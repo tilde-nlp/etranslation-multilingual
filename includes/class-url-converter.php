@@ -171,11 +171,13 @@ class TRP_Url_Converter {
             $hreflang_duplicates = array();
             $hreflang_duplicates_region_independent  = array();
         foreach ( $languages as $language ) {
-            // hreflang should have - instead of _ . For example: en-EN, not en_EN like the locale
-            $hreflang = str_replace( '_', '-', $language );
-            $hreflang = apply_filters( 'trp_hreflang', $hreflang, $language );
-            $hreflang_duplicates[] = $hreflang;
-            echo '<link rel="alternate" hreflang="' . esc_attr( $hreflang ) . '" href="' . esc_url( $this->get_url_for_language( $language ) ) . '"/>' . "\n";
+            if( apply_filters( 'trp_add_country_hreflang_tags', true ) ){
+                // hreflang should have - instead of _ . For example: en-EN, not en_EN like the locale
+                $hreflang = str_replace( '_', '-', $language );
+                $hreflang = apply_filters( 'trp_hreflang', $hreflang, $language );
+                $hreflang_duplicates[] = $hreflang;
+                echo '<link rel="alternate" hreflang="' . esc_attr( $hreflang ) . '" href="' . esc_url( $this->get_url_for_language( $language ) ) . '"/>' . "\n";
+            }
 
             if ( apply_filters( 'trp_add_region_independent_hreflang_tags', true ) ) {
                 if ( strpos( $language, '_' ) !== false ) {

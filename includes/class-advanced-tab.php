@@ -77,6 +77,10 @@ class TRP_Advanced_Tab {
                         $settings[ $registered_setting['name'] ] = sanitize_text_field($submitted_settings[ $registered_setting['name'] ]);
                         break;
                     }
+                    case 'radio' : {
+                        $settings[ $registered_setting['name'] ] = sanitize_text_field( $submitted_settings[ $registered_setting['name'] ] );
+                        break;
+                    }
                     case 'custom': {
 						foreach ( $registered_setting['rows'] as $row_label => $row_type ) {
                             if (isset($submitted_settings[$registered_setting['name']][$row_label])) {
@@ -229,6 +233,7 @@ class TRP_Advanced_Tab {
         include_once(TRP_PLUGIN_DIR . 'includes/advanced-settings/do-not-translate-certain-paths.php');
         include_once (TRP_PLUGIN_DIR . 'includes/advanced-settings/opposite-flag-shortcode.php');
         include_once (TRP_PLUGIN_DIR . 'includes/advanced-settings/open-language-switcher-shortcode-on-click.php');
+        include_once(TRP_PLUGIN_DIR . 'includes/advanced-settings/hreflang-remove-locale.php');
 	}
 
 	/*
@@ -329,16 +334,29 @@ class TRP_Advanced_Tab {
      */
     public function radio_setting( $setting ){
         $adv_option = $this->settings['trp_advanced_settings'];
-        $checked = '';
         $html = "
              <tr>
                 <th scope='row'>" . esc_html($setting['label'] ) . "</th>
                 <td class='trp-adst-radio'>";
 
         foreach($setting[ 'options' ] as $key => $option ){
-             if( isset( $adv_option[ $setting['default'] ] ) && $adv_option[ $setting['default'] ] === $option ) {
-					$checked = 'checked="checked"';
+
+            if( isset( $adv_option[ $setting['name'] ] ) && !empty( $adv_option[ $setting['name'] ] ) ){
+                if( $adv_option[ $setting['name'] ] === $option ){
+                    $checked = 'checked="checked"';
+                }
+                else{
+                    $checked = '';
+                }
 	        }
+            else{
+                if( $setting['default'] === $option ){
+                    $checked = 'checked="checked"';
+                }
+                else{
+                    $checked = '';
+                }
+            }
             $setting_name  = $setting['name'];
             $label  = $setting[ 'labels' ][$key];
             $html .= "<label>

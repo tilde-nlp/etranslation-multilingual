@@ -106,6 +106,7 @@
 <?php __("Addons", "translatepress-multilingual"); ?>
 <?php __("License", "translatepress-multilingual"); ?>
 <?php __("Settings", "translatepress-multilingual"); ?>
+<?php __("Activate License", "translatepress-multilingual"); ?>
 <?php __("Pro Features", "translatepress-multilingual"); ?>
 <?php __("Image source", "translatepress-multilingual"); ?>
 <?php __("Alt attribute", "translatepress-multilingual"); ?>
@@ -258,7 +259,6 @@
 <?php __("There are no logged errors.", "translatepress-multilingual"); ?>
 <?php __("If you purchased a <a href=\"%s\">premium version</a>, first install and activate it. After this you will be prompted with an input to enter your license key.", "translatepress-multilingual"); ?>
 <?php __("License Key", "translatepress-multilingual"); ?>
-<?php __("Activate License", "translatepress-multilingual"); ?>
 <?php __("Deactivate License", "translatepress-multilingual"); ?>
 <?php __("Your license is invalid", "translatepress-multilingual"); ?>
 <?php __("Active on this site", "translatepress-multilingual"); ?>
@@ -403,6 +403,11 @@
 <?php __("Fixes attributes without spaces between them because they are not valid HTML.<br> May help fix missing or broken content from the HTML on translated pages.", "translatepress-multilingual"); ?>
 <?php __("Force slash at end of home url:", "translatepress-multilingual"); ?>
 <?php __("Ads a slash at the end of the home_url() function", "translatepress-multilingual"); ?>
+<?php __("Show Both (recommended)", "translatepress-multilingual"); ?>
+<?php __("Remove Country Locale", "translatepress-multilingual"); ?>
+<?php __("Remove Region Independent Locale", "translatepress-multilingual"); ?>
+<?php __("Remove duplicate hreflang", "translatepress-multilingual"); ?>
+<?php __("Choose which hreflang tags will appear on your website.<br/>We recommend showing both types of hreflang tags as indicated by <a href=\"https://developers.google.com/search/docs/advanced/crawling/localized-versions\" title=\"Google Crawling\" target=\"_blank\">Google documentation</a>.<br/>Removing Country Locale when having multiple Country Locales of the same language (ex. English UK and English US) will result in showing one hreflang tag with link to just one of the region locales for that language.", "translatepress-multilingual"); ?>
 <?php __("Open language switcher only on click", "translatepress-multilingual"); ?>
 <?php __("Open the language switcher shortcode by clicking on it instead of hovering.<br> Close it by clicking on it, anywhere else on the screen or by pressing the escape key. This will affect only the shortcode language switcher.", "translatepress-multilingual"); ?>
 <?php __("Show opposite language in the language switcher", "translatepress-multilingual"); ?>

@@ -135,7 +135,7 @@ class TRP_Error_Manager{
             return;
         }
         $option = get_option( 'trp_db_errors', false );
-        if ( $option !== false ) {
+        if ( $option !== false && isset($option['notifications'])) {
             foreach( $option['notifications'] as $logged_notification ) {
                 $notifications = TRP_Plugin_Notifications::get_instance();
 

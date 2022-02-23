@@ -45,27 +45,27 @@ msgstr ""
 msgid "Advanced"
 msgstr ""
 
-#: includes/class-advanced-tab.php:181
+#: includes/class-advanced-tab.php:185
 msgid "Settings saved."
 msgstr ""
 
-#: includes/class-advanced-tab.php:313, includes/class-error-manager.php:172, partials/machine-translation-settings-page.php:13, partials/machine-translation-settings-page.php:117, partials/machine-translation-settings-page.php:150, partials/main-settings-page.php:42, partials/main-settings-page.php:55, partials/main-settings-page.php:68
+#: includes/class-advanced-tab.php:318, includes/class-error-manager.php:172, partials/machine-translation-settings-page.php:13, partials/machine-translation-settings-page.php:117, partials/machine-translation-settings-page.php:150, partials/main-settings-page.php:42, partials/main-settings-page.php:55, partials/main-settings-page.php:68
 msgid "Yes"
 msgstr ""
 
-#: includes/class-advanced-tab.php:510, includes/class-advanced-tab.php:521, includes/class-advanced-tab.php:615, includes/class-advanced-tab.php:646
+#: includes/class-advanced-tab.php:528, includes/class-advanced-tab.php:539, includes/class-advanced-tab.php:633, includes/class-advanced-tab.php:664
 msgid "Are you sure you want to remove this item?"
 msgstr ""
 
-#: includes/class-advanced-tab.php:510, includes/class-advanced-tab.php:521, includes/class-advanced-tab.php:615, includes/class-advanced-tab.php:646, partials/main-settings-language-selector.php:60, add-ons-advanced/extra-languages/partials/language-selector-pro.php:62
+#: includes/class-advanced-tab.php:528, includes/class-advanced-tab.php:539, includes/class-advanced-tab.php:633, includes/class-advanced-tab.php:664, partials/main-settings-language-selector.php:60, add-ons-advanced/extra-languages/partials/language-selector-pro.php:62
 msgid "Remove"
 msgstr ""
 
-#: includes/class-advanced-tab.php:521, includes/class-advanced-tab.php:646, partials/main-settings-language-selector.php:102, add-ons-advanced/extra-languages/partials/language-selector-pro.php:103
+#: includes/class-advanced-tab.php:539, includes/class-advanced-tab.php:664, partials/main-settings-language-selector.php:102, add-ons-advanced/extra-languages/partials/language-selector-pro.php:103
 msgid "Add"
 msgstr ""
 
-#: includes/class-advanced-tab.php:599, includes/class-advanced-tab.php:633
+#: includes/class-advanced-tab.php:617, includes/class-advanced-tab.php:651
 msgid "Select..."
 msgstr ""
 
@@ -297,11 +297,11 @@ msgstr ""
 msgid "(last checked on %s)"
 msgstr ""
 
-#: includes/class-machine-translator.php:140
+#: includes/class-machine-translator.php:136, includes/google-translate/class-google-translate-v2-machine-translator.php:181
 msgid "Please enter your Google Translate key."
 msgstr ""
 
-#: includes/class-machine-translator.php:155
+#: includes/class-machine-translator.php:151, add-ons-pro/deepl/includes/class-deepl-machine-translator.php:286
 msgid "Please enter your DeepL API key."
 msgstr ""
 
@@ -441,7 +441,11 @@ msgstr ""
 msgid "Settings"
 msgstr ""
 
-#: includes/class-settings.php:604
+#: includes/class-settings.php:613, partials/license-settings-page.php:32
+msgid "Activate License"
+msgstr ""
+
+#: includes/class-settings.php:605
 msgid "Pro Features"
 msgstr ""
 
@@ -1049,10 +1053,6 @@ msgstr ""
 msgid "License Key"
 msgstr ""
 
-#: partials/license-settings-page.php:32
-msgid "Activate License"
-msgstr ""
-
 #: partials/license-settings-page.php:22
 msgid "Deactivate License"
 msgstr ""
@@ -1363,11 +1363,11 @@ msgstr ""
 msgid "Response:"
 msgstr ""
 
-#: partials/test-api-settings-page.php:27
+#: partials/test-api-settings-page.php:32
 msgid "Response Body:"
 msgstr ""
 
-#: partials/test-api-settings-page.php:32
+#: partials/test-api-settings-page.php:42
 msgid "Entire Response From wp_remote_get():"
 msgstr ""
 
@@ -1635,6 +1635,26 @@ msgstr ""
 msgid "Ads a slash at the end of the home_url() function"
 msgstr ""
 
+#: includes/advanced-settings/hreflang-remove-locale.php:10
+msgid "Show Both (recommended)"
+msgstr ""
+
+#: includes/advanced-settings/hreflang-remove-locale.php:10
+msgid "Remove Country Locale"
+msgstr ""
+
+#: includes/advanced-settings/hreflang-remove-locale.php:10
+msgid "Remove Region Independent Locale"
+msgstr ""
+
+#: includes/advanced-settings/hreflang-remove-locale.php:11
+msgid "Remove duplicate hreflang"
+msgstr ""
+
+#: includes/advanced-settings/hreflang-remove-locale.php:12
+msgid "Choose which hreflang tags will appear on your website.<br/>We recommend showing both types of hreflang tags as indicated by <a href=\"https://developers.google.com/search/docs/advanced/crawling/localized-versions\" title=\"Google Crawling\" target=\"_blank\">Google documentation</a>.<br/>Removing Country Locale when having multiple Country Locales of the same language (ex. English UK and English US) will result in showing one hreflang tag with link to just one of the region locales for that language."
+msgstr ""
+
 #: includes/advanced-settings/open-language-switcher-shortcode-on-click.php:8
 msgid "Open language switcher only on click"
 msgstr ""
@@ -1699,23 +1719,23 @@ msgstr ""
 msgid "Google Translate v2"
 msgstr ""
 
-#: includes/google-translate/functions.php:40
+#: includes/google-translate/functions.php:41
 msgid "Google Translate API Key"
 msgstr ""
 
-#: includes/google-translate/functions.php:60
+#: includes/google-translate/functions.php:61
 msgid "Visit <a href=\"https://cloud.google.com/docs/authentication/api-keys\" target=\"_blank\">this link</a> to see how you can set up an API key, <strong>control API costs</strong> and set HTTP referrer restrictions."
 msgstr ""
 
-#: includes/google-translate/functions.php:61
+#: includes/google-translate/functions.php:62
 msgid "Your HTTP referrer is: %s"
 msgstr ""
 
-#: includes/google-translate/functions.php:100
+#: includes/google-translate/functions.php:101
 msgid "There was an error on the server processing your Google Translate key."
 msgstr ""
 
-#: includes/google-translate/functions.php:97
+#: includes/google-translate/functions.php:98
 msgid "There was an error with your Google Translate key."
 msgstr ""
 

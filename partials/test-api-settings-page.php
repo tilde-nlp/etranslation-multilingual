@@ -22,16 +22,31 @@ $api_key            = $machine_translator->get_api_key();
 
             <h3><?php esc_html_e('Response:', 'translatepress-multilingual');?></h3>
             <pre>
-                <?php print_r( $response["response"] ); ?>
+                <?php
+                ob_start();
+                !is_wp_error( $response ) ? print_r( $response["response"] ) : print_r( $response->get_error_message() );
+                $buffer = ob_get_clean();
+                echo '<pre>' . esc_html( $buffer ) . '</pre>';
+                ?>
             </pre>
             <h3><?php esc_html_e('Response Body:', 'translatepress-multilingual');?></h3>
             <pre>
-                <?php print_r( esc_html( $response["body"] ) ); ?>
+                <?php
+                ob_start();
+                !is_wp_error( $response ) ? print_r( esc_html( $response["body"] ) ) : print_r( $response->get_error_data() );
+                $buffer = ob_get_clean();
+                echo '<pre>' . esc_html( $buffer ) . '</pre>';
+                ?>
             </pre>
 
             <h3><?php esc_html_e('Entire Response From wp_remote_get():', 'translatepress-multilingual');?></h3>
             <pre>
-                <?php print_r( $response ); ?>
+                <?php
+                ob_start();
+                print_r( $response );
+                $buffer = ob_get_clean();
+                echo '<pre>' . esc_html( $buffer ) . '</pre>';
+                ?>
             </pre>
         </div>
     </div>

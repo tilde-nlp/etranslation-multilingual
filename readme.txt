@@ -5,7 +5,7 @@ Tags: translate, translation, multilingual, automatic translation, bilingual, fr
 Requires at least: 3.1.0
 Tested up to: 5.9
 Requires PHP: 5.6.20
-Stable tag: 2.2.0
+Stable tag: 2.2.1
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -140,6 +140,15 @@ For more information please check out our [documentation](https://translatepress
 
 
 == Changelog ==
+= 2.2.1 =
+* Added Advanced option to adjust hreflang to hide region independent language tags or country locale tags
+* Added missing flags for Tamil (Sri Lanka), Spanish (Ecuador), Spanish (Dominican Republic), Amharic
+* Improved Automatic Translation tab checking for translation API key validity
+* Improved Plugins interface action buttons for TP by taking into account free/pro status
+* Fixed error management interface displaying raw HTML instead of formatted HTML
+* Fixed notice in admin for an edge case
+* Fixed notice in Test API Page when test request resulted in WP Error
+
 = 2.2.0 =
 * Fixed language slug incorrectly ending up in .htaccess in some cases
 * Fixed issue in hreflang tags when using certain custom language codes

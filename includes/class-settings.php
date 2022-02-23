@@ -601,8 +601,20 @@ class TRP_Settings{
 
         array_unshift( $links, $settings_link );
 
-        $links['go_pro'] = sprintf( '<a href="%1$s" target="_blank" style="color: #e76054; font-weight: bold;">%2$s</a>', trp_add_affiliate_id_to_link('https://translatepress.com/pricing/?utm_source=wpbackend&utm_medium=clientsite&utm_content=tpeditor&utm_campaign=tpfree'), __( 'Pro Features', 'translatepress-multilingual' ) );
-
+        if( !trp_is_paid_version() ) {
+            $links['go_pro'] = sprintf( '<a href="%1$s" target="_blank" style="color: #e76054; font-weight: bold;">%2$s</a>', esc_url( trp_add_affiliate_id_to_link( 'https://translatepress.com/pricing/?utm_source=wpbackend&utm_medium=clientsite&utm_content=tpeditor&utm_campaign=tpfree' ) ), esc_html__( 'Pro Features', 'translatepress-multilingual' ) );
+        }else {
+            $license_details = get_option( 'trp_license_details' );
+            $is_demosite     = ( strpos( site_url(), 'https://demo.translatepress.com' ) !== false );
+            if ( !empty( $license_details ) && !$is_demosite ) {
+                if ( !empty( $license_details['invalid'] ) ) {
+                    $license_detail = $license_details['invalid'][0];
+                    if ( isset( $license_detail->error ) && $license_detail->error == 'missing' ) {
+                        $links['license'] = sprintf( '<a href="%1$s" target="_blank" style="color: #e76054; font-weight: bold;">%2$s</a>', esc_url(trp_add_affiliate_id_to_link( admin_url( '/admin.php?page=trp_license_key' ) ) ), esc_html__( 'Activate License', 'translatepress-multilingual' ) );
+                    }
+                }
+            }
+        }
         return $links;
     }
 

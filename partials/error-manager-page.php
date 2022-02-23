@@ -5,7 +5,7 @@
     if ( $page_output === '' ){
         $page_output = esc_html__('There are no logged errors.', 'translatepress-multilingual');
     }
-    echo esc_html( $page_output );
+    echo $page_output; /* phpcs:ignore */ /* sanitized in the functions hooked to the filters */
 
     ?>
 

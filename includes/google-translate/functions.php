@@ -17,7 +17,8 @@ function trp_gt_add_settings( $mt_settings ){
 
     // Check for API errors only if $translation_engine is Google.
     if ( 'google_translate_v2' === $translation_engine ) {
-	    $api_check = $machine_translator->automatic_translate_error_check( $machine_translator, $translation_engine, $api_key );
+        $api_check = $machine_translator->check_api_key_validity();
+
     }
 
     // Check for errors.
