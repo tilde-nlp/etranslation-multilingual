@@ -39,10 +39,10 @@ jQuery( function() {
                 return;
             }
 
-            if (jQuery( "#trp-languages-table .trp-language" ).length >= 2 ){
+/*            if (jQuery( "#trp-languages-table .trp-language" ).length >= 2 ){
                 jQuery(".trp-upsell-multiple-languages").show('fast');
                 return;
-            }
+            }*/
 
             selected_language.val( '' ).trigger( 'change' );
 
@@ -228,6 +228,9 @@ jQuery( function() {
 
     var trpGoogleTranslateKey = TRP_Field_Toggler();
         trpGoogleTranslateKey.init('.trp-translation-engine', '#trp-g-translate-key', 'google_translate_v2' );
+
+    var etranslationCredentials = TRP_Field_Toggler();
+    etranslationCredentials.init('.trp-translation-engine', '.et-credentials', 'etranslation');
 
     var deeplUpsell = TRP_Field_Toggler();
         deeplUpsell.init('.trp-translation-engine', '#trp-upsell-deepl', 'deepl_upsell' );

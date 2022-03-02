@@ -234,6 +234,7 @@ class TRP_Advanced_Tab {
         include_once (TRP_PLUGIN_DIR . 'includes/advanced-settings/opposite-flag-shortcode.php');
         include_once (TRP_PLUGIN_DIR . 'includes/advanced-settings/open-language-switcher-shortcode-on-click.php');
         include_once(TRP_PLUGIN_DIR . 'includes/advanced-settings/hreflang-remove-locale.php');
+        include_once (TRP_PLUGIN_DIR . 'includes/advanced-settings/etranslation-wait-timeout.php');
 	}
 
 	/*

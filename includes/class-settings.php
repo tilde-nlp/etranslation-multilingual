@@ -409,7 +409,7 @@ class TRP_Settings{
         return apply_filters( 'trp_get_default_trp_machine_translation_settings', array(
             // default settings for trp_machine_translation_settings
             'machine-translation'               => 'no',
-            'translation-engine'                => 'google_translate_v2',
+            'translation-engine'                => 'etranslation',
             'block-crawlers'                    => 'yes',
             'machine_translation_counter_date'  => date ("Y-m-d" ),
             'machine_translation_counter'       => 0,
