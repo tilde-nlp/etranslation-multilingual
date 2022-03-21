@@ -520,19 +520,19 @@ if( !class_exists('TRP_LICENSE_PAGE') ) {
 
         public function license_menu()
         {
-            add_submenu_page(
+/*            add_submenu_page(
                 'TRPHidden',
                 'TranslatePress License',
                 'TRPHidden',
                 'manage_options',
                 'trp_license_key',
                 array($this, 'license_page')
-            );
+            );*/
         }
 
         public function license_page()
         {
-            $license = get_option('trp_license_key');
+/*            $license = get_option('trp_license_key');
             // don't show the license in html
             $license = str_repeat("*", strlen($license));
             $status = get_option('trp_license_status');
@@ -540,7 +540,7 @@ if( !class_exists('TRP_LICENSE_PAGE') ) {
             $action = 'options.php';
             ob_start();
             require TRP_PLUGIN_DIR . 'partials/license-settings-page.php';
-            echo ob_get_clean();//phpcs:ignore
+            echo ob_get_clean();//phpcs:ignore*/
         }
     }
 }
@@ -565,12 +565,12 @@ class TRP_Plugin_Updater{
     }
 
     protected function license_page_url( ){
-        return admin_url( 'admin.php?page=trp_license_key' );
+        return admin_url( 'admin.php?page=etm_license_key' );
     }
 
     public function edd_sanitize_license( $new ) {
         $new = sanitize_text_field($new);
-        $old = $this->get_option( 'trp_license_key' );
+        $old = $this->get_option( 'etm_license_key' );
         if( $old && $old != $new ) {
             $this->delete_option( 'trp_license_status' ); // new license has been entered, so must reactivate
         }
@@ -584,9 +584,9 @@ class TRP_Plugin_Updater{
      */
     public function check_license( $transient_data ){
 
-        $license = trim( $this->get_option( 'trp_license_key' ) );
+        $license = trim( $this->get_option( 'etm_license_key' ) );
         if( $license ) {
-            $license_status = trim($this->get_option('trp_license_status'));
+            $license_status = trim($this->get_option('etm_license_status'));
 
             if ($license_status) { // do this only if the user activated the license on this site
                 $license_information_for_all_addons = array();
@@ -619,14 +619,14 @@ class TRP_Plugin_Updater{
                 }
 
                 //store the license reponse for each addon in the database
-                $this->update_option('trp_license_details', $license_information_for_all_addons);
+                $this->update_option('etm_license_details', $license_information_for_all_addons);
 
             }
         }
         else{
             //we need to throw a notice if we have a pro addon active and no license entered
             $license_information_for_all_addons['invalid'][] = (object) array( 'error' => 'missing' );
-            $this->update_option('trp_license_details', $license_information_for_all_addons);
+            $this->update_option('etm_license_details', $license_information_for_all_addons);
         }
 
         return $transient_data;
@@ -665,11 +665,11 @@ class TRP_Plugin_Updater{
             if ( isset( $_POST['trp_license_key'] ) && preg_match('/^[*]+$/', $_POST['trp_license_key']) && strlen( $_POST['trp_license_key'] ) > 5 ) { //phpcs:ignore
                 // pressed submit without altering the existing license key (containing only * as outputted by default)
                 // useful for Deactivating/Activating valid license back
-                $license = get_option('trp_license_key', '');
+                $license = get_option('etm_license_key', '');
             }else{
                 // save the license
                 $license = $this->edd_sanitize_license( trim( $_POST['trp_license_key'] ) );//phpcs:ignore
-                $this->update_option( 'trp_license_key', $license );
+                $this->update_option( 'etm_license_key', $license );
             }
             $message = array();//we will check the license for each addon and we will sotre the messages in an array
             $license_information_for_all_addons = array();
@@ -740,7 +740,7 @@ class TRP_Plugin_Updater{
             }
 
             //store the license reponse for each addon in the database
-            $this->update_option( 'trp_license_details', $license_information_for_all_addons );
+            $this->update_option( 'etm_license_details', $license_information_for_all_addons );
 
 
             // Check if anything passed on a message constituting a failure
@@ -754,7 +754,7 @@ class TRP_Plugin_Updater{
 
             // $license_data->license will be either "valid" or "invalid"
 
-            $this->update_option( 'trp_license_status', $license_data->license );
+            $this->update_option( 'etm_license_status', $license_data->license );
             wp_redirect( add_query_arg( array( 'trp_sl_activation' => 'true', 'message' => urlencode( __( 'You have successfully activated your license', 'translatepress-multilingual' ) ) ), $this->license_page_url() ) );
             exit();
         }
@@ -772,7 +772,7 @@ class TRP_Plugin_Updater{
                 return; // get out if we didn't click the Activate button
 
             // retrieve the license from the database
-            $license = trim( $this->get_option( 'trp_license_key' ) );
+            $license = trim( $this->get_option( 'etm_license_key' ) );
 
             $trp = TRP_Translate_Press::get_trp_instance();
             if( !empty( $trp->active_pro_addons ) ){

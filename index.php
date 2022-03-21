@@ -1,11 +1,11 @@
 <?php
 /*
-Plugin Name: TranslatePress - Multilingual
-Plugin URI: https://translatepress.com/
+Plugin Name: eTranslation Multilingual
+Plugin URI: https://ec.europa.eu/info/index_en
 Description: Experience a better way of translating your WordPress site using a visual front-end translation editor, with full support for WooCommerce and site builders.
-Version: 2.2.1
-Author: Cozmoslabs, Razvan Mocanu, Madalin Ungureanu, Cristophor Hurduban
-Author URI: https://cozmoslabs.com/
+Version: 0.0.1
+Author: EC
+Author URI: https://ec.europa.eu
 Text Domain: translatepress-multilingual
 Domain Path: /languages
 License: GPL2
@@ -13,7 +13,6 @@ WC requires at least: 2.5.0
 WC tested up to: 6.2
 
 == Copyright ==
-Copyright 2017 Cozmoslabs (www.cozmoslabs.com)
 
 This program is free software; you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
@@ -132,32 +131,75 @@ function translation_document_destination(WP_REST_Request $request): WP_REST_Res
 }
 
 function update_translation_manually($details_row, $translations): bool {
-    /*$trp = TRP_Translate_Press::get_trp_instance();
-    $trp_query = $trp->get_component( 'query' );*/
+    $trp = TRP_Translate_Press::get_trp_instance();
+    $trp_query = $trp->get_component( 'query' );
+    $trp_settings = $trp->get_component( 'settings' )->get_settings();
+    $default_language = strtolower($trp_settings['default-language']);
     global $wpdb;
-    $dict_table = $wpdb->get_row("SELECT TABLE_NAME AS tname FROM INFORMATION_SCHEMA.TABLES WHERE TABLE_NAME LIKE 'wp_trp_dictionary_$details_row->from%_$details_row->to%'");
+    $dict_table = $wpdb->get_row("SELECT TABLE_NAME AS tname FROM INFORMATION_SCHEMA.TABLES WHERE TABLE_NAME LIKE 'wp_etm_dictionary_" . $default_language . "_$details_row->to%'");
     if ($dict_table != null) {
         $delimiter = "\n";
+        $target_language_code = explode($default_language . "_", $dict_table->tname)[1];
         $original_strings = explode($delimiter, $details_row->original);
-        $translation_strings = TRP_eTranslation_Utils::arr_restore_spaces_after_translation($original_strings, explode($delimiter, $translations));
-        $case_query = "";
-        for ($i = 0; $i < count($original_strings); $i++) {
-            $original = $original_strings[$i];
-            $translation = $translation_strings[$i];
-            $case_query .= " WHEN '$original' THEN '$translation'";
+        $decoded_translations = decode_untranslated_symbols(explode($delimiter, $translations), $original_strings);
+        $translation_strings = TRP_eTranslation_Utils::arr_restore_spaces_after_translation($original_strings, $decoded_translations);
+
+        //insert original strings in table if they don't exist        
+        $original_inserts = $trp_query->original_strings_sync($target_language_code, $original_strings);
+
+        $max_id = $wpdb->get_row("SELECT MAX(id) as id FROM $dict_table->tname")->id;
+        $next_id = intval($max_id) + 1;
+
+        $update_strings = array();
+        for ( $i = 0; $i < count($original_strings); $i++ ) {
+            $string = $original_strings[$i];
+            array_push( $update_strings, array(
+                'id'          => $next_id + $i,
+                'original_id' => $original_inserts[ $string ]->id,
+                'original'    => $string,
+                'translated'  => trp_sanitize_string( $translation_strings[ $i ] ),
+                'status'      => $trp_query->get_constant_machine_translated() ) );
         }
-        if (!empty($case_query)) {
-            $result = $wpdb->query("UPDATE $dict_table->tname SET translated = (CASE original$case_query END) WHERE original IN ('" . implode("','", $original_strings) ."')");
-            if ($result) {
-                return true;
-            } else {
-                error_log("Could not insert translations into $dict_table->tname manually");
-            }
-        }
+
+        //insert translations
+        $trp_query->update_strings( $update_strings, $target_language_code, array( 'id', 'original', 'translated', 'status', 'original_id' ) );
+
+        //delete previously inserted untranslated rows 
+        $trp_query->remove_possible_duplicates($update_strings, $target_language_code, 'regular');
     } else {
         error_log("Could not find dictionary table by languages ($details_row->from, $details_row->to) [ID=$details_row->id]");
     }
     return false;
+}
+
+function decode_untranslated_symbols($translations, $originals) {
+    $excluded_words_from_automatic_translation = apply_filters('trp_exclude_words_from_automatic_translation', TRP_eTranslation_Utils::get_strings_to_encode_before_translation());
+    for ($i = 0; $i < count($translations); $i++) {
+        $translation = $translations[$i];
+        //check if decoding needed
+        if (str_contains($translation, "1TP")) {
+            $original = $originals[$i];
+            $replacements = array();
+            foreach($excluded_words_from_automatic_translation as $s) {
+                $replacements += strpos_all($original, $s); 
+            }
+            ksort($replacements);
+            $translations[$i] = preg_replace_callback('/1TP[0-9]+T/', function($matches) use (&$replacements) {
+                return array_shift($replacements);
+            }, $translations[$i]);
+        }
+    }
+    return $translations;
+}
+
+function strpos_all($haystack, $needle) {
+    $offset = 0;
+    $allpos = array();
+    while (($pos = strpos($haystack, $needle, $offset)) !== FALSE) {
+        $offset   = $pos + 1;
+        $allpos[$pos] = $needle;
+    }
+    return $allpos;
 }
 
 function get_incomplete_db_entry($id) {
@@ -179,7 +221,7 @@ function trp_enable_translatepress(){
 	return apply_filters( 'trp_enable_translatepress', $enable_translatepress );
 }
 
-defined('ETRANSLATION_TABLE') or define('ETRANSLATION_TABLE', 'etranslation_jobs');
+defined('ETRANSLATION_TABLE') or define('ETRANSLATION_TABLE', 'etm_etranslation_jobs');
 
 if ( trp_enable_translatepress() ) {
 	require_once plugin_dir_path( __FILE__ ) . 'class-translate-press.php';
@@ -229,7 +271,7 @@ function trp_run_translatepress_hooks(){
 }
 
 function trp_translatepress_disabled_notice(){
-	echo '<div class="notice notice-error"><p>' . wp_kses( sprintf( __( '<strong>TranslatePress</strong> requires at least PHP version 5.6.20+ to run. It is the <a href="%s">minimum requirement of the latest WordPress version</a>. Please contact your server administrator to update your PHP version.','translatepress-multilingual' ), 'https://wordpress.org/about/requirements/' ), array( 'a' => array( 'href' => array() ), 'strong' => array() ) ) . '</p></div>';
+	echo '<div class="notice notice-error"><p>' . wp_kses( sprintf( __( '<strong>eTranslation Multilingual</strong> requires at least PHP version 5.6.20+ to run. It is the <a href="%s">minimum requirement of the latest WordPress version</a>. Please contact your server administrator to update your PHP version.','translatepress-multilingual' ), 'https://wordpress.org/about/requirements/' ), array( 'a' => array( 'href' => array() ), 'strong' => array() ) ) . '</p></div>';
 }
 
 

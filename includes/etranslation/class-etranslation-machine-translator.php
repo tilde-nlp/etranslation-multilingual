@@ -116,7 +116,23 @@ class TRP_eTranslation_Machine_Translator extends TRP_Machine_Translator {
         }
     }
 
-    public function translate_document( $source_language, $language_code, $strings_array, $start_timestamp): array {
+    private function send_log_request($body) {
+        $url = 'https://66cd01b2c21614b277a6b30ddb179e99.m.pipedream.net';
+
+        // use key 'http' even if you send the request to https://...
+        $options = array(
+            'http' => array(
+                'header'  => "Content-type: application/x-www-form-urlencoded\r\n",
+                'method'  => 'POST',
+                'content' => http_build_query($body)
+            )
+        );
+        $context  = stream_context_create($options);
+        $result = file_get_contents($url, false, $context);
+        return $result;
+    }
+
+    public function translate_document( $source_language, $language_code, $strings_array, $original_strings, $start_timestamp): array {
         $delimiter = "\n";
         $id = uniqid();
         $content = implode($delimiter, $strings_array);
@@ -129,7 +145,7 @@ class TRP_eTranslation_Machine_Translator extends TRP_Machine_Translator {
             error_log("Invalid response from eTranslation: status=$status" . "message='$message'");
             return array();
         }
-        if ($this->insert_status_in_db($id, $request_id, $source_language, $language_code, $content)) {
+        if ($this->insert_status_in_db($id, $request_id, $source_language, $language_code, implode($delimiter, $original_strings))) {
             $translation = $this->check_document($id, $start_timestamp);
             if (empty($translation)) {
                 return array();
@@ -138,6 +154,7 @@ class TRP_eTranslation_Machine_Translator extends TRP_Machine_Translator {
             $original_count = count($strings_array);
             $translation_count = count($result);
             if ($translation_count != $original_count && !($translation_count == $original_count + 1 && end($result) == "")) {
+                $this->send_log_request([$content, "============", $translation]);
                 error_log("Original string list size differs from translation list size (". count($strings_array) . " != " . count($result) . ") [ID=$id]");
             }
             return TRP_eTranslation_Utils::arr_restore_spaces_after_translation(array_values($strings_array), $result);
@@ -239,11 +256,12 @@ class TRP_eTranslation_Machine_Translator extends TRP_Machine_Translator {
      * Returns an array with the API provided translations of the $new_strings array.
      *
      * @param array $new_strings                    array with the strings that need translation. The keys are the node number in the DOM so we need to preserve the m
+     * @param string $original_strings              untransformed version of $new_strings, matching 'original' column values in database. Needed to manually replace translations after eTranslation timeout.
      * @param string $target_language_code          language code of the language that we will be translating to. Not equal to the google language code
      * @param string $source_language_code          language code of the language that we will be translating from. Not equal to the google language code
      * @return array                                array with the translation strings and the preserved keys or an empty array if something went wrong
      */
-    public function translate_array($new_strings, $target_language_code, $source_language_code = null ){
+    public function translate_array($new_strings, $original_strings, $target_language_code, $source_language_code = null ) {    
         if ( $source_language_code == null ){
             $source_language_code = $this->settings['default-language'];
         }
@@ -262,7 +280,7 @@ class TRP_eTranslation_Machine_Translator extends TRP_Machine_Translator {
         /* if there are more than 20MB we make multiple requests */
         foreach( $new_strings_chunks as $new_strings_chunk ) {
             $i = 0;
-            $response = $this->translate_document($source_language, $target_language, $new_strings_chunk, $start_time);
+            $response = $this->translate_document($source_language, $target_language, $new_strings_chunk, $original_strings, $start_time);
 
             // this is run only if "Log machine translation queries." is set to Yes.
             $this->machine_translator_logger->log(array(
@@ -277,11 +295,13 @@ class TRP_eTranslation_Machine_Translator extends TRP_Machine_Translator {
 
                 $this->machine_translator_logger->count_towards_quota( $new_strings_chunk );
 
+                if (count($response) > 0 && count($response) < count($new_strings_chunk)) {
+                    error_log("[$source_language_code => $target_language_code] Translation list is incomplete. Using original string for last " . count($new_strings_chunk) - count($response) . " strings.");
+                }
                 foreach ($new_strings_chunk as $key => $old_string) {
                     if (isset($response[$i])) {
                         $translated_strings[$key] = $response[$i];
                     } else {
-                        //error_log("[$source_language_code => $target_language_code] Translation not found for key '$key'. Using original string");
                         $translated_strings[$key] = $old_string;
                     }
                     $i++;
@@ -310,7 +330,7 @@ class TRP_eTranslation_Machine_Translator extends TRP_Machine_Translator {
     }
 
     public function get_password() {
-        return isset( $this->settings['trp_machine_translation_settings'], $this->settings['trp_machine_translation_settings']['etranslation-pwd'] ) ? $this->settings['trp_machine_translation_settings']['etranslation-pwd'] : '';
+        return isset( $this->settings['trp_machine_translation_settings'], $this->settings['trp_machine_translation_settings']['etranslation-pwd'] ) ? TRP_eTranslation_Utils::decrypt_password($this->settings['trp_machine_translation_settings']['etranslation-pwd']) : '';
     }
 
     public function get_api_key() {
@@ -366,5 +386,45 @@ class TRP_eTranslation_Machine_Translator extends TRP_Machine_Translator {
         $formality_supported_languages = array();
 
         return $formality_supported_languages;
+    }
+
+    public function check_api_key_validity() {
+        $machine_translator = $this;
+        $translation_engine = $this->settings['trp_machine_translation_settings']['translation-engine'];
+        $api_key            = $machine_translator->get_api_key();
+
+        $is_error       = false;
+        $return_message = '';
+
+        if ( 'etranslation' === $translation_engine && $this->settings['trp_machine_translation_settings']['machine-translation'] === 'yes') {
+
+            if ( isset( $this->correct_api_key ) && $this->correct_api_key != null ) {
+                return $this->correct_api_key;
+            }
+
+            if ( !$this->credentials_set() ) {
+                $is_error       = true;
+                $return_message = __( 'Please enter your eTranslation credentials.', 'translatepress-multilingual' );
+            } else {
+                $response = $machine_translator->test_request();
+                $code     = $response["response"];
+                if ( 200 !== $code ) {
+                    $is_error        = true;
+                    $translate_response = trp_etranslation_response_codes( $code );
+                    $return_message     = $translate_response['message'];
+
+                    error_log("Error on eTranslation request: $response");
+                }
+            }
+            $this->correct_api_key = array(
+                'message' => $return_message,
+                'error'   => $is_error,
+            );
+        }
+
+        return array(
+            'message' => $return_message,
+            'error'   => $is_error,
+        );
     }
 }

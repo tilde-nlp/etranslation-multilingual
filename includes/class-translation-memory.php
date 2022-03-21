@@ -73,7 +73,7 @@ class TRP_Translation_Memory {
 
                 // there is no dictionary table with the default language
                 if ( $language_code !== $this->settings['default-language'] ) {
-                    // data-trp-translate-id, data-trp-translate-id-innertext are in the wp_trp_dictionary_* tables
+                    // data-trp-translate-id, data-trp-translate-id-innertext are in the wp_etm_dictionary_* tables
                     $table_name = $this->trp_query->get_table_name( $language_code );
                 }
 

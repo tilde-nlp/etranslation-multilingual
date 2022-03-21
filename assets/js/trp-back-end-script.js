@@ -66,7 +66,7 @@ jQuery( function() {
 
             var url_slug = new_option.find( 'input.trp-language-slug' );
             url_slug.val( _this.get_default_url_slug( new_language ) );
-            url_slug.attr('name', 'trp_settings[url-slugs][' + new_language + ']' );
+            url_slug.attr('name', 'etm_settings[url-slugs][' + new_language + ']' );
 
             var language_code = new_option.find( 'input.trp-language-code' );
             language_code.val( new_language);
@@ -124,7 +124,7 @@ jQuery( function() {
             var select = jQuery( event.target );
             var new_language = select.val();
             var row = jQuery( select ).parents( '.trp-language' ) ;
-            row.find( '.trp-language-slug' ).attr( 'name', 'trp_settings[url-slugs][' + new_language + ']').val( '' ).val( _this.get_default_url_slug( new_language ) );
+            row.find( '.trp-language-slug' ).attr( 'name', 'etm_settings[url-slugs][' + new_language + ']').val( '' ).val( _this.get_default_url_slug( new_language ) );
             row.find( '.trp-language-code' ).val( '' ).val( new_language );
             row.find( '.trp-translation-published' ).val( new_language );
         };
@@ -311,95 +311,4 @@ function TRP_Field_Toggler (){
     return {
         init: init
     }
-}
-
-// TRP Email Course
-jQuery(document).ready(function (e) {
-    jQuery('.trp-email-course input[type="submit"]').on('click', function (e) {
-
-        e.preventDefault()
-
-        jQuery( '.trp-email-course .trp-email-course__error' ).removeClass( 'visible' )
-
-        var email = jQuery( '.trp-email-course input[name="trp_email_course_email"]').val()
-        
-        if (!trp_validateEmail( email ) ){
-            jQuery( '.trp-email-course .trp-email-course__error' ).addClass( 'visible' )
-            jQuery( '.trp-email-course input[name="trp_email_course_email"]' ).focus()
-
-            return
-        }
-
-        if( email != '' ){
-
-            jQuery( '.trp-email-course input[type="submit"' ).val( 'Working...' )
-
-            var data = new FormData()
-                data.append( 'email', email )
-
-            jQuery.ajax({
-                url: 'https://translatepress.com/wp-json/trp-api/emailCourseSubscribe',
-                type: 'POST',
-                processData: false,
-                contentType: false,
-                data: data,
-                success: function (response) {
-
-                    if( response.message ){
-
-                        jQuery( '.trp-email-course .trp-email-course__message').text( response.message ).addClass( 'visible' ).addClass( 'success' )
-                        jQuery( '.trp-email-course .trp-email-course__form' ).hide()
-                        jQuery( '.trp-email-course__footer' ).css( 'visibility', 'hidden' )
-
-                        trp_dimiss_email_course()
-
-                    }
-
-                },
-                error: function (response) {
-
-                    jQuery('.trp-email-course input[type="submit"').val('Sign me up!')
-
-                }
-            })
-
-        }
-
-    })
-
-    jQuery('.trp-email-course .trp-email-course__close').on('click', function (e) {
-
-        trp_dimiss_email_course()
-
-        jQuery( '.trp-email-course' ).remove()
-
-    })
-})
-
-function trp_validateEmail(email) {
-
-    const re = /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
-    return re.test(String(email).toLowerCase());
-
-}
-
-function trp_dimiss_email_course(){
-
-    let newData = new FormData()
-    newData.append('action', 'trp_dismiss_email_course')
-
-    jQuery.ajax({
-        url: ajaxurl,
-        type: 'POST',
-        processData: false,
-        contentType: false,
-        data: newData,
-        success: function (response) {
-
-        },
-        error: function (response) {
-
-        }
-    })
-
 }

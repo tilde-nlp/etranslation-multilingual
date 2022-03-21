@@ -10,7 +10,7 @@ function trp_register_exclude_gettext_strings( $settings_array ){
 								'domain' => __('Domain', 'translatepress-multilingual')
 							),
 		'label'         => esc_html__( 'Exclude Gettext Strings', 'translatepress-multilingual' ),
-		'description'   => wp_kses( __( 'Exclude these strings from being translated as Gettext strings by TranslatePress. Leave the domain empty to take into account any Gettext string.<br/>Can still be translated through po/mo files.', 'translatepress-multilingual' ), array( 'br' => array() ) ),
+		'description'   => wp_kses( __( 'Exclude these strings from being translated as Gettext strings by eTranslation Multilingual. Leave the domain empty to take into account any Gettext string.<br/>Can still be translated through po/mo files.', 'translatepress-multilingual' ), array( 'br' => array() ) ),
 	);
 	return $settings_array;
 }
@@ -20,7 +20,7 @@ function trp_register_exclude_gettext_strings( $settings_array ){
  */
 add_action( 'init', 'trp_load_exclude_strings' );
 function trp_load_exclude_strings(){
-	$option = get_option( 'trp_advanced_settings', true );
+	$option = get_option( 'etm_advanced_settings', true );
 
 	if( isset( $option['exclude_gettext_strings'] ) && count( $option['exclude_gettext_strings']['string'] ) > 0 )
 		add_filter('trp_skip_gettext_processing', 'trp_exclude_strings', 1000, 4 );
@@ -28,7 +28,7 @@ function trp_load_exclude_strings(){
 }
 
 function trp_exclude_strings ( $return, $translation, $text, $domain ){
-	$option = get_option( 'trp_advanced_settings', true );
+	$option = get_option( 'etm_advanced_settings', true );
 
 	if ( isset( $option['exclude_gettext_strings'] ) ) {
 

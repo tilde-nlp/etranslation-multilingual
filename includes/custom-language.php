@@ -12,7 +12,7 @@ function trp_add_flag_sizes( $sizes ) {
 add_filter( 'trp_wp_languages', 'trpc_add_custom_language', 10, 2 );
 function trpc_add_custom_language( $languages ) {
 
-	$option = get_option( 'trp_advanced_settings', true );
+	$option = get_option( 'etm_advanced_settings', true );
 
 	if ( isset( $option['custom_language'] ) ) {
 		//print_r($option['custom_language'];
@@ -68,7 +68,7 @@ function trpc_add_custom_language( $languages ) {
 
 add_filter('gettext_with_context', 'trpc_language_rtl', 10, 4);
 function trpc_language_rtl($translated, $text, $context, $domain){
-	$option = get_option( 'trp_advanced_settings', true );
+	$option = get_option( 'etm_advanced_settings', true );
 	global $TRP_LANGUAGE;
 
 	if ( isset( $option['custom_language'] ) ) {
@@ -97,7 +97,7 @@ add_filter( 'trp_flags_path', 'trpc_flags_path_custom', 10, 2 );
 function trpc_flags_path_custom( $original_flags_path,  $language_code ) {
 
 	// only change the folder path for the custom languages:
-	$option = get_option( 'trp_advanced_settings', true );
+	$option = get_option( 'etm_advanced_settings', true );
 
 	if ( isset( $option['custom_language'] ) ) {
 		foreach ( $option['custom_language']['cuslangname'] as $key => $value ) {
@@ -124,7 +124,7 @@ add_filter( 'trp_flag_file_name', 'trpc_flag_name_custom', 10, 2 );
  */
 function trpc_flag_name_custom ( $original_flags_path,  $language_code ){
 	// only change flag name for the custom languages:
-	$option = get_option( 'trp_advanced_settings', true );
+	$option = get_option( 'etm_advanced_settings', true );
 	if ( isset( $option['custom_language'] ) ) {
 		foreach ( $option['custom_language']['cuslangname'] as $key => $value ) {
 			if ($language_code === $option["custom_language"]["cuslangcode"][$key] && !empty($option["custom_language"]["cuslangflag"][$key])) {
@@ -200,7 +200,7 @@ function trp_add_messages_custom_language_codes($correct_code, $settings, $submi
 
     if($correct_code_custom_language['correct_code'] === false){
         /* phpcs:ignore */
-        add_settings_error( 'trp_advanced_settings', 'settings_error', esc_html($correct_code_custom_language['message']), 'error' );
+        add_settings_error( 'etm_advanced_settings', 'settings_error', esc_html($correct_code_custom_language['message']), 'error' );
         $correct_code = false;
 
         return $correct_code;

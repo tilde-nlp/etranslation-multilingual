@@ -8,7 +8,7 @@ $api_key            = $machine_translator->get_api_key();
 
 <div id="trp-addons-page" class="wrap">
 
-    <h1> <?php esc_html_e( 'TranslatePress Settings', 'translatepress-multilingual' );?></h1>
+    <h1> <?php esc_html_e( 'eTranslation Multilingual Settings', 'translatepress-multilingual' );?></h1>
     <?php do_action ( 'trp_settings_navigation_tabs' ); ?>
 
     <div class="grid feat-header">

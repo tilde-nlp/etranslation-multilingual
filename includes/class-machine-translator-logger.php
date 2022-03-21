@@ -52,7 +52,7 @@ class TRP_Machine_Translator_Logger {
             'timestamp'   => date ("Y-m-d H:i:s" )
         );
 
-        $table_name = $this->query->db->prefix . 'trp_machine_translation_log';
+        $table_name = $this->query->db->prefix . 'etm_machine_translation_log';
 
         $query = "INSERT INTO `$table_name` ( `url`, `strings`, `characters`, `response`, `lang_source`, `lang_target`, `timestamp` ) VALUES (%s, %s, %s, %s, %s, %s, %s)";
 
@@ -144,7 +144,7 @@ class TRP_Machine_Translator_Logger {
             $machine_translation_settings[$option['name']] = $option['value'];
         }
 
-        update_option( 'trp_machine_translation_settings', $machine_translation_settings );
+        update_option( 'etm_machine_translation_settings', $machine_translation_settings );
     }
 
     public function sanitize_settings($mt_settings ){

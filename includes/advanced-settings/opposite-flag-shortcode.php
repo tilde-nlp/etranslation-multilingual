@@ -12,7 +12,7 @@ function trp_show_opposite_flag_language_switcher_shortcode( $settings_array ){
 }
 
 function trp_opposite_ls_current_language( $current_language, $published_languages, $TRP_LANGUAGE, $settings ){
-/*    if ( count ( $published_languages ) == 2 ) {
+    if ( count ( $published_languages ) == 2 ) {
         foreach ($published_languages as $code => $name) {
             if ($code != $TRP_LANGUAGE) {
                 $current_language['code'] = $code;
@@ -20,12 +20,12 @@ function trp_opposite_ls_current_language( $current_language, $published_languag
                 break;
             }
         }
-    }*/
+    }
     return $current_language;
 }
 
 function trp_opposite_ls_other_language( $other_language, $published_languages, $TRP_LANGUAGE, $settings ){
-/*    if ( count ( $published_languages ) == 2 ) {
+    if ( count ( $published_languages ) == 2 ) {
         $other_language = array();
         foreach ($published_languages as $code => $name) {
             if ($code != $TRP_LANGUAGE) {
@@ -33,14 +33,14 @@ function trp_opposite_ls_other_language( $other_language, $published_languages, 
                 break;
             }
         }
-    }*/
+    }
     return $other_language;
 }
 
 function trp_opposite_ls_hide_disabled_language($return, $current_language, $current_language_preference, $settings){
-/*    if ( count( $settings['publish-languages'] ) == 2 ){
+    if ( count( $settings['publish-languages'] ) == 2 ){
         return false;
-    }*/
+    }
     return $return;
 }
 
@@ -58,7 +58,7 @@ function trp_enqueue_language_switcher_shortcode_scripts(){
 }
 
 function trp_opposite_ls_floating_current_language($current_language, $published_languages, $TRP_LANGUAGE, $settings){
-/*    if ( count ( $published_languages ) == 2 ) {
+    if ( count ( $published_languages ) == 2 ) {
         foreach ($published_languages as $code => $name) {
             if ($code != $TRP_LANGUAGE) {
                 $current_language['code'] = $code;
@@ -66,12 +66,12 @@ function trp_opposite_ls_floating_current_language($current_language, $published
                 break;
             }
         }
-    }*/
+    }
     return $current_language;
 }
 
 function trp_opposite_ls_floating_other_language( $other_language, $published_languages, $TRP_LANGUAGE, $settings ){
-/*    if ( count ( $published_languages ) == 2 ) {
+    if ( count ( $published_languages ) == 2 ) {
         $other_language = array();
         foreach ($published_languages as $code => $name) {
             if ($code != $TRP_LANGUAGE) {
@@ -79,19 +79,19 @@ function trp_opposite_ls_floating_other_language( $other_language, $published_la
                 break;
             }
         }
-    }*/
+    }
     return $other_language;
 }
 
 function trp_opposite_ls_floating_hide_disabled_language($return, $current_language, $settings){
-/*    if ( count( $settings['publish-languages'] ) == 2 ){
+    if ( count( $settings['publish-languages'] ) == 2 ){
         return false;
-    }*/
+    }
     return $return;
 }
 
 function trp_show_opposite_flag_settings(){
-    $option = get_option( 'trp_advanced_settings', true );
+    $option = get_option( 'etm_advanced_settings', true );
 
      if(isset($option['show_opposite_flag_language_switcher_shortcode']) && $option['show_opposite_flag_language_switcher_shortcode'] !== 'no'){
          add_filter( 'trp_ls_shortcode_current_language', 'trp_opposite_ls_current_language', 10, 4 );

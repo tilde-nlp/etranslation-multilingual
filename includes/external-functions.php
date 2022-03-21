@@ -21,7 +21,7 @@ function trp_full_trim( $string, $args = array()  ) {
 
 	if ( !isset( $args['numerals']) ) {
 		if ( function_exists( 'get_option' ) ) {
-			$opt = get_option( 'trp_advanced_settings', false );
+			$opt = get_option( 'etm_advanced_settings', false );
 			if ( isset( $opt["enable_numerals_translation"] ) ) {
 				$args['numerals'] = $opt["enable_numerals_translation"];
 			} else {

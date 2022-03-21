@@ -19,7 +19,7 @@ function trp_register_exclude_selectors_automatic_translation( $settings_array )
 
 add_filter( 'trp_no_auto_translate_selectors', 'trp_skip_automatic_translation_for_selectors' );
 function trp_skip_automatic_translation_for_selectors( $skip_selectors ){
-    $option = get_option( 'trp_advanced_settings', true );
+    $option = get_option( 'etm_advanced_settings', true );
     $add_skip_selectors = array( );
     if ( isset( $option['exclude_selectors_from_automatic_translation'] ) && is_array( $option['exclude_selectors_from_automatic_translation']['selector'] ) ) {
         $add_skip_selectors = $option['exclude_selectors_from_automatic_translation']['selector'];

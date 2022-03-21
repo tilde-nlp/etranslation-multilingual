@@ -14,7 +14,7 @@ function trp_register_fix_broken_html( $settings_array ){
 add_filter('trp_try_fixing_invalid_html', 'trp_fix_broken_html');
 function trp_fix_broken_html($allow) {
 
-	$option = get_option( 'trp_advanced_settings', true );
+	$option = get_option( 'etm_advanced_settings', true );
 	if ( isset( $option['fix_broken_html'] ) && $option['fix_broken_html'] === 'yes' ) {
 		return true;
 	}

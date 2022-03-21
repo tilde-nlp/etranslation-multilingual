@@ -17,7 +17,7 @@ function trp_register_show_dynamic_content_before_translation( $settings_array )
 */
 add_filter( 'trp_show_dynamic_content_before_translation', 'trp_show_dynamic_content_before_translation' );
 function trp_show_dynamic_content_before_translation( $allow ){
-	$option = get_option( 'trp_advanced_settings', true );
+	$option = get_option( 'etm_advanced_settings', true );
 	if ( isset( $option['show_dynamic_content_before_translation'] ) && $option['show_dynamic_content_before_translation'] === 'yes' ){
 		return true;
 	}

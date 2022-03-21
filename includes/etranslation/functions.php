@@ -13,11 +13,10 @@ function trp_etranslation_add_settings( $mt_settings ){
     $machine_translator = $trp->get_component( 'machine_translator' );
 
     $translation_engine = isset( $mt_settings['translation-engine'] ) ? $mt_settings['translation-engine'] : '';
-    $app_name = $mt_settings['etranslation-app-name'] ?? '';
-    $password = $mt_settings['etranslation-pwd'] ?? '';
 
+    // Check for API errors only if $translation_engine is Google.
     if ( 'etranslation' === $translation_engine ) {
-        $api_check = $machine_translator->automatic_translate_error_check( $machine_translator, $translation_engine, array($app_name, $password) );
+        $api_check = $machine_translator->check_api_key_validity();
     }
 
     // Check for errors.
@@ -48,16 +47,16 @@ function trp_etranslation_add_settings( $mt_settings ){
                 <?php
             }
             ?>
-            <input type="text" class="<?php echo esc_html( implode( ' ', $text_input_classes ) ); ?>" name="trp_machine_translation_settings[etranslation-app-name]" value="<?php if( !empty( $mt_settings['etranslation-app-name'] ) ) echo esc_attr( $mt_settings['etranslation-app-name']);?>"/>
+            <input type="text" class="<?php echo esc_html( implode( ' ', $text_input_classes ) ); ?>" name="etm_machine_translation_settings[etranslation-app-name]" value="<?php if( !empty( $mt_settings['etranslation-app-name'] ) ) echo esc_attr( $mt_settings['etranslation-app-name']);?>"/>
         </td>
     </tr>
     <tr>
         <th scope="row"><?php esc_html_e( 'eTranslation Password', 'translatepress-multilingual' ); ?> </th>
         <td class="et-credentials">
-            <input type="password" class="<?php echo esc_html( implode( ' ', $text_input_classes ) ); ?>" name="trp_machine_translation_settings[etranslation-pwd]" value="<?php if( !empty( $mt_settings['etranslation-pwd'] ) ) echo esc_attr( $mt_settings['etranslation-pwd']);?>"/>
+            <input type="password" class="<?php echo esc_html( implode( ' ', $text_input_classes ) ); ?>" name="etm_machine_translation_settings[etranslation-pwd]" value="<?php if( !empty( $mt_settings['etranslation-pwd'] ) ) echo esc_attr( $mt_settings['etranslation-pwd']);?>"/>
             <?php
             // Only show errors if eTranslation is active.
-            if ( 'etranslation' === $translation_engine && function_exists( 'trp_output_svg' ) ) {
+            if ( $machine_translator->is_available() && 'etranslation' === $translation_engine && function_exists( 'trp_output_svg' ) ) {
                 $machine_translator->automatic_translation_svg_output( $show_errors );
             }
             ?>
@@ -73,9 +72,6 @@ add_filter( 'trp_machine_translation_sanitize_settings', 'trp_etranslation_sanit
 function trp_etranslation_sanitize_settings( $mt_settings ){
     if( !empty( $mt_settings['etranslation-app-name'] ) )
         $mt_settings['etranslation-app-name'] = sanitize_text_field( $mt_settings['etranslation-app-name']  );
-
-    if( !empty( $mt_settings['etranslation-pwd'] ) )
-        $mt_settings['etranslation-pwd'] = sanitize_text_field( $mt_settings['etranslation-pwd']  );
 
     return $mt_settings;
 }
@@ -99,3 +95,10 @@ function trp_etranslation_response_codes( $code ) {
     );
 }
 
+add_filter( 'pre_update_option_etm_machine_translation_settings', function( $new_value, $old_value ) {
+    $key = 'etranslation-pwd';
+    if ($new_value[$key] && $old_value[$key] != $new_value[$key]) {        
+        $new_value[$key] = TRP_eTranslation_Utils::encrypt_password($new_value[$key]);
+    }
+    return $new_value; 
+ }, 10, 2);

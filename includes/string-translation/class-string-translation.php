@@ -227,7 +227,7 @@ class TRP_String_Translation {
             'in'                         => _x( 'in', 'Untranslated in this language', 'translatepress-multilingual' ),
 
             // specific bulk actions
-            'delete_warning'             => __( 'Warning: This action cannot be undone. Deleting a string will remove its current translation. The original string will appear again in this interface after TranslatePress detects it. This action is NOT equivalent to excluding the string from being translated again.' , 'translatepress-multilingual' ),
+            'delete_warning'             => __( 'Warning: This action cannot be undone. Deleting a string will remove its current translation. The original string will appear again in this interface after eTranslation Multilingual detects it. This action is NOT equivalent to excluding the string from being translated again.' , 'translatepress-multilingual' ),
 
             // tooltips
             'next_page'                  => __( 'Navigate to next page', 'translatepress-multilingual' ),

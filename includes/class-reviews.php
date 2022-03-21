@@ -20,10 +20,10 @@ class TRP_Reviews{
      * Started tracking timestamp of installation since version 1.9.8
      */
     public function maybe_set_date_of_install(){
-        $trp_db_stored_data = get_option( 'trp_db_stored_data', array() );
+        $trp_db_stored_data = get_option( 'etm_db_stored_data', array() );
         if ( !isset( $trp_db_stored_data['install_timestamp'] ) ){
             $trp_db_stored_data['install_timestamp'] = time();
-            update_option('trp_db_stored_data', $trp_db_stored_data );
+            update_option('etm_db_stored_data', $trp_db_stored_data );
         }
         $this->date_of_install = $trp_db_stored_data['install_timestamp'];
     }
@@ -40,7 +40,7 @@ class TRP_Reviews{
         $how_often_to_check = DAY_IN_SECONDS;
 
 
-        $trp_db_stored_data = get_option( 'trp_db_stored_data', array() );
+        $trp_db_stored_data = get_option( 'etm_db_stored_data', array() );
         $notification_dismissed = isset( $trp_db_stored_data['trp_review_notification_dismiss_notification'] ) && $trp_db_stored_data['trp_review_notification_dismiss_notification'] === true;
         $site_meets_conditions_for_review = isset( $trp_db_stored_data['trp_site_meets_conditions_for_review'] ) && $trp_db_stored_data['trp_site_meets_conditions_for_review'] === true;
 
@@ -77,7 +77,7 @@ class TRP_Reviews{
         if ( !isset( $trp_db_stored_data['trp_site_meets_conditions_for_review'] ) && $site_meets_conditions_for_review ){
             // once a site meets the conditions, remember so that we don't check anymore
             $trp_db_stored_data['trp_site_meets_conditions_for_review'] = true;
-            update_option( 'trp_db_stored_data', $trp_db_stored_data );
+            update_option( 'etm_db_stored_data', $trp_db_stored_data );
         }
 
         // actual logic for showing reviews or not
@@ -102,7 +102,7 @@ class TRP_Reviews{
         $url = 'https://wordpress.org/support/plugin/translatepress-multilingual/reviews/?filter=5#new-post';
 
         $message = '<p style="margin-top: 16px;font-size: 14px;padding-right:20px">';
-        $message .= wp_kses( __( "Hello! Seems like you've been using <strong>TranslatePress</strong> for a while now to translate your website. That's awesome! ", 'translatepress-multilingual' ), array('strong' => array() ) );
+        $message .= wp_kses( __( "Hello! Seems like you've been using <strong>eTranslation Multilingual</strong> for a while now to translate your website. That's awesome! ", 'translatepress-multilingual' ), array('strong' => array() ) );
         $message .= '</p>';
 
         $message .= '<p style="font-size: 14px">';
@@ -115,7 +115,7 @@ class TRP_Reviews{
 
         // buttons for OK / No, thanks
         $message .= '<p>';
-        $message .= '<a href="' . esc_url( $url ) . '" title="' . esc_attr__( 'Rate TranslatePress on WordPress.org plugin page', 'translatepress-multilingual' ) . '" class="button-primary" style="margin-right: 20px">' . esc_html__( "Ok, I will gladly help!", 'translatepress-multilingual' ) . '</a>';
+        $message .= '<a href="' . esc_url( $url ) . '" title="' . esc_attr__( 'Rate eTranslation Multilingual on WordPress.org plugin page', 'translatepress-multilingual' ) . '" class="button-primary" style="margin-right: 20px">' . esc_html__( "Ok, I will gladly help!", 'translatepress-multilingual' ) . '</a>';
         $message .= '<a href="' . add_query_arg( array( 'trp_dismiss_admin_notification' => $notification_id ) ) . '"  title="' . esc_attr__( 'Dismiss this notice.', 'translatepress-multilingual' ) . '" class="button-secondary" >' . esc_html__( "No, thanks.", 'translatepress-multilingual' ) . '</a>';
         $message .= '</p>';
         //make sure to use the trp_dismiss_admin_notification arg
@@ -138,9 +138,9 @@ class TRP_Reviews{
      */
     public function dismiss_notification($notification_id, $current_user){
         if ( $notification_id === 'trp_review_notification' ) {
-            $trp_db_stored_data = get_option( 'trp_db_stored_data', array() );
+            $trp_db_stored_data = get_option( 'etm_db_stored_data', array() );
             $trp_db_stored_data['trp_review_notification_dismiss_notification'] = true;
-            update_option('trp_db_stored_data', $trp_db_stored_data );
+            update_option('etm_db_stored_data', $trp_db_stored_data );
         }
     }
 }

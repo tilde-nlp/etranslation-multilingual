@@ -14,7 +14,7 @@ function trp_register_disable_post_container_tags_for_post_title( $settings_arra
 
 add_filter( 'trp_before_running_hooks', 'trp_remove_hooks_to_disable_post_title_search_wraps' );
 function trp_remove_hooks_to_disable_post_title_search_wraps( $trp_loader ){
-    $option = get_option( 'trp_advanced_settings', true );
+    $option = get_option( 'etm_advanced_settings', true );
     if ( isset( $option['disable_post_container_tags_for_post_title'] ) && $option['disable_post_container_tags_for_post_title'] === 'yes' ) {
         $trp                = TRP_Translate_Press::get_trp_instance();
         $translation_render = $trp->get_component( 'translation_render' );
@@ -37,7 +37,7 @@ function trp_register_disable_post_container_tags_for_post_content( $settings_ar
 
 add_filter( 'trp_before_running_hooks', 'trp_remove_hooks_to_disable_post_content_search_wraps' );
 function trp_remove_hooks_to_disable_post_content_search_wraps( $trp_loader ){
-    $option = get_option( 'trp_advanced_settings', true );
+    $option = get_option( 'etm_advanced_settings', true );
     if ( isset( $option['disable_post_container_tags_for_post_content'] ) && $option['disable_post_container_tags_for_post_content'] === 'yes' ) {
         $trp                = TRP_Translate_Press::get_trp_instance();
         $translation_render = $trp->get_component( 'translation_render' );
