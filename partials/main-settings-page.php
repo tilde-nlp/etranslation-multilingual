@@ -24,7 +24,7 @@
 
                         <p class="warning" style="display: none;" >
                             <?php esc_html_e( 'WARNING. Changing the default language will invalidate existing translations.', 'translatepress-multilingual' ); ?><br/>
-                            <?php esc_html_e( 'Even changing from en_US to en_GB, because they are treated as two different languages.', 'translatepress-multilingual' ); ?><br/>
+                            <?php esc_html_e( 'Even changing from en_GB to en_US, because they are treated as two different languages.', 'translatepress-multilingual' ); ?><br/>
                             <?php esc_html_e( 'In most cases changing the default flag is all it is needed: ', 'translatepress-multilingual' ); ?>
                         </p>
 

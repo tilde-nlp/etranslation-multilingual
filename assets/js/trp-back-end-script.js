@@ -11,6 +11,7 @@ jQuery( function() {
         var _this = this;
         var duplicate_url_error_message;
         var iso_codes;
+        var domains;
 
         /**
          * Initialize select to become select2
@@ -75,6 +76,8 @@ jQuery( function() {
 
             new_option = jQuery( '#trp-sortable-languages' ).append( new_option );
             new_option.find( '.trp-remove-language' ).last().click( _this.remove_language );
+            
+            update_domains();
         };
 
         this.remove_language = function( element ){
@@ -90,7 +93,48 @@ jQuery( function() {
             jQuery( '.trp-hidden-default-language' ).val( selected_language );
             jQuery( '.trp-translation-published[disabled]' ).val( selected_language );
             jQuery( '.trp-translation-language[disabled]').val( selected_language ).trigger( 'change' );
+            update_domains();
         };
+
+        function update_domains() {
+            var languages = [];
+            var selected_language = jQuery( '#trp-default-language').val();
+            var source = selected_language.substring(0, 2);
+            jQuery('input.trp-translation-published').each(function() {
+                languages.push(jQuery(this).val().substring(0, 2));
+            });
+            var domainFields = jQuery('select.trp-translation-language-domain');
+            for (var i = 0; i < domainFields.length; i++) {
+                var target = languages[i];
+                var supportedDomains = get_supported_domains(source, target, domains);
+                var previousDomain = jQuery(domainFields[i]).val();
+                jQuery(domainFields[i]).empty();
+                var domainKeys = Object.keys(supportedDomains);
+                domainKeys.forEach(key => {
+                    jQuery(domainFields[i]).append('<option value="' + key + '">' + supportedDomains[key] + '</option>');
+                });
+                var defaultDomain = 'GEN';
+                if (domainKeys.includes(previousDomain)) {
+                    jQuery(domainFields[i]).val(previousDomain);
+                } else if (domainKeys.includes(defaultDomain)) {
+                    jQuery(domainFields[i]).val(defaultDomain);
+                } else if (domainKeys.length == 0) {
+                    jQuery(domainFields[i]).append('<option value="-" selected>-</option>');
+                }
+            }
+        }
+
+        function get_supported_domains(source, target, domains) {
+            var result = {}
+            var searchValue = source + "-" + target;
+            Object.keys(domains).forEach(key => {
+                langPairs = domains[key].languagePairs.map(p => p.substring(0, 5).toLowerCase());
+                if (langPairs.includes(searchValue)) {
+                    result[key] = domains[key].name;
+                }
+            });
+            return result;
+        }
 
         function has_duplicates(array) {
             var valuesSoFar = Object.create(null);
@@ -138,6 +182,8 @@ jQuery( function() {
 
             duplicate_url_error_message = trp_url_slugs_info['error_message_duplicate_slugs'];
             iso_codes = trp_url_slugs_info['iso_codes'];
+            domains = trp_url_slugs_info['domains'];
+            update_domains();
 
             jQuery( '#trp-sortable-languages' ).sortable({ handle: '.trp-sortable-handle' });
             jQuery( '#trp-add-language' ).click( _this.add_language );

@@ -112,6 +112,9 @@ class TRP_Machine_Translation_Tab {
         include_once TRP_PLUGIN_DIR . 'includes/google-translate/functions.php';
         include_once TRP_PLUGIN_DIR . 'includes/google-translate/class-google-translate-v2-machine-translator.php';
 
+        include_once TRP_PLUGIN_DIR . 'includes/etranslation/etranslation_utils.php';
+        include_once TRP_PLUGIN_DIR . 'includes/etranslation/class-etranslation-service.php';
+        include_once TRP_PLUGIN_DIR . 'includes/etranslation/class-etranslation-query.php';
         include_once TRP_PLUGIN_DIR . 'includes/etranslation/class-etranslation-machine-translator.php';
         include_once TRP_PLUGIN_DIR . 'includes/etranslation/functions.php';
     }

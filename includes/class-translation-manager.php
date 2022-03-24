@@ -1064,7 +1064,7 @@ class TRP_Translation_Manager
             }
 
             // Gettext strings are considered by default to be in the English language
-            $source_language = apply_filters('trp_gettext_source_language', 'en_US', $TRP_LANGUAGE, array(), $trp_gettext_strings_for_machine_translation);
+            $source_language = apply_filters('trp_gettext_source_language', 'en_GB', $TRP_LANGUAGE, array(), $trp_gettext_strings_for_machine_translation);
             // machine translate new strings
             if ($this->machine_translator->is_available(array($source_language, $TRP_LANGUAGE))) {
 

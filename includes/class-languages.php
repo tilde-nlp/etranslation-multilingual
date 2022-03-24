@@ -69,7 +69,7 @@ class TRP_Languages{
 				$this->wp_languages = $this->get_wp_languages_backup();
 			}
 		}
-		$default = array( 'en_US' => array( 'language'	=> 'en_US', 'english_name'=> 'English (United States)', 'native_name' => 'English', 'iso' => array( 'en' ) ) );
+		$default = array( 'en_GB' => array( 'language'	=> 'en_GB', 'english_name'=> 'English (UK)', 'native_name' => 'English', 'iso' => array( 'en' ) ) );
 		return apply_filters( 'trp_wp_languages', $default + $this->wp_languages );
 	}
 

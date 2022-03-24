@@ -21,7 +21,7 @@ function trp_register_custom_language($settings_array){
 		'name'          => 'custom_language',
 		'columns'       => array (
 
-                            'cuslangcode' => array ('label' => esc_html__( 'Language code', 'translatepress-multilingual' ), 'type' => 'text', 'values' => '', 'placeholder' => 'e. g. en_US', 'required' => true ),
+                            'cuslangcode' => array ('label' => esc_html__( 'Language code', 'translatepress-multilingual' ), 'type' => 'text', 'values' => '', 'placeholder' => 'e. g. en_GB', 'required' => true ),
                             'cuslangname' => array ('label' => esc_html__( 'Language name', 'translatepress-multilingual' ), 'type' => 'text', 'values' => '', 'placeholder' => '', 'required' => false ),
                             'cuslangnative' => array ('label' => esc_html__( 'Native name', 'translatepress-multilingual' ), 'type' => 'text', 'values' => '', 'placeholder' => '', 'required' => false ),
                             'cuslangiso' => array ('label' => esc_html__( 'Automatic translation code', 'translatepress-multilingual' ), 'type' => 'text', 'values' => '', 'placeholder' => 'e. g. en', 'required' => false ),

@@ -5,11 +5,21 @@
             <thead>
                 <tr>
                     <th colspan="2"><?php esc_html_e( 'Language', 'translatepress-multilingual' ); ?></th>
+                    <th><?php esc_html_e( 'Domain', 'translatepress-multilingual' ); ?></th>
                     <th><?php esc_html_e( 'Code', 'translatepress-multilingual' ); ?></th>
                     <th><?php esc_html_e( 'Slug', 'translatepress-multilingual' ); ?></th>
                 </tr>
             </thead>
             <tbody id="trp-sortable-languages" class="trp-language-selector-limited">
+
+            <?php
+            $domain_array = array();
+            $trp = TRP_Translate_Press::get_trp_instance();
+            $machine_translator = $trp->get_component('machine_translator');
+            if ($machine_translator instanceof TRP_eTranslation_Machine_Translator) {
+                $domain_array = $machine_translator->get_all_domains();
+            }
+            ?>
 
             <?php
             foreach ($this->settings['translation-languages'] as $key=>$selected_language_code ){
@@ -29,6 +39,17 @@
                         <?php if ( $default_language ) { ?>
                             <input type="hidden" class="trp-hidden-default-language" name="etm_settings[translation-languages][]" value="<?php echo esc_attr( $selected_language_code );?>" />
                         <?php } ?>
+                    </td>
+                    <td>
+                        <select name="etm_settings[translation-languages-domain][]" class="trp-translation-language-domain">
+                            <?php
+                            foreach ( $domain_array as $key => $value ) {
+                                ?>
+                                <option value="<?php echo esc_attr( $key ); ?>" <?php echo ( isset($this->settings['translation-languages-domain-parameter'][$selected_language_code]) && $key == $this->settings['translation-languages-domain-parameter'][$selected_language_code] ) ? 'selected' : ''; ?>><?php echo esc_html( $value->name ); ?></option>
+                                <?php
+                            }
+                            ?>
+                        </select>
                     </td>
                     <td>
                         <input class="trp-language-code trp-code-slug" type="text" disabled value="<?php echo esc_attr( $selected_language_code ); ?>">

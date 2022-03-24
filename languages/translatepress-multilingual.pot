@@ -1244,7 +1244,7 @@ msgid "WARNING. Changing the default language will invalidate existing translati
 msgstr ""
 
 #: partials/main-settings-page.php:27
-msgid "Even changing from en_US to en_GB, because they are treated as two different languages."
+msgid "Even changing from en_GB to en_US, because they are treated as two different languages."
 msgstr ""
 
 #: partials/main-settings-page.php:28

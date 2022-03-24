@@ -204,7 +204,7 @@ class TRP_Settings{
             $this->trp_languages = $trp->get_component( 'languages' );
         }
         if ( !isset ( $settings['default-language'] ) ) {
-            $settings['default-language'] = 'en_US';
+            $settings['default-language'] = 'en_GB';
         }
         if ( !isset ( $settings['translation-languages'] ) ){
             $settings['translation-languages'] = array();
@@ -283,20 +283,14 @@ class TRP_Settings{
         }
 
         foreach ($settings['translation-languages'] as $value=>$language){
-            if(isset($settings['translation-languages-formality'][$value])) {
-                if ( $settings['translation-languages-formality'][ $value ] == 'informal' ) {
-                    $settings['translation-languages-formality-parameter'][ $language ] = 'informal';
-                } else {
-                    if ( $settings['translation-languages-formality'][ $value ] == 'formal' ) {
-                        $settings['translation-languages-formality-parameter'][ $language ] = 'formal';
-                    } else {
-                        $settings['translation-languages-formality-parameter'][ $language ] = 'default';
-                    }
-                }
+            if(isset($settings['translation-languages-domain'][$value])) {
+                $settings['translation-languages-domain-parameter'][ $language ] = $settings['translation-languages-domain'][ $value ];
+            } else {
+                $settings['translation-languages-domain-parameter'][ $language ] = 'GEN';
             }
         }
 
-        unset($settings['translation-languages-formality']);
+        unset($settings['translation-languages-domain']);
 
         // check for duplicates in url slugs
         $duplicate_exists = false;
@@ -351,7 +345,7 @@ class TRP_Settings{
         // initialize default settings
         $default = get_locale();
         if ( empty( $default ) ){
-            $default = 'en_US';
+            $default = 'en_GB';
         }
         $default_settings = array(
             'default-language'                     => $default,
@@ -367,7 +361,7 @@ class TRP_Settings{
             'floater-position'                     => 'top-right',
 	        'floater-color'                        => 'default',
 	        'trp-ls-show-poweredby'                => 'no',
-            'url-slugs'                            => array( 'en_US' => 'en', '' ),
+            'url-slugs'                            => array( 'en_GB' => 'en', '' ),
         );
 
         if ( 'not_set' == $settings_option ){
@@ -442,15 +436,20 @@ class TRP_Settings{
         if( in_array( $hook, array( 'settings_page_etranslation-multilingual', 'admin_page_etm_advanced_page', 'admin_page_etm_machine_translation' ) ) ) {
             wp_enqueue_script( 'trp-settings-script', TRP_PLUGIN_URL . 'assets/js/trp-back-end-script.js', array( 'jquery', 'jquery-ui-sortable' ), TRP_PLUGIN_VERSION );
 
+            $trp                 = TRP_Translate_Press::get_trp_instance();
             if ( ! $this->trp_languages ){
-                $trp                 = TRP_Translate_Press::get_trp_instance();
                 $this->trp_languages = $trp->get_component( 'languages' );
             }
 
             $all_language_codes = $this->trp_languages->get_all_language_codes();
             $iso_codes          = $this->trp_languages->get_iso_codes( $all_language_codes, false );
+            $domains            = array();
+            if ($this->settings['trp_machine_translation_settings']['translation-engine'] === 'etranslation') {
+                $machine_translator = $trp->get_component('machine_translator');
+                $domains = $machine_translator->get_all_domains();
+            }
 
-            wp_localize_script( 'trp-settings-script', 'trp_url_slugs_info', array( 'iso_codes' => $iso_codes, 'error_message_duplicate_slugs' => __( 'Error! Duplicate URL slug values.', 'translatepress-multilingual' ) ) );
+            wp_localize_script( 'trp-settings-script', 'trp_url_slugs_info', array( 'iso_codes' => $iso_codes, 'error_message_duplicate_slugs' => __( 'Error! Duplicate URL slug values.', 'translatepress-multilingual' ), 'domains' => $domains ) );
 
             wp_enqueue_script( 'trp-select2-lib-js', TRP_PLUGIN_URL . 'assets/lib/select2-lib/dist/js/select2.min.js', array( 'jquery' ), TRP_PLUGIN_VERSION );
             wp_enqueue_style( 'trp-select2-lib-css', TRP_PLUGIN_URL . 'assets/lib/select2-lib/dist/css/select2.min.css', array(), TRP_PLUGIN_VERSION );
