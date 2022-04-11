@@ -1,5 +1,5 @@
 <?php
-add_filter( 'trp_register_advanced_settings', 'trp_register_disable_languages_sitemap', 1090);
+//add_filter( 'trp_register_advanced_settings', 'trp_register_disable_languages_sitemap', 1090);
 function trp_register_disable_languages_sitemap( $settings_array ){
     $settings_array[] = array(
         'name'          => 'disable_languages_sitemap',

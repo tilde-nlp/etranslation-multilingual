@@ -267,11 +267,11 @@ class TRP_Translate_Press{
             $this->loader->add_action('admin_notices', $this->plugin_updater, 'admin_activation_notices');
         }
 
-        $this->loader->add_action( 'admin_init', $this->reviews, 'display_review_notice' );
-        $this->loader->add_action( 'trp_dismiss_notification', $this->reviews, 'dismiss_notification', 10, 2 );
+        //$this->loader->add_action( 'admin_init', $this->reviews, 'display_review_notice' );
+        //$this->loader->add_action( 'trp_dismiss_notification', $this->reviews, 'dismiss_notification', 10, 2 );
 
         // Email Course
-	    $this->loader->add_action( 'wp_ajax_trp_dismiss_email_course', $this->settings, 'trp_dismiss_email_course' );
+	    //$this->loader->add_action( 'wp_ajax_trp_dismiss_email_course', $this->settings, 'trp_dismiss_email_course' );
 
         // Filter rewrite rules for .htaccess
         $this->loader->add_filter( 'mod_rewrite_rules', $this->rewrite_rules, 'trp_remove_language_param', 100 );
