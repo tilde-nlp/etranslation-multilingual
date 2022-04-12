@@ -444,8 +444,8 @@ class TRP_Settings{
             $all_language_codes = $this->trp_languages->get_all_language_codes();
             $iso_codes          = $this->trp_languages->get_iso_codes( $all_language_codes, false );
             $domains            = array();
-            if ($this->settings['trp_machine_translation_settings']['translation-engine'] === 'etranslation') {
-                $machine_translator = $trp->get_component('machine_translator');
+            $machine_translator = $trp->get_component('machine_translator');
+            if ($machine_translator->is_available() && $machine_translator instanceof TRP_eTranslation_Machine_Translator && $machine_translator->credentials_set()) {
                 $domains = $machine_translator->get_all_domains();
             }
 

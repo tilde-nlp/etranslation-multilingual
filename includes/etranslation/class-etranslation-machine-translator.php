@@ -18,7 +18,7 @@ class TRP_eTranslation_Machine_Translator extends TRP_Machine_Translator {
 
     private function check_document($id, $start_timestamp): string {
         $last_checked = microtime(true);
-        $timeout = $this->settings['trp_advanced_settings']['etranslation_wait_timeout'] ?? 3;
+        $timeout = $this->settings['trp_advanced_settings']['etranslation_wait_timeout'] ?? DEFAULT_ETRANSLATION_TIMEOUT;
         while (($last_checked - $start_timestamp) < $timeout || $timeout <= 0) {
             $translation = $this->etranslation_query->search_saved_translation($id);
             if ($translation != null) {
@@ -190,7 +190,7 @@ class TRP_eTranslation_Machine_Translator extends TRP_Machine_Translator {
     public function get_all_domains() {
         $option_name = 'etm_etranslation_domains';
         $stored_domains = get_option($option_name);
-        if ($stored_domains) {
+        if ($stored_domains && !empty($stored_domains)) {
             return $stored_domains;
         } else {
             $domains = $this->etranslation_service->get_available_domain_language_pairs()['body'];

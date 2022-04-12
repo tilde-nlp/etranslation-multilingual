@@ -78,6 +78,8 @@ function etranslation_query_action($action, $arg) {
     return $response;
 }
 
+defined('DEFAULT_ETRANSLATION_TIMEOUT') or define('DEFAULT_ETRANSLATION_TIMEOUT', 7);
+
 function trp_enable_translatepress(){
 	$enable_translatepress = true;
 	$current_php_version = apply_filters( 'trp_php_version', phpversion() );

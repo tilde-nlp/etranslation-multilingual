@@ -16,7 +16,7 @@
             $domain_array = array();
             $trp = TRP_Translate_Press::get_trp_instance();
             $machine_translator = $trp->get_component('machine_translator');
-            if ($machine_translator instanceof TRP_eTranslation_Machine_Translator) {
+            if ($machine_translator instanceof TRP_eTranslation_Machine_Translator && $machine_translator->is_available() && $machine_translator->credentials_set()) {
                 $domain_array = $machine_translator->get_all_domains();
             }
             ?>
@@ -41,7 +41,7 @@
                         <?php } ?>
                     </td>
                     <td>
-                        <select name="etm_settings[translation-languages-domain][]" class="trp-translation-language-domain">
+                        <select name="etm_settings[translation-languages-domain][]" class="trp-translation-language-domain" <?php disabled(empty($domain_array), true) ?>>
                             <?php
                             foreach ( $domain_array as $key => $value ) {
                                 ?>

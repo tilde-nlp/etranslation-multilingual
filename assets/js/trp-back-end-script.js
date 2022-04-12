@@ -97,31 +97,33 @@ jQuery( function() {
         };
 
         function update_domains() {
-            var languages = [];
-            var selected_language = jQuery( '#trp-default-language').val();
-            var source = selected_language.substring(0, 2);
-            jQuery('input.trp-translation-published').each(function() {
-                languages.push(jQuery(this).val().substring(0, 2));
-            });
-            var domainFields = jQuery('select.trp-translation-language-domain');
-            for (var i = 0; i < domainFields.length; i++) {
-                var target = languages[i];
-                var supportedDomains = get_supported_domains(source, target, domains);
-                var previousDomain = jQuery(domainFields[i]).val();
-                jQuery(domainFields[i]).empty();
-                var domainKeys = Object.keys(supportedDomains);
-                domainKeys.forEach(key => {
-                    jQuery(domainFields[i]).append('<option value="' + key + '">' + supportedDomains[key] + '</option>');
-                });
-                var defaultDomain = 'GEN';
-                if (domainKeys.includes(previousDomain)) {
-                    jQuery(domainFields[i]).val(previousDomain);
-                } else if (domainKeys.includes(defaultDomain)) {
-                    jQuery(domainFields[i]).val(defaultDomain);
-                } else if (domainKeys.length == 0) {
-                    jQuery(domainFields[i]).append('<option value="-" selected>-</option>');
+            if (domains) { 
+                var languages = [];
+                var selected_language = jQuery( '#trp-default-language').val();
+                var source = selected_language.substring(0, 2);
+                jQuery('input.trp-translation-published').each(function() {
+                    languages.push(jQuery(this).val().substring(0, 2));
+                });            
+                var domainFields = jQuery('select.trp-translation-language-domain');    
+                for (var i = 0; i < domainFields.length; i++) {
+                    var target = languages[i];
+                    var supportedDomains = get_supported_domains(source, target, domains);
+                    var previousDomain = jQuery(domainFields[i]).val();
+                    jQuery(domainFields[i]).empty();
+                    var domainKeys = Object.keys(supportedDomains);
+                    domainKeys.forEach(key => {
+                        jQuery(domainFields[i]).append('<option value="' + key + '">' + supportedDomains[key] + '</option>');
+                    });
+                    var defaultDomain = 'GEN';
+                    if (domainKeys.includes(previousDomain)) {
+                        jQuery(domainFields[i]).val(previousDomain);
+                    } else if (domainKeys.includes(defaultDomain)) {
+                        jQuery(domainFields[i]).val(defaultDomain);
+                    } else if (domainKeys.length == 0) {
+                        jQuery(domainFields[i]).append('<option value="-" selected>-</option>');
+                    }
                 }
-            }
+            }  
         }
 
         function get_supported_domains(source, target, domains) {

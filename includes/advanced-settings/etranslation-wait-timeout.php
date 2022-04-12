@@ -9,7 +9,7 @@ function trp_register_etranslation_timeout( $settings_array ){
 
     $settings_array[] = array(
         'name'          => 'etranslation_wait_timeout',
-        'default'       => 3,
+        'default'       => DEFAULT_ETRANSLATION_TIMEOUT,
         'type'          => 'number',
         'label'         => esc_html__( 'eTranslation timeout', 'translatepress-multilingual' ),
         'description'   => __('Max time to wait on eTranslation service (in seconds) to return translations, after which original strings will be shown. Infinite if zero.', 'translatepress-multilingual'),
