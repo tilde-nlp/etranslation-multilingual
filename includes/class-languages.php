@@ -89,12 +89,12 @@ class TRP_Languages{
         }
 		$iso_codes = array();
 		$wp_languages = $this->get_wp_languages();
-		$map_wp_codes_to_google = apply_filters( 'trp_map_wp_codes_to_google', array(
-			'zh_HK' => 'zh-TW',
-			'zh_TW'	=> 'zh-TW',
-			'zh_CN'	=> 'zh-CN',
-			'nb_NO'	=> 'no'
-		) );
+		// $map_wp_codes_to_google = apply_filters( 'trp_map_wp_codes_to_google', array(
+		// 	'zh_HK' => 'zh-TW',
+		// 	'zh_TW'	=> 'zh-TW',
+		// 	'zh_CN'	=> 'zh-CN',
+		// 	'nb_NO'	=> 'no'
+		// ) );
 		foreach ( $language_codes as $language_code ) {
 			if ( $map_google_codes && isset( $map_wp_codes_to_google[$language_code] ) ){
 				$iso_codes[$language_code] = $map_wp_codes_to_google[$language_code];
