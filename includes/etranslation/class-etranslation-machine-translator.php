@@ -183,7 +183,7 @@ class TRP_eTranslation_Machine_Translator extends TRP_Machine_Translator {
     public function get_supported_languages() {
         $domains = $this->etranslation_service->get_available_domain_language_pairs()['body'];
         $language_pairs = $domains->GEN->languagePairs;
-        $from_languages = array_map(fn($value): string => strtolower(substr($value, 0, 2)), $language_pairs);
+        $from_languages = array_map(fn($value): string => strtolower(explode("_", $value)[0]), $language_pairs);
         return array_unique($from_languages);
     }
 

@@ -96,13 +96,17 @@ jQuery( function() {
             update_domains();
         };
 
+        function get_lang_from_code(code) {
+            return code.split("_")[0];
+        }
+
         function update_domains() {
             if (domains) { 
                 var languages = [];
                 var selected_language = jQuery( '#trp-default-language').val();
-                var source = selected_language.substring(0, 2);
+                var source = get_lang_from_code(selected_language);
                 jQuery('input.trp-translation-published').each(function() {
-                    languages.push(jQuery(this).val().substring(0, 2));
+                    languages.push(get_lang_from_code(jQuery(this).val()));
                 });            
                 var domainFields = jQuery('select.trp-translation-language-domain');    
                 for (var i = 0; i < domainFields.length; i++) {

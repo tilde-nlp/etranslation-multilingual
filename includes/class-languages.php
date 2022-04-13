@@ -69,8 +69,28 @@ class TRP_Languages{
 				$this->wp_languages = $this->get_wp_languages_backup();
 			}
 		}
+		
+		$extended_language_list = $this->wp_languages;
+		$language_keys = array_keys($extended_language_list);
+
+		$missing_languages = array();
+		$missing_languages['mt_MT'] = array( 'language'	=> 'mt_MT', 'english_name'=> 'Maltese', 'native_name' => 'Malti', 'iso' => array( 'mt' ) );
+		$missing_languages['ga_IE'] = array( 'language'	=> 'ga_IE', 'english_name'=> 'Irish', 'native_name' => 'Gaeilge', 'iso' => array( 'ga' ) );
+		
+		foreach ( $missing_languages as $key => $value) {
+			if (!in_array($key, $language_keys)) {
+				$extended_language_list[$key] = $value;
+			}
+		}
+
+		usort($extended_language_list, function ($l1, $l2) {
+			$name1 = $l1['english_name'];
+			$name2 = $l2['english_name'];
+			return strcmp($name1, $name2);
+		});
+
 		$default = array( 'en_GB' => array( 'language'	=> 'en_GB', 'english_name'=> 'English (UK)', 'native_name' => 'English', 'iso' => array( 'en' ) ) );
-		return apply_filters( 'trp_wp_languages', $default + $this->wp_languages );
+		return apply_filters( 'trp_wp_languages', $default + $extended_language_list );
 	}
 
     /**
