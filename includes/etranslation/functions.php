@@ -61,7 +61,8 @@ function trp_etranslation_add_settings( $mt_settings ){
             }
             ?>
             <p class="description">
-                Visit <a href="https://webgate.ec.europa.eu/etranslation/public/welcome.html" target="_blank">this link</a> to see how you can set up an eTranslation account.</p>
+                To create a new eTranslation account, please write to eTranslation Helpdesk: <a href="mailto:help@cefat-tools-services.eu">help@cefat-tools-services.eu</a>
+            </p>
         </td>
     </tr>
 

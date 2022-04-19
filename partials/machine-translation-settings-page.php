@@ -1,4 +1,5 @@
 <div id="trp-main-settings" class="wrap">
+    <?php echo "<img style='width: 200px;' src='" . TRP_PLUGIN_URL . "assets/images/Logo_eTranslation_v6b.svg' />" ?>
     <form method="post" action="options.php">
         <?php settings_fields( 'etm_machine_translation_settings' ); ?>
         <h1> <?php esc_html_e( 'eTranslation Multilingual Automatic Translation', 'translatepress-multilingual' );?></h1>
