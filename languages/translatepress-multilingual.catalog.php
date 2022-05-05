@@ -1,10 +1,8 @@
 <?php __("", "translatepress-multilingual"); ?>
 <?php __("Plugin activated.", "translatepress-multilingual"); ?>
 <?php __("Could not install. Try again from <a href=\"%s\" >Plugins Dashboard.</a>", "translatepress-multilingual"); ?>
-<?php __("Please update the TranslatePress - Multilingual plugin to version 2.0.5 at least for %s to work properly", "translatepress-multilingual"); ?>
 <?php __("Please install and activate the eTranslation Multilingual plugin", "translatepress-multilingual"); ?>
 <?php __("Install & Activate", "translatepress-multilingual"); ?>
-<?php __("This TranslatePress add-on has been migrated to the main plugin and is no longer used. You can delete it.", "translatepress-multilingual"); ?>
 <?php __("<strong>eTranslation Multilingual</strong> requires at least PHP version 5.6.20+ to run. It is the <a href=\"%s\">minimum requirement of the latest WordPress version</a>. Please contact your server administrator to update your PHP version.", "translatepress-multilingual"); ?>
 <?php __("Advanced", "translatepress-multilingual"); ?>
 <?php __("Settings saved.", "translatepress-multilingual"); ?>
@@ -73,16 +71,12 @@
 <?php __("Please enter your Google Translate key.", "translatepress-multilingual"); ?>
 <?php __("Please enter your DeepL API key.", "translatepress-multilingual"); ?>
 <?php __("You are not using a permalink structure! Please <a href=\"%s\">enable</a> one or install our <a href=\"%s\">\"Language by GET parameter\"</a> addon, so that eTranslation Multilingual can function properly.", "translatepress-multilingual"); ?>
-<?php __("Your <strong>TranslatePress</strong> license will expire on %1$s. Please %2$sRenew Your Licence%3$s to continue receiving access to product downloads, automatic updates and support.", "translatepress-multilingual"); ?>
 <?php __("Something went wrong, please try again.", "translatepress-multilingual"); ?>
-<?php __("Your <strong>TranslatePress</strong> license has expired. <br/>Please %1$sRenew Your Licence%2$s to continue receiving access to product downloads, automatic updates and support. %3$sRenew now %4$s", "translatepress-multilingual"); ?>
-<?php __("Your <strong>TranslatePress</strong> serial number is invalid or missing. <br/>Please %1$sregister your copy%2$s to receive access to automatic updates and support. Need a license key? %3$sPurchase one now%4$s", "translatepress-multilingual"); ?>
 <?php __("NEW: Display different images based on language. Find out <a href=\"https://translatepress.com/docs/image-translation/\" >how to translate images, sliders and more</a> from the eTranslation Multilingual editor.", "translatepress-multilingual"); ?>
 <?php __("The daily quota for machine translation characters exceeded. Please check the <strong>eTranslation Multilingual -> <a href=\"%s\">Automatic Translation</a></strong> page for more information.", "translatepress-multilingual"); ?>
 <?php __("One or more languages are unsupported by the automatic translation provider. Please check the <strong>eTranslation Multilingual -> <a href=\"%s\">Automatic Translation</a></strong> page for more information.", "translatepress-multilingual"); ?>
 <?php __("Hello! Seems like you've been using <strong>eTranslation Multilingual</strong> for a while now to translate your website. That's awesome! ", "translatepress-multilingual"); ?>
 <?php __("If you can spare a few moments to rate it on WordPress.org it would help us a lot (and boost my motivation).", "translatepress-multilingual"); ?>
-<?php __("~ Razvan, developer of TranslatePress", "translatepress-multilingual"); ?>
 <?php __("Rate eTranslation Multilingual on WordPress.org plugin page", "translatepress-multilingual"); ?>
 <?php __("Ok, I will gladly help!", "translatepress-multilingual"); ?>
 <?php __("No, thanks.", "translatepress-multilingual"); ?>
@@ -219,7 +213,6 @@
 <?php __("Back to eTranslation Multilingual Settings", "translatepress-multilingual"); ?>
 <?php __("Successfully updated database!", "translatepress-multilingual"); ?>
 <?php __(" done.", "translatepress-multilingual"); ?>
-<?php __("All individual TranslatePress add-on plugins <a href=\"%1$s\" target=\"_blank\">have been discontinued</a> and are now included in the premium Personal, Business and Developer versions of TranslatePress. Please log into your <a href=\"%2$s\" target=\"_blank\">account page</a>, download the new premium version and install it. Your individual addons settings will be ported over.", "translatepress-multilingual"); ?>
 <?php __("eTranslation Multilingual", "translatepress-multilingual"); ?>
 <?php __("<strong>eTranslation Multilingual</strong> requires <strong><a href=\"http://php.net/manual/en/book.mbstring.php\">Multibyte String PHP library</a></strong>. Please contact your server administrator to install it on your server.", "translatepress-multilingual"); ?>
 <?php __("Detected long query limitation on WPEngine hosting. Some large pages may appear untranslated. You can remove limitation by adding the following to your site’s wp-config.php: define( 'WPE_GOVERNOR', false ); ", "translatepress-multilingual"); ?>
@@ -271,7 +264,6 @@
 <?php __("Choose which engine you want to use in order to automatically translate your website.", "translatepress-multilingual"); ?>
 <?php __("To use <strong>DeepL</strong> for automatic translation, activate this Pro add-on from the <a href=\"%1$s\" target=\"_self\" title=\"%2$s\">%2$s</a>.", "translatepress-multilingual"); ?>
 <?php __("<strong>DeepL</strong> automatic translation is available as a <a href=\"%1$s\" target=\"_blank\" title=\"%2$s\">%2$s</a>.", "translatepress-multilingual"); ?>
-<?php __("By upgrading you'll get access to all paid add-ons, premium support and help fund the future development of TranslatePress.", "translatepress-multilingual"); ?>
 <?php __("eTranslation Multilingual Pro Add-on", "translatepress-multilingual"); ?>
 <?php __("Addons tab", "translatepress-multilingual"); ?>
 <?php __("Please note that DeepL API usage is paid separately. See <a href=\"https://www.deepl.com/pro.html#developer\">DeepL pricing information</a>.", "translatepress-multilingual"); ?>
@@ -299,7 +291,6 @@
 <?php __("Select the languages you wish to make your website available in.<br>The Formality field is used by Automatic Translation to decide whether the translated text should lean towards formal or informal language. For now, it is supported only for a few languages and only by <a href=\"%s\">DeepL</a>.", "translatepress-multilingual"); ?>
 <?php __("To add <strong>more than two languages</strong> and support for SEO Title, Description, Slug and more check out <a href=\"%1$s\" target=\"_blank\" title=\"%2$s\">%2$s</a>.", "translatepress-multilingual"); ?>
 <?php __("eTranslation Multilingual Advanced Add-ons", "translatepress-multilingual"); ?>
-<?php __("Not only are you getting extra features and premium support, but you also help fund the future development of TranslatePress.", "translatepress-multilingual"); ?>
 <?php __("eTranslation Multilingual Advanced Add-ons", "translatepress-multilingual"); ?>
 <?php __("To add <strong>more than two languages</strong> activate the <strong>Extra Languages Add-on</strong> from <a href=\"%s\" class=\"trp-translatepress-account-page\" target=\"_blank\" title=\"Add-ons page\">the Add-ons Page</a>. Once activated, you'll be able to add unlimited languages.", "translatepress-multilingual"); ?>
 <?php __("Default Language", "translatepress-multilingual"); ?>
@@ -322,14 +313,10 @@
 <?php __("Learn more in our documentation.", "translatepress-multilingual"); ?>
 <?php __("Floating language selection", "translatepress-multilingual"); ?>
 <?php __("Add a floating dropdown that follows the user on every page.", "translatepress-multilingual"); ?>
-<?php __("Show \"Powered by TranslatePress\"", "translatepress-multilingual"); ?>
-<?php __("Show the small \"Powered by TranslatePress\" label in the floater language switcher.", "translatepress-multilingual"); ?>
 <?php __("5 Days to Better Multilingual Websites", "translatepress-multilingual"); ?>
-<?php __("%sJoin our FREE & EXCLUSIVE onboarding course%s and learn how to grow your multilingual traffic, reach international markets, and save time & money while getting the most out of TranslatePress!", "translatepress-multilingual"); ?>
 <?php __("Invalid email address", "translatepress-multilingual"); ?>
 <?php __("Your email", "translatepress-multilingual"); ?>
 <?php __("Sign me up!", "translatepress-multilingual"); ?>
-<?php __("Sign up with your email address and receive a 5-part email guide to help you maximize the power of TranslatePress.", "translatepress-multilingual"); ?>
 <?php __("Dismiss email course notification", "translatepress-multilingual"); ?>
 <?php __("API Key from settings page:", "translatepress-multilingual"); ?>
 <?php __("HTTP Referrer:", "translatepress-multilingual"); ?>

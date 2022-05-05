@@ -181,10 +181,14 @@ class TRP_eTranslation_Machine_Translator extends TRP_Machine_Translator {
     }
 
     public function get_supported_languages() {
-        $domains = $this->etranslation_service->get_available_domain_language_pairs()['body'];
-        $language_pairs = $domains->GEN->languagePairs;
-        $from_languages = array_map(fn($value): string => strtolower(explode("_", $value)[0]), $language_pairs);
-        return array_unique($from_languages);
+        $response = $this->etranslation_service->get_available_domain_language_pairs();        
+        if ($response['response'] == 200) {
+            $domains = $response['body'];
+            $language_pairs = $domains->GEN->languagePairs;
+            $from_languages = array_map(fn($value): string => strtolower(explode("-", $value)[0]), $language_pairs);
+            return array_unique($from_languages);
+        }
+        return array();       
     }
 
     public function get_all_domains() {
@@ -193,19 +197,20 @@ class TRP_eTranslation_Machine_Translator extends TRP_Machine_Translator {
         if ($stored_domains && !empty($stored_domains)) {
             return $stored_domains;
         } else {
-            $domains = $this->etranslation_service->get_available_domain_language_pairs()['body'];
-            update_option($option_name, $domains);
-            return $domains;
-        }       
+            $response = $this->etranslation_service->get_available_domain_language_pairs();
+            if ($response['response'] == 200) {
+                $domains = $response['body'];        
+                update_option($option_name, $domains);
+                return $domains;
+            }
+        }
+        return array();       
     }
 
     public function get_engine_specific_language_codes($languages) {
         return $this->trp_languages->get_iso_codes($languages);
     }
 
-    /*
-     * Google does not support formality yet, but we need this for the machine translation tab to show the unsupported languages for formality
-     */
     public function check_formality(){
 
         $formality_supported_languages = array();

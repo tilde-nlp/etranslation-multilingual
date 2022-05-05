@@ -14,7 +14,7 @@ function trp_etranslation_add_settings( $mt_settings ){
 
     $translation_engine = isset( $mt_settings['translation-engine'] ) ? $mt_settings['translation-engine'] : '';
 
-    // Check for API errors only if $translation_engine is Google.
+    // Check for API errors only if $translation_engine is eTranslation.
     if ( 'etranslation' === $translation_engine ) {
         $api_check = $machine_translator->check_api_key_validity();
     }
