@@ -83,7 +83,7 @@ class TRP_Query{
         $this->maybe_record_automatic_translation_error(array( 'details' => 'Error running get_existing_translations()' ) );
         if ( is_array( $dictionary ) && count( $dictionary ) === 0 && !$this->table_exists($this->get_table_name( $language_code )) ){
             // if table is missing then last_error is empty for the select query
-            $this->maybe_record_automatic_translation_error(array( 'details' => 'Missing table ' . $this->get_table_name( $language_code ) . ' . To regenerate tables, try going to Settings->TranslatePress->General tab and Save Settings.'), true );
+            $this->maybe_record_automatic_translation_error(array( 'details' => 'Missing table ' . $this->get_table_name( $language_code ) . ' . To regenerate tables, try going to Settings->eTranslation Multilingual->General tab and Save Settings.'), true );
         }
         if ($this->db->last_error !== '')
             $dictionary = false;
@@ -200,7 +200,7 @@ class TRP_Query{
      * @param string $language_code
      */
     public function check_machine_translation_log_table(){
-        $table_name = $this->db->prefix . 'trp_machine_translation_log';
+        $table_name = $this->db->prefix . 'etm_machine_translation_log';
         if ( $this->db->get_var( "SHOW TABLES LIKE '$table_name'" ) != $table_name )
         {
             // table not in database. Create new table
@@ -514,7 +514,7 @@ class TRP_Query{
      */
     public function check_original_meta_table(){
 
-        $table_name = $table_name = $this->db->get_blog_prefix() . 'trp_original_meta';
+        $table_name = $table_name = $this->db->get_blog_prefix() . 'etm_original_meta';
         if ( $this->db->get_var( "SHOW TABLES LIKE '$table_name'" ) != $table_name ) {
             // table not in database. Create new table
             $charset_collate = $this->db->get_charset_collate();
@@ -916,14 +916,14 @@ class TRP_Query{
         if ( $default_language == null ) {
             $default_language = $this->settings['default-language'];
         }
-        return $this->db->prefix . 'trp_dictionary_' . strtolower( $default_language ) . '_'. strtolower( $language_code );
+        return $this->db->prefix . 'etm_dictionary_' . strtolower( $default_language ) . '_'. strtolower( $language_code );
     }
 
     public function get_language_code_from_table_name( $table_name, $default_language = null ){
 	    if ( $default_language == null ) {
 		    $default_language = $this->settings['default-language'];
 	    }
-	    $language_code = str_replace($this->db->prefix . 'trp_dictionary_' . strtolower( $default_language ) . '_', '', $table_name );
+	    $language_code = str_replace($this->db->prefix . 'etm_dictionary_' . strtolower( $default_language ) . '_', '', $table_name );
 	    return $language_code;
     }
 
@@ -933,7 +933,7 @@ class TRP_Query{
      * @return string                       Table name.
      */
     public function get_table_name_for_original_strings(){
-        return sanitize_text_field( $this->db->prefix . 'trp_original_strings' );
+        return sanitize_text_field( $this->db->prefix . 'etm_original_strings' );
     }
 
     /**
@@ -942,7 +942,7 @@ class TRP_Query{
      * @return string                       Table name.
      */
     public function get_table_name_for_original_meta(){
-        return sanitize_text_field( $this->db->prefix . 'trp_original_meta' );
+        return sanitize_text_field( $this->db->prefix . 'etm_original_meta' );
     }
     /**
      * Return meta_key for post parent id from meta table
@@ -957,7 +957,7 @@ class TRP_Query{
         $dictionary = $this->db->get_results( "SELECT id, original, translated, domain FROM `" . sanitize_text_field( $this->get_gettext_table_name( $language_code ) ) . "`", ARRAY_A );
         if ( is_array( $dictionary ) && count( $dictionary ) === 0 && !$this->table_exists($this->get_gettext_table_name( $language_code )) ){
             // if table is missing then last_error is empty
-            $this->maybe_record_automatic_translation_error(array( 'details' => 'Missing table ' . $this->get_gettext_table_name( $language_code ). ' . To regenerate tables, try going to Settings->TranslatePress->General tab and Save Settings.'), true );
+            $this->maybe_record_automatic_translation_error(array( 'details' => 'Missing table ' . $this->get_gettext_table_name( $language_code ). ' . To regenerate tables, try going to Settings->eTranslation Multilingual->General tab and Save Settings.'), true );
         }
         $this->maybe_record_automatic_translation_error(array( 'details' => 'Error running get_all_gettext_strings()' ) );
         return $dictionary;
@@ -971,7 +971,7 @@ class TRP_Query{
 
     public function get_gettext_table_name( $language_code ){
 		global $wpdb;
-        return $wpdb->get_blog_prefix() . 'trp_gettext_' . strtolower( $language_code );
+        return $wpdb->get_blog_prefix() . 'etm_gettext_' . strtolower( $language_code );
     }
 
     /**
@@ -1090,7 +1090,7 @@ class TRP_Query{
 
     public function get_all_gettext_table_names(){
         global $wpdb;
-        $table_name = $wpdb->get_blog_prefix() . 'trp_gettext_';
+        $table_name = $wpdb->get_blog_prefix() . 'etm_gettext_';
         $return_tables = array();
 
         $table_names = $this->db->get_results( "SHOW TABLES LIKE '$table_name%'", ARRAY_N );
@@ -1476,10 +1476,10 @@ class TRP_Query{
         $new_table_name = sanitize_text_field( $this->get_table_name_for_original_strings() . time() );
         $this->db->query( "ALTER TABLE " . $this->get_table_name_for_original_strings() . " RENAME TO " . $new_table_name );
 
-        $table_to_use_for_recovery = get_option('trp_original_strings_table_for_recovery', '');
+        $table_to_use_for_recovery = get_option('etm_original_strings_table_for_recovery', '');
         if ( $table_to_use_for_recovery == '' ) {
             // if a previous run of removing original strings duplicates failed, use the old table, not the one created during that failed time
-            update_option( 'trp_original_strings_table_for_recovery', $new_table_name );
+            update_option( 'etm_original_strings_table_for_recovery', $new_table_name );
         }
     }
 
@@ -1491,10 +1491,10 @@ class TRP_Query{
         }
 
         $originals_table = $this->get_table_name_for_original_strings();
-        $recovery_originals_table = sanitize_text_field( get_option( 'trp_original_strings_table_for_recovery' ) );
+        $recovery_originals_table = sanitize_text_field( get_option( 'etm_original_strings_table_for_recovery' ) );
         $originals_meta_table = $this->get_table_name_for_original_meta();
         if ( empty( $recovery_originals_table ) ){
-            $this->error_manager->record_error(array('regenerate_original_meta_table' => 'Empty option trp_original_strings_table_for_recovery'));
+            $this->error_manager->record_error(array('regenerate_original_meta_table' => 'Empty option etm_original_strings_table_for_recovery'));
             return;
         }
 

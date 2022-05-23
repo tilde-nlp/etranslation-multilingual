@@ -45,7 +45,7 @@ class TRP_Settings{
 	    if ($ls_type !== 'menu-options'){
 	    	unset($ls_options['full-names-no-html']);
 	    }
-        $output = '<select id="' . esc_attr( $ls_type ) . '" name="trp_settings[' . esc_attr( $ls_type ) .']" class="trp-select trp-ls-select-option">';
+        $output = '<select id="' . esc_attr( $ls_type ) . '" name="etm_settings[' . esc_attr( $ls_type ) .']" class="trp-select trp-ls-select-option">';
         foreach( $ls_options as $key => $ls_option ){
             $selected = ( $ls_setting == $key ) ? 'selected' : '';
             $output .= '<option value="' . esc_attr( $key ) . '" ' . esc_attr( $selected ) . ' >' . esc_html( $ls_option['label'] ). '</option>';
@@ -70,7 +70,7 @@ class TRP_Settings{
 
         );
 
-        $output = '<select id="floater-position" name="trp_settings[floater-position]" class="trp-select trp-ls-select-option">';
+        $output = '<select id="floater-position" name="etm_settings[floater-position]" class="trp-select trp-ls-select-option">';
         foreach( $ls_options as $key => $ls_option ){
             $selected = ( $ls_position == $key ) ? 'selected' : '';
             $output .= '<option value="' . esc_attr( $key ) . '" ' . esc_attr( $selected ) . ' >' . esc_html( $ls_option['label'] ). '</option>';
@@ -87,11 +87,12 @@ class TRP_Settings{
 	 */
 	public function output_language_switcher_floater_color( $ls_color ){
 		$ls_options = array(
+			'default'  => array( 'label' => __( 'Default', 'translatepress-multilingual' ) ),
 			'dark'  => array( 'label' => __( 'Dark', 'translatepress-multilingual' ) ),
 			'light'   => array( 'label' => __( 'Light', 'translatepress-multilingual' ) ),
 		);
 
-		$output = '<select id="floater-color" name="trp_settings[floater-color]" class="trp-select trp-ls-select-option">';
+		$output = '<select id="floater-color" name="etm_settings[floater-color]" class="trp-select trp-ls-select-option">';
 		foreach( $ls_options as $key => $ls_option ){
 			$selected = ( $ls_color == $key ) ? 'selected' : '';
 			$output .= '<option value="' . esc_attr( $key ) . '" ' . esc_attr( $selected ) . ' >' . esc_html( $ls_option['label'] ). '</option>';
@@ -133,9 +134,9 @@ class TRP_Settings{
      * Register Settings subpage for TranslatePress
      */
     public function register_menu_page(){
-        add_options_page( 'TranslatePress', 'TranslatePress', apply_filters( 'trp_settings_capability', 'manage_options' ), 'translate-press', array( $this, 'settings_page_content' ) );
+        add_options_page( 'eTranslation Multilingual', 'eTranslation Multilingual', apply_filters( 'trp_settings_capability', 'manage_options' ), 'etranslation-multilingual', array( $this, 'settings_page_content' ) );
 
-        add_submenu_page( 'TRPHidden', 'TranslatePress Addons', 'TRPHidden', 'manage_options', 'trp_addons_page', array($this, 'addons_page_content') );
+        //add_submenu_page( 'TRPHidden', 'eTranslation Multilingual Addons', 'TRPHidden', 'manage_options', 'etm_addons_page', array($this, 'addons_page_content') );
     }
 
     /**
@@ -182,7 +183,7 @@ class TRP_Settings{
      * Register settings option.
      */
     public function register_setting(){
-        register_setting( 'trp_settings', 'trp_settings', array( $this, 'sanitize_settings' ) );
+        register_setting( 'etm_settings', 'etm_settings', array( $this, 'sanitize_settings' ) );
     }
 
     /**
@@ -203,7 +204,7 @@ class TRP_Settings{
             $this->trp_languages = $trp->get_component( 'languages' );
         }
         if ( !isset ( $settings['default-language'] ) ) {
-            $settings['default-language'] = 'en_US';
+            $settings['default-language'] = 'en_GB';
         }
         if ( !isset ( $settings['translation-languages'] ) ){
             $settings['translation-languages'] = array();
@@ -246,21 +247,21 @@ class TRP_Settings{
 
         $language_switcher_options = $this->get_language_switcher_options();
         if ( ! isset( $language_switcher_options[ $settings['shortcode-options'] ] ) ){
-            $settings['shortcode-options'] = 'flags-full-names';
+            $settings['shortcode-options'] = 'full-names';
         }
         if ( ! isset( $language_switcher_options[ $settings['menu-options'] ] ) ){
-            $settings['menu-options'] = 'flags-full-names';
+            $settings['menu-options'] = 'full-names';
         }
         if ( ! isset( $language_switcher_options[ $settings['floater-options'] ] ) ){
-            $settings['floater-options'] = 'flags-full-names';
+            $settings['floater-options'] = 'full-names';
         }
 
         if ( ! isset( $settings['floater-position'] ) ){
-            $settings['floater-position'] = 'bottom-right';
+            $settings['floater-position'] = 'top-right';
         }
 
 	    if ( ! isset( $settings['floater-color'] ) ){
-		    $settings['floater-color'] = 'dark';
+		    $settings['floater-color'] = 'default';
 	    }
 
 	    if ( !empty( $settings['trp-ls-show-poweredby'] ) ){
@@ -282,20 +283,14 @@ class TRP_Settings{
         }
 
         foreach ($settings['translation-languages'] as $value=>$language){
-            if(isset($settings['translation-languages-formality'][$value])) {
-                if ( $settings['translation-languages-formality'][ $value ] == 'informal' ) {
-                    $settings['translation-languages-formality-parameter'][ $language ] = 'informal';
-                } else {
-                    if ( $settings['translation-languages-formality'][ $value ] == 'formal' ) {
-                        $settings['translation-languages-formality-parameter'][ $language ] = 'formal';
-                    } else {
-                        $settings['translation-languages-formality-parameter'][ $language ] = 'default';
-                    }
-                }
+            if(isset($settings['translation-languages-domain'][$value])) {
+                $settings['translation-languages-domain-parameter'][ $language ] = $settings['translation-languages-domain'][ $value ];
+            } else {
+                $settings['translation-languages-domain-parameter'][ $language ] = 'GEN';
             }
         }
 
-        unset($settings['translation-languages-formality']);
+        unset($settings['translation-languages-domain']);
 
         // check for duplicates in url slugs
         $duplicate_exists = false;
@@ -336,7 +331,7 @@ class TRP_Settings{
      * Output admin notices after saving settings.
      */
     public function admin_notices(){
-        settings_errors( 'trp_settings' );
+        settings_errors( 'etm_settings' );
     }
 
     /**
@@ -345,12 +340,12 @@ class TRP_Settings{
      * Sets a default option if it does not exist.
      */
     protected function set_options(){
-        $settings_option = get_option( 'trp_settings', 'not_set' );
+        $settings_option = get_option( 'etm_settings', 'not_set' );
 
         // initialize default settings
         $default = get_locale();
         if ( empty( $default ) ){
-            $default = 'en_US';
+            $default = 'en_GB';
         }
         $default_settings = array(
             'default-language'                     => $default,
@@ -360,17 +355,17 @@ class TRP_Settings{
             'add-subdirectory-to-default-language' => 'no',
             'force-language-to-custom-links'       => 'yes',
             'trp-ls-floater'                       => 'yes',
-            'shortcode-options'                    => 'flags-full-names',
-            'menu-options'                         => 'flags-full-names',
-            'floater-options'                      => 'flags-full-names',
-            'floater-position'                     => 'bottom-right',
-	        'floater-color'                        => 'dark',
+            'shortcode-options'                    => 'full-names',
+            'menu-options'                         => 'full-names',
+            'floater-options'                      => 'full-names',
+            'floater-position'                     => 'top-right',
+	        'floater-color'                        => 'default',
 	        'trp-ls-show-poweredby'                => 'no',
-            'url-slugs'                            => array( 'en_US' => 'en', '' ),
+            'url-slugs'                            => array( 'en_GB' => 'en', '' ),
         );
 
         if ( 'not_set' == $settings_option ){
-            update_option ( 'trp_settings', $default_settings );
+            update_option ( 'etm_settings', $default_settings );
             $settings_option = $default_settings;
         }else{
             // Add any missing default option for trp_setting
@@ -386,11 +381,11 @@ class TRP_Settings{
          * These options (trp_advanced_settings,trp_machine_translation_settings) are not part of the actual trp_settings DB option.
          * But they are included in $settings variable across TP
          */
-        $settings_option['trp_advanced_settings'] = get_option('trp_advanced_settings', array() );
+        $settings_option['trp_advanced_settings'] = get_option('etm_advanced_settings', array() );
 
         // Add any missing default option for trp_machine_translation_settings
         $default_trp_machine_translation_settings = $this->get_default_trp_machine_translation_settings();
-        $settings_option['trp_machine_translation_settings'] = array_merge( $default_trp_machine_translation_settings, get_option( 'trp_machine_translation_settings', $default_trp_machine_translation_settings ) );
+        $settings_option['trp_machine_translation_settings'] = array_merge( $default_trp_machine_translation_settings, get_option( 'etm_machine_translation_settings', $default_trp_machine_translation_settings ) );
 
 
         /* @deprecated Setting only used for compatibility with Deepl Add-on 1.0.0 */
@@ -409,11 +404,12 @@ class TRP_Settings{
         return apply_filters( 'trp_get_default_trp_machine_translation_settings', array(
             // default settings for trp_machine_translation_settings
             'machine-translation'               => 'no',
-            'translation-engine'                => 'google_translate_v2',
+            'translation-engine'                => 'etranslation',
             'block-crawlers'                    => 'yes',
             'machine_translation_counter_date'  => date ("Y-m-d" ),
             'machine_translation_counter'       => 0,
-            'machine_translation_limit'         => 1000000
+            'machine_translation_limit'         => 1000000,            
+            'show-mt-notice'                       => 'yes'
             /*
              * These settings are merged into the saved DB option.
              * Be sure to set any checkboxes options to 'no' in sanitize_settings.
@@ -428,7 +424,7 @@ class TRP_Settings{
      * @param string $hook          Admin page.
      */
     public function enqueue_scripts_and_styles( $hook ) {
-        if( in_array( $hook, [ 'settings_page_translate-press', 'admin_page_trp_license_key', 'admin_page_trp_addons_page', 'admin_page_trp_advanced_page', 'admin_page_trp_machine_translation', 'admin_page_trp_test_machine_api' ] ) ){
+        if( in_array( $hook, [ 'settings_page_etranslation-multilingual', 'admin_page_etm_license_key', 'admin_page_etm_addons_page', 'admin_page_etm_advanced_page', 'admin_page_etm_machine_translation', 'admin_page_etm_test_machine_api' ] ) ){
             wp_enqueue_style(
                 'trp-settings-style',
                 TRP_PLUGIN_URL . 'assets/css/trp-back-end-style.css',
@@ -437,25 +433,30 @@ class TRP_Settings{
             );
         }
 
-        if( in_array( $hook, array( 'settings_page_translate-press', 'admin_page_trp_advanced_page', 'admin_page_trp_machine_translation' ) ) ) {
+        if( in_array( $hook, array( 'settings_page_etranslation-multilingual', 'admin_page_etm_advanced_page', 'admin_page_etm_machine_translation' ) ) ) {
             wp_enqueue_script( 'trp-settings-script', TRP_PLUGIN_URL . 'assets/js/trp-back-end-script.js', array( 'jquery', 'jquery-ui-sortable' ), TRP_PLUGIN_VERSION );
 
+            $trp                 = TRP_Translate_Press::get_trp_instance();
             if ( ! $this->trp_languages ){
-                $trp                 = TRP_Translate_Press::get_trp_instance();
                 $this->trp_languages = $trp->get_component( 'languages' );
             }
 
             $all_language_codes = $this->trp_languages->get_all_language_codes();
             $iso_codes          = $this->trp_languages->get_iso_codes( $all_language_codes, false );
+            $domains            = array();
+            $machine_translator = $trp->get_component('machine_translator');
+            if ($machine_translator->is_available() && $machine_translator instanceof TRP_eTranslation_Machine_Translator && $machine_translator->credentials_set()) {
+                $domains = $machine_translator->get_all_domains();
+            }
 
-            wp_localize_script( 'trp-settings-script', 'trp_url_slugs_info', array( 'iso_codes' => $iso_codes, 'error_message_duplicate_slugs' => __( 'Error! Duplicate URL slug values.', 'translatepress-multilingual' ) ) );
+            wp_localize_script( 'trp-settings-script', 'trp_url_slugs_info', array( 'iso_codes' => $iso_codes, 'error_message_duplicate_slugs' => __( 'Error! Duplicate URL slug values.', 'translatepress-multilingual' ), 'domains' => $domains ) );
 
             wp_enqueue_script( 'trp-select2-lib-js', TRP_PLUGIN_URL . 'assets/lib/select2-lib/dist/js/select2.min.js', array( 'jquery' ), TRP_PLUGIN_VERSION );
             wp_enqueue_style( 'trp-select2-lib-css', TRP_PLUGIN_URL . 'assets/lib/select2-lib/dist/css/select2.min.css', array(), TRP_PLUGIN_VERSION );
 
         }
 
-        if( in_array( $hook, array( 'admin_page_trp_addons_page' ) ) ) {
+        if( in_array( $hook, array( 'admin_page_etm_addons_page' ) ) ) {
             wp_enqueue_script( 'trp-add-ons-script', TRP_PLUGIN_URL . 'assets/js/trp-back-end-add-ons.js', array( ), TRP_PLUGIN_VERSION, true );
             wp_localize_script( 'trp-add-ons-script', 'trp_addons_localized', array( 'admin_ajax_url' => admin_url( 'admin-ajax.php' ), 'nonce' =>  wp_create_nonce( 'trp_install_plugins' )) );
         }
@@ -536,32 +537,19 @@ class TRP_Settings{
         $tabs = array(
             array(
                 'name'  => __( 'General', 'translatepress-multilingual' ),
-                'url'   => admin_url( 'options-general.php?page=translate-press' ),
-                'page'  => 'translate-press'
+                'url'   => admin_url( 'options-general.php?page=etranslation-multilingual' ),
+                'page'  => 'etranslation-multilingual'
             ),
             array(
                 'name'  => __( 'Translate Site', 'translatepress-multilingual' ),
                 'url'   => add_query_arg( 'trp-edit-translation', 'true', home_url() ),
                 'page'  => 'trp_translation_editor'
             ),
-	        array(
-		        'name'  => __( 'Addons', 'translatepress-multilingual' ),
-		        'url'   => admin_url( 'admin.php?page=trp_addons_page' ),
-		        'page'  => 'trp_addons_page'
-	        ),
         );
-
-        if( class_exists( 'TRP_LICENSE_PAGE' ) ) {
-            $tabs[] = array(
-                'name'  => __( 'License', 'translatepress-multilingual' ),
-                'url'   => admin_url( 'admin.php?page=trp_license_key' ),
-                'page'  => 'trp_license_key'
-            );
-        }
 
 	    $tabs = apply_filters( 'trp_settings_tabs', $tabs );
 
-        $active_tab = 'translate-press';
+        $active_tab = 'etranslation-multilingual';
         if ( isset( $_GET['page'] ) ){
             $active_tab = sanitize_text_field( wp_unslash( $_GET['page'] ) );
         }
@@ -597,20 +585,20 @@ class TRP_Settings{
      * @return array An array of plugin action links.
      */
     public function plugin_action_links( $links ) {
-        $settings_link = sprintf( '<a href="%1$s">%2$s</a>', admin_url( 'options-general.php?page=translate-press' ), __( 'Settings', 'translatepress-multilingual' ) );
+        $settings_link = sprintf( '<a href="%1$s">%2$s</a>', admin_url( 'options-general.php?page=etranslation-multilingual' ), __( 'Settings', 'translatepress-multilingual' ) );
 
         array_unshift( $links, $settings_link );
 
         if( !trp_is_paid_version() ) {
             $links['go_pro'] = sprintf( '<a href="%1$s" target="_blank" style="color: #e76054; font-weight: bold;">%2$s</a>', esc_url( trp_add_affiliate_id_to_link( 'https://translatepress.com/pricing/?utm_source=wpbackend&utm_medium=clientsite&utm_content=tpeditor&utm_campaign=tpfree' ) ), esc_html__( 'Pro Features', 'translatepress-multilingual' ) );
         }else {
-            $license_details = get_option( 'trp_license_details' );
+            $license_details = get_option( 'etm_license_details' );
             $is_demosite     = ( strpos( site_url(), 'https://demo.translatepress.com' ) !== false );
             if ( !empty( $license_details ) && !$is_demosite ) {
                 if ( !empty( $license_details['invalid'] ) ) {
                     $license_detail = $license_details['invalid'][0];
                     if ( isset( $license_detail->error ) && $license_detail->error == 'missing' ) {
-                        $links['license'] = sprintf( '<a href="%1$s" target="_blank" style="color: #e76054; font-weight: bold;">%2$s</a>', esc_url(trp_add_affiliate_id_to_link( admin_url( '/admin.php?page=trp_license_key' ) ) ), esc_html__( 'Activate License', 'translatepress-multilingual' ) );
+                        $links['license'] = sprintf( '<a href="%1$s" target="_blank" style="color: #e76054; font-weight: bold;">%2$s</a>', esc_url(trp_add_affiliate_id_to_link( admin_url( '/admin.php?page=etm_license_key' ) ) ), esc_html__( 'Activate License', 'translatepress-multilingual' ) );
                     }
                 }
             }
@@ -625,7 +613,7 @@ class TRP_Settings{
         if( empty( $user_id ) )
             die();
 
-        update_user_meta( $user_id, 'trp_email_course_dismissed', 1 );
+        update_user_meta( $user_id, 'etm_email_course_dismissed', 1 );
         die();
         
     }

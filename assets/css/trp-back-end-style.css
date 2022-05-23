@@ -376,6 +376,10 @@ a.trp-recommended-learn-more{
     transform: rotate(-45deg);
 }
 
+.trp-translation-language-domain {
+    width: 200px;
+}
+
 @media only screen and (min-width: 1024px) {
     #trp-main-settings__wrap {
         display: flex;

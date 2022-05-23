@@ -69,8 +69,28 @@ class TRP_Languages{
 				$this->wp_languages = $this->get_wp_languages_backup();
 			}
 		}
-		$default = array( 'en_US' => array( 'language'	=> 'en_US', 'english_name'=> 'English (United States)', 'native_name' => 'English', 'iso' => array( 'en' ) ) );
-		return apply_filters( 'trp_wp_languages', $default + $this->wp_languages );
+		
+		$extended_language_list = $this->wp_languages;
+		$language_keys = array_keys($extended_language_list);
+
+		$missing_languages = array();
+		$missing_languages['mt_MT'] = array( 'language'	=> 'mt_MT', 'english_name'=> 'Maltese', 'native_name' => 'Malti', 'iso' => array( 'mt' ) );
+		$missing_languages['ga_IE'] = array( 'language'	=> 'ga_IE', 'english_name'=> 'Irish', 'native_name' => 'Gaeilge', 'iso' => array( 'ga' ) );
+		
+		foreach ( $missing_languages as $key => $value) {
+			if (!in_array($key, $language_keys)) {
+				$extended_language_list[$key] = $value;
+			}
+		}
+
+		usort($extended_language_list, function ($l1, $l2) {
+			$name1 = $l1['english_name'];
+			$name2 = $l2['english_name'];
+			return strcmp($name1, $name2);
+		});
+
+		$default = array( 'en_GB' => array( 'language'	=> 'en_GB', 'english_name'=> 'English (UK)', 'native_name' => 'English', 'iso' => array( 'en' ) ) );
+		return apply_filters( 'trp_wp_languages', $default + $extended_language_list );
 	}
 
     /**
@@ -89,12 +109,12 @@ class TRP_Languages{
         }
 		$iso_codes = array();
 		$wp_languages = $this->get_wp_languages();
-		$map_wp_codes_to_google = apply_filters( 'trp_map_wp_codes_to_google', array(
-			'zh_HK' => 'zh-TW',
-			'zh_TW'	=> 'zh-TW',
-			'zh_CN'	=> 'zh-CN',
-			'nb_NO'	=> 'no'
-		) );
+		// $map_wp_codes_to_google = apply_filters( 'trp_map_wp_codes_to_google', array(
+		// 	'zh_HK' => 'zh-TW',
+		// 	'zh_TW'	=> 'zh-TW',
+		// 	'zh_CN'	=> 'zh-CN',
+		// 	'nb_NO'	=> 'no'
+		// ) );
 		foreach ( $language_codes as $language_code ) {
 			if ( $map_google_codes && isset( $map_wp_codes_to_google[$language_code] ) ){
 				$iso_codes[$language_code] = $map_wp_codes_to_google[$language_code];

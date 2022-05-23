@@ -91,7 +91,7 @@ function trp_opposite_ls_floating_hide_disabled_language($return, $current_langu
 }
 
 function trp_show_opposite_flag_settings(){
-    $option = get_option( 'trp_advanced_settings', true );
+    $option = get_option( 'etm_advanced_settings', true );
 
      if(isset($option['show_opposite_flag_language_switcher_shortcode']) && $option['show_opposite_flag_language_switcher_shortcode'] !== 'no'){
          add_filter( 'trp_ls_shortcode_current_language', 'trp_opposite_ls_current_language', 10, 4 );

@@ -38,7 +38,7 @@ function trp_lsclick_enqueue_scriptandstyle() {
 }
 
 function trp_open_language_switcher_on_click(){
-    $option = get_option( 'trp_advanced_settings', true );
+    $option = get_option( 'etm_advanced_settings', true );
 
     if(isset($option['open_language_switcher_shortcode_on_click']) && $option['open_language_switcher_shortcode_on_click'] !== 'no'){
         add_action( 'wp_enqueue_scripts', 'trp_lsclick_enqueue_scriptandstyle', 99 );

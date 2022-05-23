@@ -1,8 +1,8 @@
-# Copyright (C) 2022 TranslatePress Multilingual
-# This file is distributed under the same license as the TranslatePress Multilingual package.
+# Copyright (C) 2022 eTranslation Multilingual
+# This file is distributed under the same license as the eTranslation Multilingual package.
 msgid ""
 msgstr ""
-"Project-Id-Version: TranslatePress Multilingual\n"
+"Project-Id-Version: eTranslation Multilingual\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
@@ -22,11 +22,11 @@ msgid "Could not install. Try again from <a href=\"%s\" >Plugins Dashboard.</a>"
 msgstr ""
 
 #: index-dev.php:53
-msgid "Please update the TranslatePress - Multilingual plugin to version 2.0.5 at least for %s to work properly"
+msgid "Please update the eTranslation Multilingual plugin to version 2.0.5 at least for %s to work properly"
 msgstr ""
 
 #: index-dev.php:44
-msgid "Please install and activate the TranslatePress - Multilingual plugin"
+msgid "Please install and activate the eTranslation Multilingual plugin"
 msgstr ""
 
 #: index-dev.php:46, includes/class-settings.php:163
@@ -34,11 +34,11 @@ msgid "Install & Activate"
 msgstr ""
 
 #: index-dev.php:230
-msgid "This TranslatePress add-on has been migrated to the main plugin and is no longer used. You can delete it."
+msgid "This eTranslation Multilingual add-on has been migrated to the main plugin and is no longer used. You can delete it."
 msgstr ""
 
 #: index.php:62
-msgid "<strong>TranslatePress</strong> requires at least PHP version 5.6.20+ to run. It is the <a href=\"%s\">minimum requirement of the latest WordPress version</a>. Please contact your server administrator to update your PHP version."
+msgid "<strong>eTranslation Multilingual</strong> requires at least PHP version 5.6.20+ to run. It is the <a href=\"%s\">minimum requirement of the latest WordPress version</a>. Please contact your server administrator to update your PHP version."
 msgstr ""
 
 #: includes/class-advanced-tab.php:19
@@ -178,7 +178,7 @@ msgid "The content of this element should be written in the default language."
 msgstr ""
 
 #: includes/class-error-manager.php:50
-msgid "<strong>TranslatePress</strong> encountered SQL errors. <a href=\"%s\" title=\"View TranslatePress SQL Errors\">Check out the errors</a>."
+msgid "<strong>eTranslation Multilingual</strong> encountered SQL errors. <a href=\"%s\" title=\"View eTranslation Multilingual SQL Errors\">Check out the errors</a>."
 msgstr ""
 
 #: includes/class-error-manager.php:59
@@ -194,7 +194,7 @@ msgid "Logged errors"
 msgstr ""
 
 #: includes/class-error-manager.php:165
-msgid "These are the most recent 5 errors logged by TranslatePress:"
+msgid "These are the most recent 5 errors logged by eTranslation Multilingual:"
 msgstr ""
 
 #: includes/class-error-manager.php:189
@@ -202,7 +202,7 @@ msgid "Why are these errors occuring"
 msgstr ""
 
 #: includes/class-error-manager.php:190
-msgid "If TranslatePress detects something wrong when executing queries on your database, it may disable the Automatic Translation feature in order to avoid any extra charging by Google/DeepL. Automatic Translation needs to be manually turned on, after you solve the issues."
+msgid "If eTranslation Multilingual detects something wrong when executing queries on your database, it may disable the Automatic Translation feature in order to avoid any extra charging by Google. Automatic Translation needs to be manually turned on, after you solve the issues."
 msgstr ""
 
 #: includes/class-error-manager.php:191
@@ -218,7 +218,7 @@ msgid "Plan A."
 msgstr ""
 
 #: includes/class-error-manager.php:196
-msgid "Go to Settings -> TranslatePress -> General tab and Save Settings. This will regenerate the tables using your current SQL settings. Check if no more errors occur while browsing your website in a translated language. Look at the timestamps of the errors to make sure you are not seeing the old errors. Only the most recent 5 errors are displayed."
+msgid "Go to Settings -> eTranslation Multilingual -> General tab and Save Settings. This will regenerate the tables using your current SQL settings. Check if no more errors occur while browsing your website in a translated language. Look at the timestamps of the errors to make sure you are not seeing the old errors. Only the most recent 5 errors are displayed."
 msgstr ""
 
 #: includes/class-error-manager.php:198
@@ -234,7 +234,7 @@ msgid "Create a backup of your database"
 msgstr ""
 
 #: includes/class-error-manager.php:202
-msgid "Create a copy of each translation table where you encounter errors. You can copy the table within the same database (trp_dictionary_en_us_es_es_COPY for example) -- perform this step only if you want to keep the current translations"
+msgid "Create a copy of each translation table where you encounter errors. You can copy the table within the same database (etm_dictionary_en_us_es_es_COPY for example) -- perform this step only if you want to keep the current translations"
 msgstr ""
 
 #: includes/class-error-manager.php:203
@@ -242,11 +242,11 @@ msgid "Remove the trouble tables by executing the DROP function on them"
 msgstr ""
 
 #: includes/class-error-manager.php:204
-msgid "Go to Settings -> TranslatePress -> General tab and Save Settings. This will regenerate the tables using your current SQL server."
+msgid "Go to Settings -> eTranslation Multilingual -> General tab and Save Settings. This will regenerate the tables using your current SQL server."
 msgstr ""
 
 #: includes/class-error-manager.php:205
-msgid "Copy the relevant content from the duplicated tables (trp_dictionary_en_us_es_es_COPY for example) in the newly generated table (trp_dictionary_en_us_es_es) -- perform this step only if you want to keep the current translations"
+msgid "Copy the relevant content from the duplicated tables (etm_dictionary_en_us_es_es_COPY for example) in the newly generated table (etm_dictionary_en_us_es_es) -- perform this step only if you want to keep the current translations"
 msgstr ""
 
 #: includes/class-error-manager.php:206
@@ -286,7 +286,7 @@ msgid "Languages without formality"
 msgstr ""
 
 #: includes/class-machine-translation-tab.php:217
-msgid "The selected automatic translation engine provides only <a href=\"%s\" target=\"_blank\">default formality</a> settings for these languages for now.<br>Automatic translation will still work if available for these languages. It will just not use the formality setting from TranslatePress <a href=\"%s\" target=\"_self\"> General Tab</a> for the languages listed above."
+msgid "The selected automatic translation engine provides only <a href=\"%s\" target=\"_blank\">default formality</a> settings for these languages for now.<br>Automatic translation will still work if available for these languages. It will just not use the formality setting from eTranslation Multilingual <a href=\"%s\" target=\"_self\"> General Tab</a> for the languages listed above."
 msgstr ""
 
 #: includes/class-machine-translation-tab.php:230
@@ -306,11 +306,11 @@ msgid "Please enter your DeepL API key."
 msgstr ""
 
 #: includes/class-plugin-notices.php:339
-msgid "You are not using a permalink structure! Please <a href=\"%s\">enable</a> one or install our <a href=\"%s\">\"Language by GET parameter\"</a> addon, so that TranslatePress can function properly."
+msgid "You are not using a permalink structure! Please <a href=\"%s\">enable</a> one or install our <a href=\"%s\">\"Language by GET parameter\"</a> addon, so that eTranslation Multilingual can function properly."
 msgstr ""
 
 #: includes/class-plugin-notices.php:388
-msgid "Your <strong>TranslatePress</strong> license will expire on %1$s. Please %2$sRenew Your Licence%3$s to continue receiving access to product downloads, automatic updates and support."
+msgid "Your <strong>eTranslation Multilingual</strong> license will expire on %1$s. Please %2$sRenew Your Licence%3$s to continue receiving access to product downloads, automatic updates and support."
 msgstr ""
 
 #: includes/class-plugin-notices.php:367
@@ -318,39 +318,35 @@ msgid "Something went wrong, please try again."
 msgstr ""
 
 #: includes/class-plugin-notices.php:365
-msgid "Your <strong>TranslatePress</strong> license has expired. <br/>Please %1$sRenew Your Licence%2$s to continue receiving access to product downloads, automatic updates and support. %3$sRenew now %4$s"
+msgid "Your <strong>eTranslation Multilingual</strong> license has expired. <br/>Please %1$sRenew Your Licence%2$s to continue receiving access to product downloads, automatic updates and support. %3$sRenew now %4$s"
 msgstr ""
 
 #: includes/class-plugin-notices.php:363
-msgid "Your <strong>TranslatePress</strong> serial number is invalid or missing. <br/>Please %1$sregister your copy%2$s to receive access to automatic updates and support. Need a license key? %3$sPurchase one now%4$s"
+msgid "Your <strong>eTranslation Multilingual</strong> serial number is invalid or missing. <br/>Please %1$sregister your copy%2$s to receive access to automatic updates and support. Need a license key? %3$sPurchase one now%4$s"
 msgstr ""
 
 #: includes/class-plugin-notices.php:404
-msgid "NEW: Display different images based on language. Find out <a href=\"https://translatepress.com/docs/image-translation/\" >how to translate images, sliders and more</a> from the TranslatePress editor."
+msgid "NEW: Display different images based on language."
 msgstr ""
 
 #: includes/class-plugin-notices.php:428
-msgid "The daily quota for machine translation characters exceeded. Please check the <strong>TranslatePress -> <a href=\"%s\">Automatic Translation</a></strong> page for more information."
+msgid "The daily quota for machine translation characters exceeded. Please check the <strong>eTranslation Multilingual -> <a href=\"%s\">Automatic Translation</a></strong> page for more information."
 msgstr ""
 
 #: includes/class-plugin-notices.php:452
-msgid "One or more languages are unsupported by the automatic translation provider. Please check the <strong>TranslatePress -> <a href=\"%s\">Automatic Translation</a></strong> page for more information."
+msgid "One or more languages are unsupported by the automatic translation provider. Please check the <strong>eTranslation Multilingual -> <a href=\"%s\">Automatic Translation</a></strong> page for more information."
 msgstr ""
 
 #: includes/class-reviews.php:105
-msgid "Hello! Seems like you've been using <strong>TranslatePress</strong> for a while now to translate your website. That's awesome! "
+msgid "Hello! Seems like you've been using <strong>eTranslation Multilingual</strong> for a while now to translate your website. That's awesome! "
 msgstr ""
 
 #: includes/class-reviews.php:109
 msgid "If you can spare a few moments to rate it on WordPress.org it would help us a lot (and boost my motivation)."
 msgstr ""
 
-#: includes/class-reviews.php:113
-msgid "~ Razvan, developer of TranslatePress"
-msgstr ""
-
 #: includes/class-reviews.php:118
-msgid "Rate TranslatePress on WordPress.org plugin page"
+msgid "Rate eTranslation Multilingual on WordPress.org plugin page"
 msgstr ""
 
 #: includes/class-reviews.php:118
@@ -610,11 +606,11 @@ msgid "To translate slugs, please update the SEO Pack add-on to the latest versi
 msgstr ""
 
 #: includes/class-translation-manager.php:142
-msgid "You can add a new language from <a href=\"%s\">Settings->TranslatePress</a>"
+msgid "You can add a new language from <a href=\"%s\">Settings->eTranslation Multilingual</a>"
 msgstr ""
 
 #: includes/class-translation-manager.php:143
-msgid "However, you can still use TranslatePress to <strong style=\"background: #f5fb9d;\">modify gettext strings</strong> available in your page."
+msgid "However, you can still use eTranslation Multilingual to <strong style=\"background: #f5fb9d;\">modify gettext strings</strong> available in your page."
 msgstr ""
 
 #: includes/class-translation-manager.php:144
@@ -838,7 +834,7 @@ msgid "Finishing up..."
 msgstr ""
 
 #: includes/class-upgrade.php:249
-msgid "TranslatePress data update"
+msgid "eTranslation Multilingual data update"
 msgstr ""
 
 #: includes/class-upgrade.php:249
@@ -882,7 +878,7 @@ msgid "Processing table for language %s..."
 msgstr ""
 
 #: includes/class-upgrade.php:317, includes/class-upgrade.php:427
-msgid "Back to TranslatePress Settings"
+msgid "Back to eTranslation Multilingual Settings"
 msgstr ""
 
 #: includes/class-upgrade.php:321
@@ -893,16 +889,12 @@ msgstr ""
 msgid " done."
 msgstr ""
 
-#: includes/class-upgrade.php:814
-msgid "All individual TranslatePress add-on plugins <a href=\"%1$s\" target=\"_blank\">have been discontinued</a> and are now included in the premium Personal, Business and Developer versions of TranslatePress. Please log into your <a href=\"%2$s\" target=\"_blank\">account page</a>, download the new premium version and install it. Your individual addons settings will be ported over."
-msgstr ""
-
 #: includes/class-wp-bakery-language-for-blocks.php:179
-msgid "TranslatePress"
+msgid "eTranslation Multilingual"
 msgstr ""
 
 #: includes/compatibility-functions.php:28
-msgid "<strong>TranslatePress</strong> requires <strong><a href=\"http://php.net/manual/en/book.mbstring.php\">Multibyte String PHP library</a></strong>. Please contact your server administrator to install it on your server."
+msgid "<strong>eTranslation Multilingual</strong> requires <strong><a href=\"http://php.net/manual/en/book.mbstring.php\">Multibyte String PHP library</a></strong>. Please contact your server administrator to install it on your server."
 msgstr ""
 
 #: includes/compatibility-functions.php:1496
@@ -926,11 +918,11 @@ msgid "The Language code of the added custom language cannot be empty."
 msgstr ""
 
 #: partials/addons-settings-page.php:3, partials/license-settings-page.php:46, partials/license-settings-page.php:8, partials/main-settings-page.php:5, partials/test-api-settings-page.php:11, partials/trp-remove-duplicate-rows.php:3
-msgid "TranslatePress Settings"
+msgid "eTranslation Multilingual Settings"
 msgstr ""
 
 #: partials/addons-settings-page.php:11, partials/addons-settings-page.php:16
-msgid "TranslatePress Add-ons"
+msgid "eTranslation Multilingual Add-ons"
 msgstr ""
 
 #: partials/addons-settings-page.php:17
@@ -1030,7 +1022,7 @@ msgid "Accept user payments, create subscription plans and restrict content on y
 msgstr ""
 
 #: partials/advanced-settings-page.php:5
-msgid "TranslatePress Advanced Settings"
+msgid "eTranslation Multilingual Advanced Settings"
 msgstr ""
 
 #: partials/advanced-settings-page.php:16, partials/machine-translation-settings-page.php:161, partials/main-settings-page.php:159
@@ -1038,7 +1030,7 @@ msgid "Save Changes"
 msgstr ""
 
 #: partials/error-manager-page.php:3
-msgid "TranslatePress Errors"
+msgid "eTranslation Multilingual Errors"
 msgstr ""
 
 #: partials/error-manager-page.php:6
@@ -1070,7 +1062,7 @@ msgid "Enter your license key."
 msgstr ""
 
 #: partials/machine-translation-settings-page.php:4
-msgid "TranslatePress Automatic Translation"
+msgid "eTranslation Multilingual Automatic Translation"
 msgstr ""
 
 #: partials/machine-translation-settings-page.php:9
@@ -1101,14 +1093,10 @@ msgstr ""
 msgid "<strong>DeepL</strong> automatic translation is available as a <a href=\"%1$s\" target=\"_blank\" title=\"%2$s\">%2$s</a>."
 msgstr ""
 
-#: partials/machine-translation-settings-page.php:52
-msgid "By upgrading you'll get access to all paid add-ons, premium support and help fund the future development of TranslatePress."
-msgstr ""
-
 #. translators: %1$s is the URL to the DeepL add-on. %2$s is the name of the Pro offerings.
 #: partials/machine-translation-settings-page.php:73
 msgctxt "Verbiage for the DeepL Pro Add-on"
-msgid "TranslatePress Pro Add-on"
+msgid "eTranslation Multilingual Pro Add-on"
 msgstr ""
 
 #: partials/machine-translation-settings-page.php:67
@@ -1121,7 +1109,7 @@ msgid "Please note that DeepL API usage is paid separately. See <a href=\"https:
 msgstr ""
 
 #: partials/machine-translation-settings-page.php:85
-msgid "TranslatePress Pro Add-ons"
+msgid "eTranslation Multilingual Pro Add-ons"
 msgstr ""
 
 #: partials/machine-translation-settings-page.php:102
@@ -1157,7 +1145,7 @@ msgid "Log machine translation queries."
 msgstr ""
 
 #: partials/machine-translation-settings-page.php:153
-msgid "Only enable for testing purposes. Can impact performance.<br>All records are stored in the wp_trp_machine_translation_log database table. Use a plugin like <a href=\"https://wordpress.org/plugins/wp-data-access/\">WP Data Access</a> to browse the logs or directly from your database manager (PHPMyAdmin, etc.)"
+msgid "Only enable for testing purposes. Can impact performance.<br>All records are stored in the wp_etm_machine_translation_log database table. Use a plugin like <a href=\"https://wordpress.org/plugins/wp-data-access/\">WP Data Access</a> to browse the logs or directly from your database manager (PHPMyAdmin, etc.)"
 msgstr ""
 
 #: partials/main-settings-language-selector.php:2, add-ons-pro/navigation-based-on-language/class-navigation-based-on-language.php:81, add-ons-advanced/extra-languages/partials/language-selector-pro.php:2
@@ -1208,27 +1196,9 @@ msgstr ""
 msgid "Select the languages you wish to make your website available in.<br>The Formality field is used by Automatic Translation to decide whether the translated text should lean towards formal or informal language. For now, it is supported only for a few languages and only by <a href=\"%s\">DeepL</a>."
 msgstr ""
 
-#. translators: %1$s is the URL to the add-ons. %2$2 is for the TranslatePress add-on verbiage.
-#: partials/main-settings-language-selector.php:116
-msgid "To add <strong>more than two languages</strong> and support for SEO Title, Description, Slug and more check out <a href=\"%1$s\" target=\"_blank\" title=\"%2$s\">%2$s</a>."
-msgstr ""
-
 #: partials/main-settings-language-selector.php:118
-msgctxt "Verbiage for the TranslatePress Advanced add-ons"
-msgid "TranslatePress Advanced Add-ons"
-msgstr ""
-
-#: partials/main-settings-language-selector.php:120
-msgid "Not only are you getting extra features and premium support, but you also help fund the future development of TranslatePress."
-msgstr ""
-
-#: partials/main-settings-language-selector.php:124
-msgctxt "Link to the TranslatePress add-ons"
-msgid "TranslatePress Advanced Add-ons"
-msgstr ""
-
-#: partials/main-settings-language-selector.php:111
-msgid "To add <strong>more than two languages</strong> activate the <strong>Extra Languages Add-on</strong> from <a href=\"%s\" class=\"trp-translatepress-account-page\" target=\"_blank\" title=\"Add-ons page\">the Add-ons Page</a>. Once activated, you'll be able to add unlimited languages."
+msgctxt "Verbiage for the eTranslation Multilingual Advanced add-ons"
+msgid "eTranslation Multilingual Advanced Add-ons"
 msgstr ""
 
 #: partials/main-settings-page.php:11
@@ -1244,7 +1214,7 @@ msgid "WARNING. Changing the default language will invalidate existing translati
 msgstr ""
 
 #: partials/main-settings-page.php:27
-msgid "Even changing from en_US to en_GB, because they are treated as two different languages."
+msgid "Even changing from en_GB to en_US, because they are treated as two different languages."
 msgstr ""
 
 #: partials/main-settings-page.php:28
@@ -1312,19 +1282,15 @@ msgid "Add a floating dropdown that follows the user on every page."
 msgstr ""
 
 #: partials/main-settings-page.php:113
-msgid "Show \"Powered by TranslatePress\""
+msgid "Show \"Powered by eTranslation Multilingual\""
 msgstr ""
 
 #: partials/main-settings-page.php:115
-msgid "Show the small \"Powered by TranslatePress\" label in the floater language switcher."
+msgid "Show the small \"Powered by eTranslation Multilingual\" label in the floater language switcher."
 msgstr ""
 
 #: partials/main-settings-page.php:131
 msgid "5 Days to Better Multilingual Websites"
-msgstr ""
-
-#: partials/main-settings-page.php:135
-msgid "%sJoin our FREE & EXCLUSIVE onboarding course%s and learn how to grow your multilingual traffic, reach international markets, and save time & money while getting the most out of TranslatePress!"
 msgstr ""
 
 #: partials/main-settings-page.php:141
@@ -1337,10 +1303,6 @@ msgstr ""
 
 #: partials/main-settings-page.php:145
 msgid "Sign me up!"
-msgstr ""
-
-#: partials/main-settings-page.php:149
-msgid "Sign up with your email address and receive a 5-part email guide to help you maximize the power of TranslatePress."
 msgstr ""
 
 #: partials/main-settings-page.php:152
@@ -1372,7 +1334,7 @@ msgid "Entire Response From wp_remote_get():"
 msgstr ""
 
 #: partials/trp-remove-duplicate-rows.php:7, includes/advanced-settings/remove-duplicates-from-db.php:7
-msgid "Optimize TranslatePress database tables"
+msgid "Optimize eTranslation Multilingual database tables"
 msgstr ""
 
 #: partials/trp-remove-duplicate-rows.php:10
@@ -1392,7 +1354,7 @@ msgid "Remove CDATA for original and dictionary strings"
 msgstr ""
 
 #: partials/trp-remove-duplicate-rows.php:24
-msgid "Removes CDATA from trp_original_strings and trp_dictionary_* tables.<br>This type of content should not be detected by TranslatePress. It might have been introduced in the database in older versions of the plugin."
+msgid "Removes CDATA from etm_original_strings and etm_dictionary_* tables.<br>This type of content should not be detected by eTranslation Multilingual. It might have been introduced in the database in older versions of the plugin."
 msgstr ""
 
 #: partials/trp-remove-duplicate-rows.php:27
@@ -1400,7 +1362,7 @@ msgid "Remove untranslated links from dictionary tables"
 msgstr ""
 
 #: partials/trp-remove-duplicate-rows.php:29
-msgid "Removes untranslated links and images from all trp_dictionary_* tables. These tables contain translations for user-inputted strings such as post content, post title, menus etc."
+msgid "Removes untranslated links and images from all etm_dictionary_* tables. These tables contain translations for user-inputted strings such as post content, post title, menus etc."
 msgstr ""
 
 #: partials/trp-remove-duplicate-rows.php:32
@@ -1408,7 +1370,7 @@ msgid "Remove duplicate rows for gettext strings"
 msgstr ""
 
 #: partials/trp-remove-duplicate-rows.php:34
-msgid "Cleans up all trp_gettext_* tables of duplicate rows. These tables contain translations for themes and plugin strings."
+msgid "Cleans up all etm_gettext_* tables of duplicate rows. These tables contain translations for themes and plugin strings."
 msgstr ""
 
 #: partials/trp-remove-duplicate-rows.php:37
@@ -1416,7 +1378,7 @@ msgid "Remove duplicate rows for dictionary strings"
 msgstr ""
 
 #: partials/trp-remove-duplicate-rows.php:39
-msgid "Cleans up all trp_dictionary_* tables of duplicate rows. These tables contain translations for user-inputted strings such as post content, post title, menus etc."
+msgid "Cleans up all etm_dictionary_* tables of duplicate rows. These tables contain translations for user-inputted strings such as post content, post title, menus etc."
 msgstr ""
 
 #: partials/trp-remove-duplicate-rows.php:42
@@ -1424,7 +1386,7 @@ msgid "Remove duplicate rows for original dictionary strings"
 msgstr ""
 
 #: partials/trp-remove-duplicate-rows.php:44
-msgid "Cleans up all trp_original_strings table of duplicate rows. This table contains strings in the default language, without any translation.<br>The trp_original_meta table, which contains meta information that refers to the post parent’s id, is also regenerated.<br>Such duplicates can appear in exceptional situations of unexpected behavior."
+msgid "Cleans up all etm_original_strings table of duplicate rows. This table contains strings in the default language, without any translation.<br>The etm_original_meta table, which contains meta information that refers to the post parent’s id, is also regenerated.<br>Such duplicates can appear in exceptional situations of unexpected behavior."
 msgstr ""
 
 #: partials/trp-remove-duplicate-rows.php:50
@@ -1432,11 +1394,11 @@ msgid "Optimize Database"
 msgstr ""
 
 #: partials/trp-update-database.php:3
-msgid "TranslatePress Database Updater"
+msgid "eTranslation Multilingual Database Updater"
 msgstr ""
 
 #: partials/trp-update-database.php:7
-msgid "Updating TranslatePress tables"
+msgid "Updating eTranslation Multilingual tables"
 msgstr ""
 
 #: add-ons-pro/navigation-based-on-language/class-navigation-based-on-language.php:75
@@ -1452,7 +1414,7 @@ msgid "Customize the date formatting per each translated language.<br/>Leave emp
 msgstr ""
 
 #: includes/advanced-settings/custom-language.php:19
-msgid "To edit an existing TranslatePress language, input the language code and fill in only the columns you want to overwrite (e.g. Language name, Flag).<br>You can also add new custom languages. They will be available under General settings, All Languages list, where the URL slug can be edited.<br>For custom flag, first upload the image in media library then paste the URL.<br>Changing or deleting a custom language will impact translations and site URL's.<br>The Language code and the Automatic Translation Code should contain only alphabetical values, numerical values, \"-\" and \"_\".<br>The Automatic Translation codes can be found on <a href = \"https://cloud.google.com/translate/docs/languages\" target = \"_blank\">Google ISO Codes</a> and <a href = \"https://www.deepl.com/docs-api/translating-text/\" target = \"_blank\">DeepL Target Codes</a>."
+msgid "To edit an existing eTranslation Multilingual language, input the language code and fill in only the columns you want to overwrite (e.g. Language name, Flag).<br>You can also add new custom languages. They will be available under General settings, All Languages list, where the URL slug can be edited.<br>For custom flag, first upload the image in media library then paste the URL.<br>Changing or deleting a custom language will impact translations and site URL's.<br>The Language code and the Automatic Translation Code should contain only alphabetical values, numerical values, \"-\" and \"_\".<br>The Automatic Translation codes can be found on <a href = \"https://cloud.google.com/translate/docs/languages\" target = \"_blank\">Google ISO Codes</a>."
 msgstr ""
 
 #: includes/advanced-settings/custom-language.php:24
@@ -1496,7 +1458,7 @@ msgid "Exclude translated links from sitemap"
 msgstr ""
 
 #: includes/advanced-settings/disable-languages-sitemap.php:8
-msgid "Do not include translated links in sitemaps generated by SEO plugins.<br/>Requires <a href=\"https://translatepress.com/docs/addons/seo-pack/\" title=\"TranslatePress Add-on SEO Pack documentation\" target=\"_blank\"> SEO Pack Add-on</a> to be installed and activated."
+msgid "Do not include translated links in sitemaps generated by SEO plugins."
 msgstr ""
 
 #: includes/advanced-settings/disable-post-container-tags.php:9
@@ -1536,7 +1498,7 @@ msgid "Automatically translate slugs"
 msgstr ""
 
 #: includes/advanced-settings/enable-auto-translate-slug.php:9
-msgid "Generate automatic translations of slugs for posts, pages and Custom Post Types.<br/>Requires <a href=\"https://translatepress.com/docs/addons/seo-pack/\" title=\"TranslatePress Add-on SEO Pack documentation\" target=\"_blank\"> SEO Pack Add-on</a> to be installed and activated.<br>The slugs will be automatically translated starting with the second refresh of each page."
+msgid "Generate automatic translations of slugs for posts, pages and Custom Post Types."
 msgstr ""
 
 #: includes/advanced-settings/enable-hreflang-xdefault.php:8
@@ -1580,7 +1542,7 @@ msgid "Exclude Gettext Strings"
 msgstr ""
 
 #: includes/advanced-settings/exclude-gettext-strings.php:13
-msgid "Exclude these strings from being translated as Gettext strings by TranslatePress. Leave the domain empty to take into account any Gettext string.<br/>Can still be translated through po/mo files."
+msgid "Exclude these strings from being translated as Gettext strings by eTranslation Multilingual. Leave the domain empty to take into account any Gettext string.<br/>Can still be translated through po/mo files."
 msgstr ""
 
 #: includes/advanced-settings/exclude-selectors-automatic-translation.php:13
@@ -1842,7 +1804,7 @@ msgid "in"
 msgstr ""
 
 #: includes/string-translation/class-string-translation.php:230
-msgid "Warning: This action cannot be undone. Deleting a string will remove its current translation. The original string will appear again in this interface after TranslatePress detects it. This action is NOT equivalent to excluding the string from being translated again."
+msgid "Warning: This action cannot be undone. Deleting a string will remove its current translation. The original string will appear again in this interface after eTranslation Multilingual detects it. This action is NOT equivalent to excluding the string from being translated again."
 msgstr ""
 
 #: includes/string-translation/class-string-translation.php:233
@@ -1998,7 +1960,7 @@ msgid "Translator"
 msgstr ""
 
 #: add-ons-pro/translator-accounts/includes/class-translator-accounts.php:92
-msgid " TranslatePress Settings"
+msgid " eTranslation Multilingual Settings"
 msgstr ""
 
 #: add-ons-pro/translator-accounts/includes/class-translator-accounts.php:101

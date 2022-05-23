@@ -5,7 +5,7 @@
             <thead>
                 <tr>
                     <th colspan="2"><?php esc_html_e( 'Language', 'translatepress-multilingual' ); ?></th>
-                    <th><?php esc_html_e( 'Formality', 'translatepress-multilingual' ); ?></th>
+                    <th><?php esc_html_e( 'Domain', 'translatepress-multilingual' ); ?></th>
                     <th><?php esc_html_e( 'Code', 'translatepress-multilingual' ); ?></th>
                     <th><?php esc_html_e( 'Slug', 'translatepress-multilingual' ); ?></th>
                 </tr>
@@ -13,11 +13,12 @@
             <tbody id="trp-sortable-languages" class="trp-language-selector-limited">
 
             <?php
-            $formality_array = array(
-                'default' => __('Default', 'translatepress-multilingual'),
-                'formal'  => __('Formal', 'translatepress-multilingual'),
-                'informal'=> __('Informal', 'translatepress-multilingual')
-            );
+            $domain_array = array();
+            $trp = TRP_Translate_Press::get_trp_instance();
+            $machine_translator = $trp->get_component('machine_translator');
+            if ($machine_translator instanceof TRP_eTranslation_Machine_Translator && $machine_translator->is_available() && $machine_translator->credentials_set()) {
+                $domain_array = $machine_translator->get_all_domains();
+            }
             ?>
 
             <?php
@@ -26,7 +27,7 @@
                 <tr class="trp-language">
                     <td><span class="trp-sortable-handle"></span></td>
                     <td>
-                        <select name="trp_settings[translation-languages][]" class="trp-select2 trp-translation-language" <?php echo ( $default_language ) ? 'disabled' : '' ?>>
+                        <select name="etm_settings[translation-languages][]" class="trp-select2 trp-translation-language" <?php echo ( $default_language ) ? 'disabled' : '' ?>>
                             <?php foreach( $languages as $language_code => $language_name ){ ?>
                                 <option title="<?php echo esc_attr( $language_code ); ?>" value="<?php echo esc_attr( $language_code ); ?>" <?php echo ( $language_code == $selected_language_code ) ? 'selected' : ''; ?>>
                                     <?php echo ( $default_language ) ? 'Default: ' : ''; ?>
@@ -34,17 +35,17 @@
                                 </option>
                             <?php }?>
                         </select>
-                        <input type="hidden" class="trp-translation-published" name="trp_settings[publish-languages][]" value="<?php echo esc_attr( $selected_language_code );?>" />
+                        <input type="hidden" class="trp-translation-published" name="etm_settings[publish-languages][]" value="<?php echo esc_attr( $selected_language_code );?>" />
                         <?php if ( $default_language ) { ?>
-                            <input type="hidden" class="trp-hidden-default-language" name="trp_settings[translation-languages][]" value="<?php echo esc_attr( $selected_language_code );?>" />
+                            <input type="hidden" class="trp-hidden-default-language" name="etm_settings[translation-languages][]" value="<?php echo esc_attr( $selected_language_code );?>" />
                         <?php } ?>
                     </td>
                     <td>
-                        <select name="trp_settings[translation-languages-formality][]" class="trp-translation-language-formality" >
+                        <select name="etm_settings[translation-languages-domain][]" class="trp-translation-language-domain" <?php disabled(empty($domain_array), true) ?>>
                             <?php
-                            foreach ( $formality_array as $value => $label ) {
+                            foreach ( $domain_array as $key => $value ) {
                                 ?>
-                                <option value="<?php echo esc_attr( $value ); ?>" <?php echo ( isset($this->settings['translation-languages-formality-parameter'][$selected_language_code]) && $value == $this->settings['translation-languages-formality-parameter'][$selected_language_code] ) ? 'selected' : ''; ?>><?php echo esc_html( $label ); ?></option>
+                                <option value="<?php echo esc_attr( $key ); ?>" <?php echo ( isset($this->settings['translation-languages-domain-parameter'][$selected_language_code]) && $key == $this->settings['translation-languages-domain-parameter'][$selected_language_code] ) ? 'selected' : ''; ?>><?php echo esc_html( $value->name ); ?></option>
                                 <?php
                             }
                             ?>
@@ -54,7 +55,7 @@
                         <input class="trp-language-code trp-code-slug" type="text" disabled value="<?php echo esc_attr( $selected_language_code ); ?>">
                     </td>
                     <td>
-                        <input class="trp-language-slug trp-code-slug" name="trp_settings[url-slugs][<?php echo esc_attr( $selected_language_code ); ?>]" type="text" style="text-transform: lowercase;" value="<?php echo esc_attr( $this->url_converter->get_url_slug( $selected_language_code, false ) ); ?>">
+                        <input class="trp-language-slug trp-code-slug" name="etm_settings[url-slugs][<?php echo esc_attr( $selected_language_code ); ?>]" type="text" style="text-transform: lowercase;" value="<?php echo esc_attr( $this->url_converter->get_url_slug( $selected_language_code, false ) ); ?>">
                     </td>
                     <td>
                         <a class="trp-remove-language" style=" <?php echo ( $default_language ) ? 'display:none' : '' ?>" data-confirm-message="<?php esc_attr_e( 'Are you sure you want to remove this language?', 'translatepress-multilingual' ); ?>"><?php esc_html_e( 'Remove', 'translatepress-multilingual' ); ?></a>
@@ -102,12 +103,12 @@
             <button type="button" id="trp-add-language" class="button-secondary"><?php esc_html_e( 'Add', 'translatepress-multilingual' );?></button>
         </div>
         <p class="description">
-            <?php echo wp_kses ( sprintf(__( 'Select the languages you wish to make your website available in.<br>The Formality field is used by Automatic Translation to decide whether the translated text should lean towards formal or informal language. For now, it is supported only for a few languages and only by <a href="%s">DeepL</a>.', 'translatepress-multilingual' ), esc_url('https://www.deepl.com/docs-api/translating-text/') ), array('a' => array('href' => array(), 'title' => array()), 'br' => array()) ); ?>
+            <?php echo __( 'Select the languages you wish to make your website available in.') ?>
         </p>
         <p class="trp-upsell-multiple-languages" style="display: none;">
             <?php
             if ( trp_is_paid_version() ){
-                $url = admin_url('admin.php?page=trp_addons_page');
+                $url = admin_url('admin.php?page=etm_addons_page');
                 $lnk = sprintf( wp_kses( __( 'To add <strong>more than two languages</strong> activate the <strong>Extra Languages Add-on</strong> from <a href="%s" class="trp-translatepress-account-page" target="_blank" title="Add-ons page">the Add-ons Page</a>. Once activated, you\'ll be able to add unlimited languages.', 'translatepress-multilingual' ), array( 'strong' => array(), 'br' => array(), 'a' => array( 'href' => array(), 'title' => array(), 'target' => array(), 'class' => array() ) ) ), esc_url( $url ) );
             }else {
                 $url = trp_add_affiliate_id_to_link('https://translatepress.com/?utm_source=wpbackend&utm_medium=clientsite&utm_content=multiple_languages&utm_campaign=tpfree');

@@ -8,6 +8,10 @@
     overflow: hidden;
 }
 
+#trp-floater-ls.trp-color-default {
+    background: #003399;
+}
+
 #trp-floater-ls.trp-color-dark{
     background: rgb(27,27,27);
     background: linear-gradient(0deg, rgba(27,27,27,1) 0%, rgba(84,84,84,1) 100%);
@@ -158,6 +162,11 @@ body.admin-bar #trp-floater-ls.trp-top-left{
     height: 100%;
 }
 
+.trp-color-default #trp-floater-ls-current-language a,
+.trp-color-default #trp-floater-ls-language-list a {
+    color: white;
+}
+
 .trp-color-dark #trp-floater-ls-current-language a,
 .trp-color-dark #trp-floater-ls-language-list a {
     color: #BDBDBD;
@@ -165,6 +174,24 @@ body.admin-bar #trp-floater-ls.trp-top-left{
 .trp-color-light #trp-floater-ls-current-language a,
 .trp-color-light #trp-floater-ls-language-list a {
     color: #404040;
+}
+
+.trp-color-default #trp-floater-ls-current-language a,
+.trp-color-default #trp-floater-ls-language-list a {
+    display: block;
+    width: auto;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+#trp-floater-ls.trp-color-default {
+    box-shadow: 0 0 2px #212121;
+}
+
+.trp-color-default #trp-floater-ls-language-list a:hover {
+    color: black;
+    background-color: #ffcc00;
 }
 
 .trp-color-dark #trp-floater-ls-current-language a,
@@ -186,6 +213,11 @@ body.admin-bar #trp-floater-ls.trp-top-left{
     cursor: default;
 }
 
+#trp-floater-ls.trp-color-default .trp-language-wrap .trp-flag-image {
+    margin-right: 9px;
+}
+
+#trp-floater-ls.trp-color-default .trp-flag-image,
 #trp-floater-ls .trp-with-flags .trp-flag-image {
     margin-right: 5px;
     margin-top: -1px;

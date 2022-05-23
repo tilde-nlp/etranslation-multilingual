@@ -17,7 +17,7 @@ function trp_register_strip_gettext_post_content( $settings_array ){
  */
 add_filter('wp_insert_post_data', 'trp_filter_trpgettext_from_post_content', 10, 2 );
 function trp_filter_trpgettext_from_post_content($data, $postarr ){
-	$option = get_option( 'trp_advanced_settings', true );
+	$option = get_option( 'etm_advanced_settings', true );
 	if ( isset( $option['strip_gettext_post_content'] ) && $option['strip_gettext_post_content'] === 'yes' && class_exists( 'TRP_Translation_Manager' ) ){
 		$data['post_content'] = TRP_Translation_Manager::strip_gettext_tags($data['post_content']);
 		$data['post_title'] = TRP_Translation_Manager::strip_gettext_tags($data['post_title']);

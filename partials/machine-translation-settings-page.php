@@ -1,14 +1,15 @@
 <div id="trp-main-settings" class="wrap">
+    <?php echo "<img style='width: 200px;' src='" . TRP_PLUGIN_URL . "assets/images/Logo_eTranslation_v6b.svg' />" ?>
     <form method="post" action="options.php">
-        <?php settings_fields( 'trp_machine_translation_settings' ); ?>
-        <h1> <?php esc_html_e( 'TranslatePress Automatic Translation', 'translatepress-multilingual' );?></h1>
+        <?php settings_fields( 'etm_machine_translation_settings' ); ?>
+        <h1> <?php esc_html_e( 'eTranslation Multilingual Automatic Translation', 'translatepress-multilingual' );?></h1>
         <?php do_action ( 'trp_settings_navigation_tabs' ); ?>
 
         <table id="trp-options" class="form-table trp-machine-translation-options">
             <tr>
                 <th scope="row"><?php esc_html_e( 'Enable Automatic Translation', 'translatepress-multilingual' ); ?> </th>
                 <td>
-                    <select id="trp-machine-translation-enabled" name="trp_machine_translation_settings[machine-translation]" class="trp-select">
+                    <select id="trp-machine-translation-enabled" name="etm_machine_translation_settings[machine-translation]" class="trp-select">
                         <option value="no" <?php selected( $this->settings['trp_machine_translation_settings']['machine-translation'], 'no' ); ?>><?php esc_html_e( 'No', 'translatepress-multilingual') ?></option>
                         <option value="yes" <?php selected( $this->settings['trp_machine_translation_settings']['machine-translation'], 'yes' ); ?>><?php esc_html_e( 'Yes', 'translatepress-multilingual') ?></option>
                     </select>
@@ -26,7 +27,7 @@
 
                     <?php foreach( $translation_engines as $engine ) : ?>
                         <label for="trp-translation-engine-<?= esc_attr( $engine['value'] ) ?>" style="margin-right:10px;">
-                             <input type="radio" class="trp-translation-engine trp-radio" id="trp-translation-engine-<?= esc_attr( $engine['value'] ) ?>" name="trp_machine_translation_settings[translation-engine]" value="<?= esc_attr( $engine['value'] ) ?>" <?php checked( $this->settings['trp_machine_translation_settings']['translation-engine'], $engine['value'] ); ?>>
+                             <input type="radio" class="trp-translation-engine trp-radio" id="trp-translation-engine-<?= esc_attr( $engine['value'] ) ?>" name="etm_machine_translation_settings[translation-engine]" value="<?= esc_attr( $engine['value'] ) ?>" <?php checked( $this->settings['trp_machine_translation_settings']['translation-engine'], $engine['value'] ); ?>>
                              <?php echo esc_html( $engine['label'] ) ?>
                         </label>
                     <?php endforeach; ?>
@@ -54,7 +55,7 @@
                             <?php
                             //link and message in case the user has the pro version of TranslatePress
                                 else:
-                                    $url = 'admin.php?page=trp_addons_page' ;
+                                    $url = 'admin.php?page=etm_addons_page' ;
                                 $message = __( 'To use <strong>DeepL</strong> for automatic translation, activate this Pro add-on from the <a href="%1$s" target="_self" title="%2$s">%2$s</a>.', 'translatepress-multilingual' );
                                 $message_upgrade= "";
                                     ?>
@@ -95,11 +96,11 @@
 
             <?php do_action ( 'trp_machine_translation_extra_settings_middle', $this->settings['trp_machine_translation_settings'] ); ?>
 
-            <?php if( !empty( $machine_translator->get_api_key() ) ) : ?>
+            <?php if( !empty( $machine_translator->credentials_set() ) ) : ?>
                 <tr id="trp-test-api-key">
                     <th scope="row"></th>
                     <td>
-                        <a href="<?php echo esc_url( admin_url( 'admin.php?page=trp_test_machine_api' ) ); ?>" class="button-secondary"><?php esc_html_e( 'Test API credentials', 'translatepress-multilingual' ); ?></a>
+                        <a href="<?php echo esc_url( admin_url( 'admin.php?page=etm_test_machine_api' ) ); ?>" class="button-secondary"><?php esc_html_e( 'Test API credentials', 'translatepress-multilingual' ); ?></a>
                         <p class="description">
                             <?php esc_html_e( 'Click here to check if the selected translation engine is configured correctly.', 'translatepress-multilingual' ) ?>
                         </p>
@@ -113,7 +114,7 @@
                 <th scope=row><?php esc_html_e( 'Block Crawlers', 'translatepress-multilingual' ); ?></th>
                 <td>
                     <label>
-                        <input type=checkbox name="trp_machine_translation_settings[block-crawlers]" value="yes" <?php isset( $this->settings['trp_machine_translation_settings']['block-crawlers'] ) ? checked( $this->settings['trp_machine_translation_settings']['block-crawlers'], 'yes' ) : checked( '', 'yes' ); ?>>
+                        <input type=checkbox name="etm_machine_translation_settings[block-crawlers]" value="yes" <?php isset( $this->settings['trp_machine_translation_settings']['block-crawlers'] ) ? checked( $this->settings['trp_machine_translation_settings']['block-crawlers'], 'yes' ) : checked( '', 'yes' ); ?>>
                         <?php esc_html_e( 'Yes' , 'translatepress-multilingual' ); ?>
                     </label>
                     <p class="description">
@@ -123,37 +124,30 @@
             </tr>
 
             <tr>
-               <th scope="row"><?php esc_html_e( 'Limit machine translation / characters per day', 'translatepress-multilingual' ); ?></th>
-               <td>
-                   <label>
-                       <input type="number" name="trp_machine_translation_settings[machine_translation_limit]" value="<?php echo isset( $this->settings['trp_machine_translation_settings']['machine_translation_limit'] ) ? esc_attr( $this->settings['trp_machine_translation_settings']['machine_translation_limit'] ) : 1000000; ?>">
-                   </label>
-                   <p class="description">
-                       <?php esc_html_e( 'Add a limit to the number of automatically translated characters so you can better budget your project.', 'translatepress-multilingual' ); ?>
-                   </p>
-               </td>
-           </tr>
-
-            <tr>
-                <th scope="row"><?php esc_html_e( 'Today\'s character count:', 'translatepress-multilingual' ); ?></th>
-                <td>
-                    <strong><?php echo isset( $this->settings['trp_machine_translation_settings']['machine_translation_counter'] ) ? esc_html( $this->settings['trp_machine_translation_settings']['machine_translation_counter'] ) : 0; ?></strong>
-                    (<?php echo isset( $this->settings['trp_machine_translation_settings']['machine_translation_counter_date'] ) ? esc_html( $this->settings['trp_machine_translation_settings']['machine_translation_counter_date'] ) : esc_html( date('Y-m-d') ); ?>)
-                </td>
-            </tr>
-
-            <tr>
                <th scope=row><?php esc_html_e( 'Log machine translation queries.', 'translatepress-multilingual' ); ?></th>
                <td>
                    <label>
-                       <input type=checkbox name="trp_machine_translation_settings[machine_translation_log]" value="yes" <?php isset( $this->settings['trp_machine_translation_settings']['machine_translation_log'] ) ? checked( $this->settings['trp_machine_translation_settings']['machine_translation_log'], 'yes' ) : checked( '', 'yes' ); ?>>
+                       <input type=checkbox name="etm_machine_translation_settings[machine_translation_log]" value="yes" <?php isset( $this->settings['trp_machine_translation_settings']['machine_translation_log'] ) ? checked( $this->settings['trp_machine_translation_settings']['machine_translation_log'], 'yes' ) : checked( '', 'yes' ); ?>>
                        <?php esc_html_e( 'Yes' , 'translatepress-multilingual' ); ?>
                    </label>
                    <p class="description">
-                       <?php echo wp_kses( __( 'Only enable for testing purposes. Can impact performance.<br>All records are stored in the wp_trp_machine_translation_log database table. Use a plugin like <a href="https://wordpress.org/plugins/wp-data-access/">WP Data Access</a> to browse the logs or directly from your database manager (PHPMyAdmin, etc.)', 'translatepress-multilingual' ), array( 'br' => array(), 'a' => array( 'href' => array(), 'title' => array(), 'target' => array() ) ) ); ?>
+                       <?php echo wp_kses( __( 'Only enable for testing purposes. Can impact performance.<br>All records are stored in the wp_etm_machine_translation_log database table. Use a plugin like <a href="https://wordpress.org/plugins/wp-data-access/">WP Data Access</a> to browse the logs or directly from your database manager (PHPMyAdmin, etc.)', 'translatepress-multilingual' ), array( 'br' => array(), 'a' => array( 'href' => array(), 'title' => array(), 'target' => array() ) ) ); ?>
                    </p>
                </td>
            </tr>
+
+           <tr>
+                <th scope="row">Show machine translation notice</th>
+                <td>
+                    <select id="show-mt-notice" name="etm_machine_translation_settings[show-mt-notice]" class="trp-select">
+                        <option value="yes" <?php selected( $this->settings['trp_machine_translation_settings']['show-mt-notice'], 'yes' ); ?>><?php esc_html_e( 'Yes', 'translatepress-multilingual') ?></option>
+                        <option value="no" <?php selected( $this->settings['trp_machine_translation_settings']['show-mt-notice'], 'no' ); ?>><?php esc_html_e( 'No', 'translatepress-multilingual') ?></option>
+                    </select>
+                    <p class="description">
+                        <?php esc_html_e( 'Select No if you do not want to show machine translation notice bar at the top of every translated page.', 'translatepress-multilingual' ); ?>
+                    </p>
+                </td>
+            </tr>
 
             <?php do_action ( 'trp_machine_translation_extra_settings_bottom', $this->settings['trp_machine_translation_settings'] ); ?>
         </table>

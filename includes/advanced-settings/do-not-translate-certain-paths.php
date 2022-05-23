@@ -26,17 +26,17 @@ function trp_output_do_not_translate_certain_paths( $setting ){
         <td>
             <div class="trp-adv-holder">
                 <label>
-                    <input type='radio' id='$setting_name' name="trp_advanced_settings[<?php echo esc_attr( $setting['name'] ); ?>][option]" value="exclude" <?php echo isset( $trp_settings['trp_advanced_settings'][$setting['name']]['option'] ) && $trp_settings['trp_advanced_settings'][$setting['name']]['option'] == 'exclude' ? 'checked' : ''; ?>>
+                    <input type='radio' id='$setting_name' name="etm_advanced_settings[<?php echo esc_attr( $setting['name'] ); ?>][option]" value="exclude" <?php echo isset( $trp_settings['trp_advanced_settings'][$setting['name']]['option'] ) && $trp_settings['trp_advanced_settings'][$setting['name']]['option'] == 'exclude' ? 'checked' : ''; ?>>
                     <?php esc_html_e( 'Exclude Paths From Translation', 'translatepress-multilingual' ); ?>
                 </label>
 
                 <label>
-                    <input type='radio' id='$setting_name' name="trp_advanced_settings[<?php echo esc_attr( $setting['name'] ); ?>][option]" value="include" <?php echo isset( $trp_settings['trp_advanced_settings'][$setting['name']]['option'] ) && $trp_settings['trp_advanced_settings'][$setting['name']]['option'] == 'include' ? 'checked' : ''; ?> >
+                    <input type='radio' id='$setting_name' name="etm_advanced_settings[<?php echo esc_attr( $setting['name'] ); ?>][option]" value="include" <?php echo isset( $trp_settings['trp_advanced_settings'][$setting['name']]['option'] ) && $trp_settings['trp_advanced_settings'][$setting['name']]['option'] == 'include' ? 'checked' : ''; ?> >
                     <?php esc_html_e( 'Translate Only Certain Paths', 'translatepress-multilingual' ); ?>
                 </label>
             </div>
 
-            <textarea class="trp-adv-big-textarea" name="trp_advanced_settings[<?php echo esc_attr( $setting['name'] ); ?>][paths]"><?php echo isset( $trp_settings['trp_advanced_settings'][$setting['name']]['paths'] ) ? esc_textarea( $trp_settings['trp_advanced_settings'][$setting['name']]['paths'] ) : ''; ?></textarea>
+            <textarea class="trp-adv-big-textarea" name="etm_advanced_settings[<?php echo esc_attr( $setting['name'] ); ?>][paths]"><?php echo isset( $trp_settings['trp_advanced_settings'][$setting['name']]['paths'] ) ? esc_textarea( $trp_settings['trp_advanced_settings'][$setting['name']]['paths'] ) : ''; ?></textarea>
 
             <p class="description"><?php echo wp_kses_post( $setting['description'] ); ?></p>
         </td>
@@ -117,8 +117,8 @@ function trp_exclude_include_paths_to_run_on(){
     if( isset( $_GET['trp-string-translation'] ) && $_GET['trp-string-translation'] == 'true' )
         return true;
 
-    $settings          = get_option( 'trp_settings', false );
-    $advanced_settings = get_option( 'trp_advanced_settings', false );
+    $settings          = get_option( 'etm_settings', false );
+    $advanced_settings = get_option( 'etm_advanced_settings', false );
 
     if( empty( $advanced_settings ) || !isset( $advanced_settings['translateable_content'] ) || !isset( $advanced_settings['translateable_content']['option'] ) || empty( $advanced_settings['translateable_content']['paths'] ) )
         return true;
@@ -179,8 +179,8 @@ function trp_exclude_include_do_not_redirect_on_excluded_pages( $redirect, $lang
     if( isset( $_GET['trp-string-translation'] ) && $_GET['trp-string-translation'] == 'true' )
         return $redirect;
 
-    $settings          = get_option( 'trp_settings', false );
-    $advanced_settings = get_option( 'trp_advanced_settings', false );
+    $settings          = get_option( 'etm_settings', false );
+    $advanced_settings = get_option( 'etm_advanced_settings', false );
 
     if( empty( $advanced_settings ) || !isset( $advanced_settings['translateable_content'] ) || !isset( $advanced_settings['translateable_content']['option'] ) || empty( $advanced_settings['translateable_content']['paths'] ) )
         return $redirect;
@@ -227,8 +227,8 @@ function trp_exclude_include_redirect_to_default_language(){
     if( is_admin() )
         return;
 
-    $settings          = get_option( 'trp_settings', false );
-    $advanced_settings = get_option( 'trp_advanced_settings', false );
+    $settings          = get_option( 'etm_settings', false );
+    $advanced_settings = get_option( 'etm_advanced_settings', false );
 
     if( empty( $advanced_settings ) || !isset( $advanced_settings['translateable_content'] ) || !isset( $advanced_settings['translateable_content']['option'] ) || empty( $advanced_settings['translateable_content']['paths'] ) )
         return;
@@ -296,8 +296,8 @@ function trp_exclude_include_filter_custom_links( $new_url, $url, $TRP_LANGUAGE,
     if( isset( $_GET['trp-string-translation'] ) && $_GET['trp-string-translation'] == 'true' )
         return $new_url;
 
-    $advanced_settings = get_option( 'trp_advanced_settings', false );
-    $settings          = get_option( 'trp_settings', false );
+    $advanced_settings = get_option( 'etm_advanced_settings', false );
+    $settings          = get_option( 'etm_settings', false );
 
     if( empty( $advanced_settings ) || !isset( $advanced_settings['translateable_content'] ) || !isset( $advanced_settings['translateable_content']['option'] ) || empty( $advanced_settings['translateable_content']['paths'] ) )
         return $new_url;
@@ -349,8 +349,8 @@ function trp_exclude_include_add_sitemap_filter(){
 
 function trp_exclude_include_filter_sitemap_links( $new_output, $output, $settings, $alternate, $all_lang_urls, $url ){
 
-    $advanced_settings = get_option( 'trp_advanced_settings', false );
-    $settings          = get_option( 'trp_settings', false );
+    $advanced_settings = get_option( 'etm_advanced_settings', false );
+    $settings          = get_option( 'etm_settings', false );
 
     if( empty( $advanced_settings ) || !isset( $advanced_settings['translateable_content'] ) || !isset( $advanced_settings['translateable_content']['option'] ) || empty( $advanced_settings['translateable_content']['paths'] ) )
         return $new_output;

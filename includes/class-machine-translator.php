@@ -60,7 +60,7 @@ class TRP_Machine_Translator {
         $force_recheck = ( current_user_can('manage_options') &&
             !empty( $_GET['trp_recheck_supported_languages']) && $_GET['trp_recheck_supported_languages'] === '1' &&
             wp_verify_nonce( sanitize_text_field( $_GET['trp_recheck_supported_languages_nonce'] ), 'trp_recheck_supported_languages' ) ) ? true : $force_recheck; //phpcs:ignore
-        $data = get_option('trp_db_stored_data', array() );
+        $data = get_option('etm_db_stored_data', array() );
         if ( isset( $_GET['trp_recheck_supported_languages'] )) {
             unset($_GET['trp_recheck_supported_languages'] );
         }
@@ -79,7 +79,7 @@ class TRP_Machine_Translator {
                 $data['trp_mt_supported_languages'][ $this->settings['trp_machine_translation_settings']['translation-engine'] ]['formality-supported-languages'] = $this->check_formality();
             }
             $data['trp_mt_supported_languages'][$this->settings['trp_machine_translation_settings']['translation-engine']]['last-checked'] = date("Y-m-d H:i:s" );
-            update_option('trp_db_stored_data', $data );
+            update_option('etm_db_stored_data', $data );
         }
 
         $languages_iso_to_check = $this->get_engine_specific_language_codes( $languages );
@@ -90,7 +90,7 @@ class TRP_Machine_Translator {
     }
 
     public function get_last_checked_supported_languages(){
-        $data = get_option('trp_db_stored_data', array() );
+        $data = get_option('etm_db_stored_data', array() );
         if ( empty( $data['trp_mt_supported_languages'][$this->settings['trp_machine_translation_settings']['translation-engine']]['last-checked'] ) ){
             $this->check_languages_availability( $this->settings['translation-languages'], true);
         }
@@ -130,6 +130,24 @@ class TRP_Machine_Translator {
         $return_message = '';
 
         switch ( $translation_engine ) {
+            case 'etranslation':
+                $appname = $api_key[0];
+                $password = $api_key[1];
+                if (!isset($appname) || !isset($password)) {
+                    $is_error = true;
+                    $return_message = __( 'Please enter your eTranslation credentials.', 'translatepress-multilingual' );
+                } else {
+                    $response = $machine_translator->test_request();
+                    $code     = $response["response"];
+                    if ( 200 !== $code ) {
+                        $is_error        = true;
+                        $translate_response = trp_etranslation_response_codes( $code );
+                        $return_message     = $translate_response['message'];
+
+                        error_log("Error on eTranslation request: $response");
+                    }
+                }
+                break;
             case 'google_translate_v2':
                 if ( empty( $api_key ) ) {
                     $is_error = true;
@@ -258,7 +276,7 @@ class TRP_Machine_Translator {
      * @return bool
      */
     public function verify_request_parameters($target_language_code, $source_language_code){
-        if( empty( $this->get_api_key() ) ||
+        if( !$this->credentials_set() ||
             empty( $target_language_code ) || empty( $source_language_code ) ||
             empty( $this->machine_translation_codes[$target_language_code] ) ||
             empty( $this->machine_translation_codes[$source_language_code] ) ||
@@ -279,6 +297,15 @@ class TRP_Machine_Translator {
             return false;
 
         return true;
+    }
+
+    public function credentials_set() {
+        $engine = $this->settings['trp_machine_translation_settings']['translation-engine'];
+        if ($engine == 'etranslation') {
+            return is_array($this->get_api_key()) && !in_array('', $this->get_api_key());
+        } else {
+            return !empty($this->get_api_key());
+        }
     }
 
     /**
@@ -303,6 +330,18 @@ class TRP_Machine_Translator {
 	    return $placeholders;
     }
 
+    private function get_sprintf_specifiers(): array {
+        $result = array();
+        $letters = array("s", "d", "f", "u");
+        foreach ($letters as $l) {
+            $result[] = "%$l";
+            for ($i = 1; $i < 10; $i++) {
+                $result[] = "%$i\$$l";
+            }
+        }
+        return $result;
+    }
+
     /**
      * Function to be used externally
      *
@@ -315,8 +354,8 @@ class TRP_Machine_Translator {
         if ( !empty($strings) && is_array($strings) && method_exists( $this, 'translate_array' ) && apply_filters( 'trp_disable_automatic_translations_due_to_error', false ) === false ) {
 
             /* google has a problem translating this characters ( '%', '$', '#' )...for some reasons it puts spaces after them so we need to 'encode' them and decode them back. hopefully it won't break anything important */
-            /* we put '%s' before '%' because google seems to transform %s into % in strings for some languages which causes a 500 Fata Error in PHP 8*/
-            $trp_exclude_words_from_automatic_translation = apply_filters('trp_exclude_words_from_automatic_translation', array('%s','%', '$', '#'));
+            $trp_exclude_words_from_automatic_translation = apply_filters('trp_exclude_words_from_automatic_translation', TRP_eTranslation_Utils::get_strings_to_encode_before_translation());
+            
             $placeholders = $this->get_placeholders(count($trp_exclude_words_from_automatic_translation));
             $shortcode_tags_to_execute = apply_filters( 'trp_do_these_shortcodes_before_automatic_translation', array('trp_language') );
 
@@ -333,7 +372,9 @@ class TRP_Machine_Translator {
             if ( $this->settings['trp_machine_translation_settings']['translation-engine'] === 'deepl' && defined( 'TRP_DL_PLUGIN_VERSION' ) && TRP_DL_PLUGIN_VERSION === '1.0.0' ) {
                 // backwards compatibility with deepl version 1.0.0 which doesn't have the third function parameter $source_language_code
                 $machine_strings = $this->translate_array($strings, $target_language_code);
-            }else {
+            } else if ($this->settings['trp_machine_translation_settings']['translation-engine'] === 'etranslation') {
+                $machine_strings = $this->translate_array($strings, $original_strings, $target_language_code, $source_language_code);
+            } else {
                 $machine_strings = $this->translate_array($strings, $target_language_code, $source_language_code);
             }
 

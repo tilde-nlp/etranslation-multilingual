@@ -1,11 +1,11 @@
 <?php
 /*
-Plugin Name: TranslatePress - Multilingual
-Plugin URI: https://translatepress.com/
+Plugin Name: eTranslation Multilingual
+Plugin URI: https://ec.europa.eu/info/index_en
 Description: Experience a better way of translating your WordPress site using a visual front-end translation editor, with full support for WooCommerce and site builders.
-Version: 2.2.1
-Author: Cozmoslabs, Razvan Mocanu, Madalin Ungureanu, Cristophor Hurduban
-Author URI: https://cozmoslabs.com/
+Version: 0.0.1
+Author: EC
+Author URI: https://ec.europa.eu
 Text Domain: translatepress-multilingual
 Domain Path: /languages
 License: GPL2
@@ -13,7 +13,6 @@ WC requires at least: 2.5.0
 WC tested up to: 6.2
 
 == Copyright ==
-Copyright 2017 Cozmoslabs (www.cozmoslabs.com)
 
 This program is free software; you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
@@ -27,6 +26,59 @@ You should have received a copy of the GNU General Public License
 along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
 */
+
+// Register callback methods for eTranslation
+add_action('rest_api_init', 'register_callback');
+
+function register_callback() {
+    register_rest_route('etranslation/v1', 'error_callback/(?P<id>[a-zA-Z0-9._-]+)', array(
+        'methods' => array(
+            'GET',
+            'POST'
+        ) ,
+        'callback' => 'translation_error_callback',
+        'args' => array() ,
+        'permission_callback' => function () {
+            return true;
+        }
+    ));
+    register_rest_route('etranslation/v1', 'document/destination/(?P<id>[a-zA-Z0-9._-]+)', array(
+        'methods' => array(
+            'GET',
+            'POST'
+        ) ,
+        'callback' => 'translation_document_destination',
+        'args' => array() ,
+        'permission_callback' => function () {
+            return true;
+        }
+    ));
+}
+
+function translation_error_callback(WP_REST_Request $request): WP_REST_Response {
+    $response = new WP_REST_Response(etranslation_query_action('translation_document_destination', $request));
+    $response->set_status(200);
+    return $response;
+}
+
+function translation_document_destination(WP_REST_Request $request): WP_REST_Response {
+    $response = new WP_REST_Response(etranslation_query_action('translation_document_destination', $request));
+    $response->set_status(200);
+    return $response;
+}
+
+function etranslation_query_action($action, $arg) {
+    $trp = TRP_Translate_Press::get_trp_instance();
+    $settings = $trp->get_component('settings')->get_settings();
+    $response = "";
+    if ($settings['trp_machine_translation_settings']['translation-engine'] === 'etranslation') {
+        $mt_engine = $trp->get_component('machine_translator');
+        $response = $mt_engine->etranslation_query->$action($arg);
+    }
+    return $response;
+}
+
+defined('DEFAULT_ETRANSLATION_TIMEOUT') or define('DEFAULT_ETRANSLATION_TIMEOUT', 7);
 
 function trp_enable_translatepress(){
 	$enable_translatepress = true;
@@ -53,13 +105,14 @@ if ( trp_enable_translatepress() ) {
 	/* make sure we execute our plugin before other plugins so the changes we make apply across the board */
 	add_action( 'plugins_loaded', 'trp_run_translatepress_hooks', 1 );
 }
+
 function trp_run_translatepress_hooks(){
 	$trp = TRP_Translate_Press::get_trp_instance();
 	$trp->run();
 }
 
 function trp_translatepress_disabled_notice(){
-	echo '<div class="notice notice-error"><p>' . wp_kses( sprintf( __( '<strong>TranslatePress</strong> requires at least PHP version 5.6.20+ to run. It is the <a href="%s">minimum requirement of the latest WordPress version</a>. Please contact your server administrator to update your PHP version.','translatepress-multilingual' ), 'https://wordpress.org/about/requirements/' ), array( 'a' => array( 'href' => array() ), 'strong' => array() ) ) . '</p></div>';
+	echo '<div class="notice notice-error"><p>' . wp_kses( sprintf( __( '<strong>eTranslation Multilingual</strong> requires at least PHP version 5.6.20+ to run. It is the <a href="%s">minimum requirement of the latest WordPress version</a>. Please contact your server administrator to update your PHP version.','translatepress-multilingual' ), 'https://wordpress.org/about/requirements/' ), array( 'a' => array( 'href' => array() ), 'strong' => array() ) ) . '</p></div>';
 }
 
 

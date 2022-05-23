@@ -1,8 +1,9 @@
 
 <div id="trp-advanced-settings" class="wrap">
+    <?php echo "<img style='width: 200px;' src='" . TRP_PLUGIN_URL . "assets/images/Logo_eTranslation_v6b.svg' />" ?>
     <form method="post" action="options.php">
-        <?php settings_fields( 'trp_advanced_settings' ); ?>
-        <h1> <?php esc_html_e( 'TranslatePress Advanced Settings', 'translatepress-multilingual' );?></h1>
+        <?php settings_fields( 'etm_advanced_settings' ); ?>
+        <h1> <?php esc_html_e( 'eTranslation Multilingual Advanced Settings', 'translatepress-multilingual' );?></h1>
         <?php do_action ( 'trp_settings_navigation_tabs' ); ?>
 
         <?php do_action('trp_before_output_advanced_settings_options' ); ?>

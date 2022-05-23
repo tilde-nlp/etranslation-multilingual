@@ -16,7 +16,7 @@ function trp_register_hreflang_remove_locale( $settings_array ){
 
 add_filter( 'trp_add_country_hreflang_tags', 'trp_display_country_hreflang_tag' );
 function trp_display_country_hreflang_tag( $display ){
-    $option = get_option( 'trp_advanced_settings', true );
+    $option = get_option( 'etm_advanced_settings', true );
     if ( isset( $option['hreflang_remove_locale'] ) && $option['hreflang_remove_locale'] === 'remove_country_locale' ) {
         return false;
     }
@@ -26,7 +26,7 @@ function trp_display_country_hreflang_tag( $display ){
 add_filter( 'trp_add_region_independent_hreflang_tags', 'trp_display_region_independent_hreflang_tag' );
 function trp_display_region_independent_hreflang_tag( $display ){
 
-    $option = get_option( 'trp_advanced_settings', true );
+    $option = get_option( 'etm_advanced_settings', true );
     if ( isset( $option['hreflang_remove_locale'] ) && $option['hreflang_remove_locale'] === 'remove_region_independent_locale' ) {
         return false;
     }

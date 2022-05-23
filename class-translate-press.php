@@ -14,6 +14,7 @@ class TRP_Translate_Press{
     protected $machine_translator_logger;
     protected $query;
     protected $language_switcher;
+    protected $mt_notice;
     protected $translation_manager;
     protected $editor_api_regular_strings;
     protected $editor_api_gettext_strings;
@@ -22,7 +23,6 @@ class TRP_Translate_Press{
     protected $slug_manager;
     protected $upgrade;
     protected $plugin_updater;
-    protected $license_page;
     protected $advanced_tab;
     protected $translation_memory;
     protected $machine_translation_tab;
@@ -61,7 +61,7 @@ class TRP_Translate_Press{
         define( 'TRP_PLUGIN_SLUG', 'translatepress-multilingual' );
         define( 'TRP_PLUGIN_VERSION', '2.2.1' );
 
-	    wp_cache_add_non_persistent_groups(array('trp'));
+	    wp_cache_add_non_persistent_groups(array('trp', 'etm'));
 
         $this->load_dependencies();
         $this->initialize_components();
@@ -124,6 +124,7 @@ class TRP_Translate_Press{
         if ( defined( 'WPB_VC_VERSION' ) ) {
             require_once TRP_PLUGIN_DIR . 'includes/class-wp-bakery-language-for-blocks.php';
         }
+        require_once TRP_PLUGIN_DIR . 'includes/class-mt-notice.php';
     }
 
     /**
@@ -143,6 +144,7 @@ class TRP_Translate_Press{
         $this->translation_render         = new TRP_Translation_Render( $this->settings->get_settings() );
         $this->url_converter              = new TRP_Url_Converter( $this->settings->get_settings() );
         $this->language_switcher          = new TRP_Language_Switcher( $this->settings->get_settings(), $this );
+        $this->mt_notice                  = new TRP_MT_Notice( $this->settings->get_settings(), $this->url_converter );
         $this->query                      = new TRP_Query( $this->settings->get_settings() );
         $this->machine_translator_logger  = new TRP_Machine_Translator_Logger( $this->settings->get_settings() );
         $this->translation_manager        = new TRP_Translation_Manager( $this->settings->get_settings() );
@@ -151,7 +153,6 @@ class TRP_Translate_Press{
         $this->notifications              = new TRP_Trigger_Plugin_Notifications( $this->settings->get_settings() );
         $this->upgrade                    = new TRP_Upgrade( $this->settings->get_settings() );
         $this->plugin_updater             = new TRP_Plugin_Updater();
-        $this->license_page               = new TRP_LICENSE_PAGE();
         $this->translation_memory         = new TRP_Translation_Memory( $this->settings->get_settings() );
         $this->error_manager              = new TRP_Error_Manager( $this->settings->get_settings() );
         $this->string_translation         = new TRP_String_Translation( $this->settings->get_settings(), $this->loader );
@@ -266,18 +267,11 @@ class TRP_Translate_Press{
             $this->loader->add_action('admin_notices', $this->plugin_updater, 'admin_activation_notices');
         }
 
-        /* add license page */
-        global $trp_license_page;//this global was used in the addons, so we need to use it here also so we don't initialize the license page multiple times (backward compatibility)
-        if( !isset( $trp_license_page )  ) {
-            $trp_license_page = $this->license_page;
-            $this->loader->add_action('admin_menu', $this->license_page, 'license_menu');
-        }
-
-        $this->loader->add_action( 'admin_init', $this->reviews, 'display_review_notice' );
-        $this->loader->add_action( 'trp_dismiss_notification', $this->reviews, 'dismiss_notification', 10, 2 );
+        //$this->loader->add_action( 'admin_init', $this->reviews, 'display_review_notice' );
+        //$this->loader->add_action( 'trp_dismiss_notification', $this->reviews, 'dismiss_notification', 10, 2 );
 
         // Email Course
-	    $this->loader->add_action( 'wp_ajax_trp_dismiss_email_course', $this->settings, 'trp_dismiss_email_course' );
+	    //$this->loader->add_action( 'wp_ajax_trp_dismiss_email_course', $this->settings, 'trp_dismiss_email_course' );
 
         // Filter rewrite rules for .htaccess
         $this->loader->add_filter( 'mod_rewrite_rules', $this->rewrite_rules, 'trp_remove_language_param', 100 );
@@ -406,6 +400,9 @@ class TRP_Translate_Press{
         /* prevent indexing edit translation preview pages */
         $this->loader->add_action( 'trp_head', $this->translation_manager, 'output_noindex_tag', 100 );
         $this->loader->add_action( 'wp_head', $this->translation_manager, 'output_noindex_tag', 100 );
+
+        $this->loader->add_action( 'wp_enqueue_scripts', $this->mt_notice, 'enqueue_mt_notice_scripts' );
+        $this->loader->add_action( 'wp_body_open', $this->mt_notice, 'add_mt_notice', 11);
     }
 
     /**

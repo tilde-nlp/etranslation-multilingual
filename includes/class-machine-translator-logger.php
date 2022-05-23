@@ -52,7 +52,7 @@ class TRP_Machine_Translator_Logger {
             'timestamp'   => date ("Y-m-d H:i:s" )
         );
 
-        $table_name = $this->query->db->prefix . 'trp_machine_translation_log';
+        $table_name = $this->query->db->prefix . 'etm_machine_translation_log';
 
         $query = "INSERT INTO `$table_name` ( `url`, `strings`, `characters`, `response`, `lang_source`, `lang_target`, `timestamp` ) VALUES (%s, %s, %s, %s, %s, %s, %s)";
 
@@ -85,18 +85,19 @@ class TRP_Machine_Translator_Logger {
     }
 
     public function quota_exceeded(){
-        if ( $this->limit  >=  $this->counter )
-        {
-            // quota NOT exceeded
-            // for some reason this condition is hard to comprehend by my brain
-            // thus the unneeded comment.
-            return false;
-        }
+        // if ( $this->limit  >=  $this->counter )
+        // {
+        //     // quota NOT exceeded
+        //     // for some reason this condition is hard to comprehend by my brain
+        //     // thus the unneeded comment.
+        //     return false;
+        // }
 
-        // we've exceeded our daily quota
-        $this->update_options( array( array( 'name' => 'machine_translation_trigger_quota_notification', 'value' => true ) ) );
+        // // we've exceeded our daily quota
+        // $this->update_options( array( array( 'name' => 'machine_translation_trigger_quota_notification', 'value' => true ) ) );
 
-        return true;
+        // return true;
+        return false;
     }
 
     public function maybe_reset_counter_date(){
@@ -144,7 +145,7 @@ class TRP_Machine_Translator_Logger {
             $machine_translation_settings[$option['name']] = $option['value'];
         }
 
-        update_option( 'trp_machine_translation_settings', $machine_translation_settings );
+        update_option( 'etm_machine_translation_settings', $machine_translation_settings );
     }
 
     public function sanitize_settings($mt_settings ){

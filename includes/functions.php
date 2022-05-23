@@ -495,7 +495,7 @@ function trp_bulk_debug($debug = false, $logger = array()){
  * @return bool
  */
 function trp_is_paid_version() {
-	$licence = get_option( 'trp_licence_key' );
+/*	$licence = get_option( 'trp_licence_key' );
 
 	if ( ! empty( $licence ) ) {
 		return true;
@@ -523,7 +523,8 @@ function trp_is_paid_version() {
 		}
 	}
 
-	return false;
+	return false;*/
+    return true;
 }
 
 /**

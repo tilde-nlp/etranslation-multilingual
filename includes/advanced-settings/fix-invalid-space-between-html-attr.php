@@ -14,7 +14,7 @@ function trp_register_fix_invalid_space_between_html_attr( $settings_array ){
 add_filter('trp_before_translate_content', 'trp_fix_html_attributes_without_spaces');
 function trp_fix_html_attributes_without_spaces($output){
 
-	$option = get_option( 'trp_advanced_settings', true );
+	$option = get_option( 'etm_advanced_settings', true );
 	if ( isset( $option['fix_invalid_space_between_html_attr'] ) && $option['fix_invalid_space_between_html_attr'] === 'yes' ){
 		$size = strlen($output);
 		$pos = 0;

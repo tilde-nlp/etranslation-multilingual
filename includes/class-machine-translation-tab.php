@@ -8,7 +8,7 @@ class TRP_Machine_Translation_Tab {
 
         $this->settings = $settings;
 
-        add_action( 'plugins_loaded', array( $this, 'add_upsell_filter' ) );
+        //add_action( 'plugins_loaded', array( $this, 'add_upsell_filter' ) );
 
     }
 
@@ -20,8 +20,8 @@ class TRP_Machine_Translation_Tab {
     public function add_tab_to_navigation( $tabs ){
         $tab = array(
             'name'  => __( 'Automatic Translation', 'translatepress-multilingual' ),
-            'url'   => admin_url( 'admin.php?page=trp_machine_translation' ),
-            'page'  => 'trp_machine_translation'
+            'url'   => admin_url( 'admin.php?page=etm_machine_translation' ),
+            'page'  => 'etm_machine_translation'
         );
 
         array_splice( $tabs, 2, 0, array( $tab ) );
@@ -35,8 +35,8 @@ class TRP_Machine_Translation_Tab {
     * Hooked to admin_menu
     */
     public function add_submenu_page() {
-        add_submenu_page( 'TRPHidden', 'TranslatePress Automatic Translation', 'TRPHidden', apply_filters( 'trp_settings_capability', 'manage_options' ), 'trp_machine_translation', array( $this, 'machine_translation_page_content' ) );
-        add_submenu_page( 'TRPHidden', 'TranslatePress Test Automatic Translation API', 'TRPHidden', apply_filters( 'trp_settings_capability', 'manage_options' ), 'trp_test_machine_api', array( $this, 'test_api_page_content' ) );
+        add_submenu_page( 'TRPHidden', 'eTranslation Multilingual Automatic Translation', 'TRPHidden', apply_filters( 'trp_settings_capability', 'manage_options' ), 'etm_machine_translation', array( $this, 'machine_translation_page_content' ) );
+        add_submenu_page( 'TRPHidden', 'eTranslation Multilingual Test Automatic Translation API', 'TRPHidden', apply_filters( 'trp_settings_capability', 'manage_options' ), 'etm_test_machine_api', array( $this, 'test_api_page_content' ) );
     }
 
     /**
@@ -45,14 +45,14 @@ class TRP_Machine_Translation_Tab {
     * Hooked to admin_init
     */
     public function register_setting(){
-        register_setting( 'trp_machine_translation_settings', 'trp_machine_translation_settings', array( $this, 'sanitize_settings' ) );
+        register_setting( 'etm_machine_translation_settings', 'etm_machine_translation_settings', array( $this, 'sanitize_settings' ) );
     }
 
     /**
     * Output admin notices after saving settings.
     */
     public function admin_notices(){
-        if( isset( $_GET['page'] ) && $_GET['page'] == 'trp_machine_translation' )
+        if( isset( $_GET['page'] ) && $_GET['page'] == 'etm_machine_translation' )
             settings_errors();
     }
 
@@ -68,16 +68,21 @@ class TRP_Machine_Translation_Tab {
         if( !empty( $mt_settings['translation-engine'] ) )
             $mt_settings['translation-engine'] = sanitize_text_field( $mt_settings['translation-engine']  );
         else
-            $mt_settings['translation-engine'] = 'google_translate_v2';
+            $mt_settings['translation-engine'] = 'etranslation';
 
         if($mt_settings['translation-engine'] == 'deepl_upsell' && !class_exists( 'TRP_DeepL' ) && !class_exists( 'TRP_IN_DeepL' )){
-            $mt_settings['translation-engine'] = 'google_translate_v2';
+            $mt_settings['translation-engine'] = 'etranslation';
         }
 
         if( !empty( $mt_settings['block-crawlers'] ) )
             $mt_settings['block-crawlers'] = sanitize_text_field( $mt_settings['block-crawlers']  );
         else
             $mt_settings['block-crawlers'] = 'no';
+
+        if( !empty( $mt_settings['show-mt-notice'] ) )
+            $mt_settings['show-mt-notice'] = sanitize_text_field( $mt_settings['show-mt-notice']  );
+        else
+            $mt_settings['show-mt-notice'] = 'no';
 
         return apply_filters( 'trp_machine_translation_sanitize_settings', $mt_settings );
     }
@@ -106,17 +111,24 @@ class TRP_Machine_Translation_Tab {
     public function load_engines(){
         include_once TRP_PLUGIN_DIR . 'includes/google-translate/functions.php';
         include_once TRP_PLUGIN_DIR . 'includes/google-translate/class-google-translate-v2-machine-translator.php';
+
+        include_once TRP_PLUGIN_DIR . 'includes/etranslation/etranslation_utils.php';
+        include_once TRP_PLUGIN_DIR . 'includes/etranslation/class-etranslation-service.php';
+        include_once TRP_PLUGIN_DIR . 'includes/etranslation/class-etranslation-query.php';
+        include_once TRP_PLUGIN_DIR . 'includes/etranslation/class-etranslation-machine-translator.php';
+        include_once TRP_PLUGIN_DIR . 'includes/etranslation/functions.php';
     }
 
     public function get_active_engine( ){
         // This $default is just a fail safe. Should never be used. The real default is set in TRP_Settings->set_options function
-        $default = 'TRP_Google_Translate_V2_Machine_Translator';
+        $default = 'TRP_eTranslation_Machine_Translator';
 
         if( empty( $this->settings['trp_machine_translation_settings']['translation-engine'] ) )
             $value = $default;
         else {
             $deepl_class_name = class_exists('TRP_IN_Deepl_Machine_Translator' ) ? 'TRP_IN_Deepl_Machine_Translator' : 'TRP_Deepl_Machine_Translator';
             $existing_engines = apply_filters('trp_automatic_translation_engines_classes', array(
+                'etranslation' => 'TRP_eTranslation_Machine_Translator',
                 'google_translate_v2' => 'TRP_Google_Translate_V2_Machine_Translator',
                 'deepl'               => $deepl_class_name
             ));
@@ -183,7 +195,7 @@ class TRP_Machine_Translation_Tab {
             <?php
         }
 
-        $data = get_option('trp_db_stored_data', array() );
+        $data = get_option('etm_db_stored_data', array() );
         if (isset($data['trp_mt_supported_languages'][$this->settings['trp_machine_translation_settings']['translation-engine']]['formality-supported-languages'])){
             $languages_that_support_formality = $data['trp_mt_supported_languages'][$this->settings['trp_machine_translation_settings']['translation-engine']]['formality-supported-languages'];
             $show_formality = false;
@@ -214,7 +226,7 @@ class TRP_Machine_Translation_Tab {
                         ?>
                     </ul>
                     <p class="description">
-                        <?php echo wp_kses( sprintf(__( 'The selected automatic translation engine provides only <a href="%s" target="_blank">default formality</a> settings for these languages for now.<br>Automatic translation will still work if available for these languages. It will just not use the formality setting from TranslatePress <a href="%s" target="_self"> General Tab</a> for the languages listed above.', 'translatepress-multilingual' ), esc_url('https://www.deepl.com/docs-api/translating-text/'), esc_url(admin_url('options-general.php?page=translate-press'))), array('a' => array('href' => array(), 'target' =>array(), 'title' => array()), 'br' => array()) ); ?>
+                        <?php echo wp_kses( sprintf(__( 'The selected automatic translation engine provides only <a href="%s" target="_blank">default formality</a> settings for these languages for now.<br>Automatic translation will still work if available for these languages. It will just not use the formality setting from eTranslation Multilingual <a href="%s" target="_self"> General Tab</a> for the languages listed above.', 'translatepress-multilingual' ), esc_url('https://www.deepl.com/docs-api/translating-text/'), esc_url(admin_url('options-general.php?page=etranslation-multilingual'))), array('a' => array('href' => array(), 'target' =>array(), 'title' => array()), 'br' => array()) ); ?>
                     </p>
                 </td>
                 </tr>
@@ -227,7 +239,7 @@ class TRP_Machine_Translation_Tab {
             <tr id="trp_recheck_supported_languages">
                 <th scope=row></th>
                 <td>
-                    <a href="<?php echo esc_url( admin_url( 'admin.php?page=trp_machine_translation&trp_recheck_supported_languages=1&trp_recheck_supported_languages_nonce=' . wp_create_nonce('trp_recheck_supported_languages') ) ); ?>" class="button-secondary"><?php esc_html_e( 'Recheck supported languages', 'translatepress-multilingual' ); ?></a>
+                    <a href="<?php echo esc_url( admin_url( 'admin.php?page=etm_machine_translation&trp_recheck_supported_languages=1&trp_recheck_supported_languages_nonce=' . wp_create_nonce('trp_recheck_supported_languages') ) ); ?>" class="button-secondary"><?php esc_html_e( 'Recheck supported languages', 'translatepress-multilingual' ); ?></a>
                     <p><i><?php echo wp_kses_post( sprintf( __( '(last checked on %s)', 'translatepress-multilingual' ), esc_html( $machine_translator->get_last_checked_supported_languages() ) ) ); ?> </i></p>
                 </td>
             </tr>

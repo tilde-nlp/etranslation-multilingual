@@ -17,7 +17,7 @@ function trp_register_skip_dynamic_selectors( $settings_array ){
 
  add_filter( 'trp_skip_selectors_from_dynamic_translation', 'trp_skip_dynamic_translation_for_selectors' );
 function trp_skip_dynamic_translation_for_selectors( $skip_selectors ){
-	$option = get_option( 'trp_advanced_settings', true );
+	$option = get_option( 'etm_advanced_settings', true );
 	$add_skip_selectors = array( );
 	if ( isset( $option['skip_dynamic_selectors'] ) && is_array( $option['skip_dynamic_selectors']['selector'] ) ) {
 		$add_skip_selectors = $option['skip_dynamic_selectors']['selector'];

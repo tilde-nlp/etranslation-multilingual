@@ -139,8 +139,8 @@ class TRP_Translation_Manager
                 'seo_update_notice' => ($update_seo_add_on) ? esc_js(__('To translate slugs, please update the SEO Pack add-on to the latest version.', 'translatepress-multilingual')) : 'seo_pack_update_not_needed',
 
                 //Notice when the user has not defined a secondary language
-                'extra_lang_row1' => wp_kses(sprintf(__('You can add a new language from <a href="%s">Settings->TranslatePress</a>', 'translatepress-multilingual'), esc_url(admin_url('options-general.php?page=translate-press'))), array('a' => ['href' => []])),
-                'extra_lang_row2' => wp_kses(__('However, you can still use TranslatePress to <strong style="background: #f5fb9d;">modify gettext strings</strong> available in your page.', 'translatepress-multilingual'), array('strong' => ['style' => []])),
+                'extra_lang_row1' => wp_kses(sprintf(__('You can add a new language from <a href="%s">Settings->eTranslation Multilingual</a>', 'translatepress-multilingual'), esc_url(admin_url('options-general.php?page=etranslation-multilingual'))), array('a' => ['href' => []])),
+                'extra_lang_row2' => wp_kses(__('However, you can still use eTranslation Multilingual to <strong style="background: #f5fb9d;">modify gettext strings</strong> available in your page.', 'translatepress-multilingual'), array('strong' => ['style' => []])),
                 'extra_lang_row3' => esc_html__('Strings that are user-created cannot be modified, only those from themes and plugins.', 'translatepress-multilingual'),
                 //Pro version upselling
                 'extra_upsell_title' => esc_html__('Extra Translation Features', 'translatepress-multilingual'),
@@ -383,7 +383,7 @@ class TRP_Translation_Manager
 
         $trp_editor_data = array(
             'trp_localized_strings' => $this->localized_text(),
-            'trp_settings' => $this->settings,
+            'etm_settings' => $this->settings,
             'language_names' => $language_names,
             'ordered_secondary_languages' => $ordered_secondary_languages,
             'current_language' => $TRP_LANGUAGE,
@@ -468,7 +468,7 @@ class TRP_Translation_Manager
             array(
                 'id' => 'trp_settings_page',
                 'title' => __('Settings', 'translatepress-multilingual'),
-                'href' => admin_url('options-general.php?page=translate-press'),
+                'href' => admin_url('options-general.php?page=etranslation-multilingual'),
                 'parent' => 'trp_edit_translation',
                 'meta' => array(
                     'class' => 'trp-settings-page'
@@ -1064,7 +1064,7 @@ class TRP_Translation_Manager
             }
 
             // Gettext strings are considered by default to be in the English language
-            $source_language = apply_filters('trp_gettext_source_language', 'en_US', $TRP_LANGUAGE, array(), $trp_gettext_strings_for_machine_translation);
+            $source_language = apply_filters('trp_gettext_source_language', 'en_GB', $TRP_LANGUAGE, array(), $trp_gettext_strings_for_machine_translation);
             // machine translate new strings
             if ($this->machine_translator->is_available(array($source_language, $TRP_LANGUAGE))) {
 

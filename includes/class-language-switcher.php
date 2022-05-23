@@ -249,7 +249,7 @@ class TRP_Language_Switcher{
         if( $this->settings['floater-color'] ) {
 		        $floater_class .= ' trp-color-' . esc_attr($this->settings['floater-color']);
 	      } else {
-	          $floater_class .= ' trp-color-dark'; // default color. Good for backwards compatibility as well.
+	          $floater_class .= ' trp-color-default'; // default color. Good for backwards compatibility as well.
         }
 
         if( $this->settings['trp-ls-show-poweredby'] == 'yes' ) {
@@ -282,12 +282,15 @@ class TRP_Language_Switcher{
         }
         ob_start();
 
+        $eu_flag = '<img class="trp-flag-image" src="' . TRP_PLUGIN_URL .'assets/images/flags/eu_stars.png' . '" width="18" height="12" alt="eu">';
+
         ?>
         <div id="trp-floater-ls" onclick="" data-no-translation class="trp-language-switcher-container <?php echo esc_attr( $floater_class ); ?>" <?php echo ( isset( $_GET['trp-edit-translation'] ) && $_GET['trp-edit-translation'] == 'preview' ) ? 'data-trp-unpreviewable="trp-unpreviewable"' : '' ?>>
             <div id="trp-floater-ls-current-language" class="<?php echo esc_attr( $floater_flags_class ); ?>">
 
                 <a href="#" class="trp-floater-ls-disabled-language trp-ls-disabled-language" onclick="event.preventDefault()">
-					<?php echo ( $floater_settings['flags'] ? $this->add_flag( $current_language['code'], $current_language['name'] ) : '' ); // phpcs:ignore
+					<?php echo ( $this->settings['floater-color'] == 'default' ? $eu_flag : '' ); ?>
+					<?php echo ( $floater_settings['flags'] && $this->settings['floater-color'] != 'default' ? $this->add_flag( $current_language['code'], $current_language['name'] ) : '' ); // phpcs:ignore
 					echo esc_html( $current_language_label ); ?>
 				</a>
 
@@ -295,15 +298,15 @@ class TRP_Language_Switcher{
             <div id="trp-floater-ls-language-list" class="<?php echo esc_attr( $floater_flags_class );?>" <?php echo ( isset( $_GET['trp-edit-translation'] ) && $_GET['trp-edit-translation'] == 'preview' ) ? 'data-trp-unpreviewable="trp-unpreviewable"' : ''?>>
 
                 <?php
-                if( $this->settings['trp-ls-show-poweredby'] == 'yes' ){
-	                $powered_by = '<div id="trp-floater-poweredby">Powered by TranslatePress <a href="https://translatepress.com/?utm_source=language_switcher&utm_medium=clientsite&utm_campaign=TPLS" rel="nofollow" target="_blank" title="WordPress Translation Plugin">&raquo;</a></div>';
-                } else {
-	                $powered_by = '';
-                }
+                $powered_by = '';
 
                 if ( apply_filters('trp_ls_floater_show_disabled_language', true, $current_language, $this->settings ) ) {
                     $disabled_language = '<a href="#" class="trp-floater-ls-disabled-language trp-ls-disabled-language" onclick="event.preventDefault()">';
-                    $disabled_language .= ( $floater_settings['flags'] ? $this->add_flag( $current_language['code'], $current_language['name'] ) : '' ); // WPCS: ok.
+                    if ($this->settings['floater-color'] == 'default') {
+                        $disabled_language .= $eu_flag;
+                    } else {
+                        $disabled_language .= ( $floater_settings['flags'] ? $this->add_flag( $current_language['code'], $current_language['name'] ) : '' ); // WPCS: ok.
+                    }
                     $disabled_language .= esc_html( $current_language_label );
                     $disabled_language .= '</a>';
                 }

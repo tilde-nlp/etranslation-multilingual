@@ -4,8 +4,8 @@ if( !empty( $trp->active_pro_addons ) ){//if we have any Advanced or Pro addons 
 ?>
 <div id="trp-license-settings" class="wrap">
     <form method="post" action="<?php echo esc_attr( $action ); ?>">
-            <?php settings_fields( 'trp_license_key' ); ?>
-            <h1> <?php esc_html_e( 'TranslatePress Settings', 'translatepress-multilingual' );?></h1>
+            <?php settings_fields( 'etm_license_key' ); ?>
+            <h1> <?php esc_html_e( 'eTranslation Multilingual Settings', 'translatepress-multilingual' );?></h1>
             <?php do_action ( 'trp_settings_navigation_tabs' ); ?>
             <table class="form-table">
                     <tbody>
@@ -43,7 +43,7 @@ if( !empty( $trp->active_pro_addons ) ){//if we have any Advanced or Pro addons 
         </form>
 </div>
 <?php } else{ ?>
-    <h1> <?php esc_html_e( 'TranslatePress Settings', 'translatepress-multilingual' );?></h1>
+    <h1> <?php esc_html_e( 'eTranslation Multilingual Settings', 'translatepress-multilingual' );?></h1>
     <?php do_action ( 'trp_settings_navigation_tabs' ); ?>
     <h4><?php printf( __( 'If you purchased a <a href="%s">premium version</a>, first install and activate it. After this you will be prompted with an input to enter your license key.', 'translatepress-multilingual' ), 'https://translatepress.com/pricing/?utm_source=wpbackend&utm_medium=clientsite&utm_content=license-page&utm_campaign=TRP' ); //phpcs:ignore ?></h4>
 <?php } ?>

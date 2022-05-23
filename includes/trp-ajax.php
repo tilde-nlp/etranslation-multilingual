@@ -23,7 +23,7 @@ class TRP_Ajax{
 
         include './external-functions.php';
         if ( !trp_is_valid_language_code( $_POST['language'] ) || !trp_is_valid_language_code( $_POST['original_language'] ) ) {//phpcs:ignore
-            echo json_encode( 'TranslatePress Error: Invalid language code' );
+            echo json_encode( 'eTranslation Multilingual Error: Invalid language code' );
             exit;
         }
 
@@ -150,7 +150,7 @@ class TRP_Ajax{
      * @param string $original_language Language to translate from. Default language.
      */
     protected function output_translations( $strings, $skip_machine_translation, $language, $original_language ){
-        $sql = 'SELECT original, translated, status FROM ' . $this->table_prefix . 'trp_dictionary_' . strtolower( $original_language ) . '_' . strtolower( $language ) . ' WHERE original IN (\'' . implode( "','", $strings ) .'\') AND status != 0';
+        $sql = 'SELECT original, translated, status FROM ' . $this->table_prefix . 'etm_dictionary_' . strtolower( $original_language ) . '_' . strtolower( $language ) . ' WHERE original IN (\'' . implode( "','", $strings ) .'\') AND status != 0';
         $result = mysqli_query( $this->connection, $sql );
         if ( $result === false ){
             $this->return_error();

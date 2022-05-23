@@ -17,7 +17,7 @@ function trp_register_strip_gettext_post_meta( $settings_array ){
 add_action( 'added_post_meta', 'trp_filter_trpgettext_from_updated_post_meta', 10, 4);
 add_action( 'updated_postmeta', 'trp_filter_trpgettext_from_updated_post_meta', 10, 4);
 function trp_filter_trpgettext_from_updated_post_meta($meta_id, $object_id, $meta_key, $meta_value){
-	$option = get_option( 'trp_advanced_settings', true );
+	$option = get_option( 'etm_advanced_settings', true );
 	if ( isset( $option['strip_gettext_post_meta'] ) && $option['strip_gettext_post_meta'] === 'yes' && class_exists( 'TRP_Translation_Manager' ) ){
 		if ( is_serialized($meta_value) ){
 			$unserialized_meta_value = unserialize($meta_value);

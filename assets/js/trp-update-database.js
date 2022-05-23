@@ -12,7 +12,7 @@ jQuery( function() {
                 }
             },
             error: function (errorThrown) {
-                console.log('TranslatePress AJAX Request Error while triggering database update');
+                console.log('eTranslation Multilingual AJAX Request Error while triggering database update');
             }
         });
     };

@@ -1,0 +1,55 @@
+body.admin-bar .mt-notice-container {
+    top: 32px;
+}
+
+body:not(.admin-bar) .mt-notice-container {
+    top: 0;
+}
+
+.mt-notice-container {
+    position: fixed;
+    font-family: Arial,Helvetica,sans-serif;
+    width: 100%;
+    box-sizing: border-box;
+    border: 1px solid #dfdfdf;
+    z-index: 100000;
+    color: #2c2c2c;
+    background: #e4e8e8;
+    left: 0;
+}
+
+.translation-notice {
+    margin-left: 25px;
+    padding: 10px;
+    font-size: 12px;
+}
+
+.mt-notice-container .mt-notice-link {
+    font-weight: bold;
+    color: #1f4094;
+    text-decoration: none;
+    border: none;
+    background: transparent;
+}
+
+#mt-notice-hide {
+    cursor: pointer;
+    position: absolute;
+    top: 40%;
+    right: 5px;
+    height: 10px;
+    width: 10px;
+    line-height: 10px;
+}
+
+@media (max-width: 600px) {
+    .translation-notice {
+        margin: 0 auto;
+    }
+}
+
+@media (max-width: 782px) {
+    body.admin-bar .mt-notice-container {
+        top: 46px;
+    }
+}
