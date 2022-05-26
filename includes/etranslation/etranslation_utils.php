@@ -2,7 +2,7 @@
 
 class TRP_eTranslation_Utils {
 
-    public static array $punt_preceding_space = [", ", ". ", "; ", ") ", ": ", "? ", "! "];
+    public static $punt_preceding_space = [", ", ". ", "; ", ") ", ": ", "? ", "! "];
     private function __construct() {}
 
     public static function str_restore_spaces_after_translation($original, $translation) {
