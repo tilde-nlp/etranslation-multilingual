@@ -36,6 +36,9 @@ namespace TranslatePress;
  * (Reason for this change: tag <text> exists in HTML docs so we need a different reserved tag.)
  * (In class-translation-render.php we use find('trptext') because of this. ).
  *
+ * In function makeup() the default $quote was changed from '' to double quotes, ' " ', because it was causing a JS security issue when onclick()
+ * function was used as translation for a link where title was set without double quotes.
+ *
  */
 
 define('TRP_HDOM_TYPE_ELEMENT', 1);
@@ -506,8 +509,13 @@ class simple_html_dom_node
 				{
 					case TRP_HDOM_QUOTE_DOUBLE: $quote = '"'; break;
 					case TRP_HDOM_QUOTE_SINGLE: $quote = '\''; break;
-					default: $quote = '';
-				}
+                    /*
+                     * TranslatePress modifications
+                     * We changed the default $quote from '' to ' " ' to avoid JS security issue. There is a filter applied on this global, $TRP_HDOM_QUOTE_DEFAULT,
+                     * so it can be changed in case there is a problem for some clients.
+*/
+					default: { global $TRP_HDOM_QUOTE_DEFAULT; $quote = $TRP_HDOM_QUOTE_DEFAULT; };
+  				}
 
 				$ret .= $key
 				. $this->_[TRP_HDOM_INFO_SPACE][$i][1]

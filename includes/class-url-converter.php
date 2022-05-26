@@ -180,20 +180,21 @@ class TRP_Url_Converter {
             }
 
             if ( apply_filters( 'trp_add_region_independent_hreflang_tags', true ) ) {
-                if ( strpos( $language, '_' ) !== false ) {
-                    $language_independent_hreflang = strtok( $language, '_' );
-                    if ( !empty( $language_independent_hreflang ) && !in_array( $language_independent_hreflang, $region_independent_languages ) ) {
-                        $region_independent_languages[] = $language_independent_hreflang;
-                        $hreflang_duplicates_region_independent[$language] = '<link rel="alternate" hreflang="' . esc_attr( $language_independent_hreflang ) . '" href="' . esc_url( $this->get_url_for_language( $language ) ) . '"/>' . "\n";
+                $language_independent_hreflang = strtok( $language, '_' );
+                $language_independent_hreflang = apply_filters( 'trp_hreflang', $language_independent_hreflang, $language);
+                if ( !empty( $language_independent_hreflang ) && !in_array( $language_independent_hreflang, $region_independent_languages ) ) {
+                    $region_independent_languages[] = $language_independent_hreflang;
+                    $hreflang_duplicates_region_independent[$language] = '<link rel="alternate" hreflang="' . esc_attr( $language_independent_hreflang ) . '" href="' . esc_url( $this->get_url_for_language( $language ) ) . '"/>' . "\n";
 
-                    }
                 }
             }
         }
 
         foreach ($languages as $language){
-            if (!in_array(strtok($language, '_'), $hreflang_duplicates)){
-                if(isset($hreflang_duplicates_region_independent[ $language ])) {
+            $language_hreflang = strtok( $language, '_' );
+            $language_hreflang = apply_filters( 'trp_hreflang', $language_hreflang, $languages );
+            if (!in_array($language_hreflang, $hreflang_duplicates)){
+                if(isset($hreflang_duplicates_region_independent[ $language ] )) {
                     echo $hreflang_duplicates_region_independent[ $language ]; /* phpcs:ignore */ /* escaped inside the array */
                 }
             }
@@ -205,6 +206,25 @@ class TRP_Url_Converter {
             }
         }
 
+
+    /**
+     * Function that replace iso 639-2 and iso 639-3 with iso 639-1 because this is the official one used for hreflang.
+     */
+
+    public function replace_iso_2_with_iso_3_for_hreflang($hreflang, $language = null){
+
+        $hreflang_iso_1 = apply_filters('trp_add_hreflang_correct_iso_code', array(
+            'bel' => 'be'
+        ));
+
+        foreach ($hreflang_iso_1 as $iso_2 => $iso_1) {
+            if ( $hreflang === $iso_2 ) {
+                return $iso_1;
+            }
+        }
+
+        return $hreflang;
+    }
 
     /**
      * Function that changes the lang attribute in the html tag to the current language.

@@ -618,14 +618,18 @@ class TRP_Translation_Manager
 
         global $l10n;
         if ( isset( $l10n[$domain] ) && is_object( $l10n[$domain] ) ) {
-            $mo_filename = $l10n[$domain]->get_filename();
+            $mo_filename = $l10n[ $domain ]->get_filename();
 
-            // $mo_filename does not end with string $locale
-            if ( substr( strtolower( $mo_filename ), -$length ) == strtolower( $localemo ) ) {
-                return true;
-            }else{
-                return false;
+            if ( is_string($mo_filename) ) {
+                
+                // $mo_filename does not end with string $locale
+                if ( substr( strtolower( $mo_filename ), -$length ) == strtolower( $localemo ) ) {
+                    return true;
+                } else {
+                    return false;
+                }
             }
+            return true;
         }
 
         // if something is not as expected, return true so that we do not interfere

@@ -461,9 +461,21 @@
 <?php __("First by IP address, then by browser language", "translatepress-multilingual"); ?>
 <?php __("Only by browser language", "translatepress-multilingual"); ?>
 <?php __("Only by IP address", "translatepress-multilingual"); ?>
+<?php __("A popup appears asking the user if they want to be redirected", "translatepress-multilingual"); ?>
+<?php __("Redirect directly (*not recommended)", "translatepress-multilingual"); ?>
+<?php __("Pop-up window over the content", "translatepress-multilingual"); ?>
+<?php __("Hello bar before the content", "translatepress-multilingual"); ?>
 <?php __("WARNING. Cannot determine your language preference based on your current IP.<br>This is most likely because the website is on a local environment.", "translatepress-multilingual"); ?>
+<?php __("Go to <a href=\"%s\" target=\"_self\">Advanced</a> tab to change this feature's settings", "translatepress-multilingual"); ?>
 <?php __("Method of language detection", "translatepress-multilingual"); ?>
 <?php __("Select how the language should be detected for first time visitors.<br>The visitor's last displayed language will be remembered through cookies.", "translatepress-multilingual"); ?>
+<?php __("Pop-up to notify the user of the detected language", "translatepress-multilingual"); ?>
+<?php __("Select the type of pop-up you wish to appear.", "translatepress-multilingual"); ?>
+<?php __("Write the text you wish to appear in the pop-up.", "translatepress-multilingual"); ?>
+<?php __("The same text is displayed in all languages. <br>A selecting language switcher will be appended to the pop-up. The detected language is pre-selected.", "translatepress-multilingual"); ?>
+<?php __("Write the text you wish to appear on the button.", "translatepress-multilingual"); ?>
+<?php __("Write the text you wish to appear on the close button. Leave empty for just the close button.", "translatepress-multilingual"); ?>
+<?php __("Choose if you want the user to be redirected directly.<br>* Not recommended because it may cause indexing issues for search engines.", "translatepress-multilingual"); ?>
 <?php __("Bad request. There was an error accessing the DeepL API.", "translatepress-multilingual"); ?>
 <?php __("The API key entered is invalid.", "translatepress-multilingual"); ?>
 <?php __("The API resource could not be found.", "translatepress-multilingual"); ?>

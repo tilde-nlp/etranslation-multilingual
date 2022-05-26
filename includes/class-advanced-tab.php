@@ -210,7 +210,6 @@ class TRP_Advanced_Tab {
 
 	public function include_custom_codes(){
         include_once(TRP_PLUGIN_DIR . 'includes/advanced-settings/disable-dynamic-translation.php');
-        include_once(TRP_PLUGIN_DIR . 'includes/advanced-settings/enable-auto-translate-slug.php');
         include_once(TRP_PLUGIN_DIR . 'includes/advanced-settings/force-slash-at-end-of-links.php');
         include_once(TRP_PLUGIN_DIR . 'includes/advanced-settings/enable-numerals-translation.php');
         include_once(TRP_PLUGIN_DIR . 'includes/advanced-settings/custom-date-format.php');
@@ -243,7 +242,9 @@ class TRP_Advanced_Tab {
 
     function trp_advanced_settings_content_table(){
         $advanced_settings_array = $this->get_registered_advanced_settings();
+
         $html = '<p id="trp_advanced_tab_content_table">';
+        $advanced_settings_array = apply_filters('trp_advanced_tab_add_element', $advanced_settings_array);
         foreach( $advanced_settings_array as $setting ){
             if ( $setting['type'] !== 'separator' ){
                 continue;

@@ -98,7 +98,7 @@ function trp_etranslation_response_codes( $code ) {
 
 add_filter( 'pre_update_option_etm_machine_translation_settings', function( $new_value, $old_value ) {
     $key = 'etranslation-pwd';
-    if ($new_value[$key] && $old_value[$key] != $new_value[$key]) {        
+    if ($new_value && $new_value[$key] && (!$old_value || $old_value[$key] != $new_value[$key])) {        
         $new_value[$key] = TRP_eTranslation_Utils::encrypt_password($new_value[$key]);
     }
     return $new_value; 

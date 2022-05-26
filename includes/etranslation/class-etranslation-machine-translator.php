@@ -247,7 +247,7 @@ class TRP_eTranslation_Machine_Translator extends TRP_Machine_Translator {
                     $translate_response = trp_etranslation_response_codes( $code );
                     $return_message     = $translate_response['message'];
 
-                    error_log("Error on eTranslation request: $response");
+                    error_log("Error on eTranslation request: " . print_r($response, true));
                 }
             }
             $this->correct_api_key = array(
