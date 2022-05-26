@@ -94,7 +94,11 @@ function trp_x( $text, $context, $domain, $language ){
  * @return string the path of the mo file if it is found else an empty string
  */
 function trp_find_translation_location_for_domain( $domain, $language ){
-
+    global $trp_template_directory;
+    if ( !isset($trp_template_directory)){
+        // "caching" this because it sometimes leads to increased page load time due to many calls
+        $trp_template_directory = get_template_directory();
+    }
     $path = '';
 
     if( file_exists( WP_LANG_DIR . '/plugins/'. $domain .'-' . $language . '.mo') ) {
@@ -107,8 +111,8 @@ function trp_find_translation_location_for_domain( $domain, $language ){
     } else {
         $possible_translation_folders = array( '', 'languages/', 'language/', 'translations/', 'translation/', 'lang/' );
         foreach( $possible_translation_folders as $possible_translation_folder ){
-            if (file_exists(get_template_directory() . '/' . $possible_translation_folder . $domain . '-' . $language . '.mo')) {
-                $path = get_template_directory() . '/' . $possible_translation_folder . $domain . '-' . $language . '.mo';
+            if (file_exists($trp_template_directory . '/' . $possible_translation_folder . $domain . '-' . $language . '.mo')) {
+                $path = $trp_template_directory . '/' . $possible_translation_folder . $domain . '-' . $language . '.mo';
             } elseif ( file_exists(WP_PLUGIN_DIR . '/' . $domain . '/' . $possible_translation_folder . $domain . '-' . $language . '.mo') ) {
                 $path = WP_PLUGIN_DIR . '/' . $domain . '/' . $possible_translation_folder . $domain . '-' . $language . '.mo';
             }
@@ -620,4 +624,46 @@ function trp_force_slash_at_end_of_link( $settings ){
         return true;
     else
         return false;
+}
+
+/**
+ * This function is used by users to create their own language switcher.
+ *It returns an array with all the necessary information for the user to create their own custom language switcher.
+ *
+ * @return array
+ *
+ * The array returned has the following indexes: language_name, language_code, short_language_name, flag_link, current_page_url
+ */
+
+function trp_custom_language_switcher() {
+    $trp           = TRP_Translate_Press::get_trp_instance();
+    $trp_languages = $trp->get_component( 'languages' );
+    $trp_settings  = $trp->get_component( 'settings' );
+    $settings      = $trp_settings->get_settings();
+
+    $languages_to_display  = $settings['publish-languages'];
+    $translation_languages = $trp_languages->get_language_names( $languages_to_display );
+
+    $url_converter = $trp->get_component( 'url_converter' );
+
+    $custom_ls_array = array();
+
+    foreach ( $translation_languages as $item => $language ) {
+
+        $custom_ls_array[ $item ]['language_name']       = $language;
+        $custom_ls_array[ $item ]['language_code']       = $item;
+        $custom_ls_array[ $item ]['short_language_name'] = $url_converter->get_url_slug( $item, false );
+
+        $flags_path = TRP_PLUGIN_URL . 'assets/images/flags/';
+        $flags_path = apply_filters( 'trp_flags_path', $flags_path, $item );
+
+        $flag_file_name = $item . '.png';
+        $flag_file_name = apply_filters( 'trp_flag_file_name', $flag_file_name, $item );
+
+        $custom_ls_array[ $item ]['flag_link'] = esc_url( $flags_path . $flag_file_name );
+
+        $custom_ls_array[ $item ]['current_page_url'] = esc_url( $url_converter->get_url_for_language( $item, null, '' ) );
+    }
+
+    return $custom_ls_array;
 }

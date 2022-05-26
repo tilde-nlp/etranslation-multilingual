@@ -191,6 +191,7 @@ function trp_exclude_include_do_not_redirect_on_excluded_pages( $redirect, $lang
     $replace = trailingslashit( home_url() );
 
     $current_slug = str_replace( $replace, '', trailingslashit( $url ) );
+
     $paths        = explode("\n", str_replace("\r", "", $advanced_settings['translateable_content']['paths'] ) );
 
     // $array_slugs contains each part of $curent_slug split on "/"
@@ -343,7 +344,7 @@ function trp_exclude_include_filter_custom_links( $new_url, $url, $TRP_LANGUAGE,
 
 add_action( 'init', 'trp_exclude_include_add_sitemap_filter' );
 function trp_exclude_include_add_sitemap_filter(){
-    if( defined( 'TRP_SP_PLUGIN_VERSION' ) && version_compare( TRP_SP_PLUGIN_VERSION, '1.3.6', '>=' ) )
+    if (class_exists('TRP_IN_Seo_Pack'))
         add_filter( 'trp_xml_sitemap_output_for_url', 'trp_exclude_include_filter_sitemap_links', 10, 6 );
 }
 

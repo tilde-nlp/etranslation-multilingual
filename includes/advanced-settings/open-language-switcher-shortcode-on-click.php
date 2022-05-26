@@ -14,20 +14,20 @@ function trp_open_language_switcher_shortcode_on_click( $settings_array ){
 function trp_lsclick_enqueue_scriptandstyle() {
     wp_enqueue_script('trp-clickable-ls-js', TRP_PLUGIN_URL . 'assets/js/trp-clickable-ls.js', array('jquery'), TRP_PLUGIN_VERSION, true );
 
-    wp_add_inline_style('trp-language-switcher-style', '.trp-language-switcher .trp-ls-shortcode-current-language.trp-ls-clicked{
+    wp_add_inline_style('trp-language-switcher-style', '.trp_language_switcher_shortcode .trp-language-switcher .trp-ls-shortcode-current-language.trp-ls-clicked{
     visibility: hidden;
 }
 
-.trp-language-switcher:hover div.trp-ls-shortcode-current-language{
+.trp_language_switcher_shortcode .trp-language-switcher:hover div.trp-ls-shortcode-current-language{
     visibility: visible;
 }
 
-.trp-language-switcher:hover div.trp-ls-shortcode-language{
+.trp_language_switcher_shortcode .trp-language-switcher:hover div.trp-ls-shortcode-language{
     visibility: hidden;
     height: 1px;
 }
-.trp-language-switcher .trp-ls-shortcode-language.trp-ls-clicked,
-.trp-language-switcher:hover .trp-ls-shortcode-language.trp-ls-clicked{
+.trp_language_switcher_shortcode .trp-language-switcher .trp-ls-shortcode-language.trp-ls-clicked,
+.trp_language_switcher_shortcode .trp-language-switcher:hover .trp-ls-shortcode-language.trp-ls-clicked{
     visibility:visible;
     height:auto;
     position: absolute;

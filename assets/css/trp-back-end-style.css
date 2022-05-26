@@ -165,7 +165,8 @@ input.trp-translation-published{
 
 
 .warning,
-.trp-upsell-multiple-languages{
+.trp-upsell-multiple-languages,
+.trp-upsell-auto-translate-slugs{
     border: 1px solid #FFEF00;
     padding: 1rem;
     background: #fff;
@@ -220,7 +221,7 @@ table.trp-adst-list-option th{
 }
 
 #trp_advanced_tab_content_table{
-    margin-top: 25px;
+    margin-top: 40px;
     font-size: 15px;
 }
 

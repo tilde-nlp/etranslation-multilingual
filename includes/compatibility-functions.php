@@ -203,6 +203,21 @@ function trp_woo_ultimate_pdf_invoices_data_compatibility($data_array){
     return $data_array;
 }
 
+/**
+ * Compatibility with WooCommerce PDF Catalog (woocommerce-pdf-catalog)
+ * https://www.welaunch.io/en/product/woocommerce-pdf-catalog/
+ *
+ * @since 2.2.7
+ *
+ */
+add_filter( 'trp_stop_translating_page', 'trp_woocommerce_pdf_catalog_compatibility_dont_translate_pdf', 10, 2 );
+function trp_woocommerce_pdf_catalog_compatibility_dont_translate_pdf( $bool, $output ){
+	if ( isset( $_REQUEST['pdf-catalog'] ) ) {
+		return true;
+	}
+	return $bool;
+}
+
 
 /**
  * Compatibility with WooCommerce order notes
@@ -247,6 +262,18 @@ function trp_woo_skip_dynamic_translation( $skip_selectors ){
     return $skip_selectors;
 }
 
+/**
+ * Prevent translation of names and addresses in WooCommerce emails.
+ */
+add_action( 'woocommerce_email_customer_details', 'trp_woo_prevent_address_from_translation_in_emails' );
+function trp_woo_prevent_address_from_translation_in_emails(){
+    add_filter( 'woocommerce_order_get_formatted_shipping_address', 'trp_woo_address_no_translate', 10, 3 );
+    add_filter( 'woocommerce_order_get_formatted_billing_address', 'trp_woo_address_no_translate', 10, 3 );
+}
+
+function trp_woo_address_no_translate( $address, $raw_address, $order ){
+    return empty( $address ) ? $address : '<span data-no-translation>' . $address . '</span>';
+}
 
 /**
  * Compatibility with WooCommerce product variation.
@@ -1238,6 +1265,8 @@ function trp_add_current_menu_item_css_class( $items ){
     $trp_settings = $trp->get_component( 'settings' );
     $settings = $trp_settings->get_settings();
 
+    add_filter('pre_get_posts', 'trp_the_event_calendar_set_query_to_true', 2, 1);
+
     foreach( $items as $item ){
         if ( !( $TRP_LANGUAGE === $settings['default-language'] && isset( $settings['add-subdirectory-to-default-language']) && $settings['add-subdirectory-to-default-language'] !== 'yes'  ) &&
             !in_array( 'current-menu-item', $item->classes ) && !in_array( 'menu-item-object-language_switcher', $item->classes ) && ( !empty($item->url) && $item->url !== '#')
@@ -1262,9 +1291,22 @@ function trp_add_current_menu_item_css_class( $items ){
             }
         }
     }
+
+    remove_filter('pre_get_posts', 'trp_the_event_calendar_set_query_to_true', 2);
     return $items;
 }
 
+/**
+ * Function needed to set tribe_suppress_query_filters to false in query in order to avoid errors with The Event Calendar
+ *
+ * @param $query
+ * @return mixed
+ */
+function trp_the_event_calendar_set_query_to_true($query){
+    $query->set('tribe_suppress_query_filters', false);
+
+    return $query;
+}
 
 /**
  * Compatibility with xstore theme ajax search on other languages than english and when automatic translation was on
@@ -1624,4 +1666,3 @@ function trp_page_builders_compatibility_with_subdirectory_for_default_language(
     }
     return $needed_language;
 }
-

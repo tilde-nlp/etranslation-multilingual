@@ -14,7 +14,7 @@ $api_key            = $machine_translator->get_api_key();
     <div class="grid feat-header">
         <div class="grid-cell">
             <?php if( $api_key != false ) : ?>
-                <h2><?php esc_html_e('API Key from settings page:', 'translatepress-multilingual');?> <span style="font-family:monospace"><?php echo esc_html( $api_key ); ?></span></h2>
+                <h2><?php esc_html_e('API Key from settings page:', 'translatepress-multilingual');?> <span style="font-family:monospace"><?php echo esc_html( print_r($api_key, true) ); ?></span></h2>
             <?php endif; ?>
 
             <h2><?php esc_html_e('HTTP Referrer:', 'translatepress-multilingual');?> <span style="font-family:monospace"><?php echo esc_url( $machine_translator->get_referer() ); ?></span></h2>

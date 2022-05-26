@@ -1,7 +1,7 @@
 ﻿=== Translate WordPress with eTranslation ===
 Tags: translate, translation, etranslation, EU, europe, multilingual, automatic translation, bilingual, front-end translation, google translate, language
 Requires at least: 3.1.0
-Tested up to: 5.9
+Tested up to: 5.9.3
 Requires PHP: 5.6.20
 Stable tag: 0.0.1
 License: GPLv2 or later

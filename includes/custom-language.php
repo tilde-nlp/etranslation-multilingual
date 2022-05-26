@@ -103,7 +103,7 @@ function trpc_flags_path_custom( $original_flags_path,  $language_code ) {
 		foreach ( $option['custom_language']['cuslangname'] as $key => $value ) {
 			if ($language_code === $option["custom_language"]["cuslangcode"][$key] && !empty($option["custom_language"]["cuslangflag"][$key]) ) {
 				$attachment_array = wp_get_attachment_image_src(attachment_url_to_postid($option["custom_language"]["cuslangflag"][ $key ]), 'trp-custom-language-flag');
-				return isset($attachment_array) ? $attachment_array[0] : $option["custom_language"]["cuslangflag"][ $key ];
+                return isset($attachment_array) && $attachment_array ? $attachment_array[0] : $option["custom_language"]["cuslangflag"][ $key ];
 			}
 		}
 	}

@@ -87,14 +87,20 @@
     overflow: hidden;
     visibility: hidden;
     z-index: 1;
+
+    max-height: 250px;
+    overflow-y: auto;
+    left: 0;
+    top: 0;
+    min-height: auto;
 }
 
 .trp-language-switcher:focus .trp-ls-shortcode-language,
 .trp-language-switcher:hover .trp-ls-shortcode-language{
+    visibility: visible;
     max-height: 250px;
     height: auto;
     overflow-y: auto;
-    visibility:visible;
     position: absolute;
     left: 0;
     top: 0;

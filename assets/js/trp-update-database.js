@@ -19,5 +19,6 @@ jQuery( function() {
     trigger_update_by_ajax( {
         action: 'trp_update_database',
         trp_updb_nonce: trp_updb_localized['nonce'],
+        initiate_update: true,
     } );
 });
