@@ -5,7 +5,7 @@ if ( ! defined( 'ABSPATH' ) ) exit;
 
 class TRP_eTranslation_Machine_Translator extends TRP_Machine_Translator {
 
-    private float $db_query_interval = 0.1; //100ms
+    private $db_query_interval = 0.1; //100ms
     private $etranslation_service;
     public $etranslation_query;
 
@@ -185,10 +185,14 @@ class TRP_eTranslation_Machine_Translator extends TRP_Machine_Translator {
         if ($response['response'] == 200) {
             $domains = $response['body'];
             $language_pairs = $domains->GEN->languagePairs;
-            $from_languages = array_map(fn($value): string => strtolower(explode("-", $value)[0]), $language_pairs);
+            $from_languages = array_map(array($this, 'extract_source_language'), $language_pairs);
             return array_unique($from_languages);
         }
         return array();       
+    }
+
+    private function extract_source_language($lang_pair_str) {
+        return strtolower(explode("-", $lang_pair_str)[0]);
     }
 
     public function get_all_domains() {
