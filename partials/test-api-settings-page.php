@@ -8,19 +8,19 @@ $api_key            = $machine_translator->get_api_key();
 
 <div id="trp-addons-page" class="wrap">
 
-    <h1> <?php esc_html_e( 'eTranslation Multilingual Settings', 'translatepress-multilingual' );?></h1>
+    <h1> <?php esc_html_e( 'eTranslation Multilingual Settings', 'etranslation-multilingual' );?></h1>
     <?php do_action ( 'trp_settings_navigation_tabs' ); ?>
 
     <div class="grid feat-header">
         <div class="grid-cell">
             <?php if( $api_key != false ) : ?>
-                <h2><?php esc_html_e('API Key from settings page:', 'translatepress-multilingual');?> <span style="font-family:monospace"><?php echo esc_html( print_r($api_key, true) ); ?></span></h2>
+                <h2><?php esc_html_e('API Key from settings page:', 'etranslation-multilingual');?> <span style="font-family:monospace"><?php echo esc_html( print_r($api_key, true) ); ?></span></h2>
             <?php endif; ?>
 
-            <h2><?php esc_html_e('HTTP Referrer:', 'translatepress-multilingual');?> <span style="font-family:monospace"><?php echo esc_url( $machine_translator->get_referer() ); ?></span></h2>
-            <p><?php esc_html_e('Use this HTTP Referrer if the API lets you restrict key usage from its Dashboard.', 'translatepress-multilingual'); ?></p>
+            <h2><?php esc_html_e('HTTP Referrer:', 'etranslation-multilingual');?> <span style="font-family:monospace"><?php echo esc_url( $machine_translator->get_referer() ); ?></span></h2>
+            <p><?php esc_html_e('Use this HTTP Referrer if the API lets you restrict key usage from its Dashboard.', 'etranslation-multilingual'); ?></p>
 
-            <h3><?php esc_html_e('Response:', 'translatepress-multilingual');?></h3>
+            <h3><?php esc_html_e('Response:', 'etranslation-multilingual');?></h3>
             <pre>
                 <?php
                 ob_start();
@@ -29,7 +29,7 @@ $api_key            = $machine_translator->get_api_key();
                 echo '<pre>' . esc_html( $buffer ) . '</pre>';
                 ?>
             </pre>
-            <h3><?php esc_html_e('Response Body:', 'translatepress-multilingual');?></h3>
+            <h3><?php esc_html_e('Response Body:', 'etranslation-multilingual');?></h3>
             <pre>
                 <?php
                 ob_start();
@@ -39,7 +39,7 @@ $api_key            = $machine_translator->get_api_key();
                 ?>
             </pre>
 
-            <h3><?php esc_html_e('Entire Response From wp_remote_get():', 'translatepress-multilingual');?></h3>
+            <h3><?php esc_html_e('Entire Response From wp_remote_get():', 'etranslation-multilingual');?></h3>
             <pre>
                 <?php
                 ob_start();

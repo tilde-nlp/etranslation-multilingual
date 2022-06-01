@@ -59,7 +59,7 @@ class TRP_Translate_Press{
         define( 'TRP_PLUGIN_DIR', plugin_dir_path( __FILE__ ) );
         define( 'TRP_PLUGIN_URL', plugin_dir_url( __FILE__ ) );
         define( 'TRP_PLUGIN_BASE', plugin_basename( __DIR__ . '/index.php' ) );
-        define( 'TRP_PLUGIN_SLUG', 'translatepress-multilingual' );
+        define( 'TRP_PLUGIN_SLUG', 'etranslation-multilingual' );
         define( 'TRP_PLUGIN_VERSION', '2.2.7' );
 
 	    wp_cache_add_non_persistent_groups(array('trp', 'etm'));
@@ -426,7 +426,7 @@ class TRP_Translate_Press{
      * Load plugin textdomain
      */
     public function init_translation(){
-        load_plugin_textdomain( 'translatepress-multilingual', false, basename(dirname(__FILE__)) . '/languages/' );
+        load_plugin_textdomain( 'etranslation-multilingual', false, basename(dirname(__FILE__)) . '/languages/' );
     }
 
     public function init_machine_translation(){

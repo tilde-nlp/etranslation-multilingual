@@ -6,10 +6,10 @@ function trp_register_skip_dynamic_selectors( $settings_array ){
 		'name'          => 'skip_dynamic_selectors',
 		'type'          => 'list',
 		'columns'       => array(
-			'selector' => __('Selector', 'translatepress-multilingual' ),
+			'selector' => __('Selector', 'etranslation-multilingual' ),
 		),
-		'label'         => esc_html__( 'Exclude from dynamic translation', 'translatepress-multilingual' ),
-		'description'   => wp_kses( __( 'Do not dynamically translate strings that are found in html nodes matching these selectors.<br>Excludes all the children of HTML nodes matching these selectors from being translated using JavaScript.<br/>These strings will still be translated on the server side if possible.', 'translatepress-multilingual' ), array( 'br' => array() ) ),
+		'label'         => esc_html__( 'Exclude from dynamic translation', 'etranslation-multilingual' ),
+		'description'   => wp_kses( __( 'Do not dynamically translate strings that are found in html nodes matching these selectors.<br>Excludes all the children of HTML nodes matching these selectors from being translated using JavaScript.<br/>These strings will still be translated on the server side if possible.', 'etranslation-multilingual' ), array( 'br' => array() ) ),
 	);
 	return $settings_array;
 }

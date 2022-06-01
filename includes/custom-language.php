@@ -5,7 +5,7 @@ add_image_size( 'trp-custom-language-flag', 18, 12 );
 add_filter( 'image_size_names_choose', 'trp_add_flag_sizes' );
 function trp_add_flag_sizes( $sizes ) {
 	return array_merge( $sizes, array(
-		'trp-custom-language-flag' => __( 'Custom Language Flag', 'translatepress-multilingual' )
+		'trp-custom-language-flag' => __( 'Custom Language Flag', 'etranslation-multilingual' )
 	) );
 }
 
@@ -155,7 +155,7 @@ function trp_verify_custom_language_codes($is_correct_code, $settings){
                     $is_correct_code = false;
 
                     return array(
-                        'message' => esc_html__('The Language code of the added custom language is invalid.','translatepress-multilingual'),
+                        'message' => esc_html__('The Language code of the added custom language is invalid.','etranslation-multilingual'),
                         'correct_code' => $is_correct_code
                     );
                 }
@@ -170,7 +170,7 @@ function trp_verify_custom_language_codes($is_correct_code, $settings){
                     $is_correct_code = false;
 
                     return array(
-                        'message' => esc_html__('The Automatic Translation Code of the added custom language is invalid.', 'translatepress-multilingual'),
+                        'message' => esc_html__('The Automatic Translation Code of the added custom language is invalid.', 'etranslation-multilingual'),
                         'correct_code' => $is_correct_code
                     );
                 }
@@ -182,7 +182,7 @@ function trp_verify_custom_language_codes($is_correct_code, $settings){
         if (empty($item)) {
             $is_correct_code = false;
             return array(
-                'message'      => esc_html__('The Language code of the added custom language cannot be empty.', 'translatepress-multilingual'),
+                'message'      => esc_html__('The Language code of the added custom language cannot be empty.', 'etranslation-multilingual'),
                 'correct_code' => $is_correct_code
             );
         }

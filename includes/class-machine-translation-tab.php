@@ -19,7 +19,7 @@ class TRP_Machine_Translation_Tab {
     */
     public function add_tab_to_navigation( $tabs ){
         $tab = array(
-            'name'  => __( 'Automatic Translation', 'translatepress-multilingual' ),
+            'name'  => __( 'Automatic Translation', 'etranslation-multilingual' ),
             'url'   => admin_url( 'admin.php?page=etm_machine_translation' ),
             'page'  => 'etm_machine_translation'
         );
@@ -149,7 +149,7 @@ class TRP_Machine_Translation_Tab {
     }
 
     public function translation_engines_upsell( $engines ){
-        $engines[] = array( 'value' => 'deepl_upsell', 'label' => __( 'DeepL', 'translatepress-multilingual' ) );
+        $engines[] = array( 'value' => 'deepl_upsell', 'label' => __( 'DeepL', 'etranslation-multilingual' ) );
 
         return $engines;
     }
@@ -175,7 +175,7 @@ class TRP_Machine_Translation_Tab {
 
             ?>
             <tr id="trp_unsupported_languages">
-                <th scope=row><?php esc_html_e( 'Unsupported languages', 'translatepress-multilingual' ); ?></th>
+                <th scope=row><?php esc_html_e( 'Unsupported languages', 'etranslation-multilingual' ); ?></th>
                 <td>
                     <ul class="trp-unsupported-languages">
                         <?php
@@ -187,7 +187,7 @@ class TRP_Machine_Translation_Tab {
                         ?>
                    </ul>
                   <p class="description">
-                       <?php echo wp_kses( __( 'The selected automatic translation engine does not provide support for these languages.<br>You can still manually translate pages in these languages using the Translation Editor.', 'translatepress-multilingual' ), array( 'br' => array() ) ); ?>
+                       <?php echo wp_kses( __( 'The selected automatic translation engine does not provide support for these languages.<br>You can still manually translate pages in these languages using the Translation Editor.', 'etranslation-multilingual' ), array( 'br' => array() ) ); ?>
                    </p>
                 </td>
             </tr>
@@ -214,7 +214,7 @@ class TRP_Machine_Translation_Tab {
                 $language_names = $trp_languages->get_language_names( $this->settings['translation-languages'], 'english_name' );
                 ?>
                 <tr id="trp_unsupported_languages">
-                    <th scope=row><?php esc_html_e( 'Languages without formality', 'translatepress-multilingual' ); ?></th>
+                    <th scope=row><?php esc_html_e( 'Languages without formality', 'etranslation-multilingual' ); ?></th>
                 <td>
                     <ul class="trp-unsupported-languages">
                         <?php
@@ -226,7 +226,7 @@ class TRP_Machine_Translation_Tab {
                         ?>
                     </ul>
                     <p class="description">
-                        <?php echo wp_kses( sprintf(__( 'The selected automatic translation engine provides only <a href="%s" target="_blank">default formality</a> settings for these languages for now.<br>Automatic translation will still work if available for these languages. It will just not use the formality setting from eTranslation Multilingual <a href="%s" target="_self"> General Tab</a> for the languages listed above.', 'translatepress-multilingual' ), esc_url('https://www.deepl.com/docs-api/translating-text/'), esc_url(admin_url('options-general.php?page=etranslation-multilingual'))), array('a' => array('href' => array(), 'target' =>array(), 'title' => array()), 'br' => array()) ); ?>
+                        <?php echo wp_kses( sprintf(__( 'The selected automatic translation engine provides only <a href="%s" target="_blank">default formality</a> settings for these languages for now.<br>Automatic translation will still work if available for these languages. It will just not use the formality setting from eTranslation Multilingual <a href="%s" target="_self"> General Tab</a> for the languages listed above.', 'etranslation-multilingual' ), esc_url('https://www.deepl.com/docs-api/translating-text/'), esc_url(admin_url('options-general.php?page=etranslation-multilingual'))), array('a' => array('href' => array(), 'target' =>array(), 'title' => array()), 'br' => array()) ); ?>
                     </p>
                 </td>
                 </tr>
@@ -239,8 +239,8 @@ class TRP_Machine_Translation_Tab {
             <tr id="trp_recheck_supported_languages">
                 <th scope=row></th>
                 <td>
-                    <a href="<?php echo esc_url( admin_url( 'admin.php?page=etm_machine_translation&trp_recheck_supported_languages=1&trp_recheck_supported_languages_nonce=' . wp_create_nonce('trp_recheck_supported_languages') ) ); ?>" class="button-secondary"><?php esc_html_e( 'Recheck supported languages', 'translatepress-multilingual' ); ?></a>
-                    <p><i><?php echo wp_kses_post( sprintf( __( '(last checked on %s)', 'translatepress-multilingual' ), esc_html( $machine_translator->get_last_checked_supported_languages() ) ) ); ?> </i></p>
+                    <a href="<?php echo esc_url( admin_url( 'admin.php?page=etm_machine_translation&trp_recheck_supported_languages=1&trp_recheck_supported_languages_nonce=' . wp_create_nonce('trp_recheck_supported_languages') ) ); ?>" class="button-secondary"><?php esc_html_e( 'Recheck supported languages', 'etranslation-multilingual' ); ?></a>
+                    <p><i><?php echo wp_kses_post( sprintf( __( '(last checked on %s)', 'etranslation-multilingual' ), esc_html( $machine_translator->get_last_checked_supported_languages() ) ) ); ?> </i></p>
                 </td>
             </tr>
             <?php

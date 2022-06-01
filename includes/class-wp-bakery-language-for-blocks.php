@@ -95,19 +95,19 @@ class TRP_WPBakery {
 
         $attributes_checkbox = [
             'type' => 'checkbox',
-            'heading' => __('Restrict element to language', 'translatepress-multilingual'),
+            'heading' => __('Restrict element to language', 'etranslation-multilingual'),
             'param_name' => $this->param_name_show,
             'group' => $group,
-            'description' => __('Show this element only in one language.', 'translatepress-multilingual')
+            'description' => __('Show this element only in one language.', 'etranslation-multilingual')
         ];
 
         $attributes_value = [
             'type' => 'dropdown',
-            'heading' => __('Select language', 'translatepress-multilingual'),
+            'heading' => __('Select language', 'etranslation-multilingual'),
             'param_name' => $this->param_name_show_language,
             'group' => $group,
             'value' => array_flip($this->get_published_languages(true)),
-            'description' => __('Choose in which language to show this element.', 'translatepress-multilingual'),
+            'description' => __('Choose in which language to show this element.', 'etranslation-multilingual'),
             'dependency' => [
                 'element' => $this->param_name_show,
                 'value' => 'true'
@@ -135,31 +135,31 @@ class TRP_WPBakery {
 
         $attributes_checkbox = [
             'type' => 'checkbox',
-            'heading' => __('Exclude from Language', 'translatepress-multilingual'),
+            'heading' => __('Exclude from Language', 'etranslation-multilingual'),
             'param_name' => $this->param_name_exclude,
             'group' => $group,
-            'description' => __('Exclude this element from specific languages.', 'translatepress-multilingual')
+            'description' => __('Exclude this element from specific languages.', 'etranslation-multilingual')
         ];
 
         $message =
             '<p>' .
             __(
                 'This element will still be visible when you are translating your website through the Translation Editor.',
-                'translatepress-multilingual'
+                'etranslation-multilingual'
             ) .
             '</p>';
         $message .=
             '<p>' .
-            __('The content of this element should be written in the default language.', 'translatepress-multilingual') .
+            __('The content of this element should be written in the default language.', 'etranslation-multilingual') .
             '</p>';
 
         $attributes_value = [
             'type' => $this->shortcode_param_type_dropdown_multi,
-            'heading' => __('Select languages', 'translatepress-multilingual'),
+            'heading' => __('Select languages', 'etranslation-multilingual'),
             'param_name' => $this->param_name_exclude_languages,
             'group' => $group,
             'value' => array_flip($this->get_published_languages(true)),
-            'description' => __('Choose from which languages to exclude this element.', 'translatepress-multilingual') . $message,
+            'description' => __('Choose from which languages to exclude this element.', 'etranslation-multilingual') . $message,
             'dependency' => [
                 'element' => $this->param_name_exclude,
                 'value' => 'true'
@@ -176,7 +176,7 @@ class TRP_WPBakery {
     }
 
     private function get_group() {
-        return __('TranslatePress', 'translatepress-multilingual');
+        return __('TranslatePress', 'etranslation-multilingual');
     }
 
     private function get_published_languages($placeholder = false) {

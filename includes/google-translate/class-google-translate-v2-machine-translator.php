@@ -178,7 +178,7 @@ class TRP_Google_Translate_V2_Machine_Translator extends TRP_Machine_Translator 
 
             if ( empty( $api_key ) ) {
                 $is_error       = true;
-                $return_message = __( 'Please enter your Google Translate key.', 'translatepress-multilingual' );
+                $return_message = __( 'Please enter your Google Translate key.', 'etranslation-multilingual' );
             } else {
                 // Perform test.
                 $response = $machine_translator->test_request();

@@ -102,24 +102,24 @@ class TRP_Reviews{
         $url = 'https://wordpress.org/support/plugin/translatepress-multilingual/reviews/?filter=5#new-post';
 
         $message = '<p style="margin-top: 16px;font-size: 14px;padding-right:20px">';
-        $message .= wp_kses( __( "Hello! Seems like you've been using <strong>eTranslation Multilingual</strong> for a while now to translate your website. That's awesome! ", 'translatepress-multilingual' ), array('strong' => array() ) );
+        $message .= wp_kses( __( "Hello! Seems like you've been using <strong>eTranslation Multilingual</strong> for a while now to translate your website. That's awesome! ", 'etranslation-multilingual' ), array('strong' => array() ) );
         $message .= '</p>';
 
         $message .= '<p style="font-size: 14px">';
-        $message .= esc_html__( "If you can spare a few moments to rate it on WordPress.org it would help us a lot (and boost my motivation).", 'translatepress-multilingual' );
+        $message .= esc_html__( "If you can spare a few moments to rate it on WordPress.org it would help us a lot (and boost my motivation).", 'etranslation-multilingual' );
         $message .= '</p>';
 
         $message .= '<p>';
-        $message .= esc_html__( "~ Razvan, developer of TranslatePress", 'translatepress-multilingual' ) ;
+        $message .= esc_html__( "~ Razvan, developer of TranslatePress", 'etranslation-multilingual' ) ;
         $message .= '</p>';
 
         // buttons for OK / No, thanks
         $message .= '<p>';
-        $message .= '<a href="' . esc_url( $url ) . '" title="' . esc_attr__( 'Rate eTranslation Multilingual on WordPress.org plugin page', 'translatepress-multilingual' ) . '" class="button-primary" style="margin-right: 20px">' . esc_html__( "Ok, I will gladly help!", 'translatepress-multilingual' ) . '</a>';
-        $message .= '<a href="' . add_query_arg( array( 'trp_dismiss_admin_notification' => $notification_id ) ) . '"  title="' . esc_attr__( 'Dismiss this notice.', 'translatepress-multilingual' ) . '" class="button-secondary" >' . esc_html__( "No, thanks.", 'translatepress-multilingual' ) . '</a>';
+        $message .= '<a href="' . esc_url( $url ) . '" title="' . esc_attr__( 'Rate eTranslation Multilingual on WordPress.org plugin page', 'etranslation-multilingual' ) . '" class="button-primary" style="margin-right: 20px">' . esc_html__( "Ok, I will gladly help!", 'etranslation-multilingual' ) . '</a>';
+        $message .= '<a href="' . add_query_arg( array( 'trp_dismiss_admin_notification' => $notification_id ) ) . '"  title="' . esc_attr__( 'Dismiss this notice.', 'etranslation-multilingual' ) . '" class="button-secondary" >' . esc_html__( "No, thanks.", 'etranslation-multilingual' ) . '</a>';
         $message .= '</p>';
         //make sure to use the trp_dismiss_admin_notification arg
-        $message .= '<a href="' . add_query_arg( array( 'trp_dismiss_admin_notification' => $notification_id ) ) . '" style="text-decoration:none" type="button" class="notice-dismiss"><span class="screen-reader-text">' . __( 'Dismiss this notice.', 'translatepress-multilingual' ) . '</span></a>';
+        $message .= '<a href="' . add_query_arg( array( 'trp_dismiss_admin_notification' => $notification_id ) ) . '" style="text-decoration:none" type="button" class="notice-dismiss"><span class="screen-reader-text">' . __( 'Dismiss this notice.', 'etranslation-multilingual' ) . '</span></a>';
 
         $notifications->add_notification( $notification_id, $message, 'trp-notice trp-narrow notice notice-info', true, array( 'translate-press' ), true );
 
