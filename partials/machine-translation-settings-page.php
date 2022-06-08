@@ -137,7 +137,7 @@
            </tr>
 
            <tr>
-                <th scope="row">Show machine translation notice</th>
+                <th scope="row"><?php esc_html_e( 'Show machine translation notice', 'etranslation-multilingual' ); ?></th>
                 <td>
                     <select id="show-mt-notice" name="etm_machine_translation_settings[show-mt-notice]" class="trp-select">
                         <option value="yes" <?php selected( $this->settings['trp_machine_translation_settings']['show-mt-notice'], 'yes' ); ?>><?php esc_html_e( 'Yes', 'etranslation-multilingual') ?></option>
