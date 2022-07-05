@@ -343,10 +343,11 @@ class TRP_Settings{
         $settings_option = get_option( 'etm_settings', 'not_set' );
 
         // initialize default settings
-        $default = get_locale();
-        if ( empty( $default ) ){
-            $default = 'en_GB';
-        }
+        // $default = get_locale();
+        // if ( empty( $default ) ){
+        //     $default = 'en_GB';
+        // }
+        $default = 'en_GB';
         $default_settings = array(
             'default-language'                     => $default,
             'translation-languages'                => array( $default ),

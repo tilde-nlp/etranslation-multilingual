@@ -76,6 +76,7 @@ class TRP_Languages{
 		$missing_languages = array();
 		$missing_languages['mt_MT'] = array( 'language'	=> 'mt_MT', 'english_name'=> 'Maltese', 'native_name' => 'Malti', 'iso' => array( 'mt' ) );
 		$missing_languages['ga_IE'] = array( 'language'	=> 'ga_IE', 'english_name'=> 'Irish', 'native_name' => 'Gaeilge', 'iso' => array( 'ga' ) );
+		$missing_languages['en_US'] = array( 'language'	=> 'en_US', 'english_name'=> 'English (US)', 'native_name' => 'English (US)', 'iso' => array( 'en' ) );
 		
 		foreach ( $missing_languages as $key => $value) {
 			if (!in_array($key, $language_keys)) {
@@ -104,8 +105,8 @@ class TRP_Languages{
      * @return array                        String array of iso codes.
      */
 	public function get_iso_codes( $language_codes, $map_google_codes = true ){
-        if ( !in_array( 'en_US', $language_codes ) ){
-            $language_codes[] = 'en_US';
+		if ( !in_array( 'en_GB', $language_codes ) ){
+            $language_codes[] = 'en_GB';
         }
 		$iso_codes = array();
 		$wp_languages = $this->get_wp_languages();
@@ -188,7 +189,7 @@ class TRP_Languages{
 	/**
 	 * Return true if the language (without country) of the language_code is present multiple times in the array
 	 *
-	 * (ex. For language code en_UK, language_code_array [en_US, en_UK], return true)
+	 * (ex. For language code en_GB, language_code_array [en_US, en_GB], return true)
 	 *
 	 * @param $language_code string         Language code (ex. en_US)
 	 * @param $language_code_array array    Array of language codes
