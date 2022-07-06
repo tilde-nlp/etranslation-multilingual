@@ -110,7 +110,8 @@ class eTranslation_Service {
 
     if ($http_status != 200 || $request_id < 0) {
         $message = self::$error_map[$request_id] ?? $body;        
-        error_log("Invalid response from eTranslation: $response [status: $http_status, message: $message]");
+        $err = curl_error($client);
+        error_log("Invalid response from eTranslation: $response [status: $http_status, message: $message, error: $err]");
     }
 
     return array('response' => $http_status, 'body' => $body);

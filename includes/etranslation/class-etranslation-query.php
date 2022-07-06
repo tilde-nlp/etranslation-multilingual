@@ -167,11 +167,15 @@ class eTranslation_Query {
                 'original_id' => $original_inserts[ $string ]->id,
                 'original'    => $string,
                 'translated'  => trp_sanitize_string( $translation_strings[ $i ] ),
-                'status'      => $trp_query->get_constant_machine_translated() ) );
+                'status'      => $trp_query->get_constant_machine_retranslated() ) );
         }
     
         //insert translations
-        $trp_query->update_strings( $update_strings, $details_row->to, array( 'id', 'original', 'translated', 'status', 'original_id' ) );
+        $updated_rows = $trp_query->update_strings( $update_strings, $details_row->to, array( 'id', 'original', 'translated', 'status', 'original_id' ) );
+
+        if (count($update_strings) != $updated_rows) {
+            error_log("Translation list size differs from updated row count (" . count($update_strings) . " vs " . $updated_rows . ")");
+        }
     
         //delete previously inserted untranslated rows 
         $trp_query->remove_possible_duplicates($update_strings, $details_row->to, 'regular');

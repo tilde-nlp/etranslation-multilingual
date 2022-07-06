@@ -21,6 +21,7 @@ class TRP_Query{
     const NOT_TRANSLATED = 0;
     const MACHINE_TRANSLATED = 1;
     const HUMAN_REVIEWED = 2;
+    const MACHINE_RETRANSLATED = 3;
 
     const BLOCK_TYPE_REGULAR_STRING = 0;
     const BLOCK_TYPE_ACTIVE = 1;
@@ -68,7 +69,7 @@ class TRP_Query{
         }else {
 	        $and_block_type = " AND block_type = " . $block_type;
         }
-        $query = "SELECT original,translated, status FROM `" . sanitize_text_field( $this->get_table_name( $language_code ) ) . "` WHERE status != " . self::NOT_TRANSLATED . $and_block_type . " AND translated <>'' AND original IN ";
+        $query = "SELECT original,translated, status,id FROM `" . sanitize_text_field( $this->get_table_name( $language_code ) ) . "` WHERE status != " . self::NOT_TRANSLATED . $and_block_type . " AND translated <>'' AND original IN ";
 
         $placeholders = array();
         $values = array();
@@ -128,6 +129,15 @@ class TRP_Query{
      */
     public function get_constant_human_reviewed(){
         return self::HUMAN_REVIEWED;
+    }
+
+    /**
+     * Return constant used for entries which have matching original & translation value to determine if they should be retranslated.
+     *
+     * @return int
+     */
+    public function get_constant_machine_retranslated(){
+        return self::MACHINE_RETRANSLATED;
     }
 
 	/**
@@ -685,13 +695,15 @@ class TRP_Query{
 		// but by using prepare you cannot insert NULL values.
 
 		$prepared_query = $this->db->prepare($query . ' ', $values);
-		$this->db->query( $prepared_query );
+		$updated_rows = $this->db->query( $prepared_query );
         if( !$this->check_invalid_text ){
             $trp = TRP_Translate_Press::get_trp_instance();
             $this->check_invalid_text = $trp->get_component( 'check_invalid_text' );
         }
         $this->check_invalid_text->update_translations_without_invalid_text( $update_strings, $language_code, $columns_to_update );
         $this->maybe_record_automatic_translation_error(array( 'details' => 'Error running update_strings()' ) );
+
+        return $updated_rows;
 	}
 
 	/**
