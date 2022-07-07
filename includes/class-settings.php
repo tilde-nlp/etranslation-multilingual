@@ -406,7 +406,7 @@ class TRP_Settings{
             // default settings for trp_machine_translation_settings
             'machine-translation'               => 'no',
             'translation-engine'                => 'etranslation',
-            'block-crawlers'                    => 'yes',
+            'block-crawlers'                    => 'no',
             'machine_translation_counter_date'  => date ("Y-m-d" ),
             'machine_translation_counter'       => 0,
             'machine_translation_limit'         => 1000000,            
