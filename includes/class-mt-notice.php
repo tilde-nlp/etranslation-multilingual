@@ -26,19 +26,24 @@ class TRP_MT_Notice {
         if ($show == 'yes' && $mt_enabled == 'yes') {
             global $TRP_LANGUAGE;
             $default = $this->settings['default-language'];
-            if ($TRP_LANGUAGE != $default) {
-                $original_url = $this->url_converter->get_url_for_language($default);
-                ?>
-                <div class="mt-notice-container">
-                    <div class="translation-notice">
-                        This page has been machine-translated. <a href="<?php echo $original_url ?>" class="mt-notice-link">Show original</a>
+            if ($TRP_LANGUAGE != $default) {                
+                $trp = TRP_Translate_Press::get_trp_instance();
+                $machine_translator = $trp->get_component('machine_translator');
+                $mt_available = $machine_translator->check_languages_availability(array($default, $TRP_LANGUAGE));
+                if ($mt_available) {
+                    $original_url = $this->url_converter->get_url_for_language($default);
+                    ?>
+                    <div class="mt-notice-container">
+                        <div class="translation-notice">
+                            This page has been machine-translated. <a href="<?php echo $original_url ?>" class="mt-notice-link">Show original</a>
+                        </div>
+                        <div id="mt-notice-hide" onclick="hideMtNotice()">
+                            <?php echo "<img src='" . TRP_PLUGIN_URL . "assets/images/x.svg' />" ?>
+                        </div>
                     </div>
-                    <div id="mt-notice-hide" onclick="hideMtNotice()">
-                        <?php echo "<img src='" . TRP_PLUGIN_URL . "assets/images/x.svg' />" ?>
-                    </div>
-                </div>
-                <div class="mt-notice-space"></div>
-                <?php
+                    <div class="mt-notice-space"></div>
+                    <?php
+                }
             }
         }
     }
