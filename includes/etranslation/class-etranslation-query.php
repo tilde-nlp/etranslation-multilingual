@@ -26,7 +26,8 @@ class eTranslation_Query {
                     'id' => $db_row->id
                 ));
                 if (!$deletion) {
-                    error_log("Could not delete $this->jobs_table row after updating translation manually [ID=$db_row->id]");
+                    $error = $this->db->last_error;
+                    error_log("Could not delete $this->jobs_table row after updating translation manually [ID=$db_row->id, error=$error]");
                 }
             } else {
                 //translation completed in time
@@ -38,7 +39,8 @@ class eTranslation_Query {
                 ));
     
                 if (!$update_result) {
-                    error_log("Error updating eTranslation DB entry [ID=$id]");
+                    $error = $this->db->last_error;
+                    error_log("Error updating eTranslation DB entry [ID=$id, error=$error]");
                 }
             }
         } else {
@@ -63,7 +65,8 @@ class eTranslation_Query {
             ));
     
             if (!$update_result) {
-                error_log("Error updating eTranslation DB entry [ID=$id]");
+                $error = $this->db->last_error;
+                error_log("Error updating eTranslation DB entry [ID=$id, error=$error]");
             }
         } else {
             error_log("Translation error received has no entry in database [ID=$id]");
@@ -86,7 +89,8 @@ class eTranslation_Query {
                 'id' => $id
             ));
             if (!$deletion) {
-                error_log("Could not delete row from $this->jobs_table [ID=$id]");
+                $error = $this->db->last_error;
+                error_log("Could not delete row from $this->jobs_table [ID=$id, error=$error]");
             }
             return $row->body;
         }
@@ -101,7 +105,8 @@ class eTranslation_Query {
         ));
 
         if (!$result) {
-            error_log("Error updating eTranslation DB entry status [ID=$id]");
+            $error = $this->db->last_error;
+            error_log("Error updating eTranslation DB entry status [ID=$id, error=$error]");
         }
     }
 
@@ -115,7 +120,8 @@ class eTranslation_Query {
             'original' => $original
         ));
         if (!$result) {
-            error_log("Error inserting translation entry in eTranslation DB [ID=$id]");
+            $error = $this->db->last_error;
+            error_log("Error inserting translation entry in eTranslation DB [ID=$id, error=$error]");
         }
         return $result;
     }
@@ -127,10 +133,10 @@ class eTranslation_Query {
             $sql .= "  `id`  VARCHAR(13) NOT NULL, ";
             $sql .= " `requestId` BIGINT NOT NULL, ";
             $sql .= "  `status`  ENUM('TRANSLATING','DONE','ERROR','TIMEOUT') NOT NULL DEFAULT 'TRANSLATING', ";
-            $sql .= "  `body`  TEXT NULL DEFAULT NULL, ";
+            $sql .= "  `body`  LONGTEXT NULL DEFAULT NULL, ";
             $sql .= " `from` VARCHAR(5) NULL, ";
             $sql .= " `to` VARCHAR(200) NULL, ";
-            $sql .= " `original` TEXT NULL, ";
+            $sql .= " `original` LONGTEXT NULL, ";
             $sql .= " `timestamp` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP, ";
             $sql .= "  PRIMARY KEY (`id`) ";
             $sql .= ") COLLATE='utf8mb4_unicode_520_ci'; ";

@@ -1386,7 +1386,7 @@ class TRP_Translation_Render{
 	        }
 	        //strings existing in database,
             if ( isset( $dictionary[$string]->translated )
-                && ($dictionary[$string]->original != $dictionary[$string]->translated || $dictionary[$string]->status != $this->trp_query->get_constant_machine_translated()) ) {
+                && (html_entity_decode($dictionary[$string]->original, ENT_COMPAT) != $dictionary[$string]->translated || $dictionary[$string]->status != $this->trp_query->get_constant_machine_translated()) ) {
                 $translated_strings[$i] = $dictionary[$string]->translated;
             }else{
                 $new_strings[$i] = $translateable_strings[$i];
