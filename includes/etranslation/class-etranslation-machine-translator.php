@@ -37,22 +37,6 @@ class TRP_eTranslation_Machine_Translator extends TRP_Machine_Translator {
         $this->etranslation_query->update_translation_status($id, 'TIMEOUT');
     }
 
-    // private function send_log_request($body) {
-    //     $url = 'https://66cd01b2c21614b277a6b30ddb179e99.m.pipedream.net';
-
-    //     // use key 'http' even if you send the request to https://...
-    //     $options = array(
-    //         'http' => array(
-    //             'header'  => "Content-type: application/x-www-form-urlencoded\r\n",
-    //             'method'  => 'POST',
-    //             'content' => http_build_query($body)
-    //         )
-    //     );
-    //     $context  = stream_context_create($options);
-    //     $result = file_get_contents($url, false, $context);
-    //     return $result;
-    // }
-
     public function translate_document( $source_language_code, $target_language_code, $strings_array, $original_strings, $start_timestamp): array {
         $delimiter = "\n";
         $id = uniqid();
@@ -78,7 +62,6 @@ class TRP_eTranslation_Machine_Translator extends TRP_Machine_Translator {
             $original_count = count($strings_array);
             $translation_count = count($result);
             if ($translation_count != $original_count && !($translation_count == $original_count + 1 && end($result) == "")) {
-                //$this->send_log_request([$content, "============", $translation]);
                 error_log("Original string list size differs from translation list size (". count($strings_array) . " != " . count($result) . ") [ID=$id]");
             }
             return TRP_eTranslation_Utils::arr_restore_spaces_after_translation(array_values($strings_array), $result);
@@ -135,7 +118,7 @@ class TRP_eTranslation_Machine_Translator extends TRP_Machine_Translator {
             ));
 
             /* analyze the response */
-            if (is_array($response)) {
+            if (is_array($response) && !empty($response)) {
 
                 $this->machine_translator_logger->count_towards_quota( $new_strings_chunk );
 

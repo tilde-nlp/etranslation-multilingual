@@ -21,7 +21,6 @@ class TRP_Query{
     const NOT_TRANSLATED = 0;
     const MACHINE_TRANSLATED = 1;
     const HUMAN_REVIEWED = 2;
-    const MACHINE_RETRANSLATED = 3;
 
     const BLOCK_TYPE_REGULAR_STRING = 0;
     const BLOCK_TYPE_ACTIVE = 1;
@@ -129,15 +128,6 @@ class TRP_Query{
      */
     public function get_constant_human_reviewed(){
         return self::HUMAN_REVIEWED;
-    }
-
-    /**
-     * Return constant used for entries which have matching original & translation value to determine if they should be retranslated.
-     *
-     * @return int
-     */
-    public function get_constant_machine_retranslated(){
-        return self::MACHINE_RETRANSLATED;
     }
 
 	/**

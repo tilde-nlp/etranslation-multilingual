@@ -1088,20 +1088,20 @@ class TRP_Translation_Manager
                     $machine_strings = apply_filters('trp_gettext_machine_translate_strings', array(), $new_strings, $TRP_LANGUAGE, $trp_gettext_strings_for_machine_translation);
                 }
 
-                if ( !empty( $machine_strings ) ) {
-                    foreach ( $new_strings as $key => $new_string ) {
-                        if (isset($machine_strings[ $new_string ])) {
-                            $trp_gettext_strings_for_machine_translation[ $key ]['translated'] = $machine_strings[ $new_string ];
-                        }
+                foreach ( $new_strings as $key => $new_string ) {
+                    if (isset($machine_strings[ $new_string ])) {
+                        $trp_gettext_strings_for_machine_translation[ $key ]['translated'] = $machine_strings[ $new_string ];
+                    } else {
+                        $trp_gettext_strings_for_machine_translation[ $key ]['translated'] = "";
                     }
-
-                    if (!$this->trp_query) {
-                        $trp = TRP_Translate_Press::get_trp_instance();
-                        $this->trp_query = $trp->get_component('query');
-                    }
-
-                    $this->trp_query->update_gettext_strings($trp_gettext_strings_for_machine_translation, $TRP_LANGUAGE);
                 }
+
+                if (!$this->trp_query) {
+                    $trp = TRP_Translate_Press::get_trp_instance();
+                    $this->trp_query = $trp->get_component('query');
+                }
+
+                $this->trp_query->update_gettext_strings($trp_gettext_strings_for_machine_translation, $TRP_LANGUAGE);
             }
         }
     }

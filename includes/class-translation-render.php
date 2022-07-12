@@ -1385,8 +1385,7 @@ class TRP_Translation_Render{
 	        	continue;
 	        }
 	        //strings existing in database,
-            if ( isset( $dictionary[$string]->translated )
-                && (html_entity_decode($dictionary[$string]->original, ENT_COMPAT) != $dictionary[$string]->translated || $dictionary[$string]->status != $this->trp_query->get_constant_machine_translated()) ) {
+            if ( isset( $dictionary[$string]->translated ) ) {
                 $translated_strings[$i] = $dictionary[$string]->translated;
             }else{
                 $new_strings[$i] = $translateable_strings[$i];
@@ -1411,13 +1410,6 @@ class TRP_Translation_Render{
                 $id = NULL;
                 if (isset( $untranslated_list[$string] )) {
                     $id = $untranslated_list[$string]->id;
-                } else if (isset($dictionary[$string])) {
-                    $id = $dictionary[$string]->id;
-                }
-
-                $status = $this->trp_query->get_constant_machine_translated();
-                if (isset($dictionary[$string]) && $dictionary[$string]->status == $status) {
-                    $status = $this->trp_query->get_constant_machine_retranslated();
                 }
 
                 array_push( $update_strings, array(
@@ -1425,7 +1417,7 @@ class TRP_Translation_Render{
                     'original_id' => $original_inserts[ $string ]->id,
                     'original'    => trp_sanitize_string( $string, false ),
                     'translated'  => trp_sanitize_string( $machine_strings[ $string ] ),
-                    'status'      => $status ) );
+                    'status'      => $this->trp_query->get_constant_machine_translated() ) );
             }
         }else{
             $machine_strings = false;
