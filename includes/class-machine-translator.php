@@ -330,18 +330,6 @@ class TRP_Machine_Translator {
 	    return $placeholders;
     }
 
-    private function get_sprintf_specifiers(): array {
-        $result = array();
-        $letters = array("s", "d", "f", "u");
-        foreach ($letters as $l) {
-            $result[] = "%$l";
-            for ($i = 1; $i < 10; $i++) {
-                $result[] = "%$i\$$l";
-            }
-        }
-        return $result;
-    }
-
     /**
      * Function to be used externally
      *

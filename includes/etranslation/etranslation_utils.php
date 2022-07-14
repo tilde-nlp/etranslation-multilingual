@@ -66,6 +66,6 @@ class TRP_eTranslation_Utils {
                 $result[] = "%$i\$$l";
             }
         }
-        return $result + array('%', '$', '#');
+        return array_merge($result, array('%', '$', '#', "\r\n", "\n"));
     }
 }
