@@ -406,7 +406,6 @@ class TRP_Translate_Press{
         $this->loader->add_action( 'wp_head', $this->translation_manager, 'output_noindex_tag', 100 );
 
         $this->loader->add_action( 'wp_enqueue_scripts', $this->mt_notice, 'enqueue_mt_notice_scripts' );
-        $this->loader->add_action( 'wp_body_open', $this->mt_notice, 'add_mt_notice', 11);
     }
 
     /**

@@ -2,8 +2,8 @@
 /*
 Plugin Name: eTranslation Multilingual
 Plugin URI: https://ec.europa.eu/info/index_en
-Description: Experience a better way of translating your WordPress site using a visual front-end translation editor, with full support for WooCommerce and site builders.
-Version: 0.0.1
+Description: Make your site multilingual in few steps with eTranslation Multilingual Wordpress plugin. 
+Version: 1.0.0
 Author: EC
 Author URI: https://ec.europa.eu
 Text Domain: translatepress-multilingual
@@ -56,7 +56,7 @@ function register_callback() {
 }
 
 function translation_error_callback(WP_REST_Request $request): WP_REST_Response {
-    $response = new WP_REST_Response(etranslation_query_action('translation_document_destination', $request));
+    $response = new WP_REST_Response(etranslation_query_action('translation_error_callback', $request));
     $response->set_status(200);
     return $response;
 }

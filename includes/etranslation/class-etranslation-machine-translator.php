@@ -123,7 +123,7 @@ class TRP_eTranslation_Machine_Translator extends TRP_Machine_Translator {
                 $this->machine_translator_logger->count_towards_quota( $new_strings_chunk );
 
                 if (count($response) > 0 && count($response) < count($new_strings_chunk)) {
-                    error_log("[$source_language_code => $target_language_code] Translation list is incomplete. Using original string for last " . count($new_strings_chunk) - count($response) . " strings.");
+                    error_log("[$source_language_code => $target_language_code] Translation list is incomplete. Using original string for last " . (count($new_strings_chunk) - count($response)) . " strings.");
                 }
                 foreach ($new_strings_chunk as $key => $old_string) {
                     if (isset($response[$i])) {
