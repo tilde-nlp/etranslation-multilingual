@@ -150,83 +150,83 @@ class TRP_Translation_Render{
                     'type'          => 'meta_desc',
                     'attribute'     => 'name',
                     'value'         => 'description',
-                    'description'   => esc_html__( 'Description', 'translatepress-multilingual' )
+                    'description'   => esc_html__( 'Description', 'etranslation-multilingual' )
                 ),
                 array(
                     'type'          => 'meta_desc',
                     'attribute'     => 'property',
                     'value'         => 'og:title',
-                    'description'   => esc_html__( 'OG Title', 'translatepress-multilingual' )
+                    'description'   => esc_html__( 'OG Title', 'etranslation-multilingual' )
                 ),
                 array(
                     'type'          => 'meta_desc',
                     'attribute'     => 'property',
                     'value'         => 'og:site_name',
-                    'description'   => esc_html__( 'OG Site Name', 'translatepress-multilingual' )
+                    'description'   => esc_html__( 'OG Site Name', 'etranslation-multilingual' )
                 ),
                 array(
                     'type'          => 'meta_desc',
                     'attribute'     => 'property',
                     'value'         => 'og:description',
-                    'description'   => esc_html__( 'OG Description', 'translatepress-multilingual' )
+                    'description'   => esc_html__( 'OG Description', 'etranslation-multilingual' )
                 ),
 	            array(
 		            'type'          => 'meta_desc',
 		            'attribute'     => 'property',
 		            'value'         => 'og:image:alt',
-		            'description'   => esc_html__( 'OG Image Alt', 'translatepress-multilingual' )
+		            'description'   => esc_html__( 'OG Image Alt', 'etranslation-multilingual' )
 	            ),
                 array(
                     'type'          => 'meta_desc',
                     'attribute'     => 'name',
                     'value'         => 'twitter:title',
-                    'description'   => esc_html__( 'Twitter Title', 'translatepress-multilingual' )
+                    'description'   => esc_html__( 'Twitter Title', 'etranslation-multilingual' )
                 ),
                 array(
                     'type'          => 'meta_desc',
                     'attribute'     => 'name',
                     'value'         => 'twitter:description',
-                    'description'   => esc_html__( 'Twitter Description', 'translatepress-multilingual' )
+                    'description'   => esc_html__( 'Twitter Description', 'etranslation-multilingual' )
                 ),
 	            array(
 		            'type'          => 'meta_desc',
 		            'attribute'     => 'name',
 		            'value'         => 'twitter:image:alt',
-		            'description'   => esc_html__( 'Twitter Image Alt', 'translatepress-multilingual' )
+		            'description'   => esc_html__( 'Twitter Image Alt', 'etranslation-multilingual' )
 	            ),
                 array(
                     'type'          => 'page_title',
-                    'description'   => esc_html__( 'Page Title', 'translatepress-multilingual' )
+                    'description'   => esc_html__( 'Page Title', 'etranslation-multilingual' )
                 ),
 	            array(
 		            'type'          => 'meta_desc',
 		            'attribute'     => 'name',
 		            'value'         => 'DC.Title',
-		            'description'   => esc_html__( 'Dublin Core Title', 'translatepress-multilingual' )
+		            'description'   => esc_html__( 'Dublin Core Title', 'etranslation-multilingual' )
 	            ),
 	            array(
 		            'type'          => 'meta_desc',
 		            'attribute'     => 'name',
 		            'value'         => 'DC.Description',
-		            'description'   => esc_html__( 'Dublin Core Description', 'translatepress-multilingual' )
+		            'description'   => esc_html__( 'Dublin Core Description', 'etranslation-multilingual' )
 	            ),
 	            array(
 		            'type'          => 'meta_desc_img',
 		            'attribute'     => 'property',
 		            'value'         => 'og:image',
-		            'description'   => esc_html__( 'OG Image', 'translatepress-multilingual' )
+		            'description'   => esc_html__( 'OG Image', 'etranslation-multilingual' )
 	            ),
 	            array(
 		            'type'          => 'meta_desc_img',
 		            'attribute'     => 'property',
 		            'value'         => 'og:image:secure_url',
-		            'description'   => esc_html__( 'OG Image Secure URL', 'translatepress-multilingual' )
+		            'description'   => esc_html__( 'OG Image Secure URL', 'etranslation-multilingual' )
 	            ),
 	            array(
 		            'type'          => 'meta_desc_img',
 		            'attribute'     => 'name',
 		            'value'         => 'twitter:image',
-		            'description'   => esc_html__( 'Twitter Image', 'translatepress-multilingual' )
+		            'description'   => esc_html__( 'Twitter Image', 'etranslation-multilingual' )
 	            ),
 
             ));

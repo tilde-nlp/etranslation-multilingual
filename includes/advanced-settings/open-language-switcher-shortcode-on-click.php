@@ -5,8 +5,8 @@ function trp_open_language_switcher_shortcode_on_click( $settings_array ){
     $settings_array[] = array(
         'name'          => 'open_language_switcher_shortcode_on_click',
         'type'          => 'checkbox',
-        'label'         => esc_html__( 'Open language switcher only on click', 'translatepress-multilingual' ),
-        'description'   => wp_kses( __( 'Open the language switcher shortcode by clicking on it instead of hovering.<br> Close it by clicking on it, anywhere else on the screen or by pressing the escape key. This will affect only the shortcode language switcher.', 'translatepress-multilingual' ), array( 'br' => array()) ),
+        'label'         => esc_html__( 'Open language switcher only on click', 'etranslation-multilingual' ),
+        'description'   => wp_kses( __( 'Open the language switcher shortcode by clicking on it instead of hovering.<br> Close it by clicking on it, anywhere else on the screen or by pressing the escape key. This will affect only the shortcode language switcher.', 'etranslation-multilingual' ), array( 'br' => array()) ),
     );
     return $settings_array;
 }

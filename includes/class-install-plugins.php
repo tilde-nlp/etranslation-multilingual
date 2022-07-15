@@ -31,9 +31,9 @@ class TRP_Install_Plugins {
                 $short_slugs = $this->get_plugin_slugs();
                 if ( isset( $short_slugs[$plugin_slug]) ){
                     if ( $this->install_upgrade_activate($plugin_slug) ){
-                        $message = esc_html__('Active', 'translatepress-multilingual');
+                        $message = esc_html__('Active', 'etranslation-multilingual');
                     }else{
-                        $message = wp_kses( sprintf( __('Could not install. Try again from <a href="%s" >Plugins Dashboard.</a>', 'translatepress-multilingual'), admin_url('plugins.php') ), array('a' => array( 'href' => array() ) ) );
+                        $message = wp_kses( sprintf( __('Could not install. Try again from <a href="%s" >Plugins Dashboard.</a>', 'etranslation-multilingual'), admin_url('plugins.php') ), array('a' => array( 'href' => array() ) ) );
                     }
                     wp_die( trp_safe_json_encode( $message ));//phpcs:ignore
                 }

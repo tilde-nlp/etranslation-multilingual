@@ -23,12 +23,12 @@ class TRP_Settings{
      */
     public function get_language_switcher_options(){
         $ls_options = apply_filters( 'trp_language_switcher_output', array(
-            'full-names'         => array( 'full_names'  => true, 'short_names'  => false, 'flags' => false, 'no_html' => false, 'label' => __( 'Full Language Names', 'translatepress-multilingual' ) ),
-            'short-names'        => array( 'full_names'  => false, 'short_names'  => true, 'flags' => false, 'no_html' => false, 'label' => __( 'Short Language Names', 'translatepress-multilingual' ) ),
-            'flags-full-names'   => array( 'full_names'  => true, 'short_names'  => false, 'flags' => true, 'no_html' => false, 'label' => __( 'Flags with Full Language Names', 'translatepress-multilingual' ) ),
-            'flags-short-names'  => array( 'full_names'  => false, 'short_names'  => true, 'flags' => true, 'no_html' => false, 'label' => __( 'Flags with Short Language Names', 'translatepress-multilingual' ) ),
-            'only-flags'         => array( 'full_names'  => false, 'short_names'  => false, 'flags' => true, 'no_html' => false, 'label' => __( 'Only Flags', 'translatepress-multilingual' ) ),
-	        'full-names-no-html' => array( 'full_names'  => false, 'short_names'  => false, 'flags' => false, 'no_html' => true, 'label' => __( 'Full Language Names No HTML', 'translatepress-multilingual' ) )
+            'full-names'         => array( 'full_names'  => true, 'short_names'  => false, 'flags' => false, 'no_html' => false, 'label' => __( 'Full Language Names', 'etranslation-multilingual' ) ),
+            'short-names'        => array( 'full_names'  => false, 'short_names'  => true, 'flags' => false, 'no_html' => false, 'label' => __( 'Short Language Names', 'etranslation-multilingual' ) ),
+            'flags-full-names'   => array( 'full_names'  => true, 'short_names'  => false, 'flags' => true, 'no_html' => false, 'label' => __( 'Flags with Full Language Names', 'etranslation-multilingual' ) ),
+            'flags-short-names'  => array( 'full_names'  => false, 'short_names'  => true, 'flags' => true, 'no_html' => false, 'label' => __( 'Flags with Short Language Names', 'etranslation-multilingual' ) ),
+            'only-flags'         => array( 'full_names'  => false, 'short_names'  => false, 'flags' => true, 'no_html' => false, 'label' => __( 'Only Flags', 'etranslation-multilingual' ) ),
+	        'full-names-no-html' => array( 'full_names'  => false, 'short_names'  => false, 'flags' => false, 'no_html' => true, 'label' => __( 'Full Language Names No HTML', 'etranslation-multilingual' ) )
         ) );
         return $ls_options;
     }
@@ -63,10 +63,10 @@ class TRP_Settings{
      */
     public function output_language_switcher_floater_possition( $ls_position ){
         $ls_options = array(
-            'bottom-right'  => array( 'label' => __( 'Bottom Right', 'translatepress-multilingual' ) ),
-            'bottom-left'   => array( 'label' => __( 'Bottom Left', 'translatepress-multilingual' ) ),
-            'top-right'     => array( 'label' => __( 'Top Right', 'translatepress-multilingual' ) ),
-            'top-left'      => array( 'label' => __( 'Top Left', 'translatepress-multilingual' ) ),
+            'bottom-right'  => array( 'label' => __( 'Bottom Right', 'etranslation-multilingual' ) ),
+            'bottom-left'   => array( 'label' => __( 'Bottom Left', 'etranslation-multilingual' ) ),
+            'top-right'     => array( 'label' => __( 'Top Right', 'etranslation-multilingual' ) ),
+            'top-left'      => array( 'label' => __( 'Top Left', 'etranslation-multilingual' ) ),
 
         );
 
@@ -87,9 +87,9 @@ class TRP_Settings{
 	 */
 	public function output_language_switcher_floater_color( $ls_color ){
 		$ls_options = array(
-			'default'  => array( 'label' => __( 'Default', 'translatepress-multilingual' ) ),
-			'dark'  => array( 'label' => __( 'Dark', 'translatepress-multilingual' ) ),
-			'light'   => array( 'label' => __( 'Light', 'translatepress-multilingual' ) ),
+			'default'  => array( 'label' => __( 'Default', 'etranslation-multilingual' ) ),
+			'dark'  => array( 'label' => __( 'Dark', 'etranslation-multilingual' ) ),
+			'light'   => array( 'label' => __( 'Light', 'etranslation-multilingual' ) ),
 		);
 
 		$output = '<select id="floater-color" name="etm_settings[floater-color]" class="trp-select trp-ls-select-option">';
@@ -160,8 +160,8 @@ class TRP_Settings{
         $trp = TRP_Translate_Press::get_trp_instance();
         $install_plugins = $trp->get_component('install_plugins');
 
-        $active_plugin = __('Active', 'translatepress-multilingual');
-        $inactive_plugin = __('Install & Activate', 'translatepress-multilingual');
+        $active_plugin = __('Active', 'etranslation-multilingual');
+        $inactive_plugin = __('Install & Activate', 'etranslation-multilingual');
 
         $plugins = array( 'pb', 'pms' );
         $plugin_settings = array();
@@ -450,7 +450,7 @@ class TRP_Settings{
                 $domains = $machine_translator->get_all_domains();
             }
 
-            wp_localize_script( 'trp-settings-script', 'trp_url_slugs_info', array( 'iso_codes' => $iso_codes, 'error_message_duplicate_slugs' => __( 'Error! Duplicate URL slug values.', 'translatepress-multilingual' ), 'domains' => $domains ) );
+            wp_localize_script( 'trp-settings-script', 'trp_url_slugs_info', array( 'iso_codes' => $iso_codes, 'error_message_duplicate_slugs' => __( 'Error! Duplicate URL slug values.', 'etranslation-multilingual' ), 'domains' => $domains ) );
 
             wp_enqueue_script( 'trp-select2-lib-js', TRP_PLUGIN_URL . 'assets/lib/select2-lib/dist/js/select2.min.js', array( 'jquery' ), TRP_PLUGIN_VERSION );
             wp_enqueue_style( 'trp-select2-lib-css', TRP_PLUGIN_URL . 'assets/lib/select2-lib/dist/css/select2.min.css', array(), TRP_PLUGIN_VERSION );
@@ -491,13 +491,13 @@ class TRP_Settings{
             $this->trp_languages = $trp->get_component( 'languages' );
         }
         $published_languages = $this->trp_languages->get_language_names( $languages, 'english_name' );
-        $published_languages['current_language'] = __( 'Current Language', 'translatepress-multilingual' );
+        $published_languages['current_language'] = __( 'Current Language', 'etranslation-multilingual' );
         $languages[] = 'current_language';
         $posts = get_posts( array( 'post_type' =>'language_switcher',  'posts_per_page'   => -1  ) );
 
         if ( count( $published_languages ) == 3 ){
             $languages[] = 'opposite_language';
-            $published_languages['opposite_language'] = __( 'Opposite Language', 'translatepress-multilingual' );
+            $published_languages['opposite_language'] = __( 'Opposite Language', 'etranslation-multilingual' );
         }
 
         foreach ( $published_languages as $language_code => $language_name ) {
@@ -537,12 +537,12 @@ class TRP_Settings{
     public function add_navigation_tabs(){
         $tabs = array(
             array(
-                'name'  => __( 'General', 'translatepress-multilingual' ),
+                'name'  => __( 'General', 'etranslation-multilingual' ),
                 'url'   => admin_url( 'options-general.php?page=etranslation-multilingual' ),
                 'page'  => 'etranslation-multilingual'
             ),
             array(
-                'name'  => __( 'Translate Site', 'translatepress-multilingual' ),
+                'name'  => __( 'Translate Site', 'etranslation-multilingual' ),
                 'url'   => add_query_arg( 'trp-edit-translation', 'true', home_url() ),
                 'page'  => 'trp_translation_editor'
             ),
@@ -586,12 +586,12 @@ class TRP_Settings{
      * @return array An array of plugin action links.
      */
     public function plugin_action_links( $links ) {
-        $settings_link = sprintf( '<a href="%1$s">%2$s</a>', admin_url( 'options-general.php?page=etranslation-multilingual' ), __( 'Settings', 'translatepress-multilingual' ) );
+        $settings_link = sprintf( '<a href="%1$s">%2$s</a>', admin_url( 'options-general.php?page=etranslation-multilingual' ), __( 'Settings', 'etranslation-multilingual' ) );
 
         array_unshift( $links, $settings_link );
 
         if( !trp_is_paid_version() ) {
-            $links['go_pro'] = sprintf( '<a href="%1$s" target="_blank" style="color: #e76054; font-weight: bold;">%2$s</a>', esc_url( trp_add_affiliate_id_to_link( 'https://translatepress.com/pricing/?utm_source=wpbackend&utm_medium=clientsite&utm_content=tpeditor&utm_campaign=tpfree' ) ), esc_html__( 'Pro Features', 'translatepress-multilingual' ) );
+            $links['go_pro'] = sprintf( '<a href="%1$s" target="_blank" style="color: #e76054; font-weight: bold;">%2$s</a>', esc_url( trp_add_affiliate_id_to_link( 'https://translatepress.com/pricing/?utm_source=wpbackend&utm_medium=clientsite&utm_content=tpeditor&utm_campaign=tpfree' ) ), esc_html__( 'Pro Features', 'etranslation-multilingual' ) );
         }else {
             $license_details = get_option( 'etm_license_details' );
             $is_demosite     = ( strpos( site_url(), 'https://demo.translatepress.com' ) !== false );
@@ -599,7 +599,7 @@ class TRP_Settings{
                 if ( !empty( $license_details['invalid'] ) ) {
                     $license_detail = $license_details['invalid'][0];
                     if ( isset( $license_detail->error ) && $license_detail->error == 'missing' ) {
-                        $links['license'] = sprintf( '<a href="%1$s" target="_blank" style="color: #e76054; font-weight: bold;">%2$s</a>', esc_url(trp_add_affiliate_id_to_link( admin_url( '/admin.php?page=etm_license_key' ) ) ), esc_html__( 'Activate License', 'translatepress-multilingual' ) );
+                        $links['license'] = sprintf( '<a href="%1$s" target="_blank" style="color: #e76054; font-weight: bold;">%2$s</a>', esc_url(trp_add_affiliate_id_to_link( admin_url( '/admin.php?page=etm_license_key' ) ) ), esc_html__( 'Activate License', 'etranslation-multilingual' ) );
                     }
                 }
             }

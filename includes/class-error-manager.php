@@ -47,7 +47,7 @@ class TRP_Error_Manager{
                 $trp = TRP_Translate_Press::get_trp_instance();
                 $this->trp_settings = $trp->get_component( 'settings' );
             }
-            $error_message = wp_kses( sprintf(  __('<strong>eTranslation Multilingual</strong> encountered SQL errors. <a href="%s" title="View eTranslation Multilingual SQL Errors">Check out the errors</a>.', 'translatepress-multilingual'), admin_url( 'admin.php?page=etm_error_manager' ) ), array('a' => array('href' => array(), 'title' => array()), 'strong' => array()));
+            $error_message = wp_kses( sprintf(  __('<strong>eTranslation Multilingual</strong> encountered SQL errors. <a href="%s" title="View eTranslation Multilingual SQL Errors">Check out the errors</a>.', 'etranslation-multilingual'), admin_url( 'admin.php?page=etm_error_manager' ) ), array('a' => array('href' => array(), 'title' => array()), 'strong' => array()));
             $mt_settings_option = get_option('etm_machine_translation_settings', $this->trp_settings->get_default_trp_machine_translation_settings() );
             if ( $mt_settings_option['machine-translation'] != 'no' ) {
                 $mt_settings_option['machine-translation'] = 'no';
@@ -56,7 +56,7 @@ class TRP_Error_Manager{
                 // filter is needed to block automatic translation in this execution. The settings don't update throughout the plugin for this request. Only the next request will have machine translation turned off.
                 add_filter( 'trp_disable_automatic_translations_due_to_error', __return_true() );
 
-                $error_message = wp_kses( __('Automatic translation has been disabled.','translatepress-multilingual'), array('strong' => array() ) ) . ' ' . $error_message ;
+                $error_message = wp_kses( __('Automatic translation has been disabled.','etranslation-multilingual'), array('strong' => array() ) ) . ' ' . $error_message ;
             }
             if ( !isset( $option['notifications']['disable_automatic_translations'] ) ) {
 
@@ -143,7 +143,7 @@ class TRP_Error_Manager{
 
                 $message = '<p style="padding-right:30px;">' . $logged_notification['message'] . '</p>';
                 //make sure to use the trp_dismiss_admin_notification arg
-                $message .= '<a href="' . add_query_arg(array('trp_dismiss_admin_notification' => $notification_id)) . '" type="button" class="notice-dismiss" style="text-decoration: none;z-index:100;"><span class="screen-reader-text">' . esc_html__('Dismiss this notice.', 'translatepress-multilingual') . '</span></a>';
+                $message .= '<a href="' . add_query_arg(array('trp_dismiss_admin_notification' => $notification_id)) . '" type="button" class="notice-dismiss" style="text-decoration: none;z-index:100;"><span class="screen-reader-text">' . esc_html__('Dismiss this notice.', 'etranslation-multilingual') . '</span></a>';
 
                 $notifications->add_notification($notification_id, $message, 'trp-notice trp-narrow notice error is-dismissible', true, array('translate-press'), true);
             }
@@ -161,15 +161,15 @@ class TRP_Error_Manager{
     public function output_db_errors( $html_content ){
         $option = get_option( 'etm_db_errors', false );
         if ( $option !== false && isset($option['errors']) ) {
-            $html_content .= '<h2>' . esc_html__('Logged errors', 'translatepress-multilingual') . '</h2>';
-            $html_content .= '<p>' . esc_html__('These are the most recent 5 errors logged by eTransaltion Multilingual:', 'translatepress-multilingual' ) . '</p>';
+            $html_content .= '<h2>' . esc_html__('Logged errors', 'etranslation-multilingual') . '</h2>';
+            $html_content .= '<p>' . esc_html__('These are the most recent 5 errors logged by eTransaltion Multilingual:', 'etranslation-multilingual' ) . '</p>';
             $html_content .= '<table>';
             $option['errors'] = array_reverse($option['errors']);
             foreach ($option['errors'] as $count => $error) {
                 $count = ( is_int( $count) ) ? $count + 1 : $count;
                 $html_content .= '<tr><td>' . esc_html($count) . '</td></tr>';
                 foreach( $error as $key => $error_detail ){
-                    $error_detail = ($error_detail === true ) ? esc_html__('Yes', 'translatepress-multilingual') : $error_detail;
+                    $error_detail = ($error_detail === true ) ? esc_html__('Yes', 'etranslation-multilingual') : $error_detail;
                     $html_content .= '<tr><td><strong>' . esc_html($key ) . '</strong></td>' . '<td>' .esc_html( $error_detail ) . '</td></tr>';
                 }
 
@@ -186,28 +186,28 @@ class TRP_Error_Manager{
      * @return string
      */
     public function show_instructions_on_how_to_fix( $html_content ){
-        $html_content .= '<h2>' . esc_html__('Why are these errors occuring', 'translatepress-multilingual') . '</h2>';
-        $html_content .= '<p>' . esc_html__('If eTranslation Multilingual detects something wrong when executing queries on your database, it may disable the Automatic Translation feature in order to avoid any extra charging by Google. Automatic Translation needs to be manually turned on, after you solve the issues.', 'translatepress-multilingual') . '</p>';
-        $html_content .= '<p>' . esc_html__('The SQL errors detected can occur for various reasons including missing tables, missing permissions for the SQL user to create tables or perform other operations, problems after site migration or changes to SQL server configuration.', 'translatepress-multilingual') . '</p>';
+        $html_content .= '<h2>' . esc_html__('Why are these errors occuring', 'etranslation-multilingual') . '</h2>';
+        $html_content .= '<p>' . esc_html__('If eTranslation Multilingual detects something wrong when executing queries on your database, it may disable the Automatic Translation feature in order to avoid any extra charging by Google. Automatic Translation needs to be manually turned on, after you solve the issues.', 'etranslation-multilingual') . '</p>';
+        $html_content .= '<p>' . esc_html__('The SQL errors detected can occur for various reasons including missing tables, missing permissions for the SQL user to create tables or perform other operations, problems after site migration or changes to SQL server configuration.', 'etranslation-multilingual') . '</p>';
 
-        $html_content .= '<h2>' . esc_html__('What you can do in this situation', 'translatepress-multilingual') . '</h2>';
+        $html_content .= '<h2>' . esc_html__('What you can do in this situation', 'etranslation-multilingual') . '</h2>';
 
-        $html_content .= '<h4>' . esc_html__('Plan A.', 'translatepress-multilingual') . '</h4>';
-        $html_content .= '<p>' . esc_html__('Go to Settings -> eTranslation Multilingual -> General tab and Save Settings. This will regenerate the tables using your current SQL settings. Check if no more errors occur while browsing your website in a translated language. Look at the timestamps of the errors to make sure you are not seeing the old errors. Only the most recent 5 errors are displayed.', 'translatepress-multilingual') . '</p>';
+        $html_content .= '<h4>' . esc_html__('Plan A.', 'etranslation-multilingual') . '</h4>';
+        $html_content .= '<p>' . esc_html__('Go to Settings -> eTranslation Multilingual -> General tab and Save Settings. This will regenerate the tables using your current SQL settings. Check if no more errors occur while browsing your website in a translated language. Look at the timestamps of the errors to make sure you are not seeing the old errors. Only the most recent 5 errors are displayed.', 'etranslation-multilingual') . '</p>';
 
-        $html_content .= '<h4>' . esc_html__('Plan B.', 'translatepress-multilingual') . '</h4>';
-        $html_content .= '<p>' . esc_html__('If your problem isn\'t solved, try the following steps:', 'translatepress-multilingual') . '</p>';
+        $html_content .= '<h4>' . esc_html__('Plan B.', 'etranslation-multilingual') . '</h4>';
+        $html_content .= '<p>' . esc_html__('If your problem isn\'t solved, try the following steps:', 'etranslation-multilingual') . '</p>';
         $html_content .= '<ol>';
-        $html_content .= '<li>' . esc_html__('Create a backup of your database', 'translatepress-multilingual') . '</li>';
-        $html_content .= '<li>' . esc_html__('Create a copy of each translation table where you encounter errors. You can copy the table within the same database (etm_dictionary_en_us_es_es_COPY for example) -- perform this step only if you want to keep the current translations', 'translatepress-multilingual') . '</li>';
-        $html_content .= '<li>' . esc_html__('Remove the trouble tables by executing the DROP function on them', 'translatepress-multilingual') . '</li>';
-        $html_content .= '<li>' . esc_html__('Go to Settings -> eTranslation Multilingual -> General tab and Save Settings. This will regenerate the tables using your current SQL server.', 'translatepress-multilingual') . '</li>';
-        $html_content .= '<li>' . esc_html__('Copy the relevant content from the duplicated tables (etm_dictionary_en_us_es_es_COPY for example) in the newly generated table (etm_dictionary_en_us_es_es) -- perform this step only if you want to keep the current translations', 'translatepress-multilingual') . '</li>';
-        $html_content .= '<li>' . esc_html__('Test it to see if everything is working. If something went wrong, you can restore the backup that you\'ve made at the first step. Check if no more errors occur while browsing your website in a translated language. Look at the timestamps of the errors to make sure you are not seeing the old errors. Only the most recent 5 errors are displayed.', 'translatepress-multilingual') . '</li>';
+        $html_content .= '<li>' . esc_html__('Create a backup of your database', 'etranslation-multilingual') . '</li>';
+        $html_content .= '<li>' . esc_html__('Create a copy of each translation table where you encounter errors. You can copy the table within the same database (etm_dictionary_en_us_es_es_COPY for example) -- perform this step only if you want to keep the current translations', 'etranslation-multilingual') . '</li>';
+        $html_content .= '<li>' . esc_html__('Remove the trouble tables by executing the DROP function on them', 'etranslation-multilingual') . '</li>';
+        $html_content .= '<li>' . esc_html__('Go to Settings -> eTranslation Multilingual -> General tab and Save Settings. This will regenerate the tables using your current SQL server.', 'etranslation-multilingual') . '</li>';
+        $html_content .= '<li>' . esc_html__('Copy the relevant content from the duplicated tables (etm_dictionary_en_us_es_es_COPY for example) in the newly generated table (etm_dictionary_en_us_es_es) -- perform this step only if you want to keep the current translations', 'etranslation-multilingual') . '</li>';
+        $html_content .= '<li>' . esc_html__('Test it to see if everything is working. If something went wrong, you can restore the backup that you\'ve made at the first step. Check if no more errors occur while browsing your website in a translated language. Look at the timestamps of the errors to make sure you are not seeing the old errors. Only the most recent 5 errors are displayed.', 'etranslation-multilingual') . '</li>';
         $html_content .= '</ol>';
 
-        $html_content .= '<h4>' . esc_html__('Plan C.', 'translatepress-multilingual') . '</h4>';
-        $html_content .= '<p>' . esc_html__('If your problem still isn\'t solved, try asking your hosting about your errors. The most common issue is missing permissions for the SQL user, such as the Create Tables permission.', 'translatepress-multilingual') . '</p>';
+        $html_content .= '<h4>' . esc_html__('Plan C.', 'etranslation-multilingual') . '</h4>';
+        $html_content .= '<p>' . esc_html__('If your problem still isn\'t solved, try asking your hosting about your errors. The most common issue is missing permissions for the SQL user, such as the Create Tables permission.', 'etranslation-multilingual') . '</p>';
 
         return $html_content;
     }

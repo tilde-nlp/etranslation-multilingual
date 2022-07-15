@@ -6,7 +6,7 @@ Description: Make your site multilingual in few steps with eTranslation Multilin
 Version: 1.0.0
 Author: EC
 Author URI: https://ec.europa.eu
-Text Domain: translatepress-multilingual
+Text Domain: etranslation-multilingual
 Domain Path: /languages
 License: GPL2
 WC requires at least: 2.5.0
@@ -112,7 +112,7 @@ function trp_run_translatepress_hooks(){
 }
 
 function trp_translatepress_disabled_notice(){
-	echo '<div class="notice notice-error"><p>' . wp_kses( sprintf( __( '<strong>eTranslation Multilingual</strong> requires at least PHP version 5.6.20+ to run. It is the <a href="%s">minimum requirement of the latest WordPress version</a>. Please contact your server administrator to update your PHP version.','translatepress-multilingual' ), 'https://wordpress.org/about/requirements/' ), array( 'a' => array( 'href' => array() ), 'strong' => array() ) ) . '</p></div>';
+	echo '<div class="notice notice-error"><p>' . wp_kses( sprintf( __( '<strong>eTranslation Multilingual</strong> requires at least PHP version 5.6.20+ to run. It is the <a href="%s">minimum requirement of the latest WordPress version</a>. Please contact your server administrator to update your PHP version.','etranslation-multilingual' ), 'https://wordpress.org/about/requirements/' ), array( 'a' => array( 'href' => array() ), 'strong' => array() ) ) . '</p></div>';
 }
 
 

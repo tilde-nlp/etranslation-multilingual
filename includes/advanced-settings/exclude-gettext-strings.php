@@ -6,11 +6,11 @@ function trp_register_exclude_gettext_strings( $settings_array ){
 		'name'          => 'exclude_gettext_strings',
 		'type'          => 'list',
 		'columns'       => array(
-								'string' => __('Gettext String', 'translatepress-multilingual' ),
-								'domain' => __('Domain', 'translatepress-multilingual')
+								'string' => __('Gettext String', 'etranslation-multilingual' ),
+								'domain' => __('Domain', 'etranslation-multilingual')
 							),
-		'label'         => esc_html__( 'Exclude Gettext Strings', 'translatepress-multilingual' ),
-		'description'   => wp_kses( __( 'Exclude these strings from being translated as Gettext strings by eTranslation Multilingual. Leave the domain empty to take into account any Gettext string.<br/>Can still be translated through po/mo files.', 'translatepress-multilingual' ), array( 'br' => array() ) ),
+		'label'         => esc_html__( 'Exclude Gettext Strings', 'etranslation-multilingual' ),
+		'description'   => wp_kses( __( 'Exclude these strings from being translated as Gettext strings by eTranslation Multilingual. Leave the domain empty to take into account any Gettext string.<br/>Can still be translated through po/mo files.', 'etranslation-multilingual' ), array( 'br' => array() ) ),
 	);
 	return $settings_array;
 }

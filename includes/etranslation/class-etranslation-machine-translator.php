@@ -221,7 +221,7 @@ class TRP_eTranslation_Machine_Translator extends TRP_Machine_Translator {
 
             if ( !$this->credentials_set() ) {
                 $is_error       = true;
-                $return_message = __( 'Please enter your eTranslation credentials.', 'translatepress-multilingual' );
+                $return_message = __( 'Please enter your eTranslation credentials.', 'etranslation-multilingual' );
             } else {
                 $response = $machine_translator->test_request();
                 $code     = $response["response"];

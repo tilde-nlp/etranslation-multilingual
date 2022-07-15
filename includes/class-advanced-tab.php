@@ -16,7 +16,7 @@ class TRP_Advanced_Tab {
 	 */
 	public function add_advanced_tab_to_settings( $tab_array ){
 		$tab_array[] =  array(
-			'name'  => __( 'Advanced', 'translatepress-multilingual' ),
+			'name'  => __( 'Advanced', 'etranslation-multilingual' ),
 			'url'   => admin_url( 'admin.php?page=etm_advanced_page' ),
 			'page'  => 'etm_advanced_page'
 		);
@@ -182,7 +182,7 @@ class TRP_Advanced_Tab {
 		} //end foreach of parsing all the registered settings array
 
         if ( apply_filters( 'trp_saving_advanced_settings_is_successful', true, $settings, $submitted_settings ) ) {
-            add_settings_error( 'etm_advanced_settings', 'settings_updated', esc_html__( 'Settings saved.', 'translatepress-multilingual' ), 'updated' );
+            add_settings_error( 'etm_advanced_settings', 'settings_updated', esc_html__( 'Settings saved.', 'etranslation-multilingual' ), 'updated' );
         }
 
 		return apply_filters( 'trp_extra_sanitize_advanced_settings', $settings, $submitted_settings, $prev_settings );
@@ -317,7 +317,7 @@ class TRP_Advanced_Tab {
                 <td>
 	                <label>
 	                    <input type='checkbox' id='" . esc_attr( $setting['name'] ). "' name='etm_advanced_settings[" . esc_attr( $setting['name'] ) . "]' value='yes' " . $checked . ">
-	                    " . __('Yes', 'translatepress-multilingual' ). "
+	                    " . __('Yes', 'etranslation-multilingual' ). "
 			        </label>
                     <p class='description'>
                         " . wp_kses_post( $setting['description'] ) . "
@@ -527,7 +527,7 @@ class TRP_Advanced_Tab {
 				foreach ( $setting['columns'] as $column => $column_name ) {
 					$html .= "<td><textarea name='etm_advanced_settings[" . esc_attr( $setting['name'] ). "][" . esc_attr( $column ) . "][]'>" . htmlspecialchars($adv_option[ $setting['name'] ][ $column ][ $index ], ENT_QUOTES) . "</textarea></td>";
 				}
-				$html .= "<td><span class='trp-adst-remove-element' data-confirm-message='" . esc_html__('Are you sure you want to remove this item?', 'translatepress-multilingual') . "'>" . esc_html__( 'Remove', 'translatepress-multilingual' ) . "</span></td>";
+				$html .= "<td><span class='trp-adst-remove-element' data-confirm-message='" . esc_html__('Are you sure you want to remove this item?', 'etranslation-multilingual') . "'>" . esc_html__( 'Remove', 'etranslation-multilingual' ) . "</span></td>";
 				$html .= "</tr>";
 			}
 		}
@@ -538,7 +538,7 @@ class TRP_Advanced_Tab {
 			$html .= "<td><textarea id='new_entry_" . esc_attr( $setting['name'] ) . "_" . esc_attr( $column ) . "' data-name='etm_advanced_settings[" . esc_attr( $setting['name'] ) . "][" . esc_attr( $column ) . "][]' data-setting-name='" . esc_attr( $setting['name'] ) . "' data-column-name='" . esc_attr( $column ) . "'></textarea></td>";
 
 		}
-		$html .= "<td><input type='button' class='button-secondary trp-adst-button-add-new-item' value='" . esc_html__( 'Add', 'translatepress-multilingual' ) . "'><span class='trp-adst-remove-element' style='display: none;' data-confirm-message='" . esc_html__('Are you sure you want to remove this item?', 'translatepress-multilingual') . "'>" . esc_html__( 'Remove', 'translatepress-multilingual' ) . "</span></td>";
+		$html .= "<td><input type='button' class='button-secondary trp-adst-button-add-new-item' value='" . esc_html__( 'Add', 'etranslation-multilingual' ) . "'><span class='trp-adst-remove-element' style='display: none;' data-confirm-message='" . esc_html__('Are you sure you want to remove this item?', 'etranslation-multilingual') . "'>" . esc_html__( 'Remove', 'etranslation-multilingual' ) . "</span></td>";
 		;
 		$html .= "</tr></table>";
 
@@ -616,7 +616,7 @@ class TRP_Advanced_Tab {
 							break;
 						case 'select':
 							$html .= "<td><select class='trp-select-advanced' name='etm_advanced_settings[" . esc_attr(  $setting['name'] ) . "][" . esc_attr(  $option_name ) . "][]'>";
-							$html .= "<option value=''>" . esc_html__( 'Select...', 'translatepress-multilingual' ) . "</option>";
+							$html .= "<option value=''>" . esc_html__( 'Select...', 'etranslation-multilingual' ) . "</option>";
 							foreach ( $option_details["values"] as $select_key => $select_value ) {
 								$selected = ($adv_option[ $setting['name'] ][ $option_name ][ $index ] === $select_value ) ? "selected='selected'" : '';
 								$html .= "<option value='". esc_attr($select_value). "'$selected>" . esc_html($select_value) ."</option>";
@@ -632,7 +632,7 @@ class TRP_Advanced_Tab {
 							break;
 					}
 				}
-				$html .= "<td><span class='trp-adst-remove-element' data-confirm-message='" . esc_html__('Are you sure you want to remove this item?', 'translatepress-multilingual') . "'>" . esc_html__( 'Remove', 'translatepress-multilingual' ) . "</span></td>";
+				$html .= "<td><span class='trp-adst-remove-element' data-confirm-message='" . esc_html__('Are you sure you want to remove this item?', 'etranslation-multilingual') . "'>" . esc_html__( 'Remove', 'etranslation-multilingual' ) . "</span></td>";
 				$html .= "</tr>";
 			}
 		}
@@ -650,7 +650,7 @@ class TRP_Advanced_Tab {
 					break;
 				case 'select':
 					$html .= "<td><select id='new_entry_" . esc_attr( $setting['name'] ) . "_" . esc_attr( $option_name ) . "' data-name='etm_advanced_settings[" . esc_attr( $setting['name'] ) . "][" . esc_attr( $option_name ) . "][]' data-setting-name='" . esc_attr( $setting['name'] ) . "' data-column-name='" . esc_attr( $option_name ) . "'>";
-					$html .= "<option value=''>" . __( 'Select...', 'translatepress-multilingual' ) . "</option>";
+					$html .= "<option value=''>" . __( 'Select...', 'etranslation-multilingual' ) . "</option>";
 					foreach ( $option_details["values"] as $select_key => $select_value ) {
 						$html .= "<option value='". esc_attr($select_value). "'>" . esc_html($select_value) . "</option>";
 					}
@@ -663,7 +663,7 @@ class TRP_Advanced_Tab {
 					break;
 			}
 		}
-		$html .= "<td><input type='button' id='button_add_" . esc_attr( $setting['name'] ) . "' class='button-secondary trp-adst-button-add-new-item' value='" . esc_html__( 'Add', 'translatepress-multilingual' ) . "'><span class='trp-adst-remove-element' style='display: none;' data-confirm-message='" . esc_html__('Are you sure you want to remove this item?', 'translatepress-multilingual') . "'>" . esc_html__( 'Remove', 'translatepress-multilingual' ) . "</span></td>";
+		$html .= "<td><input type='button' id='button_add_" . esc_attr( $setting['name'] ) . "' class='button-secondary trp-adst-button-add-new-item' value='" . esc_html__( 'Add', 'etranslation-multilingual' ) . "'><span class='trp-adst-remove-element' style='display: none;' data-confirm-message='" . esc_html__('Are you sure you want to remove this item?', 'etranslation-multilingual') . "'>" . esc_html__( 'Remove', 'etranslation-multilingual' ) . "</span></td>";
 		$html .= "</tr></table>";
 		$html .= "<p class='description'>
                         " . wp_kses_post( $setting['description'] ) . "

@@ -7,8 +7,8 @@ function trp_register_do_not_translate_certain_paths( $settings_array ){
         'type'        => 'custom',
         'name'        => 'translateable_content',
         'rows'        => array( 'option' => 'radio', 'paths' => 'textarea' ),
-        'label'       => esc_html__( 'Do not translate certain paths', 'translatepress-multilingual' ),
-        'description' => wp_kses(  __( 'Choose what paths can be translated. Supports wildcard at the end of the path.<br>For example, to exclude https://example.com/some/path you can either use the rule /some/path/ or /some/*.<br>Enter each rule on it\'s own line. To exclude the home page use {{home}}.', 'translatepress-multilingual' ), array( 'br' => array() )),
+        'label'       => esc_html__( 'Do not translate certain paths', 'etranslation-multilingual' ),
+        'description' => wp_kses(  __( 'Choose what paths can be translated. Supports wildcard at the end of the path.<br>For example, to exclude https://example.com/some/path you can either use the rule /some/path/ or /some/*.<br>Enter each rule on it\'s own line. To exclude the home page use {{home}}.', 'etranslation-multilingual' ), array( 'br' => array() )),
     );
 
 	return $settings_array;
@@ -27,12 +27,12 @@ function trp_output_do_not_translate_certain_paths( $setting ){
             <div class="trp-adv-holder">
                 <label>
                     <input type='radio' id='$setting_name' name="etm_advanced_settings[<?php echo esc_attr( $setting['name'] ); ?>][option]" value="exclude" <?php echo isset( $trp_settings['trp_advanced_settings'][$setting['name']]['option'] ) && $trp_settings['trp_advanced_settings'][$setting['name']]['option'] == 'exclude' ? 'checked' : ''; ?>>
-                    <?php esc_html_e( 'Exclude Paths From Translation', 'translatepress-multilingual' ); ?>
+                    <?php esc_html_e( 'Exclude Paths From Translation', 'etranslation-multilingual' ); ?>
                 </label>
 
                 <label>
                     <input type='radio' id='$setting_name' name="etm_advanced_settings[<?php echo esc_attr( $setting['name'] ); ?>][option]" value="include" <?php echo isset( $trp_settings['trp_advanced_settings'][$setting['name']]['option'] ) && $trp_settings['trp_advanced_settings'][$setting['name']]['option'] == 'include' ? 'checked' : ''; ?> >
-                    <?php esc_html_e( 'Translate Only Certain Paths', 'translatepress-multilingual' ); ?>
+                    <?php esc_html_e( 'Translate Only Certain Paths', 'etranslation-multilingual' ); ?>
                 </label>
             </div>
 

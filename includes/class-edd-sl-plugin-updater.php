@@ -212,7 +212,7 @@ if( !class_exists('TRP_EDD_SL_Plugin_Updater') ) {
 
                 if (empty($version_info->download_link)) {
                     printf(
-                        __('There is a new version of %1$s available. %2$sView version %3$s details%4$s.', 'translatepress-multilingual'), //phpcs:ignore
+                        __('There is a new version of %1$s available. %2$sView version %3$s details%4$s.', 'etranslation-multilingual'), //phpcs:ignore
                         esc_html($version_info->name),
                         '<a target="_blank" class="thickbox" href="' . esc_url($changelog_link) . '">',
                         esc_html($version_info->new_version),
@@ -220,7 +220,7 @@ if( !class_exists('TRP_EDD_SL_Plugin_Updater') ) {
                     );
                 } else {
                     printf(
-                        __('There is a new version of %1$s available. %2$sView version %3$s details%4$s or %5$supdate now%6$s.', 'translatepress-multilingual'), //phpcs:ignore
+                        __('There is a new version of %1$s available. %2$sView version %3$s details%4$s or %5$supdate now%6$s.', 'etranslation-multilingual'), //phpcs:ignore
                         esc_html($version_info->name),
                         '<a target="_blank" class="thickbox" href="' . esc_url($changelog_link) . '">',
                         esc_html($version_info->new_version),
@@ -414,7 +414,7 @@ if( !class_exists('TRP_EDD_SL_Plugin_Updater') ) {
             }
 
             if (!current_user_can('update_plugins')) {
-                wp_die( esc_html__('You do not have permission to install plugin updates', 'translatepress-multilingual'), esc_html__('Error', 'translatepress-multilingual'), array('response' => 403));
+                wp_die( esc_html__('You do not have permission to install plugin updates', 'etranslation-multilingual'), esc_html__('Error', 'etranslation-multilingual'), array('response' => 403));
             }
 
             $data = $edd_plugin_data[sanitize_text_field( $_REQUEST['slug'] )];
@@ -692,7 +692,7 @@ class TRP_Plugin_Updater{
                     if ( is_wp_error( $response ) || 200 !== wp_remote_retrieve_response_code( $response ) ) {
 
                         $response_error_message = $response->get_error_message();
-                        $message[] = ( is_wp_error( $response ) && ! empty( $response_error_message ) ) ? $response->get_error_message() : __( 'An error occurred, please try again.', 'translatepress-multilingual' );
+                        $message[] = ( is_wp_error( $response ) && ! empty( $response_error_message ) ) ? $response->get_error_message() : __( 'An error occurred, please try again.', 'etranslation-multilingual' );
 
                     } else {
 
@@ -703,28 +703,28 @@ class TRP_Plugin_Updater{
                             switch( $license_data->error ) {
                                 case 'expired' :
                                     $message[] = sprintf(
-                                        __( 'Your license key expired on %s.', 'translatepress-multilingual' ),
+                                        __( 'Your license key expired on %s.', 'etranslation-multilingual' ),
                                         date_i18n( get_option( 'date_format' ), strtotime( $license_data->expires, current_time( 'timestamp' ) ) )
                                     );
                                     break;
                                 case 'revoked' :
-                                    $message[] = __( 'Your license key has been disabled.', 'translatepress-multilingual' );
+                                    $message[] = __( 'Your license key has been disabled.', 'etranslation-multilingual' );
                                     break;
                                 case 'missing' :
-                                    $message[] = __( 'Invalid license.', 'translatepress-multilingual' );
+                                    $message[] = __( 'Invalid license.', 'etranslation-multilingual' );
                                     break;
                                 case 'invalid' :
                                 case 'site_inactive' :
-                                    $message[] = __( 'Your license is not active for this URL.', 'translatepress-multilingual' );
+                                    $message[] = __( 'Your license is not active for this URL.', 'etranslation-multilingual' );
                                     break;
                                 case 'item_name_mismatch' :
-                                    $message[] = sprintf( __( 'This appears to be an invalid license key for %s.', 'translatepress-multilingual' ), $active_pro_addon_name );
+                                    $message[] = sprintf( __( 'This appears to be an invalid license key for %s.', 'etranslation-multilingual' ), $active_pro_addon_name );
                                     break;
                                 case 'no_activations_left':
-                                    $message[] = __( 'Your license key has reached its activation limit.', 'translatepress-multilingual' );
+                                    $message[] = __( 'Your license key has reached its activation limit.', 'etranslation-multilingual' );
                                     break;
                                 default :
-                                    $message[] = __( 'An error occurred, please try again.', 'translatepress-multilingual' );
+                                    $message[] = __( 'An error occurred, please try again.', 'etranslation-multilingual' );
                                     break;
                             }
 
@@ -755,7 +755,7 @@ class TRP_Plugin_Updater{
             // $license_data->license will be either "valid" or "invalid"
 
             $this->update_option( 'etm_license_status', $license_data->license );
-            wp_redirect( add_query_arg( array( 'trp_sl_activation' => 'true', 'message' => urlencode( __( 'You have successfully activated your license', 'translatepress-multilingual' ) ) ), $this->license_page_url() ) );
+            wp_redirect( add_query_arg( array( 'trp_sl_activation' => 'true', 'message' => urlencode( __( 'You have successfully activated your license', 'etranslation-multilingual' ) ) ), $this->license_page_url() ) );
             exit();
         }
     }
@@ -795,7 +795,7 @@ class TRP_Plugin_Updater{
                         if ( is_wp_error( $response ) ) {
                             $message = $response->get_error_message();
                         } else {
-                            $message = __( 'An error occurred, please try again.', 'translatepress-multilingual' );
+                            $message = __( 'An error occurred, please try again.', 'etranslation-multilingual' );
                         }
 
                         $redirect = add_query_arg( array( 'trp_sl_activation' => 'false', 'message' => urlencode( $message ) ), $this->license_page_url() );
