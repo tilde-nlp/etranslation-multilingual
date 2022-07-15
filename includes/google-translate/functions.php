@@ -2,7 +2,7 @@
 
 add_filter( 'trp_machine_translation_engines', 'trp_gt_add_engine', 10 );
 function trp_gt_add_engine( $engines ){
-    //$engines[] = array( 'value' => 'google_translate_v2', 'label' => __( 'Google Translate v2', 'translatepress-multilingual' ) );
+    //$engines[] = array( 'value' => 'google_translate_v2', 'label' => __( 'Google Translate v2', 'etranslation-multilingual' ) );
 
     return $engines;
 }
@@ -38,7 +38,7 @@ function trp_gt_add_settings( $mt_settings ){
     ?>
 
     <tr>
-        <th scope="row"><?php esc_html_e( 'Google Translate API Key', 'translatepress-multilingual' ); ?> </th>
+        <th scope="row"><?php esc_html_e( 'Google Translate API Key', 'etranslation-multilingual' ); ?> </th>
         <td>
             <?php
             // Display an error message above the input.
@@ -58,8 +58,8 @@ function trp_gt_add_settings( $mt_settings ){
             }
             ?>
             <p class="description">
-                <?php echo wp_kses( __( 'Visit <a href="https://cloud.google.com/docs/authentication/api-keys" target="_blank">this link</a> to see how you can set up an API key, <strong>control API costs</strong> and set HTTP referrer restrictions.', 'translatepress-multilingual' ), [ 'a' => [ 'href' => [], 'title' => [], 'target' => [] ], 'strong' => [] ] ); ?>
-                <br><?php echo esc_html( sprintf( __( 'Your HTTP referrer is: %s', 'translatepress-multilingual' ), $machine_translator->get_referer() ) ); ?>
+                <?php echo wp_kses( __( 'Visit <a href="https://cloud.google.com/docs/authentication/api-keys" target="_blank">this link</a> to see how you can set up an API key, <strong>control API costs</strong> and set HTTP referrer restrictions.', 'etranslation-multilingual' ), [ 'a' => [ 'href' => [], 'title' => [], 'target' => [] ], 'strong' => [] ] ); ?>
+                <br><?php echo esc_html( sprintf( __( 'Your HTTP referrer is: %s', 'etranslation-multilingual' ), $machine_translator->get_referer() ) ); ?>
             </p>
         </td>
 
@@ -95,10 +95,10 @@ function trp_gt_response_codes( $code ) {
      */
     if ( preg_match( '/4\d\d/', $code ) ) {
         $is_error = true;
-        $return_message = esc_html__( 'There was an error with your Google Translate key.', 'translatepress-multilingual' );
+        $return_message = esc_html__( 'There was an error with your Google Translate key.', 'etranslation-multilingual' );
     } elseif ( preg_match( '/5\d\d/', $code ) ) {
         $is_error = true;
-        $return_message = esc_html__( 'There was an error on the server processing your Google Translate key.', 'translatepress-multilingual' );
+        $return_message = esc_html__( 'There was an error on the server processing your Google Translate key.', 'etranslation-multilingual' );
     }
     
     return array(

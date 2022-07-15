@@ -37,22 +37,6 @@ class TRP_eTranslation_Machine_Translator extends TRP_Machine_Translator {
         $this->etranslation_query->update_translation_status($id, 'TIMEOUT');
     }
 
-    // private function send_log_request($body) {
-    //     $url = 'https://66cd01b2c21614b277a6b30ddb179e99.m.pipedream.net';
-
-    //     // use key 'http' even if you send the request to https://...
-    //     $options = array(
-    //         'http' => array(
-    //             'header'  => "Content-type: application/x-www-form-urlencoded\r\n",
-    //             'method'  => 'POST',
-    //             'content' => http_build_query($body)
-    //         )
-    //     );
-    //     $context  = stream_context_create($options);
-    //     $result = file_get_contents($url, false, $context);
-    //     return $result;
-    // }
-
     public function translate_document( $source_language_code, $target_language_code, $strings_array, $original_strings, $start_timestamp): array {
         $delimiter = "\n";
         $id = uniqid();
@@ -238,7 +222,7 @@ class TRP_eTranslation_Machine_Translator extends TRP_Machine_Translator {
 
             if ( !$this->credentials_set() ) {
                 $is_error       = true;
-                $return_message = __( 'Please enter your eTranslation credentials.', 'translatepress-multilingual' );
+                $return_message = __( 'Please enter your eTranslation credentials.', 'etranslation-multilingual' );
             } else {
                 $response = $machine_translator->test_request();
                 $code     = $response["response"];

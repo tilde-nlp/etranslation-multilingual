@@ -120,7 +120,7 @@ class TRP_Addons_List_Table extends WP_List_Table {
         //for plugins we can do something general
         if( $item['type'] === 'plugin' ) {
             ?>
-            <a class="button-primary right trp-recommended-plugin-buttons trp-install-and-activate" data-trp-plugin-slug="<?php echo esc_attr( $item['short-slug'] ); ?>" data-trp-action-performed="<?php esc_html_e( 'Installing...', 'translatepress-multilingual' );?>" <?php echo esc_html( $item['disabled'] ); ?>><?php echo wp_kses_post( $item['install_button'] ); ?></a>
+            <a class="button-primary right trp-recommended-plugin-buttons trp-install-and-activate" data-trp-plugin-slug="<?php echo esc_attr( $item['short-slug'] ); ?>" data-trp-action-performed="<?php esc_html_e( 'Installing...', 'etranslation-multilingual' );?>" <?php echo esc_html( $item['disabled'] ); ?>><?php echo wp_kses_post( $item['install_button'] ); ?></a>
             <?php
 
         }
@@ -336,7 +336,7 @@ function trp_add_ons_listing_process_actions(){
 if ( isset($_GET['trp_add_ons_listing_success']) ){
     if( class_exists('TRP_Add_General_Notices') ) {
         new TRP_Add_General_Notices('trp_add_ons_listing_success',
-            sprintf(__('%1$sAdd-ons settings saved successfully%2$s', 'translatepress-multilingual'), "<p>", "</p>"),
+            sprintf(__('%1$sAdd-ons settings saved successfully%2$s', 'etranslation-multilingual'), "<p>", "</p>"),
             'updated notice is-dismissible');
     }
 }

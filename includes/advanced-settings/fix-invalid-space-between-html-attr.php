@@ -5,8 +5,8 @@ function trp_register_fix_invalid_space_between_html_attr( $settings_array ){
 	$settings_array[] = array(
 		'name'          => 'fix_invalid_space_between_html_attr',
 		'type'          => 'checkbox',
-		'label'         => esc_html__( 'Fix spaces between HTML attributes', 'translatepress-multilingual' ),
-		'description'   => wp_kses( __( 'Fixes attributes without spaces between them because they are not valid HTML.<br> May help fix missing or broken content from the HTML on translated pages.', 'translatepress-multilingual' ), array( 'br' => array()) ),
+		'label'         => esc_html__( 'Fix spaces between HTML attributes', 'etranslation-multilingual' ),
+		'description'   => wp_kses( __( 'Fixes attributes without spaces between them because they are not valid HTML.<br> May help fix missing or broken content from the HTML on translated pages.', 'etranslation-multilingual' ), array( 'br' => array()) ),
 	);
 	return $settings_array;
 }

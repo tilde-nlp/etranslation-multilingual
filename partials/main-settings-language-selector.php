@@ -1,13 +1,13 @@
 <tr>
-    <th scope="row"> <?php esc_html_e( 'All Languages', 'translatepress-multilingual' ) ?> </th>
+    <th scope="row"> <?php esc_html_e( 'All Languages', 'etranslation-multilingual' ) ?> </th>
     <td>
         <table id="trp-languages-table">
             <thead>
                 <tr>
-                    <th colspan="2"><?php esc_html_e( 'Language', 'translatepress-multilingual' ); ?></th>
-                    <th><?php esc_html_e( 'Domain', 'translatepress-multilingual' ); ?></th>
-                    <th><?php esc_html_e( 'Code', 'translatepress-multilingual' ); ?></th>
-                    <th><?php esc_html_e( 'Slug', 'translatepress-multilingual' ); ?></th>
+                    <th colspan="2"><?php esc_html_e( 'Language', 'etranslation-multilingual' ); ?></th>
+                    <th><?php esc_html_e( 'Domain', 'etranslation-multilingual' ); ?></th>
+                    <th><?php esc_html_e( 'Code', 'etranslation-multilingual' ); ?></th>
+                    <th><?php esc_html_e( 'Slug', 'etranslation-multilingual' ); ?></th>
                 </tr>
             </thead>
             <tbody id="trp-sortable-languages" class="trp-language-selector-limited">
@@ -58,7 +58,7 @@
                         <input class="trp-language-slug trp-code-slug" name="etm_settings[url-slugs][<?php echo esc_attr( $selected_language_code ); ?>]" type="text" style="text-transform: lowercase;" value="<?php echo esc_attr( $this->url_converter->get_url_slug( $selected_language_code, false ) ); ?>">
                     </td>
                     <td>
-                        <a class="trp-remove-language" style=" <?php echo ( $default_language ) ? 'display:none' : '' ?>" data-confirm-message="<?php esc_attr_e( 'Are you sure you want to remove this language?', 'translatepress-multilingual' ); ?>"><?php esc_html_e( 'Remove', 'translatepress-multilingual' ); ?></a>
+                        <a class="trp-remove-language" style=" <?php echo ( $default_language ) ? 'display:none' : '' ?>" data-confirm-message="<?php esc_attr_e( 'Are you sure you want to remove this language?', 'etranslation-multilingual' ); ?>"><?php esc_html_e( 'Remove', 'etranslation-multilingual' ); ?></a>
                     </td>
                 </tr>
             <?php }?>
@@ -71,11 +71,11 @@
                 $trp_languages = $trp->get_component('languages');
                 $wp_languages = $trp_languages->get_wp_languages();
                 ?>
-                <option value=""><?php esc_html_e( 'Choose...', 'translatepress-multilingual' );?></option>
+                <option value=""><?php esc_html_e( 'Choose...', 'etranslation-multilingual' );?></option>
                 <?php foreach( $languages as $language_code => $language_name ){ ?>
 
             <?php if(isset($wp_languages[$language_code]['is_custom_language']) && $wp_languages[$language_code]['is_custom_language'] === true){ ?>
-                <optgroup label="<?php echo esc_html__('Custom Languages', 'translatepress-multilingual'); ?>">
+                <optgroup label="<?php echo esc_html__('Custom Languages', 'etranslation-multilingual'); ?>">
                     <?php break;?>
                     <?php } ?>
                     <?php } ?>
@@ -100,7 +100,7 @@
                     <?php } ?>
                 <?php }?>
             </select>
-            <button type="button" id="trp-add-language" class="button-secondary"><?php esc_html_e( 'Add', 'translatepress-multilingual' );?></button>
+            <button type="button" id="trp-add-language" class="button-secondary"><?php esc_html_e( 'Add', 'etranslation-multilingual' );?></button>
         </div>
         <p class="description">
             <?php echo __( 'Select the languages you wish to make your website available in.') ?>
@@ -109,20 +109,20 @@
             <?php
             if ( trp_is_paid_version() ){
                 $url = admin_url('admin.php?page=etm_addons_page');
-                $lnk = sprintf( wp_kses( __( 'To add <strong>more than two languages</strong> activate the <strong>Extra Languages Add-on</strong> from <a href="%s" class="trp-translatepress-account-page" target="_blank" title="Add-ons page">the Add-ons Page</a>. Once activated, you\'ll be able to add unlimited languages.', 'translatepress-multilingual' ), array( 'strong' => array(), 'br' => array(), 'a' => array( 'href' => array(), 'title' => array(), 'target' => array(), 'class' => array() ) ) ), esc_url( $url ) );
+                $lnk = sprintf( wp_kses( __( 'To add <strong>more than two languages</strong> activate the <strong>Extra Languages Add-on</strong> from <a href="%s" class="trp-translatepress-account-page" target="_blank" title="Add-ons page">the Add-ons Page</a>. Once activated, you\'ll be able to add unlimited languages.', 'etranslation-multilingual' ), array( 'strong' => array(), 'br' => array(), 'a' => array( 'href' => array(), 'title' => array(), 'target' => array(), 'class' => array() ) ) ), esc_url( $url ) );
             }else {
                 $url = trp_add_affiliate_id_to_link('https://translatepress.com/?utm_source=wpbackend&utm_medium=clientsite&utm_content=multiple_languages&utm_campaign=tpfree');
                 $lnk = sprintf(
                     // Translators: %1$s is the URL to the add-ons. %2$2 is for the TranslatePress add-on verbiage.
-                    __( 'To add <strong>more than two languages</strong> and support for SEO Title, Description, Slug and more check out <a href="%1$s" target="_blank" title="%2$s">%2$s</a>.', 'translatepress-multilingual' ),
+                    __( 'To add <strong>more than two languages</strong> and support for SEO Title, Description, Slug and more check out <a href="%1$s" target="_blank" title="%2$s">%2$s</a>.', 'etranslation-multilingual' ),
                     esc_url( $url ),
-                    _x( 'TranslatePress Advanced Add-ons', 'Verbiage for the TranslatePress Advanced add-ons', 'translatepress-multilingual' )
+                    _x( 'TranslatePress Advanced Add-ons', 'Verbiage for the TranslatePress Advanced add-ons', 'etranslation-multilingual' )
                 );
-                $lnk .= '<br/><br />' . __('Not only are you getting extra features and premium support, but you also help fund the future development of TranslatePress.', 'translatepress-multilingual');
+                $lnk .= '<br/><br />' . __('Not only are you getting extra features and premium support, but you also help fund the future development of TranslatePress.', 'etranslation-multilingual');
                 $lnk .= sprintf(
                     '<br /><br />' . '<a href="%1$s" class="button button-primary" target="_blank" title="%2$s">%2$s</a>',
                     esc_url( $url ),
-                    _x( 'TranslatePress Advanced Add-ons', 'Link to the TranslatePress add-ons', 'translatepress-multilingual' )
+                    _x( 'TranslatePress Advanced Add-ons', 'Link to the TranslatePress add-ons', 'etranslation-multilingual' )
                 );
             }
             echo wp_kses_post( $lnk ); // Post kses for more generalized output that is more forgiving and has late escaping.

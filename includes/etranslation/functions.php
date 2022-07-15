@@ -2,7 +2,7 @@
 
 add_filter( 'trp_machine_translation_engines', 'trp_etranslation_add_engine', 5 );
 function trp_etranslation_add_engine( $engines ){
-    $engines[] = array( 'value' => 'etranslation', 'label' => __( 'eTranslation', 'translatepress-multilingual' ) );
+    $engines[] = array( 'value' => 'etranslation', 'label' => __( 'eTranslation', 'etranslation-multilingual' ) );
 
     return $engines;
 }
@@ -35,7 +35,7 @@ function trp_etranslation_add_settings( $mt_settings ){
     }
     ?>
     <tr>
-        <th scope="row"><?php esc_html_e( 'eTranslation Application Name', 'translatepress-multilingual' ); ?> </th>
+        <th scope="row"><?php esc_html_e( 'eTranslation Application Name', 'etranslation-multilingual' ); ?> </th>
         <td class="et-credentials">
             <?php
             // Display an error message above the input.
@@ -51,7 +51,7 @@ function trp_etranslation_add_settings( $mt_settings ){
         </td>
     </tr>
     <tr>
-        <th scope="row"><?php esc_html_e( 'eTranslation Password', 'translatepress-multilingual' ); ?> </th>
+        <th scope="row"><?php esc_html_e( 'eTranslation Password', 'etranslation-multilingual' ); ?> </th>
         <td class="et-credentials">
             <input type="password" class="<?php echo esc_html( implode( ' ', $text_input_classes ) ); ?>" name="etm_machine_translation_settings[etranslation-pwd]" value="<?php if( !empty( $mt_settings['etranslation-pwd'] ) ) echo esc_attr( $mt_settings['etranslation-pwd']);?>"/>
             <?php
@@ -84,10 +84,10 @@ function trp_etranslation_response_codes( $code ) {
 
     if ( preg_match( '/4\d\d/', $code ) ) {
         $is_error = true;
-        $return_message = esc_html__( 'There was an error with your eTranslation credentials.', 'translatepress-multilingual' );
+        $return_message = esc_html__( 'There was an error with your eTranslation credentials.', 'etranslation-multilingual' );
     } elseif ( preg_match( '/5\d\d/', $code ) ) {
         $is_error = true;
-        $return_message = esc_html__( 'There was an error on the server processing your eTranslation credentials.', 'translatepress-multilingual' );
+        $return_message = esc_html__( 'There was an error on the server processing your eTranslation credentials.', 'etranslation-multilingual' );
     }
 
     return array(

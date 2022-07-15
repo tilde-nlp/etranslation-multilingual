@@ -152,9 +152,9 @@ class TRP_String_Translation {
     public function get_translation_status_filters() {
         $filters = array(
             'translation_status' => array(
-                'human_reviewed'     => __( 'Human reviewed', 'translatepress-multilingual' ),
-                'machine_translated' => __( 'Automatically translated', 'translatepress-multilingual' ),
-                'not_translated'     => __( 'Not translated', 'translatepress-multilingual' )
+                'human_reviewed'     => __( 'Human reviewed', 'etranslation-multilingual' ),
+                'machine_translated' => __( 'Automatically translated', 'etranslation-multilingual' ),
+                'not_translated'     => __( 'Not translated', 'etranslation-multilingual' )
             )
 
         );
@@ -164,14 +164,14 @@ class TRP_String_Translation {
     public function get_default_actions() {
         $actions = array(
             'bulk_actions' => array(
-                'trp_default' => array( 'name' => __( 'Bulk Actions', 'translatepress-multilingual' ) ),
+                'trp_default' => array( 'name' => __( 'Bulk Actions', 'etranslation-multilingual' ) ),
                 'delete'      => array(
-                    'name'  => __( 'Delete entries', 'translatepress-multilingual' ),
+                    'name'  => __( 'Delete entries', 'etranslation-multilingual' ),
                     'nonce' => wp_create_nonce( 'string_translation_save_strings_delete' )
                 ),
             ),
             'actions'      => array(
-                'edit'   => __( 'Edit', 'translatepress-multilingual' )
+                'edit'   => __( 'Edit', 'etranslation-multilingual' )
             )
         );
         return apply_filters( 'trp_st_default_actions', $actions );
@@ -204,43 +204,43 @@ class TRP_String_Translation {
 
     public function get_st_editor_strings() {
         $st_editor_strings = array(
-            'translation_status'     => __( 'Translation Status', 'translatepress-multilingual' ),
-            'filter'                 => __( 'Filter', 'translatepress-multilingual' ),
-            'filter_by_language'     => __( 'Filter by language', 'translatepress-multilingual' ),
-            'add_new'                => __( 'Add New', 'translatepress-multilingual' ),
-            'importexport'           => __( 'Import / Export', 'translatepress-multilingual' ),
-            'items'                  => __( 'items', 'translatepress-multilingual' ),
-            'of'                     => _x( 'of', 'page 1 of 3', 'translatepress-multilingual' ),
-            'see_more'               => __( 'See More', 'translatepress-multilingual' ),
-            'see_less'               => __( 'See Less', 'translatepress-multilingual' ),
-            'apply'                  => __( 'Apply', 'translatepress-multilingual' ),
-            'no_strings_match_query' => __( 'No strings match your query.', 'translatepress-multilingual' ),
-            'request_error'          => __( 'An error occurred while loading results. Most likely you were logged out. Reload page?', 'translatepress-multilingual' ),
+            'translation_status'     => __( 'Translation Status', 'etranslation-multilingual' ),
+            'filter'                 => __( 'Filter', 'etranslation-multilingual' ),
+            'filter_by_language'     => __( 'Filter by language', 'etranslation-multilingual' ),
+            'add_new'                => __( 'Add New', 'etranslation-multilingual' ),
+            'importexport'           => __( 'Import / Export', 'etranslation-multilingual' ),
+            'items'                  => __( 'items', 'etranslation-multilingual' ),
+            'of'                     => _x( 'of', 'page 1 of 3', 'etranslation-multilingual' ),
+            'see_more'               => __( 'See More', 'etranslation-multilingual' ),
+            'see_less'               => __( 'See Less', 'etranslation-multilingual' ),
+            'apply'                  => __( 'Apply', 'etranslation-multilingual' ),
+            'no_strings_match_query' => __( 'No strings match your query.', 'etranslation-multilingual' ),
+            'request_error'          => __( 'An error occurred while loading results. Most likely you were logged out. Reload page?', 'etranslation-multilingual' ),
 
-            'select_all'               => __( 'Select All', 'translatepress-multilingual' ),
-            'select_visible'           => __( 'Select Visible', 'translatepress-multilingual' ),
-            'select_all_warning'       => __( 'You are about to perform this action on all the strings matching your filter, not just the visibly checked. To perform the action only to the visible strings click "Select Visible" from the table header dropdown.', 'translatepress-multilingual' ),
-            'select_visible_warning'   => __( 'You are about to perform this action only on the visible strings. To perform the action on all the strings matching the filter click "Select All" from the table header dropdown.', 'translatepress-multilingual' ),
-            'type_a_word_for_security' => __( 'To continue please type the word:', 'translatepress-multilingual' ),
-            'incorect_word_typed'      => __( 'The word typed was incorrect. Action was cancelled.', 'translatepress-multilingual' ),
+            'select_all'               => __( 'Select All', 'etranslation-multilingual' ),
+            'select_visible'           => __( 'Select Visible', 'etranslation-multilingual' ),
+            'select_all_warning'       => __( 'You are about to perform this action on all the strings matching your filter, not just the visibly checked. To perform the action only to the visible strings click "Select Visible" from the table header dropdown.', 'etranslation-multilingual' ),
+            'select_visible_warning'   => __( 'You are about to perform this action only on the visible strings. To perform the action on all the strings matching the filter click "Select All" from the table header dropdown.', 'etranslation-multilingual' ),
+            'type_a_word_for_security' => __( 'To continue please type the word:', 'etranslation-multilingual' ),
+            'incorect_word_typed'      => __( 'The word typed was incorrect. Action was cancelled.', 'etranslation-multilingual' ),
 
-            'in'                         => _x( 'in', 'Untranslated in this language', 'translatepress-multilingual' ),
+            'in'                         => _x( 'in', 'Untranslated in this language', 'etranslation-multilingual' ),
 
             // specific bulk actions
-            'delete_warning'             => __( 'Warning: This action cannot be undone. Deleting a string will remove its current translation. The original string will appear again in this interface after eTranslation Multilingual detects it. This action is NOT equivalent to excluding the string from being translated again.' , 'translatepress-multilingual' ),
+            'delete_warning'             => __( 'Warning: This action cannot be undone. Deleting a string will remove its current translation. The original string will appear again in this interface after eTranslation Multilingual detects it. This action is NOT equivalent to excluding the string from being translated again.' , 'etranslation-multilingual' ),
 
             // tooltips
-            'next_page'                  => __( 'Navigate to next page', 'translatepress-multilingual' ),
-            'previous_page'              => __( 'Navigate to previous page', 'translatepress-multilingual' ),
-            'first_page'                 => __( 'Navigate to first page', 'translatepress-multilingual' ),
-            'last_page'                  => __( 'Navigate to last page', 'translatepress-multilingual' ),
-            'navigate_to_page'           => __( 'Type a page number to navigate to', 'translatepress-multilingual' ),
-            'wrong_page'                 => __( 'Incorrect page number. Type a page number between 1 and total number of pages', 'translatepress-multilingual' ),
-            'search_tooltip'             => __( 'Search original strings containing typed keywords while also matching selected filters', 'translatepress-multilingual' ),
-            'filter_tooltip'             => __( 'Filter strings according to selected translation status, filters and keywords and selected filters', 'translatepress-multilingual' ),
-            'select_all_tooltip'         => __( 'See options for selecting all strings', 'translatepress-multilingual' ),
-            'sort_by_column'             => __( 'Click to sort strings by this column', 'translatepress-multilingual' ),
-            'filter_by_language_tooltip' => __( 'Language in which the translation status filter applies. Leave unselected for the translation status to apply to ANY language', 'translatepress-multilingual' ),
+            'next_page'                  => __( 'Navigate to next page', 'etranslation-multilingual' ),
+            'previous_page'              => __( 'Navigate to previous page', 'etranslation-multilingual' ),
+            'first_page'                 => __( 'Navigate to first page', 'etranslation-multilingual' ),
+            'last_page'                  => __( 'Navigate to last page', 'etranslation-multilingual' ),
+            'navigate_to_page'           => __( 'Type a page number to navigate to', 'etranslation-multilingual' ),
+            'wrong_page'                 => __( 'Incorrect page number. Type a page number between 1 and total number of pages', 'etranslation-multilingual' ),
+            'search_tooltip'             => __( 'Search original strings containing typed keywords while also matching selected filters', 'etranslation-multilingual' ),
+            'filter_tooltip'             => __( 'Filter strings according to selected translation status, filters and keywords and selected filters', 'etranslation-multilingual' ),
+            'select_all_tooltip'         => __( 'See options for selecting all strings', 'etranslation-multilingual' ),
+            'sort_by_column'             => __( 'Click to sort strings by this column', 'etranslation-multilingual' ),
+            'filter_by_language_tooltip' => __( 'Language in which the translation status filter applies. Leave unselected for the translation status to apply to ANY language', 'etranslation-multilingual' ),
         );
         return apply_filters( 'trp_st_editor_strings', $st_editor_strings );
     }

@@ -25,7 +25,7 @@ add_filter( 'trp_edit_translation_url', 'trp_beaver_builder_compatibility' );
  * Mb Strings missing PHP library error notice
  */
 function trp_mbstrings_notification(){
-    echo '<div class="notice notice-error"><p>' . wp_kses( __( '<strong>eTranslation Multilingual</strong> requires <strong><a href="http://php.net/manual/en/book.mbstring.php">Multibyte String PHP library</a></strong>. Please contact your server administrator to install it on your server.','translatepress-multilingual' ), [ 'a' => [ 'href' => [] ], 'strong' => [] ] ) . '</p></div>';
+    echo '<div class="notice notice-error"><p>' . wp_kses( __( '<strong>eTranslation Multilingual</strong> requires <strong><a href="http://php.net/manual/en/book.mbstring.php">Multibyte String PHP library</a></strong>. Please contact your server administrator to install it on your server.','etranslation-multilingual' ), [ 'a' => [ 'href' => [] ], 'strong' => [] ] ) . '</p></div>';
 }
 
 function trp_missing_mbstrings_library( $allow_to_run ){
@@ -1535,7 +1535,7 @@ function trp_wpengine_query_limit_check($dictionary, $prepared_query, $strings_a
     if ( function_exists('is_wpe') && ( !defined ('WPE_GOVERNOR') || ( defined ('WPE_GOVERNOR') && WPE_GOVERNOR != false ) ) && strlen($prepared_query) >= 16000 ){
         $trp = TRP_Translate_Press::get_trp_instance();
         $trp_query = $trp->get_component( 'query' );
-        $trp_query->maybe_record_automatic_translation_error(array( 'details' => esc_html__("Detected long query limitation on WPEngine hosting. Some large pages may appear untranslated. You can remove limitation by adding the following to your site’s wp-config.php: define( 'WPE_GOVERNOR', false ); ", 'translatepress-multilingual')), true );
+        $trp_query->maybe_record_automatic_translation_error(array( 'details' => esc_html__("Detected long query limitation on WPEngine hosting. Some large pages may appear untranslated. You can remove limitation by adding the following to your site’s wp-config.php: define( 'WPE_GOVERNOR', false ); ", 'etranslation-multilingual')), true );
         return false;
     }else{
         return $dictionary;

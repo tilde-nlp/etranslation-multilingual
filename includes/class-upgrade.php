@@ -111,7 +111,7 @@ class TRP_Upgrade {
                     'callback'          => array( $this->trp_query,'remove_cdata_in_original_and_dictionary_tables'),
                     'batch_size'        => 1000,
                     'message_initial'   => '',
-                    'message_processing'=> __('Removing cdata dictionary strings for language %s...', 'translatepress-multilingual' )
+                    'message_processing'=> __('Removing cdata dictionary strings for language %s...', 'etranslation-multilingual' )
                 ),
                 'remove_untranslated_links_dictionary_rows' => array(
                     'version'           => '0',
@@ -119,7 +119,7 @@ class TRP_Upgrade {
                     'callback'          => array( $this->trp_query,'remove_untranslated_links_in_dictionary_table'),
                     'batch_size'        => 10000,
                     'message_initial'   => '',
-                    'message_processing'=> __('Removing untranslated dictionary links for language %s...', 'translatepress-multilingual' )
+                    'message_processing'=> __('Removing untranslated dictionary links for language %s...', 'etranslation-multilingual' )
                 ),
 				'full_trim_originals_140' => array(
 					'version'           => '1.4.0',
@@ -139,7 +139,7 @@ class TRP_Upgrade {
                     'callback'          => array( $this->trp_query,'remove_duplicate_rows_in_gettext_table'),
                     'batch_size'        => 10000,
                     'message_initial'   => '',
-                    'message_processing'=> __('Removing duplicated gettext strings for language %s...', 'translatepress-multilingual' )
+                    'message_processing'=> __('Removing duplicated gettext strings for language %s...', 'etranslation-multilingual' )
                 ),
                 'remove_duplicate_untranslated_gettext_rows' => array(
                     'version'           => '0',
@@ -147,7 +147,7 @@ class TRP_Upgrade {
                     'callback'          => array( $this->trp_query,'remove_untranslated_strings_if_gettext_translation_available'),
                     'batch_size'        => 10000,
                     'message_initial'   => '',
-                    'message_processing'=> __('Removing untranslated gettext strings where translation is available for language %s...', 'translatepress-multilingual' )
+                    'message_processing'=> __('Removing untranslated gettext strings where translation is available for language %s...', 'etranslation-multilingual' )
                 ),
                 'remove_duplicate_dictionary_rows' => array(
                     'version'           => '0',
@@ -155,7 +155,7 @@ class TRP_Upgrade {
                     'callback'          => array( $this->trp_query,'remove_duplicate_rows_in_dictionary_table'),
                     'batch_size'        => 1000,
                     'message_initial'   => '',
-                    'message_processing'=> __('Removing duplicated dictionary strings for language %s...', 'translatepress-multilingual' )
+                    'message_processing'=> __('Removing duplicated dictionary strings for language %s...', 'etranslation-multilingual' )
                 ),
                 'remove_duplicate_untranslated_dictionary_rows' => array(
                     'version'           => '0',
@@ -163,14 +163,14 @@ class TRP_Upgrade {
                     'callback'          => array( $this->trp_query,'remove_untranslated_strings_if_translation_available'),
                     'batch_size'        => 10000,
                     'message_initial'   => '',
-                    'message_processing'=> __('Removing untranslated dictionary strings where translation is available for language %s...', 'translatepress-multilingual' )
+                    'message_processing'=> __('Removing untranslated dictionary strings where translation is available for language %s...', 'etranslation-multilingual' )
                 ),
                 'original_id_insert_166' => array(
                     'version'           => '1.6.6',
                     'option_name'       => 'etm_updated_database_original_id_insert_166',
                     'callback'          => array( $this,'trp_updated_database_original_id_insert_166'),
                     'batch_size'        => 1000,
-                    'message_processing'=> __('Inserting original strings for language %s...', 'translatepress-multilingual' )
+                    'message_processing'=> __('Inserting original strings for language %s...', 'etranslation-multilingual' )
                 ),
                 'original_id_cleanup_166' => array(
                     'version'           => '1.6.6',
@@ -179,7 +179,7 @@ class TRP_Upgrade {
                     'progress_message'  => 'clean',
                     'batch_size'        => 1000,
                     'message_initial'   => '',
-                    'message_processing'=> __('Cleaning original strings table for language %s...', 'translatepress-multilingual' )
+                    'message_processing'=> __('Cleaning original strings table for language %s...', 'etranslation-multilingual' )
                 ),
                 'original_id_update_166' => array(
                     'version'           => '1.6.6',
@@ -187,7 +187,7 @@ class TRP_Upgrade {
                     'callback'          => array( $this,'trp_updated_database_original_id_update_166'),
                     'batch_size'        => 5000,
                     'message_initial'   => '',
-                    'message_processing'=> __('Updating original string ids for language %s...', 'translatepress-multilingual' )
+                    'message_processing'=> __('Updating original string ids for language %s...', 'etranslation-multilingual' )
                 ),
                 'regenerate_original_meta' => array(
                     'version'           => '0', // independent of tp version, available only on demand
@@ -195,7 +195,7 @@ class TRP_Upgrade {
                     'callback'          => array( $this,'trp_regenerate_original_meta_table'),
                     'batch_size'        => 200,
                     'message_initial'   => '',
-                    'message_processing'=> __('Regenerating original meta table for language %s...', 'translatepress-multilingual' )
+                    'message_processing'=> __('Regenerating original meta table for language %s...', 'etranslation-multilingual' )
                 ),
                 'clean_original_meta' => array(
                     'version'           => '0', // independent of tp version, available only on demand
@@ -203,7 +203,7 @@ class TRP_Upgrade {
                     'callback'          => array( $this,'trp_clean_original_meta_table'),
                     'batch_size'        => 20000,
                     'message_initial'   => '',
-                    'message_processing'=> __('Cleaning original meta table for language %s...', 'translatepress-multilingual' )
+                    'message_processing'=> __('Cleaning original meta table for language %s...', 'etranslation-multilingual' )
                 ),
                 'show_error_db_message' => array(
                     'version'           => '0', // independent of tp version, available only on demand
@@ -211,7 +211,7 @@ class TRP_Upgrade {
                     'callback'          => array( $this,'trp_successfully_run_database_optimization'),
                     'batch_size'        => 10,
                     'message_initial'   => '',
-                    'message_processing'=> __('Finishing up...', 'translatepress-multilingual' ),
+                    'message_processing'=> __('Finishing up...', 'etranslation-multilingual' ),
                     'execute_only_once' => true
                 )
 			)
@@ -247,8 +247,8 @@ class TRP_Upgrade {
 
 		// maybe change notice color to blue #28B1FF
 		$html = '<div id="message" class="updated">';
-		$html .= '<p><strong>' . esc_html__( 'eTranslation Multilingual data update', 'translatepress-multilingual' ) . '</strong> &#8211; ' . esc_html__( 'We need to update your translations database to the latest version.', 'translatepress-multilingual' ) . '</p>';
-		$html .= '<p class="submit"><a href="' . esc_url( $url ) . '" onclick="return confirm( \'' . __( 'IMPORTANT: It is strongly recommended to first backup the database!\nAre you sure you want to continue?', 'translatepress-multilingual' ) . '\');" class="button-primary">' . esc_html__( 'Run the updater', 'translatepress-multilingual' ) . '</a></p>';
+		$html .= '<p><strong>' . esc_html__( 'eTranslation Multilingual data update', 'etranslation-multilingual' ) . '</strong> &#8211; ' . esc_html__( 'We need to update your translations database to the latest version.', 'etranslation-multilingual' ) . '</p>';
+		$html .= '<p class="submit"><a href="' . esc_url( $url ) . '" onclick="return confirm( \'' . __( 'IMPORTANT: It is strongly recommended to first backup the database!\nAre you sure you want to continue?', 'etranslation-multilingual' ) . '\');" class="button-primary">' . esc_html__( 'Run the updater', 'etranslation-multilingual' ) . '</a></p>';
 		$html .= '</div>';
 		echo $html;//phpcs:ignore
 	}
@@ -275,7 +275,7 @@ class TRP_Upgrade {
     public function trp_admin_notice_error_database(){
 
         echo '<div class="notice notice-error is-dismissible">
-            <p>' . wp_kses( sprintf( __('Database optimization did not complete successfully. We recommend restoring the original database or <a href="%s" >trying again.</a>', 'translatepress-multilingual'), admin_url('admin.php?page=etm_update_database') ), array('a' => array( 'href' => array() ) ) ) .'</p>
+            <p>' . wp_kses( sprintf( __('Database optimization did not complete successfully. We recommend restoring the original database or <a href="%s" >trying again.</a>', 'etranslation-multilingual'), admin_url('admin.php?page=etm_update_database') ), array('a' => array( 'href' => array() ) ) ) .'</p>
         </div>';
 
     }
@@ -293,12 +293,12 @@ class TRP_Upgrade {
 	 */
 	public function trp_update_database(){
 		if ( ! current_user_can( apply_filters('trp_update_database_capability', 'manage_options') ) ){
-			$this->stop_and_print_error( __('Update aborted! Your user account doesn\'t have the capability to perform database updates.', 'translatepress-multilingual' ) );
+			$this->stop_and_print_error( __('Update aborted! Your user account doesn\'t have the capability to perform database updates.', 'etranslation-multilingual' ) );
 		}
 
 		$nonce = isset( $_REQUEST['trp_updb_nonce'] ) ? wp_verify_nonce( sanitize_text_field( $_REQUEST['trp_updb_nonce'] ), 'tpupdatedatabase' ) : false;
 		if ( $nonce === false ){
-			$this->stop_and_print_error( __('Update aborted! Invalid nonce.', 'translatepress-multilingual' ) );
+			$this->stop_and_print_error( __('Update aborted! Invalid nonce.', 'etranslation-multilingual' ) );
 		}
 
 		$request = array();
@@ -316,11 +316,11 @@ class TRP_Upgrade {
 				}
 			}
 			if ( empty ( $_REQUEST['trp_updb_action'] ) ){
-				$back_to_settings_button = '<p><a href="' . site_url('wp-admin/options-general.php?page=etranslation-multilingual') . '"> <input type="button" value="' . esc_html__('Back to eTranslation Multilingual Settings', 'translatepress-multilingual' ) . '" class="button-primary"></a></p>';
+				$back_to_settings_button = '<p><a href="' . site_url('wp-admin/options-general.php?page=etranslation-multilingual') . '"> <input type="button" value="' . esc_html__('Back to eTranslation Multilingual Settings', 'etranslation-multilingual' ) . '" class="button-primary"></a></p>';
 				// finished successfully
 				echo json_encode( array(
 					'trp_update_completed' => 'yes',
-					'progress_message'  => '<p><strong>' . __('Successfully updated database!', 'translatepress-multilingual' ) . '</strong></p>' . $back_to_settings_button
+					'progress_message'  => '<p><strong>' . __('Successfully updated database!', 'etranslation-multilingual' ) . '</strong></p>' . $back_to_settings_button
 				));
 				wp_die();
 			}else{
@@ -329,11 +329,11 @@ class TRP_Upgrade {
 
                 $update_message_initial = isset( $updates_needed[$_REQUEST['trp_updb_action']]['message_initial'] ) ?
                                             $updates_needed[sanitize_text_field( $_REQUEST['trp_updb_action'] )]['message_initial']
-                                            : __('Updating database to version %s+', 'translatepress-multilingual' );
+                                            : __('Updating database to version %s+', 'etranslation-multilingual' );
 
                 $update_message_processing = isset( $updates_needed[$_REQUEST['trp_updb_action']]['message_processing'] ) ?
                                                 $updates_needed[ sanitize_text_field( $_REQUEST['trp_updb_action'] )]['message_processing']
-                                                : __('Processing table for language %s...', 'translatepress-multilingual' );
+                                                : __('Processing table for language %s...', 'etranslation-multilingual' );
 
                 if ($updates_needed[ sanitize_text_field( $_REQUEST['trp_updb_action'] ) ]['version'] != 0) {
                     $request['progress_message'] .= '<p>' . sprintf( $update_message_initial, $updates_needed[ sanitize_text_field( $_REQUEST['trp_updb_action'] ) ]['version'] ) . '</p>';
@@ -342,10 +342,10 @@ class TRP_Upgrade {
 			}
 		}else{
 			if ( !isset( $updates_needed[ $_REQUEST['trp_updb_action'] ] ) ){
-				$this->stop_and_print_error( __('Update aborted! Incorrect action.', 'translatepress-multilingual' ) );
+				$this->stop_and_print_error( __('Update aborted! Incorrect action.', 'etranslation-multilingual' ) );
 			}
 			if ( !in_array( $_REQUEST['trp_updb_lang'], $this->settings['translation-languages'] ) ) {//phpcs:ignore
-				$this->stop_and_print_error( __('Update aborted! Incorrect language code.', 'translatepress-multilingual' ) );
+				$this->stop_and_print_error( __('Update aborted! Incorrect language code.', 'etranslation-multilingual' ) );
 			}
 		}
 
@@ -393,15 +393,15 @@ class TRP_Upgrade {
                 if ( isset ( $this->settings['translation-languages'][ $index + 1 ] ) && (!isset($update_details['execute_only_once']) || $update_details['execute_only_once'] == false)) {
                         // next language code in array
                         $request['trp_updb_lang']    = $this->settings['translation-languages'][ $index + 1 ];
-                        $request['progress_message'] .= __( ' done.', 'translatepress-multilingual' ) . '</br>';
+                        $request['progress_message'] .= __( ' done.', 'etranslation-multilingual' ) . '</br>';
                         $update_message_processing   = isset( $updates_needed[ $_REQUEST['trp_updb_action'] ]['message_processing'] ) ?
                             $updates_needed[ sanitize_text_field( $_REQUEST['trp_updb_action'] ) ]['message_processing']
-                            : __( 'Processing table for language %s...', 'translatepress-multilingual' );
+                            : __( 'Processing table for language %s...', 'etranslation-multilingual' );
                         $request['progress_message'] .= '</br>' . sprintf( $update_message_processing, $request['trp_updb_lang'] );
 
                     } else {
                         // finish action due to completing all the translation languages
-                        $request['progress_message'] .= __( ' done.', 'translatepress-multilingual' ) . '</br>';
+                        $request['progress_message'] .= __( ' done.', 'etranslation-multilingual' ) . '</br>';
                         $request['trp_updb_lang']    = '';
                         // this will stop showing the admin notice
                         update_option( $update_details['option_name'], 'yes' );
@@ -426,7 +426,7 @@ class TRP_Upgrade {
 	}
 
 	public function stop_and_print_error( $error_message ){
-		$back_to_settings_button = '<p><a href="' . site_url('wp-admin/options-general.php?page=etranslation-multilingual') . '"> <input type="button" value="' . __('Back to eTranslation Multilingual Settings', 'translatepress-multilingual' ) . '" class="button-primary"></a></p>';
+		$back_to_settings_button = '<p><a href="' . site_url('wp-admin/options-general.php?page=etranslation-multilingual') . '"> <input type="button" value="' . __('Back to eTranslation Multilingual Settings', 'etranslation-multilingual' ) . '" class="button-primary"></a></p>';
 		$query_arguments = array(
 			'trp_update_completed'      => 'yes',
 			'progress_message'          => '<p><strong>' . $error_message . '</strong></strong></p>' . $back_to_settings_button
@@ -812,9 +812,9 @@ class TRP_Upgrade {
 
                 $url_info = 'https://translatepress.com/docs/installation/upgrade-to-version-2-0-5-or-newer/';
                 $url_account = 'https://translatepress.com/account/';
-                $message = '<p style="padding-right:30px;">' . sprintf(__( 'All individual TranslatePress add-on plugins <a href="%1$s" target="_blank">have been discontinued</a> and are now included in the premium Personal, Business and Developer versions of TranslatePress. Please log into your <a href="%2$s" target="_blank">account page</a>, download the new premium version and install it. Your individual addons settings will be ported over.' , 'translatepress-multilingual' ), esc_url($url_info), esc_url($url_account)) . '</p>';
+                $message = '<p style="padding-right:30px;">' . sprintf(__( 'All individual TranslatePress add-on plugins <a href="%1$s" target="_blank">have been discontinued</a> and are now included in the premium Personal, Business and Developer versions of TranslatePress. Please log into your <a href="%2$s" target="_blank">account page</a>, download the new premium version and install it. Your individual addons settings will be ported over.' , 'etranslation-multilingual' ), esc_url($url_info), esc_url($url_account)) . '</p>';
                 //make sure to use the trp_dismiss_admin_notification arg
-                $message .= '<a href="' . add_query_arg(array('trp_dismiss_admin_notification' => $notification_id)) . '" type="button" class="notice-dismiss" style="text-decoration: none;z-index:100;"><span class="screen-reader-text">' . esc_html__('Dismiss this notice.', 'translatepress-multilingual') . '</span></a>';
+                $message .= '<a href="' . add_query_arg(array('trp_dismiss_admin_notification' => $notification_id)) . '" type="button" class="notice-dismiss" style="text-decoration: none;z-index:100;"><span class="screen-reader-text">' . esc_html__('Dismiss this notice.', 'etranslation-multilingual') . '</span></a>';
 
                 $notifications->add_notification($notification_id, $message, 'trp-notice trp-narrow notice error is-dismissible', true, array('translate-press'), true);
                 break;

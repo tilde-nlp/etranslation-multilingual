@@ -45,7 +45,7 @@ class TRP_Editor_Api_Regular_Strings {
 					$dictionaries = $this->get_translation_for_strings( $ids, $originals, $block_type, $skip_machine_translation );
 
 					$localized_text = $this->translation_manager->string_groups();
-					$string_group = __('Others', 'translatepress-multilingual'); // this type is not registered in the string types because it will be overwritten by the content in data-trp-node-type
+					$string_group = __('Others', 'etranslation-multilingual'); // this type is not registered in the string types because it will be overwritten by the content in data-trp-node-type
 					if ( isset( $_POST['dynamic_strings'] ) && $_POST['dynamic_strings'] === 'true'  ){
 						$string_group = $localized_text['dynamicstrings'];
 					}

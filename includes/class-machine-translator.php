@@ -135,7 +135,7 @@ class TRP_Machine_Translator {
                 $password = $api_key[1];
                 if (!isset($appname) || !isset($password)) {
                     $is_error = true;
-                    $return_message = __( 'Please enter your eTranslation credentials.', 'translatepress-multilingual' );
+                    $return_message = __( 'Please enter your eTranslation credentials.', 'etranslation-multilingual' );
                 } else {
                     $response = $machine_translator->test_request();
                     $code     = $response["response"];
@@ -151,7 +151,7 @@ class TRP_Machine_Translator {
             case 'google_translate_v2':
                 if ( empty( $api_key ) ) {
                     $is_error = true;
-                    $return_message = __( 'Please enter your Google Translate key.', 'translatepress-multilingual' );
+                    $return_message = __( 'Please enter your Google Translate key.', 'etranslation-multilingual' );
                 } else {
                     // Perform test.
                     $response = $machine_translator->test_request();
@@ -166,7 +166,7 @@ class TRP_Machine_Translator {
             case 'deepl':
                 if ( empty( $api_key ) ) {
                     $is_error = true;
-                    $return_message = __( 'Please enter your DeepL API key.', 'translatepress-multilingual' );
+                    $return_message = __( 'Please enter your DeepL API key.', 'etranslation-multilingual' );
                 } else {
                     // Perform test.
                     $is_error= false;

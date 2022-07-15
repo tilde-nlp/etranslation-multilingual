@@ -336,9 +336,9 @@ class TRP_Trigger_Plugin_Notifications{
             $notification_id = 'trp_new_add_on_invoices';
 
             $message = '<img style="float: left; margin: 10px 12px 10px 0; max-width: 80px;" src="' . TRP_PLUGIN_URL . 'assets/images/get_param_addon.jpg" />';
-            $message .= '<p style="margin-top: 16px;padding-right:30px;">' . sprintf( __('You are not using a permalink structure! Please <a href="%s">enable</a> one or install our <a href="%s">"Language by GET parameter"</a> addon, so that eTranslation Multilingual can function properly.', 'translatepress-multilingual' ), admin_url('options-permalink.php'),admin_url('admin.php?page=etm_addons_page#language-by-get-parameter') ) . '</p>';
+            $message .= '<p style="margin-top: 16px;padding-right:30px;">' . sprintf( __('You are not using a permalink structure! Please <a href="%s">enable</a> one or install our <a href="%s">"Language by GET parameter"</a> addon, so that eTranslation Multilingual can function properly.', 'etranslation-multilingual' ), admin_url('options-permalink.php'),admin_url('admin.php?page=etm_addons_page#language-by-get-parameter') ) . '</p>';
             //make sure to use the trp_dismiss_admin_notification arg
-            $message .= '<a href="' . add_query_arg(array('trp_dismiss_admin_notification' => $notification_id)) . '" type="button" class="notice-dismiss"><span class="screen-reader-text">' . __('Dismiss this notice.', 'translatepress-multilingual') . '</span></a>';
+            $message .= '<a href="' . add_query_arg(array('trp_dismiss_admin_notification' => $notification_id)) . '" type="button" class="notice-dismiss"><span class="screen-reader-text">' . __('Dismiss this notice.', 'etranslation-multilingual') . '</span></a>';
 
             $notifications->add_notification($notification_id, $message, 'trp-notice trp-narrow notice notice-info', true, array('translate-press'));
         }
@@ -361,10 +361,10 @@ class TRP_Trigger_Plugin_Notifications{
 
             $message = '<img style="float: left; margin: 10px 12px 10px 0; max-width: 80px;" src="' . TRP_PLUGIN_URL . 'assets/images/get_param_addon.jpg" />';
             $message .= '<p style="margin-top: 16px;padding-right:30px;">';
-                $message .= sprintf( __( 'The daily quota for machine translation characters exceeded. Please check the <strong>eTranslation Multilingual -> <a href="%s">Automatic Translation</a></strong> page for more information.', 'translatepress-multilingual' ), admin_url( 'admin.php?page=etm_machine_translation' ) );
+                $message .= sprintf( __( 'The daily quota for machine translation characters exceeded. Please check the <strong>eTranslation Multilingual -> <a href="%s">Automatic Translation</a></strong> page for more information.', 'etranslation-multilingual' ), admin_url( 'admin.php?page=etm_machine_translation' ) );
             $message .= '</p>';
             //make sure to use the trp_dismiss_admin_notification arg
-            $message .= '<a href="' . add_query_arg(array('trp_dismiss_admin_notification' => $notification_id)) . '" type="button" class="notice-dismiss"><span class="screen-reader-text">' . __('Dismiss this notice.', 'translatepress-multilingual') . '</span></a>';
+            $message .= '<a href="' . add_query_arg(array('trp_dismiss_admin_notification' => $notification_id)) . '" type="button" class="notice-dismiss"><span class="screen-reader-text">' . __('Dismiss this notice.', 'etranslation-multilingual') . '</span></a>';
 
             $notifications->add_notification($notification_id, $message, 'trp-notice trp-narrow notice notice-info', true, array('translate-press'));
         }
@@ -385,10 +385,10 @@ class TRP_Trigger_Plugin_Notifications{
                 $notification_id = 'etm_mt_unsupported_languages';
 
                 $message = '<p style="margin-top: 16px;padding-right:30px;">';
-                $message .= sprintf( __( 'One or more languages are unsupported by the automatic translation provider. Please check the <strong>eTranslation Multilingual -> <a href="%s">Automatic Translation</a></strong> page for more information.', 'translatepress-multilingual' ), admin_url( 'admin.php?page=etm_machine_translation#trp_unsupported_languages' ) );
+                $message .= sprintf( __( 'One or more languages are unsupported by the automatic translation provider. Please check the <strong>eTranslation Multilingual -> <a href="%s">Automatic Translation</a></strong> page for more information.', 'etranslation-multilingual' ), admin_url( 'admin.php?page=etm_machine_translation#trp_unsupported_languages' ) );
                 $message .= '</p>';
                 //make sure to use the trp_dismiss_admin_notification arg
-                $message .= '<a href="' . add_query_arg( array( 'trp_dismiss_admin_notification' => $notification_id ) ) . '" type="button" class="notice-dismiss"><span class="screen-reader-text">' . __( 'Dismiss this notice.', 'translatepress-multilingual' ) . '</span></a>';
+                $message .= '<a href="' . add_query_arg( array( 'trp_dismiss_admin_notification' => $notification_id ) ) . '" type="button" class="notice-dismiss"><span class="screen-reader-text">' . __( 'Dismiss this notice.', 'etranslation-multilingual' ) . '</span></a>';
 
                 $notifications->add_notification( $notification_id, $message, 'trp-notice trp-narrow notice notice-info', true, array( 'translate-press' ) );
             }

@@ -7,9 +7,9 @@ function trp_register_hreflang_remove_locale( $settings_array ){
         'type'          => 'radio',
         'options'       => array( 'show_both', 'remove_country_locale', 'remove_region_independent_locale' ),
         'default'       => 'show_both',
-        'labels'        => array( esc_html__( 'Show Both (recommended)', 'translatepress-multilingual' ), esc_html__( 'Remove Country Locale', 'translatepress-multilingual' ), esc_html__( 'Remove Region Independent Locale', 'translatepress-multilingual' ) ),
-        'label'         => esc_html__( 'Remove duplicate hreflang', 'translatepress-multilingual' ),
-        'description'   => wp_kses(  __( 'Choose which hreflang tags will appear on your website.<br/>We recommend showing both types of hreflang tags as indicated by <a href="https://developers.google.com/search/docs/advanced/crawling/localized-versions" title="Google Crawling" target="_blank">Google documentation</a>.<br/>Removing Country Locale when having multiple Country Locales of the same language (ex. English UK and English US) will result in showing one hreflang tag with link to just one of the region locales for that language.', 'translatepress-multilingual' ), array( 'br' => array(), 'a' => array( 'href' => array(), 'title' => array(), 'target' => array() ) ) ),
+        'labels'        => array( esc_html__( 'Show Both (recommended)', 'etranslation-multilingual' ), esc_html__( 'Remove Country Locale', 'etranslation-multilingual' ), esc_html__( 'Remove Region Independent Locale', 'etranslation-multilingual' ) ),
+        'label'         => esc_html__( 'Remove duplicate hreflang', 'etranslation-multilingual' ),
+        'description'   => wp_kses(  __( 'Choose which hreflang tags will appear on your website.<br/>We recommend showing both types of hreflang tags as indicated by <a href="https://developers.google.com/search/docs/advanced/crawling/localized-versions" title="Google Crawling" target="_blank">Google documentation</a>.<br/>Removing Country Locale when having multiple Country Locales of the same language (ex. English UK and English US) will result in showing one hreflang tag with link to just one of the region locales for that language.', 'etranslation-multilingual' ), array( 'br' => array(), 'a' => array( 'href' => array(), 'title' => array(), 'target' => array() ) ) ),
     );
     return $settings_array;
 }

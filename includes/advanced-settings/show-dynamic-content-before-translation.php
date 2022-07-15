@@ -5,8 +5,8 @@ function trp_register_show_dynamic_content_before_translation( $settings_array )
 	$settings_array[] = array(
 		'name'          => 'show_dynamic_content_before_translation',
 		'type'          => 'checkbox',
-		'label'         => esc_html__( 'Fix missing dynamic content', 'translatepress-multilingual' ),
-		'description'   => wp_kses( __( 'May help fix missing content inserted using JavaScript. <br> It shows dynamically inserted content in original language for a moment before the translation request is finished.', 'translatepress-multilingual' ), array( 'br' => array()) ),
+		'label'         => esc_html__( 'Fix missing dynamic content', 'etranslation-multilingual' ),
+		'description'   => wp_kses( __( 'May help fix missing content inserted using JavaScript. <br> It shows dynamically inserted content in original language for a moment before the translation request is finished.', 'etranslation-multilingual' ), array( 'br' => array()) ),
 	);
 	return $settings_array;
 }
