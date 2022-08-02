@@ -1,0 +1,37 @@
+# Package plugin as Zip archive
+
+variables:
+- name: PackageName
+  value: etranslation-multilingual
+
+trigger:
+- master
+
+pool:
+  name: default
+
+steps:
+- task: CopyFiles@2
+  inputs:
+    SourceFolder: '$(Build.SourcesDirectory)'
+    Contents: |
+      **
+      !.git/**
+      !azure-pipelines.yml
+    TargetFolder: '$(Build.BinariesDirectory)/$(PackageName)'
+    CleanTargetFolder: true
+
+- task: ArchiveFiles@2
+  inputs:
+    rootFolderOrFile: '$(Build.BinariesDirectory)/$(PackageName)'
+    includeRootFolder: true
+    archiveType: 'zip'
+    archiveFile: '$(Build.ArtifactStagingDirectory)/$(PackageName).zip'
+    replaceExistingArchive: true
+
+- task: PublishBuildArtifacts@1
+  inputs:
+    PathtoPublish: '$(Build.ArtifactStagingDirectory)'
+    ArtifactName: 'plugin'
+    publishLocation: 'FilePath'
+    TargetPath: '\\tilde.lv\ad\Builds\MT\$(Build.DefinitionName)\$(Build.BuildNumber)'
