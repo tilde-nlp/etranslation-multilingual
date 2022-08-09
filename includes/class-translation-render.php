@@ -1385,7 +1385,7 @@ class TRP_Translation_Render{
 	        	continue;
 	        }
 	        //strings existing in database,
-            if ( isset( $dictionary[$string]->translated ) ) {
+            if ( isset( $dictionary[$string]->translated ) ){
                 $translated_strings[$i] = $dictionary[$string]->translated;
             }else{
                 $new_strings[$i] = $translateable_strings[$i];
@@ -1407,11 +1407,7 @@ class TRP_Translation_Render{
 
             // insert unique machine translations into db. Only for strings newly discovered
             foreach ( $unique_original_strings_with_machine_translations as $string ) {
-                $id = NULL;
-                if (isset( $untranslated_list[$string] )) {
-                    $id = $untranslated_list[$string]->id;
-                }
-
+                $id = ( isset( $untranslated_list[$string] ) ) ? $untranslated_list[$string]->id : NULL;
                 array_push( $update_strings, array(
                     'id'          => $id,
                     'original_id' => $original_inserts[ $string ]->id,
@@ -1774,6 +1770,7 @@ class TRP_Translation_Render{
             }
 
             $item = $this->url_converter->get_url_for_language( $form_language, $item );
+	        $item  = str_replace('#TRPLINKPROCESSED', '', $item);
         }
     }
 

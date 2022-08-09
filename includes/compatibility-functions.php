@@ -772,12 +772,12 @@ function trp_superfly_change_menu_loading_hook(){
  */
 add_filter( 'wpseo_canonical', 'trp_wpseo_canonical_compat', 99999, 2);
 function trp_wpseo_canonical_compat( $canonical, $presentation_class = null ){
-	global $TRP_LANGUAGE;
-	$trp = TRP_Translate_Press::get_trp_instance();
-	$url_converter = $trp->get_component( 'url_converter' );
-	$canonical = $url_converter->get_url_for_language($TRP_LANGUAGE, $canonical, '');
+    global $TRP_LANGUAGE;
+    $trp           = TRP_Translate_Press::get_trp_instance();
+    $url_converter = $trp->get_component( 'url_converter' );
+    $canonical     = $url_converter->get_url_for_language( $TRP_LANGUAGE, $canonical, '' );
 
-	return $canonical;
+    return $canonical;
 };
 
 add_filter( 'wpseo_opengraph_url', 'trp_opengraph_url', 99999 );
@@ -1024,6 +1024,22 @@ function trp_thrive_arhitect_compatibility($bool)    {
         $bool = false;
 
     return $bool;
+}
+// do not redirect the URL's that are used inside Thrive Architect Editor
+add_filter( 'trp_allow_language_redirect', 'trp_thrive_no_redirect_in_editor', 10, 3 );
+function trp_thrive_no_redirect_in_editor( $allow_redirect, $needed_language, $current_page_url ){
+	if ( strpos($current_page_url, 'tve=true&tcbf')!== false ){
+		return false;
+	}
+	return $allow_redirect;
+};
+// skip the URL's that are used inside Thrive Architect Editor as they are stripped of parameters in certain cases and the editor isn't working.
+add_filter('trp_skip_url_for_language', 'trp_thrive_skip_language_in_editor', 10, 2);
+function trp_thrive_skip_language_in_editor($skip, $url){
+	if ( strpos($url, 'tve=true&tcbf') !== false ){
+		return true;
+	}
+	return $skip;
 }
 
 /**

@@ -11,7 +11,7 @@ Make your site multilingual in few steps with eTranslation Multilingual Wordpres
 
 == Description ==
 
-eTranslation Multilingual allows full website content translation in any language and supports automatic translation in all EU languages using eTranslation machine translator.
+The eTranslation Multilingual WordPress plugin allows full website content translation in any language supported by the eTranslation automated translation service provided by the EC. The automated translations are performed by an eTranslation service API.
 
 
 == Features ==

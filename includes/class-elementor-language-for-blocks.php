@@ -15,6 +15,10 @@ class TRP_Elementor {
         array(
             'element' => 'section',
             'action'  => 'section_advanced',
+        ),
+        array(
+            'element' => 'container',
+            'action'  => 'section_layout',
         )
     );
     public $section_name_show    = 'trp_section_show';
@@ -36,6 +40,9 @@ class TRP_Elementor {
 
 		// Filter sections display & add custom messages
 		add_action( 'elementor/frontend/section/should_render', array( $this, 'section_render' ), 10, 2 );
+
+        // Filter container display
+        add_action( 'elementor/frontend/container/should_render', array( $this, 'section_render' ), 10, 2 );
 
         // Add data-no-translation to elements that are restricted to a particular language
         add_action( 'elementor/element/after_add_attributes', array( $this, 'add_attributes' ) );

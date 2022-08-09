@@ -479,6 +479,44 @@ class TRP_Translation_Manager
     }
 
     /**
+     * adds shortcut to trp editor in gutenberg editor
+     */
+
+    function trp_add_shortcut_to_trp_editor_gutenberg(){
+        wp_enqueue_script( 'custom-link-in-toolbar', TRP_PLUGIN_URL. '/assets/js/trp-gutenberg-editor-shortcut.js', array("jquery"), TRP_PLUGIN_VERSION, true );
+
+        $trp           = TRP_Translate_Press::get_trp_instance();
+        $url_converter = $trp->get_component('url_converter');
+
+        //$settings = $trp->get_component('settings');
+
+        global $post;
+        global $TRP_LANGUAGE;
+
+        $url_translation_editor = array();
+
+        add_filter('trp_add_language_to_home_url_check_for_admin', '__return_false');
+
+        $trp_permalink_post = $url_converter->get_url_for_language($TRP_LANGUAGE, get_permalink($post->ID));
+
+        if($post->post_status !== "publish"){
+
+            $trp_permalink_post = $url_converter->get_url_for_language($TRP_LANGUAGE, get_preview_post_link($post->ID));
+
+        }
+
+        $url_translation_editor = apply_filters('trp_edit_translation_url', add_query_arg('trp-edit-translation', 'true', $trp_permalink_post));
+
+        $title = esc_attr__('Opens post in the translation editor. Post must be saved as draft or published beforehand.', 'etranslation-multilingual');
+
+        $trp_editor_button[0] =  "<a id='trp-link-id' class='components-button' href='" . esc_url($url_translation_editor) ."'  title='"  . $title ."' ><button class='button-primary' style='height: 33px'>" . esc_html__('Translate Page', 'etranslation-multilingual') ."</button></a>";
+
+        wp_localize_script('custom-link-in-toolbar', 'trp_url_tp_editor', $trp_editor_button);
+
+        remove_filter('trp_add_language_to_home_url_check_for_admin', '__return_false');
+    }
+
+    /**
      * Add the glyph icon for Translate Site button in admin bar
      *
      * hooked to admin_head action
@@ -665,6 +703,22 @@ class TRP_Translation_Manager
         // do this function only once per execution. The init hook can be called more than once
         remove_action( 'trp_call_gettext_filters', array( $this, 'verify_locale_of_loaded_textdomain' ) );
     }
+
+	/**
+	 * Function that determines if a request is a rest api request based on the URL.
+	 * @return bool
+	 */
+	static function is_rest_api_request() {
+		if ( empty( $_SERVER['REQUEST_URI'] ) ) {
+			// Probably a CLI request
+			return false;
+		}
+
+		$rest_prefix         = trailingslashit( rest_get_url_prefix() );
+		$is_rest_api_request = strpos( $_SERVER['REQUEST_URI'], $rest_prefix ) !== false; /* phpcs:ignore */
+
+        return apply_filters( 'trp_is_rest_api_request', $is_rest_api_request );
+	}
 
     /**
      * Function that determines if an ajax request came from the frontend
@@ -948,7 +1002,18 @@ class TRP_Translation_Manager
             if (did_action('init') && isset($trp_output_buffer_started) && $trp_output_buffer_started) {//check here for our global $trp_output_buffer_started, don't wrap the gettexts if they are not processed by our cleanup callbacks for the buffers
                 if ((!empty($TRP_LANGUAGE) && $this->settings["default-language"] != $TRP_LANGUAGE) || (isset($_REQUEST['trp-edit-translation']) && $_REQUEST['trp-edit-translation'] == 'preview')) {
                     //add special start and end tags so that it does not influence html in any way. we will replace them with < and > at the start of the translate function
-                    $translation = apply_filters('trp_process_gettext_tags', '#!trpst#trp-gettext data-trpgettextoriginal=' . $db_id . '#!trpen#' . $translation . '#!trpst#/trp-gettext#!trpen#', $translation, $skip_gettext_querying, $text, $domain);
+                    /**
+                     * Compatibility with Woocomerce Payments
+                     *
+                     * In the file woocommerce-payments/includes/class-wc-payments-customer-service.php there is this line of code
+                     * $description = sprintf( __( 'Name: %1$s, Username: %2$s', 'woocommerce-payments' ), $name, $wc_customer->get_username() ); that should return admin or guest
+                     * but for some reason it returns our gettext string without the stripped gettext.
+                     */
+
+                    if ( $text != 'Name: %1$s, Username: %2$s' && $text != 'Name: %1$s, Guest' ) {
+                        $translation = apply_filters( 'trp_process_gettext_tags', '#!trpst#trp-gettext data-trpgettextoriginal=' . $db_id . '#!trpen#' . $translation . '#!trpst#/trp-gettext#!trpen#', $translation, $skip_gettext_querying, $text, $domain );
+
+                    }
                 }
             }
         }

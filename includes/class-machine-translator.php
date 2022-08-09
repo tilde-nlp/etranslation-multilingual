@@ -29,6 +29,7 @@ class TRP_Machine_Translator {
             $this->trp_languages = $trp->get_component('languages');
         }
         $this->machine_translation_codes = $this->trp_languages->get_iso_codes($this->settings['translation-languages']);
+        add_filter( 'trp_exclude_words_from_automatic_translation', array( $this,'sort_exclude_words_from_automatic_translation_array'), 99999, 1);
     }
 
     /**
@@ -376,6 +377,24 @@ class TRP_Machine_Translator {
         }else {
             return array();
         }
+    }
+
+    /**
+     * @param $trp_exclude_words_from_automatic_translation
+     * @return mixed
+     *
+     * We need to sort the $trp_exclude_words_from_automatic_translation array descending because we risk to not translate excluded multiple words when one
+     * is repeated ( example: Facebook, Facebook Store, Facebook View, because Facebook was the first one in the array it was replaced with a code and the
+     * other words group ( Store, View) were translated)
+     */
+    public function sort_exclude_words_from_automatic_translation_array($trp_exclude_words_from_automatic_translation){
+        usort($trp_exclude_words_from_automatic_translation, array($this,"sort_array"));
+
+        return $trp_exclude_words_from_automatic_translation;
+    }
+
+    public function sort_array($a, $b){
+        return strlen($b)-strlen($a);
     }
 
 

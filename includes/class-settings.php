@@ -223,6 +223,15 @@ class TRP_Settings{
             array_unshift( $settings['publish-languages'], $settings['default-language'] );
         }
 
+        // check if submitted language codes are valid. Default language is included here too
+        $check_language_codes = array_unique( array_merge($settings['translation-languages'], $settings['publish-languages']) );
+        foreach($check_language_codes as $check_language_code ){
+            if ( !trp_is_valid_language_code($check_language_code) ){
+                add_settings_error( 'etm_advanced_settings', 'settings_error', esc_html__('Invalid language code. Please try again.', 'etranslation-multilingual'), 'error' );
+                return get_option( 'etm_settings', 'not_set' );
+            }
+        }
+
         if( !empty( $settings['native_or_english_name'] ) )
             $settings['native_or_english_name'] = sanitize_text_field( $settings['native_or_english_name']  );
         else
@@ -377,6 +386,14 @@ class TRP_Settings{
             }
         }
 
+        // Might have saved invalid language codes in the past so this code protects against SQL Injections using invalid language codes which are used in queries
+        $check_language_codes = array_unique( array_merge($settings_option['translation-languages'], $settings_option['publish-languages']) );
+        foreach($check_language_codes as $check_language_code ) {
+            if ( !trp_is_valid_language_code( $check_language_code ) ) {
+                add_filter('plugins_loaded', array($this, 'show_invalid_language_codes_error_notice'), 999999);
+            }
+        }
+
 
         /**
          * These options (trp_advanced_settings,trp_machine_translation_settings) are not part of the actual trp_settings DB option.
@@ -399,6 +416,15 @@ class TRP_Settings{
         }
 
         $this->settings = $settings_option;
+    }
+
+    public function show_invalid_language_codes_error_notice(){
+        $trp = TRP_Translate_Press::get_trp_instance();
+        $error_manager = $trp->get_component( 'error_manager' );
+
+        $error_manager->record_error(
+            array( 'message'         => esc_html__('Language codes can contain only A-Z a-z 0-9 - _ characters. Check your language codes in eTranslation Multilingual General Settings.', 'etranslation-multilingual'),
+                   'notification_id' => 'etm_invalid_language_code' ) );
     }
 
     public function get_default_trp_machine_translation_settings(){

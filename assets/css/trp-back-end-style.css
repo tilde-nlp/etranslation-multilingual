@@ -7,7 +7,7 @@ table#trp-options td{
 }
 
 span.select2-container{
-    width: 240px !important;
+    width: 248px !important;
 }
 
 #trp-options .trp-text-input{
@@ -15,7 +15,7 @@ span.select2-container{
 }
 
 #trp-options .trp-select{
-    min-width:240px;
+    min-width:248px;
 }
 
 #trp-published-language{
@@ -407,5 +407,50 @@ a.trp-recommended-learn-more{
 
     .trp-email-course h2 {
         font-size: 2.1em;
+    }
+}
+
+/**
+Setting Menu Responsive
+ */
+
+
+@media only screen and (max-width: 783px) {
+
+    #trp-languages-table{
+        width: unset;
+        margin-left: unset;
+    }
+
+    table#trp-languages-table{
+        text-align: center;
+    }
+
+    span.select2-container {
+        width: 100% !important;
+        text-align: left;
+    }
+
+    #trp-languages-table{
+        width: 100%;
+    }
+
+    .select2-container .select2-selection--single {
+        min-height: 40px !important;
+        font-size: initial;
+    }
+
+    .select2-container--default .select2-selection--single .select2-selection__rendered {
+        line-height: 2.4 !important;
+    }
+
+    #trp-add-language{
+        margin-top: 10px;
+        margin-left: unset;
+    }
+
+    table#trp-languages-table td{
+        padding-left: 0;
+        padding-right: 0;
     }
 }

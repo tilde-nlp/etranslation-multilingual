@@ -937,6 +937,11 @@ class TRP_Query{
         if ( $default_language == null ) {
             $default_language = $this->settings['default-language'];
         }
+        if ( !trp_is_valid_language_code($language_code) || !trp_is_valid_language_code($default_language) ){
+            /* there's are other checks that display an admin notice for this kind of errors */
+            return 'trp_language_code_is_invalid_error';
+        }
+
         return apply_filters( 'trp_table_name_dictionary', $this->db->prefix . 'etm_dictionary_' . strtolower( $default_language ) . '_'. strtolower( $language_code ), $this->db->prefix, $language_code, $default_language );
     }
 
@@ -991,6 +996,10 @@ class TRP_Query{
     }
 
     public function get_gettext_table_name( $language_code ){
+        if ( !trp_is_valid_language_code($language_code) ){
+            /* there's are other checks that display an admin notice for this kind of errors */
+            return 'trp_language_code_is_invalid_error';
+        }
         return apply_filters( 'trp_table_name_gettext', $this->db->prefix . 'etm_gettext_' . strtolower( $language_code ), $this->db->prefix, $language_code );
     }
 
