@@ -383,7 +383,7 @@ class TRP_Translation_Manager
 
         $trp_editor_data = array(
             'trp_localized_strings' => $this->localized_text(),
-            'etm_settings' => $this->settings,
+            'trp_settings' => $this->settings,
             'language_names' => $language_names,
             'ordered_secondary_languages' => $ordered_secondary_languages,
             'current_language' => $TRP_LANGUAGE,

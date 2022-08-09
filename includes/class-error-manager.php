@@ -17,7 +17,7 @@ class TRP_Error_Manager{
     }
 
     /**
-     * Record specified error in trp_db_errors option
+     * Record specified error in etm_db_errors option
      *
      * @param $error_details array Suggested fields:
     'last_error'  => $this->db->last_error,
@@ -83,7 +83,7 @@ class TRP_Error_Manager{
 
 
     /**
-     * Remove notification from trp_db_errors too (not only user_meta) when dismissed by user
+     * Remove notification from etm_db_errors too (not only user_meta) when dismissed by user
      *
      * Necessary in order to allow logging of this error in the future. Basically allow creation of new notifications about this error.
      *
