@@ -1,11 +1,10 @@
 <?php
 /*
 Plugin Name: eTranslation Multilingual
-Plugin URI: https://ec.europa.eu/info/index_en
 Description: Make your site multilingual in few steps with eTranslation Multilingual Wordpress plugin. 
 Version: 1.0.0
-Author: EC
-Author URI: https://ec.europa.eu
+Author: Tilde
+Author URI: https://tilde.com/
 Text Domain: etranslation-multilingual
 Domain Path: /languages
 License: GPL2
@@ -13,6 +12,7 @@ WC requires at least: 2.5.0
 WC tested up to: 6.2
 
 == Copyright ==
+Copyright (C) 2022 European Union
 
 This program is free software; you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
