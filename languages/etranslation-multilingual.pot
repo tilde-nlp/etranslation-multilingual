@@ -1,4 +1,4 @@
-# Copyright (C) 2022 EC
+# Copyright (C) 2022 European Union
 # This file is distributed under the GPL2.
 msgid ""
 msgstr ""
@@ -19,20 +19,16 @@ msgstr ""
 msgid "eTranslation Multilingual"
 msgstr ""
 
-#. Plugin URI of the plugin
-msgid "https://ec.europa.eu/info/index_en"
-msgstr ""
-
 #. Description of the plugin
 msgid "Make your site multilingual in few steps with eTranslation Multilingual Wordpress plugin."
 msgstr ""
 
 #. Author of the plugin
-msgid "EC"
+msgid "Tilde"
 msgstr ""
 
 #. Author URI of the plugin
-msgid "https://ec.europa.eu"
+msgid "https://tilde.com"
 msgstr ""
 
 #: assets/lib/tp-add-ons-listing/tp-add-ons-listing.php:123
