@@ -219,7 +219,6 @@ class TRP_Advanced_Tab {
         include_once(TRP_PLUGIN_DIR . 'includes/advanced-settings/exclude-selectors.php');
 		include_once(TRP_PLUGIN_DIR . 'includes/advanced-settings/exclude-selectors-automatic-translation.php');
         include_once(TRP_PLUGIN_DIR . 'includes/advanced-settings/fix-broken-html.php');
-        include_once(TRP_PLUGIN_DIR . 'includes/advanced-settings/fix-invalid-space-between-html-attr.php');
         include_once(TRP_PLUGIN_DIR . 'includes/advanced-settings/show-dynamic-content-before-translation.php');
         include_once(TRP_PLUGIN_DIR . 'includes/advanced-settings/enable-hreflang-xdefault.php');
         include_once(TRP_PLUGIN_DIR . 'includes/advanced-settings/strip-gettext-post-content.php');
@@ -234,6 +233,7 @@ class TRP_Advanced_Tab {
         include_once (TRP_PLUGIN_DIR . 'includes/advanced-settings/open-language-switcher-shortcode-on-click.php');
         include_once(TRP_PLUGIN_DIR . 'includes/advanced-settings/hreflang-remove-locale.php');
         include_once (TRP_PLUGIN_DIR . 'includes/advanced-settings/etranslation-wait-timeout.php');
+        include_once(TRP_PLUGIN_DIR . 'includes/advanced-settings/html-lang-remove-locale.php');
 	}
 
 	/*

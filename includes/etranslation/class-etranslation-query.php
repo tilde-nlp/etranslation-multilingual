@@ -26,7 +26,8 @@ class eTranslation_Query {
                     'id' => $db_row->id
                 ));
                 if (!$deletion) {
-                    error_log("Could not delete $this->jobs_table row after updating translation manually [ID=$db_row->id]");
+                    $error = $this->db->last_error;
+                    error_log("Could not delete $this->jobs_table row after updating translation manually [ID=$db_row->id, error=$error]");
                 }
             } else {
                 //translation completed in time
@@ -38,7 +39,8 @@ class eTranslation_Query {
                 ));
     
                 if (!$update_result) {
-                    error_log("Error updating eTranslation DB entry [ID=$id]");
+                    $error = $this->db->last_error;
+                    error_log("Error updating eTranslation DB entry [ID=$id, error=$error]");
                 }
             }
         } else {
@@ -63,7 +65,8 @@ class eTranslation_Query {
             ));
     
             if (!$update_result) {
-                error_log("Error updating eTranslation DB entry [ID=$id]");
+                $error = $this->db->last_error;
+                error_log("Error updating eTranslation DB entry [ID=$id, error=$error]");
             }
         } else {
             error_log("Translation error received has no entry in database [ID=$id]");
@@ -86,7 +89,8 @@ class eTranslation_Query {
                 'id' => $id
             ));
             if (!$deletion) {
-                error_log("Could not delete row from $this->jobs_table [ID=$id]");
+                $error = $this->db->last_error;
+                error_log("Could not delete row from $this->jobs_table [ID=$id, error=$error]");
             }
             return $row->body;
         }
@@ -101,7 +105,8 @@ class eTranslation_Query {
         ));
 
         if (!$result) {
-            error_log("Error updating eTranslation DB entry status [ID=$id]");
+            $error = $this->db->last_error;
+            error_log("Error updating eTranslation DB entry status [ID=$id, error=$error]");
         }
     }
 
@@ -115,7 +120,8 @@ class eTranslation_Query {
             'original' => $original
         ));
         if (!$result) {
-            error_log("Error inserting translation entry in eTranslation DB [ID=$id]");
+            $error = $this->db->last_error;
+            error_log("Error inserting translation entry in eTranslation DB [ID=$id, error=$error]");
         }
         return $result;
     }
@@ -127,10 +133,10 @@ class eTranslation_Query {
             $sql .= "  `id`  VARCHAR(13) NOT NULL, ";
             $sql .= " `requestId` BIGINT NOT NULL, ";
             $sql .= "  `status`  ENUM('TRANSLATING','DONE','ERROR','TIMEOUT') NOT NULL DEFAULT 'TRANSLATING', ";
-            $sql .= "  `body`  TEXT NULL DEFAULT NULL, ";
+            $sql .= "  `body`  LONGTEXT NULL DEFAULT NULL, ";
             $sql .= " `from` VARCHAR(5) NULL, ";
             $sql .= " `to` VARCHAR(200) NULL, ";
-            $sql .= " `original` TEXT NULL, ";
+            $sql .= " `original` LONGTEXT NULL, ";
             $sql .= " `timestamp` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP, ";
             $sql .= "  PRIMARY KEY (`id`) ";
             $sql .= ") COLLATE='utf8mb4_unicode_520_ci'; ";
@@ -147,34 +153,42 @@ class eTranslation_Query {
         $trp = TRP_Translate_Press::get_trp_instance();
         $trp_query = $trp->get_component( 'query' );
 
-        $dict_table = 'wp_etm_dictionary_' . $details_row->from . '_' . $details_row->to;
-        $delimiter = "\n";
-        $original_strings = explode($delimiter, $details_row->original);
-        $decoded_translations = self::decode_untranslated_symbols(explode($delimiter, $translations), $original_strings);
-        $translation_strings = TRP_eTranslation_Utils::arr_restore_spaces_after_translation($original_strings, $decoded_translations);
+        if ($details_row->from && $details_row->to && $details_row->from != $details_row->to) {
+            $dict_table = 'wp_etm_dictionary_' . $details_row->from . '_' . $details_row->to;
+            $delimiter = "\n";
+            $original_strings = explode($delimiter, $details_row->original);
+            $decoded_translations = self::decode_untranslated_symbols(explode($delimiter, $translations), $original_strings);
+            $translation_strings = TRP_eTranslation_Utils::arr_restore_spaces_after_translation($original_strings, $decoded_translations);
+        
+            //insert original strings in table if they don't exist        
+            $original_inserts = $trp_query->original_strings_sync($details_row->to, $original_strings);
+        
+            $max_id = $this->db->get_row("SELECT MAX(id) as id FROM $dict_table")->id;
+            $next_id = intval($max_id) + 1;
+        
+            $update_strings = array();
+            for ( $i = 0; $i < count($original_strings); $i++ ) {
+                $string = $original_strings[$i];
+                array_push( $update_strings, array(
+                    'id'          => $next_id + $i,
+                    'original_id' => $original_inserts[ $string ]->id,
+                    'original'    => $string,
+                    'translated'  => trp_sanitize_string( $translation_strings[ $i ] ),
+                    'status'      => $trp_query->get_constant_machine_translated() ) );
+            }
+        
+            //insert translations
+            $updated_rows = $trp_query->update_strings( $update_strings, $details_row->to, array( 'id', 'original', 'translated', 'status', 'original_id' ) );
     
-        //insert original strings in table if they don't exist        
-        $original_inserts = $trp_query->original_strings_sync($details_row->to, $original_strings);
-    
-        $max_id = $this->db->get_row("SELECT MAX(id) as id FROM $dict_table")->id;
-        $next_id = intval($max_id) + 1;
-    
-        $update_strings = array();
-        for ( $i = 0; $i < count($original_strings); $i++ ) {
-            $string = $original_strings[$i];
-            array_push( $update_strings, array(
-                'id'          => $next_id + $i,
-                'original_id' => $original_inserts[ $string ]->id,
-                'original'    => $string,
-                'translated'  => trp_sanitize_string( $translation_strings[ $i ] ),
-                'status'      => $trp_query->get_constant_machine_translated() ) );
-        }
-    
-        //insert translations
-        $trp_query->update_strings( $update_strings, $details_row->to, array( 'id', 'original', 'translated', 'status', 'original_id' ) );
-    
-        //delete previously inserted untranslated rows 
-        $trp_query->remove_possible_duplicates($update_strings, $details_row->to, 'regular');
+            if (count($update_strings) != $updated_rows) {
+                error_log("Translation list size differs from updated row count (" . count($update_strings) . " vs " . $updated_rows . ")");
+            }
+        
+            //delete previously inserted untranslated rows 
+            $trp_query->remove_possible_duplicates($update_strings, $details_row->to, 'regular');
+        } else {
+            error_log("Cannot update translations manually - invalid langauge pair '$details_row->from -> $details_row->to'");
+        }        
     }
 
     private function decode_untranslated_symbols($translations, $originals) {

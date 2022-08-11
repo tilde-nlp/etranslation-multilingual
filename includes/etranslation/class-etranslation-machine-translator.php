@@ -62,7 +62,6 @@ class TRP_eTranslation_Machine_Translator extends TRP_Machine_Translator {
             $original_count = count($strings_array);
             $translation_count = count($result);
             if ($translation_count != $original_count && !($translation_count == $original_count + 1 && end($result) == "")) {
-                //$this->send_log_request([$content, "============", $translation]);
                 error_log("Original string list size differs from translation list size (". count($strings_array) . " != " . count($result) . ") [ID=$id]");
             }
             return TRP_eTranslation_Utils::arr_restore_spaces_after_translation(array_values($strings_array), $result);
@@ -119,12 +118,12 @@ class TRP_eTranslation_Machine_Translator extends TRP_Machine_Translator {
             ));
 
             /* analyze the response */
-            if (is_array($response)) {
+            if (is_array($response) && !empty($response)) {
 
                 $this->machine_translator_logger->count_towards_quota( $new_strings_chunk );
 
                 if (count($response) > 0 && count($response) < count($new_strings_chunk)) {
-                    error_log("[$source_language_code => $target_language_code] Translation list is incomplete. Using original string for last " . count($new_strings_chunk) - count($response) . " strings.");
+                    error_log("[$source_language_code => $target_language_code] Translation list is incomplete. Using original string for last " . (count($new_strings_chunk) - count($response)) . " strings.");
                 }
                 foreach ($new_strings_chunk as $key => $old_string) {
                     if (isset($response[$i])) {

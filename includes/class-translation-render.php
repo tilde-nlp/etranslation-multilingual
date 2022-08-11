@@ -1770,6 +1770,7 @@ class TRP_Translation_Render{
             }
 
             $item = $this->url_converter->get_url_for_language( $form_language, $item );
+	        $item  = str_replace('#TRPLINKPROCESSED', '', $item);
         }
     }
 

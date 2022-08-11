@@ -667,3 +667,35 @@ function trp_custom_language_switcher() {
 
     return $custom_ls_array;
 }
+
+/**Function that provides translation for a specific text or html content, into another language.
+ * The function can be used by third party plugin/theme authors.
+ *
+ * @param string $content is the content you want to translate, it must be in the default language and it can be any text or html code
+ * @param string $language is the language you want to translate the content into, if it is left undefined the content will be translated
+ * to the current language; it's set to current language by default
+ * @param bool $prevent_over_translation is a parameter that prevents the translated content from being translated again during the translation
+ * of the page. This can be set to false if the translated content is used in a way that TranslatePress can't detect the text.
+ * It's set to true by default
+ * @return string is the translated content in the chosen language
+ */
+function trp_translate( $content, $language = null, $prevent_over_translation = true ){
+    $trp = TRP_Translate_Press::get_trp_instance();
+    $trp_render = $trp->get_component( 'translation_render' );
+    global $TRP_LANGUAGE;
+
+    $lang_backup = $TRP_LANGUAGE;
+
+    if ($language !== null){
+        $TRP_LANGUAGE = $language;
+    }
+    $translated_custom_content = $trp_render->translate_page($content);
+
+    if ($prevent_over_translation === true){
+        $translated_custom_content = '<span data-no-translation>' . $translated_custom_content .'</span>';
+    }
+
+    $TRP_LANGUAGE = $lang_backup;
+
+    return $translated_custom_content;
+}

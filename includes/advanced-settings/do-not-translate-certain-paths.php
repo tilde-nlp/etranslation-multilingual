@@ -216,7 +216,14 @@ function trp_exclude_include_do_not_redirect_on_excluded_pages( $redirect, $lang
 
 }
 
-add_action( 'init', 'trp_exclude_include_redirect_to_default_language', 1 );
+/**
+ *  The function verifies if we are on an excluded path and automatically redirects to the default language in that case.
+ * The function '$url_converter->get_url_for_language( $settings['default-language'], null, '' )' is needed in the case we are on a page with a different
+ * language code then the default and the path is the one excluded, so we need to get the correct url in the default language.
+ *
+ * Redirects to the excluded page in the default language.
+ */
+add_action( 'template_redirect', 'trp_exclude_include_redirect_to_default_language', 1 );
 function trp_exclude_include_redirect_to_default_language(){
 
     if( isset( $_GET['trp-edit-translation'] ) && ( $_GET['trp-edit-translation'] == 'true' || $_GET['trp-edit-translation'] == 'preview' ) )

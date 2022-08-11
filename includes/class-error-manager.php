@@ -17,7 +17,7 @@ class TRP_Error_Manager{
     }
 
     /**
-     * Record specified error in trp_db_errors option
+     * Record specified error in etm_db_errors option
      *
      * @param $error_details array Suggested fields:
     'last_error'  => $this->db->last_error,
@@ -40,6 +40,8 @@ class TRP_Error_Manager{
         $error_details['date_time'] = date('Y-m-d H:i:s');
         $error_details['timestamp'] = time();
 
+        $error_message = wp_kses( sprintf(  __('<strong>eTranslation Multilingual</strong> encountered SQL errors. <a href="%s" title="View eTranslation Multilingual SQL Errors">Check out the errors</a>.', 'etranslation-multilingual'), admin_url( 'admin.php?page=etm_error_manager' ) ), array('a' => array('href' => array(), 'title' => array()), 'strong' => array()));
+
         // specific actions for this error: add notification message and disable machine translation
         if ( isset( $error_details['disable_automatic_translations'] ) && $error_details['disable_automatic_translations'] === true ){
 
@@ -47,7 +49,7 @@ class TRP_Error_Manager{
                 $trp = TRP_Translate_Press::get_trp_instance();
                 $this->trp_settings = $trp->get_component( 'settings' );
             }
-            $error_message = wp_kses( sprintf(  __('<strong>eTranslation Multilingual</strong> encountered SQL errors. <a href="%s" title="View eTranslation Multilingual SQL Errors">Check out the errors</a>.', 'etranslation-multilingual'), admin_url( 'admin.php?page=etm_error_manager' ) ), array('a' => array('href' => array(), 'title' => array()), 'strong' => array()));
+
             $mt_settings_option = get_option('etm_machine_translation_settings', $this->trp_settings->get_default_trp_machine_translation_settings() );
             if ( $mt_settings_option['machine-translation'] != 'no' ) {
                 $mt_settings_option['machine-translation'] = 'no';
@@ -67,6 +69,12 @@ class TRP_Error_Manager{
                 );
             }
         }
+        if ( $error_details['notification_id'] ){
+            $option['notifications'][$error_details['notification_id']] = array(
+                'notification_id' => $error_details['notification_id'],
+                'message' => $error_details['message'] .' ' . $error_message
+            );
+        }
 
 
         $option['errors'][] = $error_details;
@@ -75,7 +83,7 @@ class TRP_Error_Manager{
 
 
     /**
-     * Remove notification from trp_db_errors too (not only user_meta) when dismissed by user
+     * Remove notification from etm_db_errors too (not only user_meta) when dismissed by user
      *
      * Necessary in order to allow logging of this error in the future. Basically allow creation of new notifications about this error.
      *
@@ -88,7 +96,7 @@ class TRP_Error_Manager{
         $option = get_option( 'etm_db_errors', false );
         if ( isset( $option['notifications'] ) ) {
             foreach ($option['notifications'] as $key => $logged_notification ){
-                if ( $logged_notification['notification_id'] === $notification_id || $key === $notification_id ) {
+                if ( $notification_id == '' || $logged_notification['notification_id'] === $notification_id || $key === $notification_id ) {
                     unset( $option['notifications'][$key] );
                     update_option('etm_db_errors', $option );
                     break;
@@ -121,7 +129,7 @@ class TRP_Error_Manager{
         $link = isset( $_GET['page'] ) ? sanitize_text_field( $_GET['page'] ) : '';
 
         if($link === 'etm_error_manager') {
-            $this->clear_notification_from_db('disable_automatic_translations', null);
+            $this->clear_notification_from_db('', null);
         }
 
     }

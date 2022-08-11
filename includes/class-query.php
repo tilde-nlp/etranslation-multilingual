@@ -68,7 +68,7 @@ class TRP_Query{
         }else {
 	        $and_block_type = " AND block_type = " . $block_type;
         }
-        $query = "SELECT original,translated, status FROM `" . sanitize_text_field( $this->get_table_name( $language_code ) ) . "` WHERE status != " . self::NOT_TRANSLATED . $and_block_type . " AND translated <>'' AND original IN ";
+        $query = "SELECT original,translated, status,id FROM `" . sanitize_text_field( $this->get_table_name( $language_code ) ) . "` WHERE status != " . self::NOT_TRANSLATED . $and_block_type . " AND translated <>'' AND original IN ";
 
         $placeholders = array();
         $values = array();
@@ -685,13 +685,15 @@ class TRP_Query{
 		// but by using prepare you cannot insert NULL values.
 
 		$prepared_query = $this->db->prepare($query . ' ', $values);
-		$this->db->query( $prepared_query );
+		$updated_rows = $this->db->query( $prepared_query );
         if( !$this->check_invalid_text ){
             $trp = TRP_Translate_Press::get_trp_instance();
             $this->check_invalid_text = $trp->get_component( 'check_invalid_text' );
         }
         $this->check_invalid_text->update_translations_without_invalid_text( $update_strings, $language_code, $columns_to_update );
         $this->maybe_record_automatic_translation_error(array( 'details' => 'Error running update_strings()' ) );
+
+        return $updated_rows;
 	}
 
 	/**
@@ -935,6 +937,11 @@ class TRP_Query{
         if ( $default_language == null ) {
             $default_language = $this->settings['default-language'];
         }
+        if ( !trp_is_valid_language_code($language_code) || !trp_is_valid_language_code($default_language) ){
+            /* there's are other checks that display an admin notice for this kind of errors */
+            return 'trp_language_code_is_invalid_error';
+        }
+
         return apply_filters( 'trp_table_name_dictionary', $this->db->prefix . 'etm_dictionary_' . strtolower( $default_language ) . '_'. strtolower( $language_code ), $this->db->prefix, $language_code, $default_language );
     }
 
@@ -989,6 +996,10 @@ class TRP_Query{
     }
 
     public function get_gettext_table_name( $language_code ){
+        if ( !trp_is_valid_language_code($language_code) ){
+            /* there's are other checks that display an admin notice for this kind of errors */
+            return 'trp_language_code_is_invalid_error';
+        }
         return apply_filters( 'trp_table_name_gettext', $this->db->prefix . 'etm_gettext_' . strtolower( $language_code ), $this->db->prefix, $language_code );
     }
 

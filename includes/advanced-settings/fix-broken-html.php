@@ -6,7 +6,7 @@ function trp_register_fix_broken_html( $settings_array ){
 		'name'          => 'fix_broken_html',
 		'type'          => 'checkbox',
 		'label'         => esc_html__( 'Fix broken HTML', 'etranslation-multilingual' ),
-		'description'   => wp_kses( __( 'General attempt to fix broken or missing HTML on translated pages.<br/><strong>Only try this if the "Fix spaces between html attribute" did not solve the issue.</strong>', 'etranslation-multilingual' ), array( 'br' => array(), 'strong' => array() ) ),
+		'description'   => wp_kses( __( 'General attempt to fix broken or missing HTML on translated pages.<br/>', 'etranslation-multilingual' ), array( 'br' => array(), 'strong' => array() ) ),
 	);
 	return $settings_array;
 }
