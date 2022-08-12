@@ -1,6 +1,6 @@
 
 eTranslation Multilingual WordPress plugin
-version: 1.0 
+version: 1.0.0 
 ========================================================================================
 
 Copyright (C) 2022 European Union
