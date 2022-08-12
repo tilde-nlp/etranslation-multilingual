@@ -1,5 +1,5 @@
 ﻿=== eTranslation Multilingual ===
-Contributors: Tilde
+Contributors: tildesia, cozmoslabs
 Tags: translate, translation, etranslation, EU, europe, multilingual, automatic translation, bilingual, front-end translation, language
 Requires at least: 3.1.0
 Tested up to: 6.0.1
