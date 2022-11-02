@@ -289,9 +289,13 @@ jQuery( function() {
 
     jQuery(document).trigger( 'trpInitFieldToggler' );
 
+    jQuery(document).on("click","#show-login-alert", function() {
+        alert(trp_url_slugs_info['message_please_login_first']);
+    });
+
     // Used for the main machine translation toggle to show/hide all options below it
     function TRP_show_hide_machine_translation_options(){
-        if( jQuery( '#trp-machine-translation-enabled' ).val() != 'yes' )
+        if( jQuery( '#trp-machine-translation-enabled' ).val() == 'no' )
             jQuery( '.trp-machine-translation-options tbody tr:not(:first-child)').hide()
         else
             jQuery( '.trp-machine-translation-options tbody tr:not(:first-child)').show()

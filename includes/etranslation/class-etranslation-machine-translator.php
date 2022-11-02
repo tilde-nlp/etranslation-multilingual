@@ -213,7 +213,8 @@ class TRP_eTranslation_Machine_Translator extends TRP_Machine_Translator {
         $is_error       = false;
         $return_message = '';
 
-        if ( 'etranslation' === $translation_engine && $this->settings['trp_machine_translation_settings']['machine-translation'] === 'yes') {
+        if ( 'etranslation' === $translation_engine && isset($this->settings['trp_machine_translation_settings']['machine-translation']) &&
+                $this->settings['trp_machine_translation_settings']['machine-translation'] === 'yes') {
 
             if ( isset( $this->correct_api_key ) && $this->correct_api_key != null ) {
                 return $this->correct_api_key;

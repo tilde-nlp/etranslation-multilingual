@@ -909,9 +909,14 @@ msgstr ""
 msgid "Language codes can contain only A-Z a-z 0-9 - _ characters. Check your language codes in eTranslation Multilingual General Settings."
 msgstr ""
 
-#: includes/class-settings.php:479
+#: includes/class-settings.php:481
 #: languages/etranslation-multilingual.catalog.php:95
 msgid "Error! Duplicate URL slug values."
+msgstr ""
+
+#: includes/class-settings.php:482
+#: languages/etranslation-multilingual.catalog.php:520
+msgid "Please enable automatic translation and enter valid eTranslation credentials first!"
 msgstr ""
 
 #: includes/class-settings.php:520

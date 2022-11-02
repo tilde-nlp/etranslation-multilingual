@@ -165,7 +165,8 @@ class TRP_Machine_Translation_Tab {
         $display_recheck_button = false;
 
 
-        if ( 'yes' === $this->settings['trp_machine_translation_settings']['machine-translation'] &&
+        if ( isset($this->settings['trp_machine_translation_settings']['machine-translation']) &&
+            'yes' === $this->settings['trp_machine_translation_settings']['machine-translation'] &&
             !empty( $machine_translator->get_api_key() ) &&
             !$machine_translator->check_languages_availability($this->settings['translation-languages']) &&
             $correct_key != null
@@ -233,7 +234,8 @@ class TRP_Machine_Translation_Tab {
                 <?php
             }
         }
-        if ( 'yes' === $this->settings['trp_machine_translation_settings']['machine-translation'] && $display_recheck_button ){
+        if ( isset($this->settings['trp_machine_translation_settings']['machine-translation']) &&
+                'yes' === $this->settings['trp_machine_translation_settings']['machine-translation'] && $display_recheck_button ){
             ?>
 
             <tr id="trp_recheck_supported_languages">
