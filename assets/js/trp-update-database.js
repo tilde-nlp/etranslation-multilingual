@@ -12,6 +12,7 @@ jQuery( function() {
                 }
             },
             error: function (errorThrown) {
+                jQuery('#trp-update-database-progress').append(errorThrown['responseText'])
                 console.log('eTranslation Multilingual AJAX Request Error while triggering database update');
             }
         });

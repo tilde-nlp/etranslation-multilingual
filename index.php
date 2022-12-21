@@ -9,7 +9,7 @@ Text Domain: etranslation-multilingual
 Domain Path: /languages
 License: GPL2
 WC requires at least: 2.5.0
-WC tested up to: 6.2
+WC tested up to: 7.1.1
 
 == Copyright ==
 Copyright (C) 2022 European Union
@@ -115,7 +115,18 @@ function trp_translatepress_disabled_notice(){
 	echo '<div class="notice notice-error"><p>' . wp_kses( sprintf( __( '<strong>eTranslation Multilingual</strong> requires at least PHP version 5.6.20+ to run. It is the <a href="%s">minimum requirement of the latest WordPress version</a>. Please contact your server administrator to update your PHP version.','etranslation-multilingual' ), 'https://wordpress.org/about/requirements/' ), array( 'a' => array( 'href' => array() ), 'strong' => array() ) ) . '</p></div>';
 }
 
+/**
+ * Redirect users to the settings page on plugin activation
+ */
+add_action( 'activated_plugin', 'trp_plugin_activation_redirect' );
+function trp_plugin_activation_redirect( $plugin ){
 
+	if( !wp_doing_ajax() && $plugin == plugin_basename( __FILE__ ) ) {
+		wp_safe_redirect( admin_url( 'options-general.php?page=etranslation-multilingual' ) );
+		exit();
+	}
+
+}
 //This is for the DEV version
 if( file_exists(plugin_dir_path( __FILE__ ) . '/index-dev.php') )
     include_once( plugin_dir_path( __FILE__ ) . '/index-dev.php');

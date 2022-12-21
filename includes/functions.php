@@ -699,3 +699,86 @@ function trp_translate( $content, $language = null, $prevent_over_translation = 
 
     return $translated_custom_content;
 }
+
+/**
+ * Used by third parties to briefly switch language such as when sending an email
+ * To get a user's preferred language use this code: get_user_meta( $user_id, 'etm_language', true );
+ *
+ * @param $language
+ * @return void
+ */
+function trp_switch_language($language){
+    global $TRP_LANGUAGE, $TRP_LANGUAGE_COPY, $TRP_LANGUAGE_ORIGINAL;
+    $language = trp_validate_language( $language );
+    $TRP_LANGUAGE_ORIGINAL = $TRP_LANGUAGE;
+    $TRP_LANGUAGE = $language;
+    $TRP_LANGUAGE_COPY = $language;
+
+    // Because of 'trp_before_translate_content' filter function is_ajax_frontend() is called and it changes the global $TRP_LANGUAGE according to the url from which it was called.
+    // Function trp_reset_language() is added on the hook in order to set global $TRP_LANGUAGE according to our need for the email language instead.
+    add_filter( 'trp_before_translate_content', 'trp_reset_language', 99999999 );
+
+    switch_to_locale($language);
+    add_filter( 'plugin_locale', 'trp_get_locale', 99999999);
+}
+
+/**
+ * Return $TRP_LANGUAGE as plugin locale
+ *
+ * @return mixed
+ */
+function trp_get_locale() {
+    global $TRP_LANGUAGE;
+    return $TRP_LANGUAGE;
+}
+
+/**
+ * The value of $TRP_LANGUAGE is set according to the url, which can be problematic in some cases when sending emails
+ * Restore the $TRP_LANGUAGE value in which email will be sent
+ *
+ * @param $output
+ * @return mixed
+ */
+function trp_reset_language( $output ){
+    global $TRP_LANGUAGE, $TRP_LANGUAGE_COPY;
+    $TRP_LANGUAGE = $TRP_LANGUAGE_COPY;
+    return $output;
+}
+
+/**
+ * Return a valid TRP language in which the email will be sent
+ *
+ * @param $language
+ * @return mixed
+ */
+function trp_validate_language( $language ){
+    $trp = TRP_Translate_Press::get_trp_instance();
+    $trp_settings = $trp->get_component( 'settings' );
+    $settings = $trp_settings->get_settings();
+    if( empty( $language ) || !in_array( $language, $settings['translation-languages'] ) ){
+        $language = $settings['default-language'];
+    }
+    return $language;
+}
+
+/**
+ * Used by third parties to restore original language after using trp_switch_language
+ */
+function trp_restore_language(){
+    global $TRP_LANGUAGE, $TRP_LANGUAGE_ORIGINAL;
+    remove_filter( 'trp_before_translate_content', 'trp_reset_language' );
+
+    restore_previous_locale();
+    remove_filter( 'plugin_locale', 'trp_get_locale' );
+    $TRP_LANGUAGE = $TRP_LANGUAGE_ORIGINAL;
+}
+
+/**trp_language
+ * Determine user language
+ *
+ * @param $user_id
+ * @return mixed
+ */
+function trp_get_user_language( $user_id ){
+    return trp_validate_language( get_user_meta( $user_id, 'etm_language', true ) );
+}

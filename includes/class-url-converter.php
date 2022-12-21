@@ -377,6 +377,7 @@ class TRP_Url_Converter {
                 /* In order to accurately find the posst ID the passed URL to url_to_postid() needs to be accurate
 	            * if the option add subdir to default language is on we need to add that to the URL
                 */
+
                 $possible_url = $url;
 				if (isset ($this->settings['add-subdirectory-to-default-language']) && $this->settings['add-subdirectory-to-default-language'] === 'yes' && $this->get_lang_from_url_string( $url ) == null ){
 					$possible_url = $this->add_language_to_home_url($url, $url_obj->getPath(), $url_obj->getScheme(), get_current_blog_id() );
@@ -415,11 +416,21 @@ class TRP_Url_Converter {
             $arguments = str_replace(untrailingslashit($processed_permalink), '', $url_to_replace );
 
             // if nothing was replaced, something was wrong, just use the normal permalink without any arguments.
-            if( $arguments == $url_to_replace )
+            if( $arguments == $url_to_replace ) {
                 $arguments = '';
+                //try again, this time trying to correct url_to_replace to include subdirectory
+                if (isset ($this->settings['add-subdirectory-to-default-language']) && $this->settings['add-subdirectory-to-default-language'] === 'yes' && $this->get_lang_from_url_string( $url_to_replace ) == null ) {
+                    $possible_url_to_replace = $this->add_language_to_home_url( $url, ( empty( $url_obj->getQuery() ) ) ? $url_obj->getPath() : rtrim( $url_obj->getPath(), '/' ) . '/?' . $url_obj->getQuery(), $url_obj->getScheme(), get_current_blog_id() );
+                    $arguments = str_replace( untrailingslashit( $processed_permalink ), '', $possible_url_to_replace );
+                    if ( $arguments == $possible_url_to_replace ) {
+                        $arguments = '';
+                    }
+                }
+            }
 
             $TRP_LANGUAGE = $language;
-            $new_url = trailingslashit( get_permalink($post_id) ) . ltrim($arguments, '/');
+            $fragment = ( $frag = parse_url( $url, PHP_URL_FRAGMENT ) ) ? '#' . $frag : '';
+            $new_url = trailingslashit( get_permalink($post_id) ) . ltrim($arguments, '/') . $fragment;
             trp_bulk_debug($debug, array('url' => $url, 'new url' => $new_url, 'found post id' => $post_id, 'url type' => 'based on permalink', 'for language' => $TRP_LANGUAGE));
             $TRP_LANGUAGE = $trp_language_copy;
 
@@ -672,7 +683,9 @@ class TRP_Url_Converter {
             }
         }
 
-	    wp_cache_set( 'get_abs_home', $this->absolute_home, 'trp' );
+        $this->absolute_home = apply_filters('trp_filter_absolute_home_result', $this->absolute_home);
+
+        wp_cache_set( 'get_abs_home', $this->absolute_home, 'etm' );
 
         return $this->absolute_home;
     }
@@ -792,6 +805,7 @@ class TRP_Url_Converter {
     public function woocommerce_filter_permalinks_on_other_languages( $rewrite_rules ){
         if( class_exists( 'WooCommerce' ) ){
             global $TRP_LANGUAGE;
+
             if( $TRP_LANGUAGE != $this->settings['default-language'] ){
                 global $default_language_wc_permalink_structure; //we use a global because apparently you can't do switch to locale and restore multiple times. I should keep an eye on this
                 /* get rewrite rules from original language */
@@ -885,8 +899,31 @@ class TRP_Url_Converter {
      */
     function prevent_permalink_update_on_other_languages( $value, $old_value ){
         global $TRP_LANGUAGE;
+
         if( isset($TRP_LANGUAGE) && $TRP_LANGUAGE != $this->settings['default-language'] && apply_filters( 'trp_prevent_permalink_update_on_other_languages', true ) ) {
             $value = $old_value;
+        }
+
+        return $value;
+    }
+
+
+    /**
+     * Function that deletes old woocommerce transients so the new one are generated correctly
+     * @param $value
+     * @return void
+     */
+    public function delete_woocommerce_transient_permalink($value){
+
+        if( class_exists( 'WooCommerce' ) ) {
+            $english_woocommerce_slugs = array( 'product-category', 'product-tag', 'product', 'default_language_wc_permalink_structure', 'current_language_wc_permalink_structure' );
+
+            foreach ( $english_woocommerce_slugs as $english_woocommerce_slug ) {
+                delete_transient( 'tp_' . $english_woocommerce_slug . '_' . $this->settings['default-language'] );
+                foreach ( $this->settings['translation-languages'] as $language ) {
+                    delete_transient( 'tp_' . $english_woocommerce_slug . '_' . $language );
+                }
+            }
         }
 
         return $value;

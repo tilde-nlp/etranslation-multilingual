@@ -275,7 +275,8 @@ function trp_exclude_include_redirect_to_default_language(){
 
         if ( trp_return_exclude_include_url($paths, $current_slug, $array_slugs) )
             if( $url_converter->cur_page_url() != $current_original_url ){
-                wp_redirect( $current_original_url, 301 );
+                $status = apply_filters( 'trp_redirect_status', 301, 'redirect_to_default_language_because_link_is_excluded_from_translation' );
+                wp_redirect( $current_original_url, $status );
                 exit;
             }
 
@@ -286,7 +287,8 @@ function trp_exclude_include_redirect_to_default_language(){
             return;
 
         if( $url_converter->cur_page_url() != $current_original_url ){
-            wp_redirect( $current_original_url, 301 );
+            $status = apply_filters( 'trp_redirect_status', 301, 'redirect_to_default_language_because_link_is_excluded_from_translation' );
+            wp_redirect( $current_original_url, $status );
             exit;
         }
 

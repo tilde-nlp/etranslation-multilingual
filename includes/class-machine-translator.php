@@ -29,7 +29,8 @@ class TRP_Machine_Translator {
             $this->trp_languages = $trp->get_component('languages');
         }
         $this->machine_translation_codes = $this->trp_languages->get_iso_codes($this->settings['translation-languages']);
-        add_filter( 'trp_exclude_words_from_automatic_translation', array( $this,'sort_exclude_words_from_automatic_translation_array'), 99999, 1);
+        add_filter( 'trp_exclude_words_from_automatic_translation', array( $this, 'sort_exclude_words_from_automatic_translation_array' ), 99999, 1 );
+        add_filter( 'trp_exclude_words_from_automatic_translation', array( $this, 'exclude_special_symbol_from_translation' ), 9999, 2 );
     }
 
     /**
@@ -343,17 +344,20 @@ class TRP_Machine_Translator {
         if ( !empty($strings) && is_array($strings) && method_exists( $this, 'translate_array' ) && apply_filters( 'trp_disable_automatic_translations_due_to_error', false ) === false ) {
 
             /* google has a problem translating this characters ( '%', '$', '#' )...for some reasons it puts spaces after them so we need to 'encode' them and decode them back. hopefully it won't break anything important */
-            $trp_exclude_words_from_automatic_translation = apply_filters('trp_exclude_words_from_automatic_translation', TRP_eTranslation_Utils::get_strings_to_encode_before_translation());
-            
+            /* we put '%s' before '%' because google seems to transform %s into % in strings for some languages which causes a 500 Fatal Error in PHP 8*/
+            $imploded_strings = implode(" ", $strings);
+            $trp_exclude_words_from_automatic_translation = apply_filters('trp_exclude_words_from_automatic_translation', array('%s', '%d', '%', '$', '#'), $imploded_strings);
             $placeholders = $this->get_placeholders(count($trp_exclude_words_from_automatic_translation));
             $shortcode_tags_to_execute = apply_filters( 'trp_do_these_shortcodes_before_automatic_translation', array('trp_language') );
 
             $strings = array_unique($strings);
             $original_strings = $strings;
+
             foreach ($strings as $key => $string) {
                 /* html_entity_decode is needed before replacing the character "#" from the list because characters like &#8220; (8220 utf8)
                  * will get an extra space after '&' which will break the character, rendering it like this: & #8220;
                  */
+
                 $strings[$key] = str_replace($trp_exclude_words_from_automatic_translation, $placeholders, html_entity_decode( $string ));
                 $strings[$key] = trp_do_these_shortcodes( $strings[$key], $shortcode_tags_to_execute );
             }
@@ -407,4 +411,18 @@ class TRP_Machine_Translator {
     public function extra_request_validations( $to_language ){
         return true;
     }
+
+    public function exclude_special_symbol_from_translation($array, $strings){
+        $float_array_symbols = array('d', 's', 'e', 'E', 'f', 'F', 'g', 'G', 'h', 'H', 'u');
+        foreach ($float_array_symbols as $float_array_symbol){
+            for($i= 1; $i<=10; $i++) {
+                $symbol = '%'.$i .'$'.$float_array_symbol;
+                if ( strpos( $strings, $symbol ) !== false ) {
+                    $array[] = '%' . $i . '$' . $float_array_symbol;
+                }
+            }
+        }
+        return $array;
+    }
+
 }

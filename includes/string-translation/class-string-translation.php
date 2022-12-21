@@ -38,6 +38,10 @@ class TRP_String_Translation {
 
         // Include all classes and hooks needed for Visual Editor
         foreach ( $this->string_types as $string_type_key => $string_type_value ) {
+	        if ( $string_type_key == 'emails' || (isset($string_type_value['type']) && $string_type_value['type'] == 'upsale-slugs' ) ) {
+				// it's just gettext. We are using it to create an extra tab with this filter
+				continue;
+	        }
 
             require_once $string_type_value['plugin_path'] . 'includes/string-translation/class-string-translation-api-' . $string_type_key . '.php';
             $class_name                                 = 'TRP_String_Translation_API_' . $string_type_value['class_name_suffix'];
@@ -46,7 +50,18 @@ class TRP_String_Translation {
             // Different hook for String Translation compared to Visual Editor
             add_action( 'wp_ajax_trp_string_translation_get_strings_' . $string_type_key, array( $this->string_type_apis[ $string_type_key ], 'get_strings' ) );
 
-            // Same hook as for Visual Editor save translations
+			if ( $string_type_key == 'gettext' ) {
+				add_action( 'wp_ajax_trp_string_translation_get_missing_gettext_strings', array(
+					$this->string_type_apis[ 'gettext' ],
+					'get_missing_gettext_strings'
+				) );
+				add_action( 'wp_ajax_trp_string_translation_get_strings_by_original_ids_gettext', array(
+					$this->string_type_apis[ 'gettext' ],
+					'get_strings_by_original_ids'
+				) );
+			}
+
+	        // Same hook as for Visual Editor save translations
             add_action( 'wp_ajax_trp_save_translations_' . $string_type_key, array( $this->string_type_apis[ $string_type_key ], 'save_strings' ) );
         }
     }
@@ -152,9 +167,9 @@ class TRP_String_Translation {
     public function get_translation_status_filters() {
         $filters = array(
             'translation_status' => array(
-                'human_reviewed'     => __( 'Human reviewed', 'etranslation-multilingual' ),
-                'machine_translated' => __( 'Automatically translated', 'etranslation-multilingual' ),
-                'not_translated'     => __( 'Not translated', 'etranslation-multilingual' )
+                'human_reviewed'     => esc_html__( 'Manually translated', 'etranslation-multilingual' ),
+                'machine_translated' => esc_html__( 'Automatically translated', 'etranslation-multilingual' ),
+                'not_translated'     => esc_html__( 'Not translated', 'etranslation-multilingual' )
             )
 
         );
@@ -164,14 +179,14 @@ class TRP_String_Translation {
     public function get_default_actions() {
         $actions = array(
             'bulk_actions' => array(
-                'trp_default' => array( 'name' => __( 'Bulk Actions', 'etranslation-multilingual' ) ),
+                'trp_default' => array( 'name' => esc_html__( 'Bulk Actions', 'etranslation-multilingual' ) ),
                 'delete'      => array(
-                    'name'  => __( 'Delete entries', 'etranslation-multilingual' ),
+                    'name'  => esc_html__( 'Delete entries', 'etranslation-multilingual' ),
                     'nonce' => wp_create_nonce( 'string_translation_save_strings_delete' )
                 ),
             ),
             'actions'      => array(
-                'edit'   => __( 'Edit', 'etranslation-multilingual' )
+                'edit'   => esc_html__( 'Edit', 'etranslation-multilingual' )
             )
         );
         return apply_filters( 'trp_st_default_actions', $actions );
@@ -185,13 +200,17 @@ class TRP_String_Translation {
             $settings     = $trp_settings->get_settings();
 
             global $wpdb;
-//            $query = 'SELECT DISTINCT domain FROM ' . $trp_query->get_gettext_table_name( $settings['default-language'] );
             $query = '';
             foreach ( $settings['translation-languages'] as $language ) {
                 $query .= 'SELECT domain FROM ' . $trp_query->get_gettext_table_name( $language ) . ' UNION ';
             }
             $query = rtrim( $query, ' UNION ' ) . ' ';
-            $query .= ' ORDER BY domain ASC ';
+
+            $charset_collate = $wpdb->get_charset_collate();
+            $charset = "utf8mb4";
+            if( strpos( 'latin1', $charset_collate ) === 0 )
+                $charset = "latin1";
+            $query .= ' ORDER BY domain COLLATE '.$charset.'_general_ci ASC';
 
             $this->gettext_domains = $wpdb->get_results( $query, OBJECT_K );
             foreach ( $this->gettext_domains as $domain => $value ) {
@@ -204,43 +223,50 @@ class TRP_String_Translation {
 
     public function get_st_editor_strings() {
         $st_editor_strings = array(
-            'translation_status'     => __( 'Translation Status', 'etranslation-multilingual' ),
-            'filter'                 => __( 'Filter', 'etranslation-multilingual' ),
-            'filter_by_language'     => __( 'Filter by language', 'etranslation-multilingual' ),
-            'add_new'                => __( 'Add New', 'etranslation-multilingual' ),
-            'importexport'           => __( 'Import / Export', 'etranslation-multilingual' ),
-            'items'                  => __( 'items', 'etranslation-multilingual' ),
-            'of'                     => _x( 'of', 'page 1 of 3', 'etranslation-multilingual' ),
-            'see_more'               => __( 'See More', 'etranslation-multilingual' ),
-            'see_less'               => __( 'See Less', 'etranslation-multilingual' ),
-            'apply'                  => __( 'Apply', 'etranslation-multilingual' ),
-            'no_strings_match_query' => __( 'No strings match your query.', 'etranslation-multilingual' ),
-            'request_error'          => __( 'An error occurred while loading results. Most likely you were logged out. Reload page?', 'etranslation-multilingual' ),
+	        'translation_status'     => esc_html__( 'Translation Status', 'etranslation-multilingual' ),
+	        'filter'                 => esc_html__( 'Filter', 'etranslation-multilingual' ),
+	        'clear_filter'           => esc_html__( 'Clear filters', 'etranslation-multilingual' ),
+	        'filter_by_language'     => esc_html__( 'Filter by language', 'etranslation-multilingual' ),
+	        'add_new'                => esc_html__( 'Add New', 'etranslation-multilingual' ),
+	        'rescan_gettext'         => esc_html__( 'Rescan plugins and theme for strings', 'etranslation-multilingual' ),
+	        'scanning_gettext'       => esc_html__( 'Scanning plugins and theme for strings...', 'etranslation-multilingual' ),
+	        'gettext_scan_completed' => esc_html__( 'Plugins and theme scan is complete', 'etranslation-multilingual' ),
+	        'gettext_scan_error'     => esc_html__( 'Plugins and theme scan did not finish due to an error', 'etranslation-multilingual' ),
+	        'importexport'           => esc_html__( 'Import / Export', 'etranslation-multilingual' ),
+	        'items'                  => esc_html__( 'items', 'etranslation-multilingual' ),
+	        'of'                     => esc_html_x( 'of', 'page 1 of 3', 'etranslation-multilingual' ),
+	        'see_more'               => esc_html__( 'See More', 'etranslation-multilingual' ),
+	        'see_less'               => esc_html__( 'See Less', 'etranslation-multilingual' ),
+	        'apply'                  => esc_html__( 'Apply', 'etranslation-multilingual' ),
+	        'no_strings_match_query' => esc_html__( 'No strings match your query.', 'etranslation-multilingual' ),
+	        'no_strings_match_rescan'=> esc_html__( 'Try to rescan plugins and theme for strings.', 'etranslation-multilingual' ),
+	        'request_error'          => esc_html__( 'An error occurred while loading results. Most likely you were logged out. Reload page?', 'etranslation-multilingual' ),
 
-            'select_all'               => __( 'Select All', 'etranslation-multilingual' ),
-            'select_visible'           => __( 'Select Visible', 'etranslation-multilingual' ),
-            'select_all_warning'       => __( 'You are about to perform this action on all the strings matching your filter, not just the visibly checked. To perform the action only to the visible strings click "Select Visible" from the table header dropdown.', 'etranslation-multilingual' ),
-            'select_visible_warning'   => __( 'You are about to perform this action only on the visible strings. To perform the action on all the strings matching the filter click "Select All" from the table header dropdown.', 'etranslation-multilingual' ),
-            'type_a_word_for_security' => __( 'To continue please type the word:', 'etranslation-multilingual' ),
-            'incorect_word_typed'      => __( 'The word typed was incorrect. Action was cancelled.', 'etranslation-multilingual' ),
+	        'select_all'               => esc_html__( 'Select All', 'etranslation-multilingual' ),
+	        'select_visible'           => esc_html__( 'Select Visible', 'etranslation-multilingual' ),
+	        'select_all_warning'       => esc_html__( 'You are about to perform this action on all the strings matching your filter, not just the visibly checked. To perform the action only to the visible strings click "Select Visible" from the table header dropdown.', 'etranslation-multilingual' ),
+	        'select_visible_warning'   => esc_html__( 'You are about to perform this action only on the visible strings. To perform the action on all the strings matching the filter click "Select All" from the table header dropdown.', 'etranslation-multilingual' ),
+	        'type_a_word_for_security' => esc_html__( 'To continue please type the word:', 'etranslation-multilingual' ),
+	        'incorect_word_typed'      => esc_html__( 'The word typed was incorrect. Action was cancelled.', 'etranslation-multilingual' ),
 
-            'in'                         => _x( 'in', 'Untranslated in this language', 'etranslation-multilingual' ),
+	        'in'                         => esc_html_x( 'in', 'Untranslated in this language', 'etranslation-multilingual' ),
 
-            // specific bulk actions
-            'delete_warning'             => __( 'Warning: This action cannot be undone. Deleting a string will remove its current translation. The original string will appear again in this interface after eTranslation Multilingual detects it. This action is NOT equivalent to excluding the string from being translated again.' , 'etranslation-multilingual' ),
+	        // specific bulk actions
+	        'delete_warning'             => esc_html__( 'Warning: This action cannot be undone. Deleting a string will remove its current translation. The original string will appear again in this interface after eTranslation Multilingual detects it. This action is NOT equivalent to excluding the string from being translated again.', 'etranslation-multilingual' ),
 
-            // tooltips
-            'next_page'                  => __( 'Navigate to next page', 'etranslation-multilingual' ),
-            'previous_page'              => __( 'Navigate to previous page', 'etranslation-multilingual' ),
-            'first_page'                 => __( 'Navigate to first page', 'etranslation-multilingual' ),
-            'last_page'                  => __( 'Navigate to last page', 'etranslation-multilingual' ),
-            'navigate_to_page'           => __( 'Type a page number to navigate to', 'etranslation-multilingual' ),
-            'wrong_page'                 => __( 'Incorrect page number. Type a page number between 1 and total number of pages', 'etranslation-multilingual' ),
-            'search_tooltip'             => __( 'Search original strings containing typed keywords while also matching selected filters', 'etranslation-multilingual' ),
-            'filter_tooltip'             => __( 'Filter strings according to selected translation status, filters and keywords and selected filters', 'etranslation-multilingual' ),
-            'select_all_tooltip'         => __( 'See options for selecting all strings', 'etranslation-multilingual' ),
-            'sort_by_column'             => __( 'Click to sort strings by this column', 'etranslation-multilingual' ),
-            'filter_by_language_tooltip' => __( 'Language in which the translation status filter applies. Leave unselected for the translation status to apply to ANY language', 'etranslation-multilingual' ),
+	        // tooltips
+	        'next_page'                  => esc_html__( 'Navigate to next page', 'etranslation-multilingual' ),
+	        'previous_page'              => esc_html__( 'Navigate to previous page', 'etranslation-multilingual' ),
+	        'first_page'                 => esc_html__( 'Navigate to first page', 'etranslation-multilingual' ),
+	        'last_page'                  => esc_html__( 'Navigate to last page', 'etranslation-multilingual' ),
+	        'navigate_to_page'           => esc_html__( 'Type a page number to navigate to', 'etranslation-multilingual' ),
+	        'wrong_page'                 => esc_html__( 'Incorrect page number. Type a page number between 1 and total number of pages', 'etranslation-multilingual' ),
+	        'search_tooltip'             => esc_html__( 'Search original strings containing typed keywords while also matching selected filters', 'etranslation-multilingual' ),
+	        'filter_tooltip'             => esc_html__( 'Filter strings according to selected translation status, filters and keywords and selected filters', 'etranslation-multilingual' ),
+	        'clear_filter_tooltip'       => esc_html__( 'Removes selected filters', 'etranslation-multilingual' ),
+	        'select_all_tooltip'         => esc_html__( 'See options for selecting all strings', 'etranslation-multilingual' ),
+	        'sort_by_column'             => esc_html__( 'Click to sort strings by this column', 'etranslation-multilingual' ),
+	        'filter_by_language_tooltip' => esc_html__( 'Language in which the translation status filter applies. Leave unselected for the translation status to apply to ANY language', 'etranslation-multilingual' ),
         );
         return apply_filters( 'trp_st_editor_strings', $st_editor_strings );
     }
@@ -249,13 +275,118 @@ class TRP_String_Translation {
      * @return mixed
      */
     public function string_types_config() {
-        $string_types_config = array();
+	    $string_types_config = array(
+		    'gettext' =>
+			    array(
+					'type'                   => 'gettext',
+				    'name'                   => esc_html__( 'Plugins and Theme String Translation', 'etranslation-multilingual' ),
+				    'tab_name'               => esc_html__( 'Gettext', 'etranslation-multilingual' ),
+				    'search_name'            => esc_html__( 'Search Gettext Strings', 'etranslation-multilingual' ),
+				    'class_name_suffix'      => 'Gettext',
+//				    'add_new'                => true,
+                    'scan_gettext'           => true,
+				    'plugin_path'            => TRP_PLUGIN_DIR,
+				    'nonces'                 => $this->get_nonces_for_type( 'gettext' ),
+				    'table_columns'          => array(
+					    'id'         => esc_html__( 'ID', 'etranslation-multilingual' ),
+					    'original'   => esc_html__( 'Original String', 'etranslation-multilingual' ),
+					    'translated' => esc_html__( 'Translation', 'etranslation-multilingual' ),
+					    'domain'     => esc_html__( 'Domain', 'etranslation-multilingual' ),
+				    ),
+				    'show_original_language' => true,
+				    'category_based'         => false,
+				    'filters'                => array(
+					    'domain' => array_merge(
+						    array( 'trp_default' => esc_html__( 'Filter by domain', 'etranslation-multilingual' ) ),
+						    $this->get_gettext_domains()
+					    ),
+					    'type' => array(
+							    'trp_default' => esc_html__( 'Filter by type', 'etranslation-multilingual' ),
+							    'email'       => esc_html__( 'Email text', 'etranslation-multilingual' )
+					    ),
+				    )
+			    ),
+		    'emails' =>
+			    array(
+				    'type'                   => 'gettext',
+				    'name'                   => esc_html__( 'Emails String Translation', 'etranslation-multilingual' ),
+				    'tab_name'               => esc_html__( 'Emails', 'etranslation-multilingual' ),
+				    'search_name'            => esc_html__( 'Search Email Strings', 'etranslation-multilingual' ),
+				    'class_name_suffix'      => 'Gettext',
+				    //				    'add_new'                => true,
+				    'scan_gettext'           => true,
+				    'plugin_path'            => TRP_PLUGIN_DIR,
+				    'nonces'                 => $this->get_nonces_for_type( 'gettext' ),
+				    'table_columns'          => array(
+					    'id'         => esc_html__( 'ID', 'etranslation-multilingual' ),
+					    'original'   => esc_html__( 'Original String', 'etranslation-multilingual' ),
+					    'translated' => esc_html__( 'Translation', 'etranslation-multilingual' ),
+					    'domain'     => esc_html__( 'Domain', 'etranslation-multilingual' ),
+				    ),
+				    'show_original_language' => true,
+				    'category_based'         => false,
+				    'filters'                => array(
+					    'domain' => array_merge(
+						    array( 'trp_default' => esc_html__( 'Filter by domain', 'etranslation-multilingual' ) ),
+						    $this->get_gettext_domains()
+					    ),
+				    )
+			    ),
+		    'regular' =>
+			    array(
+				    'type'                   => 'regular',
+				    'name'                   => esc_html__( 'User Inputted String Translation', 'etranslation-multilingual' ),
+				    'tab_name'               => esc_html__( 'Regular', 'etranslation-multilingual' ),
+				    'search_name'            => esc_html__( 'Search Regular Strings', 'etranslation-multilingual' ),
+				    'class_name_suffix'      => 'Regular',
+				    //				    'add_new'                => true,
+				    'plugin_path'            => TRP_PLUGIN_DIR,
+				    'nonces'                 => $this->get_nonces_for_type( 'regular' ),
+				    'table_columns'          => array(
+					    'id'         => esc_html__( 'ID', 'etranslation-multilingual' ),
+					    'original'   => esc_html__( 'Original String', 'etranslation-multilingual' ),
+					    'translated' => esc_html__( 'Translation', 'etranslation-multilingual' )
+				    ),
+				    'show_original_language' => false,
+				    'category_based'         => false,
+				    'filters'                => array(
+					    'translation-block-type' => array(
+						    'trp_default'       => esc_html__( 'Filter by Translation Block', 'etranslation-multilingual' ),
+						    'individual_string' => 'Individual string',
+						    'translation_block' => 'Translation Block'
+					    )
+				    )
+			    )
+	    );
+
+
+	    if ( !apply_filters('trp_show_regular_strings_string_translation', false ) ){
+	    	unset($string_types_config['regular']);
+	    }
+	    $seo_pack_active = class_exists( 'TRP_IN_Seo_Pack');
+		if( !$seo_pack_active ){
+			$upsale_slugs_string_type = array(
+				'slugs' => array(
+					'type'              => 'upsale-slugs',
+					'name'              => __( 'URL Slugs Translation', 'etranslation-multilingual' ),
+					'tab_name'          => __( 'Slugs', 'etranslation-multilingual' ),
+					'class_name_suffix' => 'Regular',
+					'plugin_path'       => TRP_PLUGIN_DIR,
+					'category_based'    => false,
+					'nonces'                 => $this->get_nonces_for_type( 'regular' ),
+				)
+			);
+			$string_types_config = $upsale_slugs_string_type + $string_types_config;
+		}
+
         return apply_filters( 'trp_st_string_types_config', $string_types_config, $this );
     }
 
     public function get_nonces_for_type( $type ) {
         $nonces = array(
             'get_strings'  => wp_create_nonce( 'string_translation_get_strings_' . $type ),
+            'get_missing_strings'  => wp_create_nonce( 'string_translation_get_missing_strings_' . $type ),
+            'get_strings_by_original_id'  => wp_create_nonce( 'string_translation_get_strings_by_original_ids_' . $type ),
             'save_strings' => wp_create_nonce( 'string_translation_save_strings_' . $type )
         );
         return apply_filters( 'trp_string_translation_nonces', $nonces, $type );
@@ -290,4 +421,5 @@ class TRP_String_Translation {
         }
         return $nonces;
     }
+
 }

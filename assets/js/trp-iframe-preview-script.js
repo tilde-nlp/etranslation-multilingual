@@ -19,7 +19,9 @@ function TRP_Iframe_Preview(){
             if ( ! jQuery(this).attr('data-trp-original-target') ){
                 jQuery( this ).attr( 'data-trp-original-target', jQuery( this ).attr( 'target' ) );
             }
-            jQuery(this).attr('target', '_self');
+            if ( !jQuery(this).hasClass('trp-button-primary') ){
+                jQuery( this ).attr( 'target', '_self' );
+            }
 
             if( typeof this.href != "undefined" && this.href != '' ) {
                 if (this.action != '' && this.href.indexOf('void(0)') === -1) {

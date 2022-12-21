@@ -27,6 +27,7 @@
     -moz-box-sizing: border-box !important;
     box-sizing: border-box !important;
     padding: 3px !important;
+    letter-spacing: normal !important;
 }
 
 .trp-icon:hover {
@@ -155,4 +156,33 @@ translate-press{
 
 .trp-bad-encoded-strings-list{
     padding-left: 15px;
+}
+
+.trp-button-primary{
+    background: #2271b1;
+    border-color: #2271b1;
+    color: #fff;
+    text-decoration: none;
+    text-shadow: none;
+    display: inline-block;
+
+    font-size: 13px;
+    line-height: 2.15384615;
+    min-height: 30px;
+    margin: 0;
+    padding: 0 10px;
+    cursor: pointer;
+    border-width: 1px;
+    border-style: solid;
+    -webkit-appearance: none;
+    border-radius: 3px;
+    white-space: nowrap;
+    box-sizing: border-box;
+
+}
+
+.trp-button-primary:focus, .trp-button-primary:hover {
+    background: #135e96;
+    border-color: #135e96;
+    color: #fff;
 }

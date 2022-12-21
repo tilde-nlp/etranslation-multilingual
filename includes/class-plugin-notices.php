@@ -166,7 +166,7 @@ Class TRP_Plugin_Notifications {
      *
      *
      */
-    public function add_notification( $notification_id = '', $notification_message = '', $notification_class = 'update-nag', $count_in_menu = true, $count_in_submenu = array(), $show_in_all_backend = false ) {
+    public function add_notification( $notification_id = '', $notification_message = '', $notification_class = 'update-nag', $count_in_menu = true, $count_in_submenu = array(), $show_in_all_backend = false, $non_dismissable = false ) {
 
         if( empty( $notification_id ) )
             return;
@@ -182,7 +182,7 @@ Class TRP_Plugin_Notifications {
          */
         $force_show = false;
         if( get_user_meta( $current_user->ID, $notification_id . '_dismiss_notification' ) ) {
-            if( !($this->is_plugin_page() && $show_in_all_backend) ){
+            if( !$non_dismissable && !($this->is_plugin_page() && $show_in_all_backend) ){
                 return;
             }
             else{
@@ -199,7 +199,7 @@ Class TRP_Plugin_Notifications {
         );
 
 
-        if( $this->is_plugin_page() || $show_in_all_backend ) {
+        if( $this->is_plugin_page() || ($show_in_all_backend && isset( $GLOBALS['PHP_SELF']) && $GLOBALS['PHP_SELF'] === '/wp-admin/index.php' ) ) {
             new TRP_Add_General_Notices( $notification_id, $notification_message, $notification_class, '', '', $force_show );
         }
 

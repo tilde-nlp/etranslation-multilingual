@@ -44,7 +44,7 @@ function TRP_Translator(){
             success: function( response ) {
                 if ( response === 'error' ) {
                     _this.ajax_get_translation( nodesInfo, string_originals, wp_ajax_url, skip_machine_translation );
-                    console.log( 'Notice: eTranslation Multilingual trp-ajax request uses fall back to admin ajax.' );
+                    console.log( 'Notice: TranslatePress trp-ajax request uses fall back to admin ajax.' );
                 }else{
                     _this.update_strings( response, nodesInfo );
                 }
@@ -52,10 +52,10 @@ function TRP_Translator(){
             error: function( errorThrown ){
                 if ( url == custom_ajax_url && custom_ajax_url != wp_ajax_url ){
                     _this.ajax_get_translation( nodesInfo, string_originals, wp_ajax_url, skip_machine_translation );
-                    console.log( 'Notice: eTranslation Multilingual trp-ajax request uses fall back to admin ajax.' );
+                    console.log( 'Notice: TranslatePress trp-ajax request uses fall back to admin ajax.' );
                 }else{
                     _this.update_strings( null, nodesInfo );
-                    console.log( 'eTranslation Multilingual AJAX Request Error' );
+                    console.log( 'TranslatePress AJAX Request Error' );
                 }
             }
         });

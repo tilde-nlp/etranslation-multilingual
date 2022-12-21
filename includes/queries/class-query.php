@@ -17,6 +17,12 @@ class TRP_Query{
     protected $check_invalid_text;
     protected $tables_exist = array();
     protected $db_sql_version = null;
+    protected $gettext_normalized = null;
+
+    /* gettext query components */
+    protected $gettext_table_creation;
+    protected $gettext_normalization;
+    protected $gettext_insert_update;
 
     const NOT_TRANSLATED = 0;
     const MACHINE_TRANSLATED = 1;
@@ -34,6 +40,14 @@ class TRP_Query{
         global $wpdb;
         $this->db = $wpdb;
         $this->settings = $settings;
+
+        $this->gettext_normalization = new TRP_Gettext_Normalization($settings);
+        $this->gettext_table_creation = new TRP_Gettext_Table_Creation($settings);
+        $this->gettext_insert_update = new TRP_Gettext_Insert_Update($settings);
+    }
+
+    public function get_query_component( $component ){
+        return $this->$component;
     }
 
 
@@ -266,41 +280,6 @@ class TRP_Query{
 	    }
     }
 
-	/**
-	 * Check if gettext table for specific language exists.
-	 *
-	 * If the table does not exists it is created.
-	 *
-	 * @param string $language_code
-	 */
-    public function check_gettext_table( $language_code ){
-        $table_name = sanitize_text_field( $this->get_gettext_table_name($language_code) );
-        if ( $this->db->get_var( "SHOW TABLES LIKE '$table_name'" ) != $table_name ) {
-            // table not in database. Create new table
-            $charset_collate = $this->db->get_charset_collate();
-
-            $sql = "CREATE TABLE `" . $table_name . "`(
-                                    id bigint(20) AUTO_INCREMENT NOT NULL PRIMARY KEY,
-                                    original  longtext NOT NULL,
-                                    translated  longtext,
-                                    domain  longtext,
-                                    status int(20),
-                                    UNIQUE KEY id (id) )
-                                     $charset_collate;";
-            require_once( ABSPATH . 'wp-admin/includes/upgrade.php' );
-            dbDelta( $sql );
-
-            $this->maybe_record_automatic_translation_error(array( 'details' => 'Error creating gettext strings tables' ) );
-
-            $sql_index = "CREATE INDEX index_name ON `" . $table_name . "` (original(100));";
-            $this->db->query( $sql_index );
-
-            // full text index for original
-            $sql_index = "CREATE FULLTEXT INDEX original_fulltext ON `" . $table_name . "`(original);";
-            $this->db->query( $sql_index );
-        }
-    }
-
     /**
      * Check if the original string table exists
      *
@@ -526,7 +505,7 @@ class TRP_Query{
      */
     public function check_original_meta_table(){
 
-        $table_name = $table_name = $this->db->get_blog_prefix() . 'etm_original_meta';
+        $table_name = $this->get_table_name_for_original_meta();
         if ( $this->db->get_var( "SHOW TABLES LIKE '$table_name'" ) != $table_name ) {
             // table not in database. Create new table
             $charset_collate = $this->db->get_charset_collate();
@@ -737,105 +716,6 @@ class TRP_Query{
         $this->maybe_record_automatic_translation_error(array( 'details' => 'Error running insert_strings()' ) );
     }
 
-    public function insert_gettext_strings( $new_strings, $language_code ){
-        if ( count( $new_strings ) == 0  ){
-            return;
-        }
-        $query = "INSERT INTO `" . sanitize_text_field( $this->get_gettext_table_name( $language_code ) ) . "` ( original, translated, domain, status ) VALUES ";
-
-        $values = array();
-        $place_holders = array();
-
-        foreach ( $new_strings as $string ) {
-            //make sure we don't insert empty strings in db
-            if( empty( $string['original'] ) )
-                continue;
-
-            if( $string['original'] == $string['translated'] || $string['translated'] == '' ){
-                $translated = NULL;
-                $status = self::NOT_TRANSLATED;
-            }
-            else{
-                $translated = $string['translated'];
-                $status = self::HUMAN_REVIEWED;
-            }
-
-            array_push( $values, $string['original'], $translated, $string['domain'], $status );
-            $place_holders[] = "( '%s', '%s', '%s', '%d')";
-        }
-
-
-
-        $query .= implode(', ', $place_holders);
-        $this->db->query( $this->db->prepare($query . ' ', $values) );
-
-        $this->maybe_record_automatic_translation_error(array( 'details' => 'Error running insert_gettext_strings()' ) );
-
-        if( count( $new_strings ) == 1 )
-            return $this->db->insert_id;
-        else
-            return null;
-    }
-
-    public function update_gettext_strings( $updated_strings, $language_code, $columns_to_update = array('id','original', 'translated', 'domain', 'status') ) {
-	    if ( count( $updated_strings ) == 0 ) {
-		    return;
-	    }
-
-	    $placeholder_array_mapping = array( 'id'         => '%d',
-	                                        'original'   => '%s',
-	                                        'translated' => '%s',
-	                                        'domain'     => '%s',
-	                                        'status'     => '%d'
-	    );
-	    $columns_query_part        = '';
-	    foreach ( $columns_to_update as $column ) {
-		    $columns_query_part .= $column . ',';
-		    $placeholders[]     = $placeholder_array_mapping[ $column ];
-	    }
-	    $columns_query_part = rtrim( $columns_query_part, ',' );
-
-	    $query = "INSERT INTO `" . sanitize_text_field( $this->get_gettext_table_name( $language_code ) ) . "` ( " . $columns_query_part . " ) VALUES ";
-
-	    $values        = array();
-	    $place_holders = array();
-
-	    $placeholders_query_part = '(';
-	    foreach ( $placeholders as $placeholder ) {
-		    $placeholders_query_part .= "'" . $placeholder . "',";
-	    }
-	    $placeholders_query_part = rtrim( $placeholders_query_part, ',' );
-	    $placeholders_query_part .= ')';
-
-	    $update_id_and_original = in_array( 'id', $columns_to_update ) && in_array( 'original', $columns_to_update );
-        foreach ( $updated_strings as $string ) {
-	        if ( !$update_id_and_original || ( !empty( $string['id'] ) && is_numeric( $string['id'] ) && !empty( $string['original'] ) ) ) { //we must have an ID and an original if columns to update include id and original
-		        $string['status'] = !empty( $string['status'] ) ? $string['status'] : self::NOT_TRANSLATED;
-		        foreach( $columns_to_update as $column ) {
-			        array_push( $values, $string[$column] );
-		        }
-		        $place_holders[] = $placeholders_query_part;
-	        }
-        }
-
-	    $on_duplicate = ' ON DUPLICATE KEY UPDATE ';
-        $key_term_values = $this->is_values_accepted() ? 'VALUES' : 'VALUE';
-	    foreach ( $columns_to_update as $column ) {
-		    if ( $column == 'id' ){
-			    continue;
-		    }
-            $on_duplicate .= $column . '=' . $key_term_values . '(' . $column . '),';
-	    }
-	    $query .= implode( ', ', $place_holders );
-
-	    $on_duplicate = rtrim( $on_duplicate, ',' );
-        $query .= $on_duplicate;
-
-        $this->db->query( $this->db->prepare($query . ' ', $values) );
-
-        $this->maybe_record_automatic_translation_error(array( 'details' => 'Error running update_gettext_strings()' ) );
-    }
-
     /**
      * Returns the DB ids of the provided original strings
      *
@@ -970,6 +850,25 @@ class TRP_Query{
     public function get_table_name_for_original_meta(){
         return apply_filters( 'trp_table_name_original_meta', sanitize_text_field( $this->db->prefix . 'etm_original_meta' ), $this->db->prefix );
     }
+
+    /**
+     * Return table name for gettext original strings table
+     *
+     * @return string                       Table name.
+     */
+    public function get_table_name_for_gettext_original_strings(){
+        return sanitize_text_field( $this->db->prefix . 'etm_gettext_original_strings' );
+    }
+
+    /**
+     * Return table name for gettext original meta table
+     *
+     * @return string                       Table name.
+     */
+    public function get_table_name_for_gettext_original_meta(){
+        return sanitize_text_field( $this->db->prefix . 'etm_gettext_original_meta' );
+    }
+
     /**
      * Return meta_key for post parent id from meta table
      *
@@ -980,7 +879,7 @@ class TRP_Query{
     }
 
     public function get_all_gettext_strings(  $language_code ){
-        $dictionary = $this->db->get_results( "SELECT id, original, translated, domain FROM `" . sanitize_text_field( $this->get_gettext_table_name( $language_code ) ) . "`", ARRAY_A );
+        $dictionary = $this->db->get_results( "SELECT tt.id, CASE WHEN ot.original is NULL THEN tt.original ELSE NULL END as tt_original, tt.translated, tt.domain AS tt_domain, tt.plural_form, ot.original, ot.domain, ot.context FROM `" . sanitize_text_field( $this->get_gettext_table_name( $language_code ) ) . "` AS tt LEFT JOIN `" . sanitize_text_field( $this->get_table_name_for_gettext_original_strings() ) . "` AS ot ON tt.original_id = ot.id", ARRAY_A );
         $this->maybe_record_automatic_translation_error(array( 'details' => 'Error running get_all_gettext_strings()' ) );
         if ( is_array( $dictionary ) && count( $dictionary ) === 0 && !$this->table_exists($this->get_gettext_table_name( $language_code )) ){
             // if table is missing then last_error is empty
@@ -1068,7 +967,8 @@ class TRP_Query{
         if ( !is_array( $id_array ) || count ( $id_array ) == 0 ){
             return array();
         }
-        $query = "SELECT id, original, translated, domain, status  FROM `" . sanitize_text_field( $this->get_gettext_table_name( $language_code ) ) . "` WHERE id IN ";
+
+        $query = "SELECT ot.id as ot_id, tt.id, ot.original, tt.original as tt_original, tt.translated, tt.domain AS tt_domain, tt.plural_form, ot.original, ot.domain, ot.context, ot.original_plural FROM `" . sanitize_text_field( $this->get_gettext_table_name( $language_code ) )  . "` AS tt LEFT JOIN `" . sanitize_text_field( $this->get_table_name_for_gettext_original_strings() ) . "` AS ot ON tt.original_id = ot.id WHERE tt.id IN ";
 
         $placeholders = array();
         $values = array();
@@ -1083,11 +983,30 @@ class TRP_Query{
         return $dictionary;
     }
 
+    public function get_gettext_string_rows_by_original_id( $original_id_array, $language_code ){
+        if ( !is_array( $original_id_array ) || count ( $original_id_array ) == 0 ){
+            return array();
+        }
+        $query = "SELECT tt.id, tt.original AS tt_original, tt.translated, tt.status, tt.domain AS tt_domain, tt.plural_form, ot.id AS ot_id, ot.original, ot.domain, ot.context, ot.original_plural FROM `" . sanitize_text_field( $this->get_table_name_for_gettext_original_strings() ) . "` AS ot LEFT JOIN `" . sanitize_text_field( $this->get_gettext_table_name( $language_code ) ) . "` AS tt ON tt.original_id = ot.id WHERE ot.id IN ";
+
+        $placeholders = array();
+        $values = array();
+        foreach( $original_id_array as $id ){
+            $placeholders[] = '%d';
+            $values[] = intval( $id );
+        }
+
+        $query .= "( " . implode ( ", ", $placeholders ) . " )";
+        $dictionary = $this->db->get_results( $this->db->prepare( $query, $values ), ARRAY_A );
+        $this->maybe_record_automatic_translation_error(array( 'details' => 'Error running get_gettext_string_rows_by_original_id()' ) );
+        return $dictionary;
+    }
+
     public function get_gettext_string_rows_by_original( $original_array, $language_code ){
         if ( !is_array( $original_array ) || count ( $original_array ) == 0 ){
             return array();
         }
-        $query = "SELECT id, original, translated, domain, status  FROM `" . sanitize_text_field( $this->get_gettext_table_name( $language_code ) ) . "` WHERE original IN ";
+        $query = "SELECT tt.id, tt.original as tt_original, tt.translated, tt.domain AS tt_domain, tt.plural_form, ot.original, ot.domain, ot.context FROM `" . sanitize_text_field( $this->get_gettext_table_name( $language_code ) )  . "` AS tt LEFT JOIN `" . sanitize_text_field( $this->get_table_name_for_gettext_original_strings() ) . "` AS ot ON tt.original_id = ot.id WHERE CASE WHEN ot.original is NULL THEN tt.original ELSE NULL END IN ";
 
         $placeholders = array();
         $values = array();
@@ -1124,7 +1043,9 @@ class TRP_Query{
 
         $table_names = $this->db->get_results( "SHOW TABLES LIKE '$table_name%'", ARRAY_N );
         foreach ( $table_names as $table_name ){
-            if ( isset( $table_name[0]) ) {
+            if ( isset( $table_name[0]) &&
+                strpos($table_name[0], 'trp_gettext_original_meta') === false &&
+                strpos($table_name[0], 'trp_gettext_original_strings') === false ) {
                 $return_tables[] = $table_name[0];
             }
         }
@@ -1493,11 +1414,11 @@ class TRP_Query{
         $place_holders = array();
         foreach( $update_string_array as $string ){
             if ( $string_type === 'gettext' ) {
-                array_push( $values, $string['original'], $string['domain'], $string['id'] );
+                array_push( $values, $string['original'], $string['domain'], (int)$string['plural_form'], $string['id'] );
             }else{
                 array_push( $values, $string['original'], $string['id'] );
             }
-            $domain = ( $string_type === 'gettext') ? "AND domain COLLATE " . $charset . "_bin = '%s' " : "";
+            $domain = ( $string_type === 'gettext') ? "AND domain COLLATE " . $charset . "_bin = '%s' AND plural_form = '%d' " : "";
             $place_holders[] = "(original COLLATE " . $charset . "_bin = '%s' " . $domain . "AND id != '%d'  )";
         }
 
@@ -1613,5 +1534,12 @@ class TRP_Query{
 
         $sql = "SELECT (COUNT(*) > " . $minimum_rows . ") FROM `" . sanitize_text_field( $this->get_table_name( $language ) ). "` WHERE status = " . $status;
         return $this->db->get_var( $sql );
+    }
+
+    public function is_gettext_normalized(){
+        if( $this->gettext_normalized === null ){
+            $this->gettext_normalized = !( get_option( 'trp_gettext_normalized', '' ) == 'no' );
+        }
+        return $this->gettext_normalized;
     }
 }

@@ -34,7 +34,7 @@ class TRP_Translation_Render{
         global $TRP_LANGUAGE;
 
         //when we check if is an ajax request in frontend we also set proper REQUEST variables and language global so we need to run this for every buffer
-        $ajax_on_frontend = TRP_Translation_Manager::is_ajax_on_frontend();//TODO refactor this function si it just checks and does not set variables
+        $ajax_on_frontend = TRP_Gettext_Manager::is_ajax_on_frontend();//TODO refactor this function si it just checks and does not set variables
 
         if( ( is_admin() && !$ajax_on_frontend ) || trp_is_translation_editor( 'true' ) ){
             return;//we have two cases where we don't do anything: we are on the admin side and we are not in an ajax call or we are in the left side of the translation editor
@@ -924,15 +924,18 @@ class TRP_Translation_Render{
 	    $trp_editor_notices = apply_filters( 'trp_editor_notices', $trp_editor_notices );
 	    if ( trp_is_translation_editor('preview') && $trp_editor_notices != '' ){
 		    $body = $html->find('body', 0 );
-		    $body->innertext = '<div data-no-translation class="trp-editor-notices">' . $trp_editor_notices . "</div>" . $body->innertext;
+            if ( $body ) {
+                $body->innertext = '<div data-no-translation class="trp-editor-notices">' . $trp_editor_notices . "</div>" . $body->innertext;
+            }
 	    }
 	    $final_html = $html->save();
 
-        /* perform preg replace on the remaining trp-gettext tags */
+       /* perform preg replace on the remaining trp-gettext tags */
         $final_html = $this->remove_trp_html_tags( $final_html );
 
 	    return apply_filters( 'trp_translated_html', $final_html, $TRP_LANGUAGE, $language_code, $preview_mode );
     }
+
 
     public function handle_custom_links_and_forms( $html ){
         global $TRP_LANGUAGE;
@@ -1709,7 +1712,7 @@ class TRP_Translation_Render{
      * @since 1.0.8
      */
     public function force_preview_on_url_in_ajax( $output ){
-        if ( TRP_Translation_Manager::is_ajax_on_frontend() && isset( $_REQUEST['trp-edit-translation'] ) && $_REQUEST['trp-edit-translation'] === 'preview' && $output != false ) {
+        if ( TRP_Gettext_Manager::is_ajax_on_frontend() && isset( $_REQUEST['trp-edit-translation'] ) && $_REQUEST['trp-edit-translation'] === 'preview' && $output != false ) {
             $result = json_decode($output, TRUE);
             if ( json_last_error() === JSON_ERROR_NONE) {
                 if( !is_array( $result ) )//make sure we send an array as json_decode even with true parameter might not return one
@@ -1742,7 +1745,7 @@ class TRP_Translation_Render{
      * @since 1.1.2
      */
     public function force_form_language_on_url_in_ajax( $output ){
-        if ( TRP_Translation_Manager::is_ajax_on_frontend() && isset( $_REQUEST[ 'trp-form-language' ] ) && !empty( $_REQUEST[ 'trp-form-language' ] ) ) {
+        if ( TRP_Gettext_Manager::is_ajax_on_frontend() && isset( $_REQUEST[ 'trp-form-language' ] ) && !empty( $_REQUEST[ 'trp-form-language' ] ) ) {
             $result = json_decode($output, TRUE);
             if ( json_last_error() === JSON_ERROR_NONE) {
                 array_walk_recursive($result, array($this, 'callback_add_language_to_url'));

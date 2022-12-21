@@ -31,27 +31,64 @@ class TRP_Languages{
         return apply_filters( 'trp_languages', $this->languages[$english_or_native_name], $english_or_native_name );
     }
 
-	/** Set proper locale when changing languages with translatepress
-	 *
-	 * @param $locale
-	 * @return mixed
-	 */
-	public function change_locale( $locale ){
-        if ( !$this->is_admin_request ){
+    /**Function that clear cache from the key trp_locale because it was retained over page reloads.
+     * @param $locale
+     * @return void
+     */
+    public function clear_cache_locale( $locale ){
+
+        wp_cache_delete( 'trp_locale' );
+
+        remove_filter('locale', array($this, 'clear_cache_locale'), 99998);
+        remove_filter('plugin_locale', array($this, 'clear_cache_locale'), 99998);
+
+        return $locale;
+    }
+
+    /** Set proper locale when changing languages with translatepress
+     *
+     * @param $locale
+     * @return mixed
+     */
+    public function change_locale( $locale ){
+
+        if ( $this->is_string_translation_request_for_different_language() ){
+            $trp_ajax_language = (isset($_POST['trp_ajax_language']) ) ? sanitize_text_field( $_POST['trp_ajax_language'] ) : '';
+            if ( !$this->settings ){
+                $trp = TRP_Translate_Press::get_trp_instance();
+                $trp_settings = $trp->get_component( 'settings' );
+                $this->settings = $trp_settings->get_settings();
+            }
+            if ( $trp_ajax_language && in_array( $trp_ajax_language, $this->settings['translation-languages'] ) ){
+                return $trp_ajax_language;
+            }
+        }
+
+        if ( $this->is_admin_request === null ){
             $trp = TRP_Translate_Press::get_trp_instance();
             $trp_is_admin_request = $trp->get_component( 'url_converter' );
             $this->is_admin_request= $trp_is_admin_request->is_admin_request();
         }
 
-		if ( $this->is_admin_request )
-		    return $locale;
+        if ( $this->is_admin_request ){
+            return $locale;
+        }
 
+        global $TRP_LANGUAGE;
+        if( !empty($TRP_LANGUAGE) ){
+            $locale = $TRP_LANGUAGE;
+        }
+        return $locale;
+    }
 
-	    global $TRP_LANGUAGE;
-		if( !empty($TRP_LANGUAGE) ){
-			$locale = $TRP_LANGUAGE;
+	public function is_string_translation_request_for_different_language(){
+		if ( defined( 'DOING_AJAX' ) && DOING_AJAX ) {
+			$action = 'trp_string_translation_get_missing_gettext_strings';
+			if ( isset( $_POST['action'] ) && $_POST['action'] === $action ) {
+				return true;
+			}
 		}
-		return $locale;
+		return false;
 	}
 
     /**

@@ -73,12 +73,29 @@ class TRP_Upgrade {
             if ( version_compare($stored_database_version, '1.9.8', '<=')) {
                 $this->set_force_slash_at_end_of_links();
             }
+
+			if ( version_compare( $stored_database_version, '2.3.7', '<=' ) ) {
+                $gettext_normalization = $this->trp_query->get_query_component('gettext_normalization');
+                $gettext_normalization->check_for_gettext_original_id_column();
+
+                $gettext_table_creation = $this->trp_query->get_query_component('gettext_table_creation');
+                $gettext_table_creation->check_gettext_original_table();
+                $gettext_table_creation->check_gettext_original_meta_table();
+			}
             if ( version_compare($stored_database_version, '2.1.0', '<=')){
                 $this->add_iso_code_to_language_code();
             }
             if ( version_compare($stored_database_version, '2.1.2', '<=')){
                 $this->create_opposite_ls_option();
             }
+            if( version_compare( $stored_database_version, '2.2.2', '<=' ) ){
+                $this->migrate_auto_translate_slug_to_automatic_translation();
+            }
+            /**
+             * Write an upgrading function above this comment to be executed only once: while updating plugin to a higher version.
+             * Use example condition: version_compare( $stored_database_version, '2.9.9', '<=')
+             * where 2.9.9 is the current version, and 3.0.0 will be the updated version where this code will be launched.
+             */
         }
 
         // don't update the db version unless they are different. Otherwise the query is run on every page load.
@@ -86,6 +103,20 @@ class TRP_Upgrade {
             update_option( 'etm_trp_plugin_version', TRP_PLUGIN_VERSION );
 		}
 	}
+
+    public function migrate_auto_translate_slug_to_automatic_translation(){
+        $option = get_option( 'etm_advanced_settings', true );
+        $mt_settings_option = get_option( 'etm_machine_translation_settings' );
+        if( !isset( $mt_settings_option['automatically-translate-slug'] ) ){
+            if( !isset( $option['enable_auto_translate_slug'] ) || $option['enable_auto_translate_slug'] == '' || $option['enable_auto_translate_slug'] == 'no' ){
+                $mt_settings_option['automatically-translate-slug'] = 'no';
+            }
+            else{
+                $mt_settings_option['automatically-translate-slug'] = 'yes';
+            }
+            update_option( 'etm_machine_translation_settings', $mt_settings_option );
+        }
+    }
 
 	/**
 	 * Iterates over all languages to call gettext table checking
@@ -95,11 +126,14 @@ class TRP_Upgrade {
 		if( ! $this->trp_query ) {
 			$this->trp_query = $trp->get_component( 'query' );
 		}
+        $gettext_table_creation = $this->trp_query->get_query_component('gettext_table_creation');
 		if( !empty( $this->settings['translation-languages'] ) ){
 			foreach( $this->settings['translation-languages'] as $site_language_code ){
-				$this->trp_query->check_gettext_table($site_language_code);
+				$gettext_table_creation->check_gettext_table($site_language_code);
 			}
 		}
+		$gettext_table_creation->check_gettext_original_table();
+		$gettext_table_creation->check_gettext_original_meta_table();
 	}
 
 	public function get_updates_details(){
@@ -205,6 +239,30 @@ class TRP_Upgrade {
                     'message_initial'   => '',
                     'message_processing'=> __('Cleaning original meta table for language %s...', 'etranslation-multilingual' )
                 ),
+                'gettext_original_id_insert' => array(
+                    'version'           => '2.3.8',
+                    'option_name'       => 'trp_updated_database_gettext_original_id_insert',
+                    'callback'          => array( $this,'trp_updated_database_gettext_original_id_insert'),
+                    'batch_size'        => 1000,
+                    'message_processing'=> __('Inserting gettext original strings for language %s...', 'etranslation-multilingual' )
+                ),
+                'gettext_original_id_cleanup' => array(
+                    'version'           => '2.3.8',
+                    'option_name'       => 'trp_updated_database_gettext_original_id_cleanup',
+                    'callback'          => array( $this,'trp_updated_database_gettext_original_id_cleanup'),
+                    'progress_message'  => 'clean',
+                    'batch_size'        => 1000,
+                    'message_initial'   => '',
+                    'message_processing'=> __('Cleaning gettext original strings table for language %s...', 'etranslation-multilingual' )
+                ),
+                'gettext_original_id_update' => array(
+                    'version'           => '2.3.8',
+                    'option_name'       => 'trp_updated_database_gettext_original_id_update',
+                    'callback'          => array( $this,'trp_updated_database_gettext_original_id_update'),
+                    'batch_size'        => 5000,
+                    'message_initial'   => '',
+                    'message_processing'=> __('Updating gettext original string ids for language %s...', 'etranslation-multilingual' )
+                ),
                 'show_error_db_message' => array(
                     'version'           => '0', // independent of tp version, available only on demand
                     'option_name'       => 'etm_show_error_db_message',
@@ -216,24 +274,30 @@ class TRP_Upgrade {
                 )
 			)
 		);
+        /**
+         * Write 3.0.0 if 2.9.9 is the current version, and 3.0.0 will be the updated version where this code will be launched.
+         */
 	}
 
 	/**
 	 * Show admin notice about updating database
 	 */
 	public function show_admin_notice(){
-		if ( ( isset( $_GET[ 'page'] ) && $_GET['page'] == 'etm_update_database' ) ){
-			return;
-		}
-		$updates_needed = $this->get_updates_details();
-        $option_db_error_message = get_option($updates_needed['show_error_db_message']['option_name']);
-		foreach( $updates_needed as $update ){
-			$option = get_option( $update['option_name'], 'is not set' );
-			if ( $option === 'no' && $option_db_error_message !== 'no'){
-				add_action( 'admin_notices', array( $this, 'admin_notice_update_database' ) );
-				break;
-			}
-		}
+        $notifications = TRP_Plugin_Notifications::get_instance();
+        if ( $notifications->is_plugin_page() || ( isset( $GLOBALS['PHP_SELF']) && ( $GLOBALS['PHP_SELF'] === '/wp-admin/index.php' || $GLOBALS['PHP_SELF'] === '/wp-admin/plugins.php' ) ) ) {
+            if ( ( isset( $_GET['page'] ) && $_GET['page'] == 'etm_update_database' ) ) {
+                return;
+            }
+            $updates_needed          = $this->get_updates_details();
+            $option_db_error_message = get_option( $updates_needed['show_error_db_message']['option_name'] );
+            foreach ( $updates_needed as $update ) {
+                $option = get_option( $update['option_name'], 'is not set' );
+                if ( $option === 'no' && $option_db_error_message !== 'no' ) {
+                    add_action( 'admin_notices', array( $this, 'admin_notice_update_database' ) );
+                    break;
+                }
+            }
+        }
 	}
 
 	/**
@@ -412,6 +476,9 @@ class TRP_Upgrade {
             $request['progress_message'] = '.';
 		}
 
+        if ( $this->db->last_error != '' ){
+            $request['progress_message'] = '<p><strong>SQL Error:</strong> ' . esc_html($this->db->last_error) . '</p>' . $request['progress_message'];
+        }
 		$query_arguments = array(
 			'action'                    => 'trp_update_database',
 			'trp_updb_action'           => $request['trp_updb_action'],
@@ -516,26 +583,26 @@ class TRP_Upgrade {
     }
 
     public function trp_updated_database_original_id_cleanup_166( $language_code, $inferior_limit, $batch_size ){
-    if ( ! $this->trp_query ) {
-        $trp = TRP_Translate_Press::get_trp_instance();
-        /* @var TRP_Query */
-        $this->trp_query = $trp->get_component( 'query' );
+        if ( ! $this->trp_query ) {
+            $trp = TRP_Translate_Press::get_trp_instance();
+            /* @var TRP_Query */
+            $this->trp_query = $trp->get_component( 'query' );
+        }
+
+        $this->trp_query->original_ids_cleanup();
+
+        return true;
     }
 
-    $this->trp_query->original_ids_cleanup();
-
-    return true;
-}
-
     /**
- * Normalize original ids for all dictionary entries
- *
- * @param string $language_code     Language code of the table
- * @param int $inferior_limit       Omit first X rows
- * @param int $batch_size           How many rows to query
- *
- * @return bool
- */
+     * Normalize original ids for all dictionary entries
+     *
+     * @param string $language_code     Language code of the table
+     * @param int $inferior_limit       Omit first X rows
+     * @param int $batch_size           How many rows to query
+     *
+     * @return bool
+     */
     public function trp_updated_database_original_id_update_166( $language_code, $inferior_limit, $batch_size ){
         if ( ! $this->trp_query ) {
             $trp = TRP_Translate_Press::get_trp_instance();
@@ -783,6 +850,78 @@ class TRP_Upgrade {
         }
     }
 
+    /**
+     * Normalize original ids for all gettext entries
+     *
+     * @param string $language_code     Language code of the table
+     * @param int $inferior_limit       Omit first X rows
+     * @param int $batch_size           How many rows to query
+     *
+     * @return bool
+     */
+    public function trp_updated_database_gettext_original_id_insert( $language_code, $inferior_limit, $batch_size ){
+        if ( ! $this->trp_query ) {
+            $trp = TRP_Translate_Press::get_trp_instance();
+            /* @var TRP_Query */
+            $this->trp_query = $trp->get_component( 'query' );
+        }
+        $gettext_normalization = $this->trp_query->get_query_component('gettext_normalization');
+        $rows_inserted = $gettext_normalization->gettext_original_ids_insert( $language_code, $inferior_limit, $batch_size );
+        $last_id = $this->trp_query->get_last_id( $this->trp_query->get_gettext_table_name($language_code) );
+
+        if ( $inferior_limit + $batch_size <= $last_id ){
+            return false;
+        }else{
+            return true;
+        }
+    }
+
+    /**
+     * Removes possible duplicates from within gettext_original_strings table
+     *
+     * @param $language_code
+     * @param $inferior_limit
+     * @param $batch_size
+     * @return bool
+     */
+    public function trp_updated_database_gettext_original_id_cleanup( $language_code, $inferior_limit, $batch_size ){
+        if ( ! $this->trp_query ) {
+            $trp = TRP_Translate_Press::get_trp_instance();
+            /* @var TRP_Query */
+            $this->trp_query = $trp->get_component( 'query' );
+        }
+
+        $gettext_normalization = $this->trp_query->get_query_component('gettext_normalization');
+        $gettext_normalization->gettext_original_ids_cleanup();
+
+        return true;
+    }
+
+    /**
+     * Normalize original ids for all gettext entries
+     *
+     * @param string $language_code     Language code of the table
+     * @param int $inferior_limit       Omit first X rows
+     * @param int $batch_size           How many rows to query
+     *
+     * @return bool
+     */
+    public function trp_updated_database_gettext_original_id_update( $language_code, $inferior_limit, $batch_size ){
+        if ( ! $this->trp_query ) {
+            $trp = TRP_Translate_Press::get_trp_instance();
+            /* @var TRP_Query */
+            $this->trp_query = $trp->get_component( 'query' );
+        }
+
+        $gettext_normalization = $this->trp_query->get_query_component('gettext_normalization');
+        $rows_updated = $gettext_normalization->gettext_original_ids_reindex( $language_code, $inferior_limit, $batch_size );
+
+        if ( $rows_updated > 0 ){
+            return false;
+        }else {
+            return true;
+        }
+    }
 
     /**
      *

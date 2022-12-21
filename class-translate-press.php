@@ -33,8 +33,12 @@ class TRP_Translate_Press{
     protected $search;
     protected $install_plugins;
     protected $reviews;
+    protected $gettext_manager;
+    protected $gettext_scan;
     protected $rewrite_rules;
     protected $check_invalid_text;
+    protected $woocommerce_emails;
+    protected $preferred_user_language;
 
     public $active_pro_addons = array();
     public static $translate_press = null;
@@ -60,7 +64,7 @@ class TRP_Translate_Press{
         define( 'TRP_PLUGIN_URL', plugin_dir_url( __FILE__ ) );
         define( 'TRP_PLUGIN_BASE', plugin_basename( __DIR__ . '/index.php' ) );
         define( 'TRP_PLUGIN_SLUG', 'etranslation-multilingual' );
-        define( 'TRP_PLUGIN_VERSION', '2.3.3' );
+        define( 'TRP_PLUGIN_VERSION', '2.4.3' );
 
 	    wp_cache_add_non_persistent_groups(array('trp', 'etm'));
 
@@ -98,7 +102,10 @@ class TRP_Translate_Press{
         require_once TRP_PLUGIN_DIR . 'includes/class-language-switcher.php';
         require_once TRP_PLUGIN_DIR . 'includes/class-machine-translator.php';
         require_once TRP_PLUGIN_DIR . 'includes/class-machine-translator-logger.php';
-        require_once TRP_PLUGIN_DIR . 'includes/class-query.php';
+        require_once TRP_PLUGIN_DIR . 'includes/queries/class-query.php';
+        require_once TRP_PLUGIN_DIR . 'includes/queries/class-gettext-normalization.php';
+        require_once TRP_PLUGIN_DIR . 'includes/queries/class-gettext-table-creation.php';
+        require_once TRP_PLUGIN_DIR . 'includes/queries/class-gettext-insert-update.php';
         require_once TRP_PLUGIN_DIR . 'includes/class-url-converter.php';
         require_once TRP_PLUGIN_DIR . 'includes/class-uri.php';
 	    require_once TRP_PLUGIN_DIR . 'includes/class-upgrade.php';
@@ -115,12 +122,21 @@ class TRP_Translate_Press{
         require_once TRP_PLUGIN_DIR . 'includes/class-machine-translation-tab.php';
         require_once TRP_PLUGIN_DIR . 'includes/string-translation/class-string-translation.php';
         require_once TRP_PLUGIN_DIR . 'includes/string-translation/class-string-translation-helper.php';
+        require_once TRP_PLUGIN_DIR . 'includes/string-translation/class-gettext-scan.php';
         require_once TRP_PLUGIN_DIR . 'includes/class-search.php';
         require_once TRP_PLUGIN_DIR . 'includes/class-install-plugins.php';
         require_once TRP_PLUGIN_DIR . 'includes/class-reviews.php';
+        require_once TRP_PLUGIN_DIR . 'includes/gettext/class-gettext-manager.php';
+        require_once TRP_PLUGIN_DIR . 'includes/gettext/class-process-gettext.php';
+        require_once TRP_PLUGIN_DIR . 'includes/gettext/class-plural-forms.php';
         require_once TRP_PLUGIN_DIR . 'includes/class-rewrite-rules.php';
         require_once TRP_PLUGIN_DIR . 'includes/class-check-invalid-text.php';
+        require_once TRP_PLUGIN_DIR . 'includes/class-woocommerce-emails.php';
+	    require_once TRP_PLUGIN_DIR . 'includes/string-translation/class-string-translation-api-gettext.php';
+	    require_once TRP_PLUGIN_DIR . 'includes/string-translation/class-string-translation-api-regular.php';
         require_once TRP_PLUGIN_DIR . 'assets/lib/tp-add-ons-listing/tp-add-ons-listing.php';
+        require_once TRP_PLUGIN_DIR . 'includes/class-preferred-user-language.php';
+        
         if ( did_action( 'elementor/loaded' ) )
             require_once TRP_PLUGIN_DIR . 'includes/class-elementor-language-for-blocks.php';
         if ( defined( 'WPB_VC_VERSION' ) ) {
@@ -158,11 +174,15 @@ class TRP_Translate_Press{
         $this->translation_memory         = new TRP_Translation_Memory( $this->settings->get_settings() );
         $this->error_manager              = new TRP_Error_Manager( $this->settings->get_settings() );
         $this->string_translation         = new TRP_String_Translation( $this->settings->get_settings(), $this->loader );
+        $this->gettext_scan               = new TRP_Gettext_Scan( $this->settings->get_settings() );
         $this->search                     = new TRP_Search( $this->settings->get_settings() );
         $this->install_plugins            = new TRP_Install_Plugins();
         $this->reviews                    = new TRP_Reviews( $this->settings->get_settings() );
+        $this->gettext_manager            = new TRP_Gettext_Manager( $this->settings->get_settings() );
         $this->rewrite_rules              = new TRP_Rewrite_Rules( $this->settings->get_settings() );
         $this->check_invalid_text         = new TRP_Check_Invalid_Text( );
+        $this->woocommerce_emails         = new TRP_Woocommerce_Emails();
+        $this->preferred_user_language    = new TRP_Preferred_User_Language();
     }
 
     /**
@@ -243,9 +263,11 @@ class TRP_Translate_Press{
 	    $this->loader->add_action( 'wp_ajax_trp_save_translations_gettext', $this->editor_api_gettext_strings, 'gettext_save_translations' );
 
         $this->loader->add_action( 'wp_ajax_trp_get_similar_string_translation', $this->translation_memory, 'ajax_get_similar_string_translation' );
+	    $this->loader->add_action( 'wp_ajax_trp_scan_gettext', $this->gettext_scan, 'scan_gettext' );
 
 	    $this->loader->add_filter( 'trp_get_existing_translations', $this->translation_manager, 'display_possible_db_errors', 20, 3 );
         $this->loader->add_action( 'wp_ajax_trp_save_editor_user_meta', $this->translation_manager, 'save_editor_user_meta', 10 );
+        $this->loader->add_action( 'trp_editor_notices', $this->translation_manager, 'display_notice_to_upgrade_gettext_in_editor', 10, 1 );
 
 
         $this->loader->add_action( 'wp_ajax_trp_process_js_strings_in_translation_editor', $this->translation_render, 'process_js_strings_in_translation_editor' );
@@ -278,6 +300,15 @@ class TRP_Translate_Press{
 
         // Filter rewrite rules for .htaccess
         $this->loader->add_filter( 'mod_rewrite_rules', $this->rewrite_rules, 'trp_remove_language_param', 100 );
+
+        // Add hooks for translating WooCommerce emails
+        $this->loader->add_action( 'init', $this->woocommerce_emails, 'initialize_hooks' );
+
+        $this->loader->add_action( 'show_user_profile', $this->preferred_user_language, 'always_use_this_language', 99, 1 );
+        $this->loader->add_action( 'edit_user_profile', $this->preferred_user_language, 'always_use_this_language', 99, 1 );
+        $this->loader->add_action( 'personal_options_update', $this->preferred_user_language, 'update_profile_fields', 99, 1 );
+        $this->loader->add_action( 'edit_user_profile_update', $this->preferred_user_language, 'update_profile_fields', 99, 1 );
+
     }
 
     /**
@@ -347,20 +378,22 @@ class TRP_Translate_Press{
 
         /* handle dynamic texts with gettext */
         $this->loader->add_filter( 'locale', $this->languages, 'change_locale', 99999 );
+        $this->loader->add_filter( 'locale', $this->languages, 'clear_cache_locale', 99998 );
         $this->loader->add_filter( 'plugin_locale', $this->languages, 'change_locale', 99999 );
+        $this->loader->add_filter( 'plugin_locale', $this->languages, 'clear_cache_locale', 99998 );
 
-        $this->loader->add_action( 'init', $this->translation_manager, 'create_gettext_translated_global' );
-        $this->loader->add_action( 'init', $this->translation_manager, 'initialize_gettext_processing' );
-        $this->loader->add_action( 'trp_call_gettext_filters', $this->translation_manager, 'verify_locale_of_loaded_textdomain' );
-        $this->loader->add_action( 'shutdown', $this->translation_manager, 'machine_translate_gettext', 100 );
+        $this->loader->add_action( 'init', $this->gettext_manager, 'create_gettext_translated_global' );
+        $this->loader->add_action( 'init', $this->gettext_manager, 'initialize_gettext_processing' );
+        $this->loader->add_action( 'trp_call_gettext_filters', $this->gettext_manager, 'verify_locale_of_loaded_textdomain' );
+        $this->loader->add_action( 'shutdown', $this->gettext_manager, 'machine_translate_gettext', 100 );
 
 
         /* we need to treat the date_i18n function differently so we remove the gettext wraps */
-        $this->loader->add_filter( 'date_i18n', $this->translation_manager, 'handle_date_i18n_function_for_gettext', 1, 4 );
+        $this->loader->add_filter( 'date_i18n', $this->gettext_manager, 'handle_date_i18n_function_for_gettext', 1, 4 );
 	    /* strip esc_url() from gettext wraps */
-	    $this->loader->add_filter( 'clean_url', $this->translation_manager, 'trp_strip_gettext_tags_from_esc_url', 1, 3 );
+	    $this->loader->add_filter( 'clean_url', $this->gettext_manager, 'trp_strip_gettext_tags_from_esc_url', 1, 3 );
 	    /* strip sanitize_title() from gettext wraps and apply custom trp_remove_accents */
-	    $this->loader->add_filter( 'sanitize_title', $this->translation_manager, 'trp_sanitize_title', 1, 3 );
+	    $this->loader->add_filter( 'sanitize_title', $this->gettext_manager, 'trp_sanitize_title', 1, 3 );
 
         /* define an update hook here */
         $this->loader->add_action( 'plugins_loaded', $this->upgrade, 'check_for_necessary_updates', 10 );
@@ -389,6 +422,7 @@ class TRP_Translate_Press{
         $this->loader->add_filter( "option_woocommerce_permalinks", $this->url_converter, 'woocommerce_filter_permalink_option' );
         $this->loader->add_filter( "pre_update_option_woocommerce_permalinks", $this->url_converter, 'prevent_permalink_update_on_other_languages', 10, 2 );
         $this->loader->add_filter( "pre_update_option_rewrite_rules", $this->url_converter, 'prevent_permalink_update_on_other_languages', 10, 2 );
+        $this->loader->add_filter( "pre_update_option_rewrite_rules", $this->url_converter, 'delete_woocommerce_transient_permalink' );
 
         /* add to the body class the current language */
         $this->loader->add_filter( "body_class", $this->translation_manager, 'add_language_to_body_class' );

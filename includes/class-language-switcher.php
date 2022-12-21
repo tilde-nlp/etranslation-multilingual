@@ -102,10 +102,13 @@ class TRP_Language_Switcher{
 
         $link_to_redirect = apply_filters( 'trp_link_to_redirect_to', $this->url_converter->get_url_for_language( $TRP_NEEDED_LANGUAGE, null, '' ), $TRP_NEEDED_LANGUAGE );
 
-        if( isset( $this->settings['add-subdirectory-to-default-language'] ) && $this->settings['add-subdirectory-to-default-language'] === 'yes' && isset( $this->settings['default-language'] ) && $this->settings['default-language'] === $TRP_NEEDED_LANGUAGE )
-            wp_redirect( $link_to_redirect, 301 );
-        else
-            wp_redirect( $link_to_redirect );
+        if( isset( $this->settings['add-subdirectory-to-default-language'] ) && $this->settings['add-subdirectory-to-default-language'] === 'yes' && isset( $this->settings['default-language'] ) && $this->settings['default-language'] === $TRP_NEEDED_LANGUAGE ) {
+            $status = apply_filters( 'trp_redirect_status', 301, 'redirect_to_add_subdirectory_to_default_language' );
+            wp_redirect( $link_to_redirect, $status );
+        }else {
+            $status = apply_filters( 'trp_redirect_status', 302, 'redirect_to_a_different_language_according_to_url_slug' );
+            wp_redirect( $link_to_redirect, $status );
+        }
 
         exit;
 

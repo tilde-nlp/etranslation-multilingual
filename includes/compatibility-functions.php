@@ -1682,3 +1682,44 @@ function trp_page_builders_compatibility_with_subdirectory_for_default_language(
     }
     return $needed_language;
 }
+
+
+/**
+ * Compatibility with Give WP plugin.
+ *
+ * When automatic translation is active and we are on secondary language, clicking the Donate button will not redirect you to the confirmation page.
+ * This happens because "Give WP" expects an admin ajax request to return "success" but TP translates it in another language.
+ */
+add_filter( 'trp_stop_translating_page', 'trp_give_wp_compatibility', 10, 2 );
+function trp_give_wp_compatibility( $bool, $output ){
+    if ( isset( $_REQUEST['give_ajax'] ) && $_REQUEST['give_ajax'] == 'true' ) {
+        return true;
+    }
+    return $bool;
+}
+
+/*
+ * Divi is filtering the locale which is in turn accessed on every gettext call by TranslatePress. Together these two things slow down the site to 20+ seconds
+ * The fix is to remove the Divi hook and replace it with another one that caches the result, so it's fast.
+ * Ideally this is a fix Divi should do, however, it negatively impacts TP, so we're doing it for them.
+ */
+add_filter('locale', 'trp_remove_divi_locale_filter', 999999);
+function trp_remove_divi_locale_filter($lang){
+    remove_filter( 'locale', 'et_divi_maybe_change_frontend_locale' );
+    return $lang;
+}
+function trp_et_divi_maybe_change_frontend_locale( $locale ) {
+    $cache_key = 'et_divi_option';
+    $theme_options = wp_cache_get( $cache_key );
+    $option_name   = 'divi_disable_translations';
+    if (false === $theme_options){
+        $theme_options = get_option( 'et_divi' );
+        wp_cache_set( $cache_key, $theme_options );
+    }
+    $disable_translations = isset ( $theme_options[ $option_name ] ) ? $theme_options[ $option_name ] : false;
+    if ( 'on' === $disable_translations ) {
+        return 'en_GB';
+    }
+    return $locale;
+}
+add_filter( 'locale', 'trp_et_divi_maybe_change_frontend_locale' );

@@ -55,13 +55,13 @@ class TRP_Translation_Memory {
      */
     public function ajax_get_similar_string_translation(){
         if ( defined( 'DOING_AJAX' ) && DOING_AJAX ) {
-            if (isset($_POST['action']) && $_POST['action'] === 'trp_get_similar_string_translation' && !empty($_POST['original_string']) && !empty($_POST['language']) && !empty($_POST['selector']) && in_array($_POST['language'], $this->settings['translation-languages']) )
+            if (isset($_POST['action']) && $_POST['action'] === 'trp_get_similar_string_translation' && !empty($_POST['original_string']) && !empty($_POST['language']) && !empty($_POST['type']) && in_array($_POST['language'], $this->settings['translation-languages']) )
             {
                 global $TRP_LANGUAGE;
                 check_ajax_referer('getsimilarstring', 'security');
                 $string = ( isset($_POST['original_string']) ) ? $_POST['original_string'] : '';//phpcs:ignore
                 $language_code = ( isset($_POST['language']) ) ? sanitize_text_field( $_POST['language'] ) : $TRP_LANGUAGE;
-                $selector = ( isset($_POST['selector']) ) ? sanitize_text_field( $_POST['selector'] ) : '';
+                $type = ( isset($_POST['type']) ) ? sanitize_text_field( $_POST['type'] ) : '';
                 $number = ( isset($_POST['number']) ) ? (int) $_POST['number'] : 3;
 
                 $trp = TRP_Translate_Press::get_trp_instance();
@@ -77,7 +77,7 @@ class TRP_Translation_Memory {
                     $table_name = $this->trp_query->get_table_name( $language_code );
                 }
 
-                if( strpos($selector, "data-trpgettextoriginal" ) !== false ){
+                if( $type == "gettext" ){
                     $table_name = $this->trp_query->get_gettext_table_name( $language_code );
                 }
 

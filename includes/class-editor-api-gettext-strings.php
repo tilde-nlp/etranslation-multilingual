@@ -23,17 +23,19 @@ class TRP_Editor_Api_Gettext_Strings {
 	/**
 	 * Hooked to wp_ajax_trp_get_translations_gettext
 	 */
-	public function gettext_get_translations(){
+	public function gettext_get_translations() {
 		if ( defined( 'DOING_AJAX' ) && DOING_AJAX ) {
-			if (isset($_POST['action']) && $_POST['action'] === 'trp_get_translations_gettext' && !empty($_POST['string_ids']) && !empty($_POST['language']) && in_array($_POST['language'], $this->settings['translation-languages'])) {
+			if ( isset( $_POST['action'] ) && $_POST['action'] === 'trp_get_translations_gettext' && ! empty( $_POST['string_ids'] ) && ! empty( $_POST['language'] ) && in_array( $_POST['language'], $this->settings['translation-languages'] ) ) {
 				check_ajax_referer( 'gettext_get_translations', 'security' );
-				if (!empty($_POST['string_ids']))
-					$gettext_string_ids = json_decode(stripslashes($_POST['string_ids']));/* phpcs:ignore */ /* sanitized when inserting in db */
-				else
+				if ( ! empty( $_POST['string_ids'] ) ) {
+					$gettext_string_ids = json_decode( stripslashes( $_POST['string_ids'] ) ); /* phpcs:ignore */ /* sanitized when inserting in db */
+				}
+				else {
 					$gettext_string_ids = array();
+				}
 
 				$current_language = sanitize_text_field( $_POST['language'] );
-				$dictionaries = array();
+				$dictionaries     = array();
 
 				if ( is_array( $gettext_string_ids ) ) {
 
@@ -41,87 +43,31 @@ class TRP_Editor_Api_Gettext_Strings {
 					if ( ! $this->trp_query ) {
 						$this->trp_query = $trp->get_component( 'query' );
 					}
-					if (!$this->translation_manager) {
-						$this->translation_manager = $trp->get_component('translation_manager');
+					if ( ! $this->translation_manager ) {
+						$this->translation_manager = $trp->get_component( 'translation_manager' );
 					}
 
-					/* build the current language dictionary */
-					$dictionaries[$current_language] = $this->trp_query->get_gettext_string_rows_by_ids( $gettext_string_ids, $current_language );
 
-					/* build the other languages dictionaries */
+					$dictionaries[ $current_language ] = $this->trp_query->get_gettext_string_rows_by_ids( $gettext_string_ids, $current_language );
 
-					$original_strings = array();
-					$original_string_details = array();
-					if( !empty( $dictionaries[$current_language] ) ){
-						foreach( $dictionaries[$current_language] as $current_language_string ){
-							$original_strings[] = $current_language_string['original'];
-							$original_string_details[] = array( 'original' => $current_language_string['original'], 'domain' => $current_language_string['domain'] );
+					/* build the original id array */
+					$original_ids            = array();
+					if ( ! empty( $dictionaries[ $current_language ] ) ) {
+						foreach ( $dictionaries[ $current_language ] as $current_language_string ) {
+							/* searching by original id */
+							$original_ids[] = (int)$current_language_string['ot_id'];
 						}
 					}
-
-					foreach ($this->settings['translation-languages'] as $language) {
-						if ($language == $current_language) {
-							continue;
-						}
-
-						$lang_original_string_details = $original_string_details;
-						if( !empty( $original_strings ) && !empty( $lang_original_string_details ) ){
-							$dictionaries[$language] = $this->trp_query->get_gettext_string_rows_by_original( $original_strings, $language );
-							if( empty( $dictionaries[$language] ) )
-								$dictionaries[$language]  = array();
-
-							$search_strings_array = array();
-
-							foreach( $dictionaries[$language] as $lang_string ){
-								$search_strings_array[] = array( 'original' => $lang_string['original'], 'domain' => $lang_string['domain']  );
-							}
-
-							if( !empty( $search_strings_array ) ){
-								foreach( $search_strings_array as $search_key => $search_string ){
-									if( in_array( $search_string, $lang_original_string_details ) ) {
-										$remove_original_key = array_search($search_string, $lang_original_string_details );
-										unset($lang_original_string_details[$remove_original_key]);
-									}
-									else{
-										unset($dictionaries[$language][$search_key]);
-									}
-								}
-							}
-
-							/* add here in the db the strings that are not there and after that add them in the dictionary */
-							switch_to_locale( $language );
-							if( !empty( $lang_original_string_details ) ){
-								foreach( $lang_original_string_details as $lang_original_string_detail ){
-
-									$translations = get_translations_for_domain( $lang_original_string_detail['domain'] );
-									$translated  = $translations->translate( $lang_original_string_detail['original'] );
-
-									$db_id = $this->trp_query->insert_gettext_strings( array( array('original' => $lang_original_string_detail['original'], 'translated' => $translated, 'domain' => $lang_original_string_detail['domain']) ), $language );
-									$dictionaries[$language][] = array('id' => $db_id, 'original' => $lang_original_string_detail['original'], 'translated' => ( $translated != $lang_original_string_detail['original'] ) ? $translated : '', 'domain' => $lang_original_string_detail['domain']);
-								}
-							}
-							restore_current_locale();
-
-							$dictionaries[$language] = array_values($dictionaries[$language]);
-						}
-					}
+					echo trp_safe_json_encode( array( // phpcs:ignore
+						'originalIds' => $original_ids,
+					) );
 
 				}
-
-				/* html entity decode the strings so we display them properly in the textareas  */
-				foreach( $dictionaries as $lang => $dictionary ){
-					foreach( $dictionary as $key => $string ){
-						$string = array_map('html_entity_decode', $string );
-						$dictionaries[$lang][$key] = (object)$string;
-					}
-				}
-				$localized_text = $this->translation_manager->string_groups();
-				$dictionary_by_original = trp_sort_dictionary_by_original( $dictionaries, 'gettext', $localized_text['gettextstrings'], sanitize_text_field( $_POST['language'] ) );
-				die( trp_safe_json_encode( $dictionary_by_original ) );//phpcs:ignore
-
 			}
 		}
+		wp_die();
 	}
+
 
 	/*
 	 * Save gettext translations
@@ -142,7 +88,9 @@ class TRP_Editor_Api_Gettext_Strings {
                                     'original' => trp_sanitize_string( $string->original, false ),
 									'translated' => trp_sanitize_string( $string->translated ),
 									'domain' => sanitize_text_field( $string->domain ),
-									'status' => (int)$string->status
+									'status' => (int)$string->status,
+									'plural_form' => (int)$string->plural_form,
+									'context' => $string->context
 								));
 							}
 						}
@@ -155,7 +103,8 @@ class TRP_Editor_Api_Gettext_Strings {
 				}
 
 				foreach( $update_strings as $language => $update_string_array ) {
-					$this->trp_query->update_gettext_strings( $update_string_array, $language, array('id','translated', 'status') );
+                    $gettext_insert_update = $this->trp_query->get_query_component('gettext_insert_update');
+                    $gettext_insert_update->update_gettext_strings( $update_string_array, $language, array('id','translated', 'status') );
                     $this->trp_query->remove_possible_duplicates($update_string_array, $language, 'gettext');
 				}
 
