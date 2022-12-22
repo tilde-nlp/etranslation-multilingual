@@ -185,6 +185,7 @@ class ETM_eTranslation_Multilingual{
         $this->loader->add_action( 'admin_init', $this->settings, 'register_setting' );
         $this->loader->add_action( 'admin_notices', $this->settings, 'admin_notices' );
         $this->loader->add_action( 'admin_enqueue_scripts', $this->settings, 'enqueue_scripts_and_styles', 10, 1 );
+        $this->loader->add_filter( 'plugin_action_links_' . ETM_PLUGIN_BASE , $this->settings, 'plugin_action_links', 10, 1 );
         $this->loader->add_action( 'etm_settings_navigation_tabs', $this->settings, 'add_navigation_tabs' );
         $this->loader->add_action( 'etm_settings_navigation_tabs', $this->settings, 'add_svg_icons' );
         $this->loader->add_action( 'etm_language_selector', $this->settings, 'languages_selector', 10, 1 );

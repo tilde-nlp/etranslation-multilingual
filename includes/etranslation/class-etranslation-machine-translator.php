@@ -48,12 +48,14 @@ class ETM_eTranslation_Machine_Translator extends ETM_Machine_Translator {
         $content = implode($delimiter, $strings_array);
         $document = $this->string_to_base64_data($content);
 
-        $response = $this->etranslation_service->send_translate_document_request($source_language, $target_language, $document, $domain, $id);
-        $request_id = isset($response['body']) && is_numeric($response['body']) ? (int) $response['body'] : null;
-        if ($response['response'] != 200 || $request_id < 0) {
-            return array();
-        }
-        if ($this->etranslation_query->insert_translation_entry($id, $request_id, strtolower($source_language_code), strtolower($target_language_code), implode($delimiter, $original_strings))) {
+        $temp_entry = $this->etranslation_query->insert_translation_entry($id, strtolower($source_language_code), strtolower($target_language_code), implode($delimiter, $original_strings));
+        if ($temp_entry) {
+            $response = $this->etranslation_service->send_translate_document_request($source_language, $target_language, $document, $domain, $id);
+            $request_id = isset($response['body']) && is_numeric($response['body']) ? (int) $response['body'] : null;
+            if ($response['response'] != 200 || $request_id < 0) {
+                return array();
+            }
+
             $translation = $this->check_document($id, $start_timestamp);
             if (empty($translation)) {
                 return array();

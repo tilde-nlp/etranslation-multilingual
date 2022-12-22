@@ -560,4 +560,20 @@ class ETM_Settings{
         <?php
     }
 
+    /**
+     * Plugin action links.
+     *
+     * Adds action links to the plugin list table
+     *
+     * Fired by `plugin_action_links` filter.
+     *
+     * @param array $links An array of plugin action links.
+     *
+     * @return array An array of plugin action links.
+     */
+    public function plugin_action_links( $links ) {
+        $settings_link = sprintf( '<a href="%1$s">%2$s</a>', admin_url( 'options-general.php?page=etranslation-multilingual' ), __( 'Settings', 'etranslation-multilingual' ) );
+        array_unshift( $links, $settings_link );
+        return $links;
+    }
 }

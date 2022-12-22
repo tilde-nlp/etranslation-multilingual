@@ -110,10 +110,9 @@ class eTranslation_Query {
         }
     }
 
-    function insert_translation_entry($id, $request_id, $lang_from, $lang_to, $original) {
+    function insert_translation_entry($id, $lang_from, $lang_to, $original) {
         $result = $this->db->insert($this->jobs_table, array(
             'id' => $id,
-            'requestId' => $request_id,
             'status' => 'TRANSLATING',
             'from' => $lang_from,
             'to' => $lang_to,
@@ -131,7 +130,6 @@ class eTranslation_Query {
         if ($this->db->get_var("show tables like '$this->jobs_table'") != $this->jobs_table) {
             $sql = "CREATE TABLE `" . $this->jobs_table . "` ( ";
             $sql .= "  `id`  VARCHAR(13) NOT NULL, ";
-            $sql .= " `requestId` BIGINT NOT NULL, ";
             $sql .= "  `status`  ENUM('TRANSLATING','DONE','ERROR','TIMEOUT') NOT NULL DEFAULT 'TRANSLATING', ";
             $sql .= "  `body`  LONGTEXT NULL DEFAULT NULL, ";
             $sql .= " `from` VARCHAR(5) NULL, ";
