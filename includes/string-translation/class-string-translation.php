@@ -200,17 +200,7 @@ class TRP_String_Translation {
             $settings     = $trp_settings->get_settings();
 
             global $wpdb;
-            $query = '';
-            foreach ( $settings['translation-languages'] as $language ) {
-                $query .= 'SELECT domain FROM ' . $trp_query->get_gettext_table_name( $language ) . ' UNION ';
-            }
-            $query = rtrim( $query, ' UNION ' ) . ' ';
-
-            $charset_collate = $wpdb->get_charset_collate();
-            $charset = "utf8mb4";
-            if( strpos( 'latin1', $charset_collate ) === 0 )
-                $charset = "latin1";
-            $query .= ' ORDER BY domain COLLATE '.$charset.'_general_ci ASC';
+            $query = 'SELECT DISTINCT domain FROM `' . $trp_query->get_table_name_for_gettext_original_strings() . '` ORDER BY domain ASC';
 
             $this->gettext_domains = $wpdb->get_results( $query, OBJECT_K );
             foreach ( $this->gettext_domains as $domain => $value ) {
@@ -363,21 +353,21 @@ class TRP_String_Translation {
 	    if ( !apply_filters('trp_show_regular_strings_string_translation', false ) ){
 	    	unset($string_types_config['regular']);
 	    }
-	    $seo_pack_active = class_exists( 'TRP_IN_Seo_Pack');
-		if( !$seo_pack_active ){
-			$upsale_slugs_string_type = array(
-				'slugs' => array(
-					'type'              => 'upsale-slugs',
-					'name'              => __( 'URL Slugs Translation', 'etranslation-multilingual' ),
-					'tab_name'          => __( 'Slugs', 'etranslation-multilingual' ),
-					'class_name_suffix' => 'Regular',
-					'plugin_path'       => TRP_PLUGIN_DIR,
-					'category_based'    => false,
-					'nonces'                 => $this->get_nonces_for_type( 'regular' ),
-				)
-			);
-			$string_types_config = $upsale_slugs_string_type + $string_types_config;
-		}
+	    // $seo_pack_active = class_exists( 'TRP_IN_Seo_Pack');
+		// if( !$seo_pack_active ){
+		// 	$upsale_slugs_string_type = array(
+		// 		'slugs' => array(
+		// 			'type'              => 'upsale-slugs',
+		// 			'name'              => __( 'URL Slugs Translation', 'etranslation-multilingual' ),
+		// 			'tab_name'          => __( 'Slugs', 'etranslation-multilingual' ),
+		// 			'class_name_suffix' => 'Regular',
+		// 			'plugin_path'       => TRP_PLUGIN_DIR,
+		// 			'category_based'    => false,
+		// 			'nonces'                 => $this->get_nonces_for_type( 'regular' ),
+		// 		)
+		// 	);
+		// 	$string_types_config = $upsale_slugs_string_type + $string_types_config;
+		// }
 
         return apply_filters( 'trp_st_string_types_config', $string_types_config, $this );
     }

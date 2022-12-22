@@ -50,7 +50,7 @@ class TRP_Preferred_User_Language{
 
         $always_use_this_language = get_user_meta( $user_ID, 'etm_always_use_this_language', true );
 ?>
-<h3><?php esc_html_e( 'TranslatePress Preferred User Language', 'etranslation-multilingual' ); ?></h3>
+<h3><?php esc_html_e( 'eTranslation Multilingual Preferred User Language', 'etranslation-multilingual' ); ?></h3>
 
 <table class="form-table">
     <tr>

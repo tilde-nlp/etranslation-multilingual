@@ -1,7 +1,6 @@
 <?php __("", "etranslation-multilingual"); ?>
 <?php __("Plugin activated.", "etranslation-multilingual"); ?>
 <?php __("Could not install. Try again from <a href=\"%s\" >Plugins Dashboard.</a>", "etranslation-multilingual"); ?>
-<?php __("Please install and activate the eTranslation Multilingual plugin", "etranslation-multilingual"); ?>
 <?php __("Install & Activate", "etranslation-multilingual"); ?>
 <?php __("<strong>eTranslation Multilingual</strong> requires at least PHP version 5.6.20+ to run. It is the <a href=\"%s\">minimum requirement of the latest WordPress version</a>. Please contact your server administrator to update your PHP version.", "etranslation-multilingual"); ?>
 <?php __("Advanced", "etranslation-multilingual"); ?>
@@ -44,7 +43,7 @@
 <?php __("Logged errors", "etranslation-multilingual"); ?>
 <?php __("These are the most recent 5 errors logged by eTranslation Multilingual:", "etranslation-multilingual"); ?>
 <?php __("Why are these errors occuring", "etranslation-multilingual"); ?>
-<?php __("If eTranslation Multilingual detects something wrong when executing queries on your database, it may disable the Automatic Translation feature in order to avoid any extra charging by Google. Automatic Translation needs to be manually turned on, after you solve the issues.", "etranslation-multilingual"); ?>
+<?php __("If eTranslation Multilingual detects something wrong when executing queries on your database, it may disable the Automatic Translation feature in order to avoid any extra charging by Google/DeepL. Automatic Translation needs to be manually turned on, after you solve the issues.", "etranslation-multilingual"); ?>
 <?php __("The SQL errors detected can occur for various reasons including missing tables, missing permissions for the SQL user to create tables or perform other operations, problems after site migration or changes to SQL server configuration.", "etranslation-multilingual"); ?>
 <?php __("What you can do in this situation", "etranslation-multilingual"); ?>
 <?php __("Plan A.", "etranslation-multilingual"); ?>
@@ -65,19 +64,20 @@
 <?php __("Unsupported languages", "etranslation-multilingual"); ?>
 <?php __("The selected automatic translation engine does not provide support for these languages.<br>You can still manually translate pages in these languages using the Translation Editor.", "etranslation-multilingual"); ?>
 <?php __("Languages without formality", "etranslation-multilingual"); ?>
-<?php __("The selected automatic translation engine provides only <a href=\"%s\" target=\"_blank\">default formality</a> settings for these languages for now.<br>Automatic translation will still work if available for these languages. It will just not use the formality setting from eTranslation Multilingual <a href=\"%s\" target=\"_self\"> General Tab</a> for the languages listed above.", "etranslation-multilingual"); ?>
 <?php __("Recheck supported languages", "etranslation-multilingual"); ?>
 <?php __("(last checked on %s)", "etranslation-multilingual"); ?>
 <?php __("Please enter your Google Translate key.", "etranslation-multilingual"); ?>
 <?php __("Please enter your DeepL API key.", "etranslation-multilingual"); ?>
 <?php __("You are not using a permalink structure! Please <a href=\"%s\">enable</a> one or install our <a href=\"%s\">\"Language by GET parameter\"</a> addon, so that eTranslation Multilingual can function properly.", "etranslation-multilingual"); ?>
 <?php __("Something went wrong, please try again.", "etranslation-multilingual"); ?>
-<?php __("NEW: Display different images based on language. Find out <a href=\"https://translatepress.com/docs/image-translation/\" >how to translate images, sliders and more</a> from the eTranslation Multilingual editor.", "etranslation-multilingual"); ?>
-<?php __("The daily quota for machine translation characters exceeded. Please check the <strong>eTranslation Multilingual -> <a href=\"%s\">Automatic Translation</a></strong> page for more information.", "etranslation-multilingual"); ?>
 <?php __("One or more languages are unsupported by the automatic translation provider. Please check the <strong>eTranslation Multilingual -> <a href=\"%s\">Automatic Translation</a></strong> page for more information.", "etranslation-multilingual"); ?>
-<?php __("Hello! Seems like you've been using <strong>eTranslation Multilingual</strong> for a while now to translate your website. That's awesome! ", "etranslation-multilingual"); ?>
-<?php __("If you can spare a few moments to rate it on WordPress.org it would help us a lot (and boost my motivation).", "etranslation-multilingual"); ?>
-<?php __("Rate eTranslation Multilingual on WordPress.org plugin page", "etranslation-multilingual"); ?>
+<?php __("Marketing optin", "etranslation-multilingual"); ?>
+<?php __("Opt in to our security and feature updates notifications, and non-sensitive diagnostic tracking.", "etranslation-multilingual"); ?>
+<?php __("eTranslation Multilingual Preferred User Language", "etranslation-multilingual"); ?>
+<?php __("Preferred language to navigate the site", "etranslation-multilingual"); ?>
+<?php __("The language is automatically set based by the last visited language by the user.", "etranslation-multilingual"); ?>
+<?php __("Always use this language", "etranslation-multilingual"); ?>
+<?php __("By checking this setting the preferred language will remain the one selected above, without the possibility of being changed in the frontend.<br>This language will be used in different operations such as sending email to the user.", "etranslation-multilingual"); ?>
 <?php __("Ok, I will gladly help!", "etranslation-multilingual"); ?>
 <?php __("No, thanks.", "etranslation-multilingual"); ?>
 <?php __("Full Language Names", "etranslation-multilingual"); ?>
@@ -92,6 +92,8 @@
 <?php __("Top Left", "etranslation-multilingual"); ?>
 <?php __("Dark", "etranslation-multilingual"); ?>
 <?php __("Light", "etranslation-multilingual"); ?>
+<?php __("Invalid language code. Please try again.", "etranslation-multilingual"); ?>
+<?php __("Language codes can contain only A-Z a-z 0-9 - _ characters. Check your language codes in eTranslation Multilingual General Settings.", "etranslation-multilingual"); ?>
 <?php __("Error! Duplicate URL slug values.", "etranslation-multilingual"); ?>
 <?php __("Current Language", "etranslation-multilingual"); ?>
 <?php __("Opposite Language", "etranslation-multilingual"); ?>
@@ -109,6 +111,11 @@
 <?php __("Placeholder attribute", "etranslation-multilingual"); ?>
 <?php __("Submit attribute", "etranslation-multilingual"); ?>
 <?php __("Text", "etranslation-multilingual"); ?>
+<?php __("plural form", "etranslation-multilingual"); ?>
+<?php __("one", "etranslation-multilingual"); ?>
+<?php __("few", "etranslation-multilingual"); ?>
+<?php __("many", "etranslation-multilingual"); ?>
+<?php __("other", "etranslation-multilingual"); ?>
 <?php __("Saved", "etranslation-multilingual"); ?>
 <?php __("Save translation", "etranslation-multilingual"); ?>
 <?php __("Saving translation...", "etranslation-multilingual"); ?>
@@ -124,6 +131,7 @@
 <?php __("Previous", "etranslation-multilingual"); ?>
 <?php __("Add Media", "etranslation-multilingual"); ?>
 <?php __("Other languages", "etranslation-multilingual"); ?>
+<?php __("Context", "etranslation-multilingual"); ?>
 <?php __("View As", "etranslation-multilingual"); ?>
 <?php __("Available in our Pro Versions", "etranslation-multilingual"); ?>
 <?php __("Select or Upload Media", "etranslation-multilingual"); ?>
@@ -162,6 +170,15 @@
 <?php __("Don't forget to Save Translation. Use keyboard shortcut CTRL(⌘) + S", "etranslation-multilingual"); ?>
 <?php __("Switch language to see the translation changes directly on the page.", "etranslation-multilingual"); ?>
 <?php __("Search for any text in this page in the dropdown.", "etranslation-multilingual"); ?>
+<?php __("Your %s license has <span class=\"trp-license-status-emphasized\">expired</span>.", "etranslation-multilingual"); ?>
+<?php __("Please renew your license to continue receiving access to product downloads, automatic updates and support.", "etranslation-multilingual"); ?>
+<?php __("Renew Now", "etranslation-multilingual"); ?>
+<?php __("Your %s license was <span class=\"trp-license-status-emphasized\">refunded</span>.", "etranslation-multilingual"); ?>
+<?php __("Please purchase a new license to continue receiving access to product downloads, automatic updates and support.", "etranslation-multilingual"); ?>
+<?php __("Purchase a new license", "etranslation-multilingual"); ?>
+<?php __("Your %s license is <span class=\"trp-license-status-emphasized\">empty or incorrect</span>.", "etranslation-multilingual"); ?>
+<?php __("Please enter a valid license to continue receiving access to product downloads, automatic updates and support.", "etranslation-multilingual"); ?>
+<?php __("Enter a valid license", "etranslation-multilingual"); ?>
 <?php __("Slugs", "etranslation-multilingual"); ?>
 <?php __("Meta Information", "etranslation-multilingual"); ?>
 <?php __("String List", "etranslation-multilingual"); ?>
@@ -169,10 +186,26 @@
 <?php __("Images", "etranslation-multilingual"); ?>
 <?php __("Dynamically Added Strings", "etranslation-multilingual"); ?>
 <?php __("Visual Editor", "etranslation-multilingual"); ?>
+<?php __("Edit translations by visually selecting them on each site page", "etranslation-multilingual"); ?>
 <?php __("String Translation", "etranslation-multilingual"); ?>
+<?php __("Edit url slug translations, plugins and theme translation (emails, forms etc.)", "etranslation-multilingual"); ?>
 <?php __("Translate Page", "etranslation-multilingual"); ?>
+<?php __("Opens post in the translation editor. Post must be saved as draft or published beforehand.", "etranslation-multilingual"); ?>
 <?php __("Security check", "etranslation-multilingual"); ?>
 <?php __("<strong>Warning:</strong> Some strings have possibly incorrectly encoded characters. This may result in breaking the queries, rendering the page untranslated in live mode. Consider revising the following strings or their method of outputting.", "etranslation-multilingual"); ?>
+<?php __("eTranslation Multilingual data update", "etranslation-multilingual"); ?>
+<?php __("We need to update your translations database to the latest version.", "etranslation-multilingual"); ?>
+<?php __("Updating will allow editing translations of localized text from plugins and theme. Existing translation will still work as expected.", "etranslation-multilingual"); ?>
+<?php __("IMPORTANT: It is strongly recommended to first backup the database!\nAre you sure you want to continue?", "etranslation-multilingual"); ?>
+<?php __("Run the updater", "etranslation-multilingual"); ?>
+<?php __("The SEO Pack add-on allows translation of all the URL slugs:", "etranslation-multilingual"); ?>
+<?php __("Taxonomy slugs", "etranslation-multilingual"); ?>
+<?php __("Term slugs", "etranslation-multilingual"); ?>
+<?php __("Post slugs (this includes pages and custom post types)", "etranslation-multilingual"); ?>
+<?php __("Post type base slugs", "etranslation-multilingual"); ?>
+<?php __("WooCommerce slugs", "etranslation-multilingual"); ?>
+<?php __("The SEO Pack add-on is available with ALL premium versions of the plugin.", "etranslation-multilingual"); ?>
+<?php __("Learn More", "etranslation-multilingual"); ?>
 <?php __("Description", "etranslation-multilingual"); ?>
 <?php __("OG Title", "etranslation-multilingual"); ?>
 <?php __("OG Site Name", "etranslation-multilingual"); ?>
@@ -198,11 +231,10 @@
 <?php __("Updating original string ids for language %s...", "etranslation-multilingual"); ?>
 <?php __("Regenerating original meta table for language %s...", "etranslation-multilingual"); ?>
 <?php __("Cleaning original meta table for language %s...", "etranslation-multilingual"); ?>
+<?php __("Inserting gettext original strings for language %s...", "etranslation-multilingual"); ?>
+<?php __("Cleaning gettext original strings table for language %s...", "etranslation-multilingual"); ?>
+<?php __("Updating gettext original string ids for language %s...", "etranslation-multilingual"); ?>
 <?php __("Finishing up...", "etranslation-multilingual"); ?>
-<?php __("eTranslation Multilingual data update", "etranslation-multilingual"); ?>
-<?php __("We need to update your translations database to the latest version.", "etranslation-multilingual"); ?>
-<?php __("IMPORTANT: It is strongly recommended to first backup the database!\nAre you sure you want to continue?", "etranslation-multilingual"); ?>
-<?php __("Run the updater", "etranslation-multilingual"); ?>
 <?php __("Database optimization did not complete successfully. We recommend restoring the original database or <a href=\"%s\" >trying again.</a>", "etranslation-multilingual"); ?>
 <?php __("Update aborted! Your user account doesn't have the capability to perform database updates.", "etranslation-multilingual"); ?>
 <?php __("Update aborted! Invalid nonce.", "etranslation-multilingual"); ?>
@@ -221,7 +253,6 @@
 <?php __("The Automatic Translation Code of the added custom language is invalid.", "etranslation-multilingual"); ?>
 <?php __("The Language code of the added custom language cannot be empty.", "etranslation-multilingual"); ?>
 <?php __("eTranslation Multilingual Settings", "etranslation-multilingual"); ?>
-<?php __("eTranslation Multilingual Add-ons", "etranslation-multilingual"); ?>
 <?php __("You must first purchase this version to have access to the addon %1$shere%2$s", "etranslation-multilingual"); ?>
 <?php __("Advanced Add-ons", "etranslation-multilingual"); ?>
 <?php __("These addons extend your translation plugin and are available in the Developer, Business and Personal plans.", "etranslation-multilingual"); ?>
@@ -264,19 +295,20 @@
 <?php __("Choose which engine you want to use in order to automatically translate your website.", "etranslation-multilingual"); ?>
 <?php __("To use <strong>DeepL</strong> for automatic translation, activate this Pro add-on from the <a href=\"%1$s\" target=\"_self\" title=\"%2$s\">%2$s</a>.", "etranslation-multilingual"); ?>
 <?php __("<strong>DeepL</strong> automatic translation is available as a <a href=\"%1$s\" target=\"_blank\" title=\"%2$s\">%2$s</a>.", "etranslation-multilingual"); ?>
-<?php __("eTranslation Multilingual Pro Add-on", "etranslation-multilingual"); ?>
 <?php __("Addons tab", "etranslation-multilingual"); ?>
 <?php __("Please note that DeepL API usage is paid separately. See <a href=\"https://www.deepl.com/pro.html#developer\">DeepL pricing information</a>.", "etranslation-multilingual"); ?>
-<?php __("eTranslation Multilingual Pro Add-ons", "etranslation-multilingual"); ?>
 <?php __("Test API credentials", "etranslation-multilingual"); ?>
 <?php __("Click here to check if the selected translation engine is configured correctly.", "etranslation-multilingual"); ?>
 <?php __("Block Crawlers", "etranslation-multilingual"); ?>
 <?php __("Block crawlers from triggering automatic translations on your website.", "etranslation-multilingual"); ?>
+<?php __("Automatically Translate Slugs", "etranslation-multilingual"); ?>
+<?php __("Generate automatic translations of slugs for posts, pages and Custom Post Types.<br/>The slugs will be automatically translated starting with the second refresh of each page.", "etranslation-multilingual"); ?>
+<?php __("This feature is available only in the paid version. <a href=\"%1$s\" target=\"_blank\" title=\"%2$s\">%2$s</a> and unlock more premium features.", "etranslation-multilingual"); ?>
 <?php __("Limit machine translation / characters per day", "etranslation-multilingual"); ?>
 <?php __("Add a limit to the number of automatically translated characters so you can better budget your project.", "etranslation-multilingual"); ?>
 <?php __("Today's character count:", "etranslation-multilingual"); ?>
 <?php __("Log machine translation queries.", "etranslation-multilingual"); ?>
-<?php __("Only enable for testing purposes. Can impact performance.<br>All records are stored in the wp_etm_machine_translation_log database table. Use a plugin like <a href=\"https://wordpress.org/plugins/wp-data-access/\">WP Data Access</a> to browse the logs or directly from your database manager (PHPMyAdmin, etc.)", "etranslation-multilingual"); ?>
+<?php __("Only enable for testing purposes. Can impact performance.<br>All records are stored in the wp_etm_machine_translation_log database table. Use a plugin like <a href=\"https://wordpress.org/plugins/wp-data-access/\" target=\"_blank\">WP Data Access</a> to browse the logs or directly from your database manager (PHPMyAdmin, etc.)", "etranslation-multilingual"); ?>
 <?php __("All Languages", "etranslation-multilingual"); ?>
 <?php __("Language", "etranslation-multilingual"); ?>
 <?php __("Formality", "etranslation-multilingual"); ?>
@@ -288,15 +320,11 @@
 <?php __("Are you sure you want to remove this language?", "etranslation-multilingual"); ?>
 <?php __("Choose...", "etranslation-multilingual"); ?>
 <?php __("Custom Languages", "etranslation-multilingual"); ?>
-<?php __("Select the languages you wish to make your website available in.<br>The Formality field is used by Automatic Translation to decide whether the translated text should lean towards formal or informal language. For now, it is supported only for a few languages and only by <a href=\"%s\">DeepL</a>.", "etranslation-multilingual"); ?>
-<?php __("To add <strong>more than two languages</strong> and support for SEO Title, Description, Slug and more check out <a href=\"%1$s\" target=\"_blank\" title=\"%2$s\">%2$s</a>.", "etranslation-multilingual"); ?>
-<?php __("eTranslation Multilingual Advanced Add-ons", "etranslation-multilingual"); ?>
-<?php __("eTranslation Multilingual Advanced Add-ons", "etranslation-multilingual"); ?>
-<?php __("To add <strong>more than two languages</strong> activate the <strong>Extra Languages Add-on</strong> from <a href=\"%s\" class=\"trp-translatepress-account-page\" target=\"_blank\" title=\"Add-ons page\">the Add-ons Page</a>. Once activated, you'll be able to add unlimited languages.", "etranslation-multilingual"); ?>
+<?php __("Select the languages you wish to make your website available in.<br>The Formality field is used by Automatic Translation to decide whether the translated text should lean towards formal or informal language. For now, it is supported only for a few languages and only by <a href=\"%s\" target=\"_blank\">DeepL</a>.", "etranslation-multilingual"); ?>
 <?php __("Default Language", "etranslation-multilingual"); ?>
 <?php __("Select the original language of your content.", "etranslation-multilingual"); ?>
 <?php __("WARNING. Changing the default language will invalidate existing translations.", "etranslation-multilingual"); ?>
-<?php __("Even changing from en_GB to en_US, because they are treated as two different languages.", "etranslation-multilingual"); ?>
+<?php __("Even changing from en_US to en_GB, because they are treated as two different languages.", "etranslation-multilingual"); ?>
 <?php __("In most cases changing the default flag is all it is needed: ", "etranslation-multilingual"); ?>
 <?php __("replace the default flag", "etranslation-multilingual"); ?>
 <?php __("Native language name", "etranslation-multilingual"); ?>
@@ -318,6 +346,18 @@
 <?php __("Your email", "etranslation-multilingual"); ?>
 <?php __("Sign me up!", "etranslation-multilingual"); ?>
 <?php __("Dismiss email course notification", "etranslation-multilingual"); ?>
+<?php __("Hey %s,<br>Never miss an important update - opt in to our security and feature updates notifications, and non-sensitive diagnostic tracking.", "etranslation-multilingual"); ?>
+<?php __("Allow & Continue", "etranslation-multilingual"); ?>
+<?php __("Skip", "etranslation-multilingual"); ?>
+<?php __("What permissions are being granted?", "etranslation-multilingual"); ?>
+<?php __("Your profile overview", "etranslation-multilingual"); ?>
+<?php __("Name and email address", "etranslation-multilingual"); ?>
+<?php __("Admin Notices", "etranslation-multilingual"); ?>
+<?php __("Updates, announcements, marketing, no spam", "etranslation-multilingual"); ?>
+<?php __("Current plugin status", "etranslation-multilingual"); ?>
+<?php __("Active, Deactivated or uninstalled", "etranslation-multilingual"); ?>
+<?php __("Privacy Policy", "etranslation-multilingual"); ?>
+<?php __("Terms of Service", "etranslation-multilingual"); ?>
 <?php __("API Key from settings page:", "etranslation-multilingual"); ?>
 <?php __("HTTP Referrer:", "etranslation-multilingual"); ?>
 <?php __("Use this HTTP Referrer if the API lets you restrict key usage from its Dashboard.", "etranslation-multilingual"); ?>
@@ -344,7 +384,7 @@
 <?php __("Limit this menu item to the following languages", "etranslation-multilingual"); ?>
 <?php __("Date format", "etranslation-multilingual"); ?>
 <?php __("Customize the date formatting per each translated language.<br/>Leave empty for default WP setting or see more information <a href=\"https://wordpress.org/support/article/formatting-date-and-time/\" title=\"Formatting Date and Time\" target=\"_blank\">here</a>", "etranslation-multilingual"); ?>
-<?php __("To edit an existing eTranslation Multilingual language, input the language code and fill in only the columns you want to overwrite (e.g. Language name, Flag).<br>You can also add new custom languages. They will be available under General settings, All Languages list, where the URL slug can be edited.<br>For custom flag, first upload the image in media library then paste the URL.<br>Changing or deleting a custom language will impact translations and site URL's.<br>The Language code and the Automatic Translation Code should contain only alphabetical values, numerical values, \"-\" and \"_\".<br>The Automatic Translation codes can be found on <a href = \"https://cloud.google.com/translate/docs/languages\" target = \"_blank\">Google ISO Codes</a>.", "etranslation-multilingual"); ?>
+<?php __("To edit an existing eTranslation Multilingual language, input the language code and fill in only the columns you want to overwrite (e.g. Language name, Flag).<br>You can also add new custom languages. They will be available under General settings, All Languages list, where the URL slug can be edited.<br>For custom flag, first upload the image in media library then paste the URL.<br>Changing or deleting a custom language will impact translations and site URL's.<br>The Language code and the Automatic Translation Code should contain only alphabetical values, numerical values, \"-\" and \"_\".<br>The Automatic Translation codes can be found on <a href = \"https://cloud.google.com/translate/docs/languages\" target = \"_blank\">Google ISO Codes</a> and <a href = \"https://www.deepl.com/docs-api/translating-text/\" target = \"_blank\">DeepL Target Codes</a>.", "etranslation-multilingual"); ?>
 <?php __("Language code", "etranslation-multilingual"); ?>
 <?php __("Language name", "etranslation-multilingual"); ?>
 <?php __("Native name", "etranslation-multilingual"); ?>
@@ -354,8 +394,13 @@
 <?php __("Custom language", "etranslation-multilingual"); ?>
 <?php __("Disable dynamic translation", "etranslation-multilingual"); ?>
 <?php __("It disables detection of strings displayed dynamically using JavaScript. <br/>Strings loaded via a server side AJAX call will still be translated.", "etranslation-multilingual"); ?>
+<?php __("Disable translation for gettext strings", "etranslation-multilingual"); ?>
+<?php __("Gettext Strings are strings outputted by themes and plugins. <br> Translating these types of strings through eTranslation Multilingual can be unnecessary if they are already translated using the .po/.mo translation file system.<br>Enabling this option can improve the page load performance of your site in certain cases. The disadvantage is that you can no longer edit gettext translations using eTranslation Multilingual, nor benefit from automatic translation on these strings.", "etranslation-multilingual"); ?>
+<?php __("Gettext Strings translation is disabled", "etranslation-multilingual"); ?>
+<?php __("To enable it go to ", "etranslation-multilingual"); ?>
+<?php __("eTranslation Multilingual->Advanced Settings->Debug->Disable translation for gettext strings", "etranslation-multilingual"); ?>
+<?php __(" and uncheck the Checkbox.", "etranslation-multilingual"); ?>
 <?php __("Exclude translated links from sitemap", "etranslation-multilingual"); ?>
-<?php __("Do not include translated links in sitemaps generated by SEO plugins.<br/>Requires SEO Pack Add-on to be installed and activated.", "etranslation-multilingual"); ?>
 <?php __("Disable post container tags for post title", "etranslation-multilingual"); ?>
 <?php __("It disables search indexing the post title in translated languages.<br/>Useful when the title of the post doesn't allow HTML thus breaking the page.", "etranslation-multilingual"); ?>
 <?php __("Disable post container tags for post content", "etranslation-multilingual"); ?>
@@ -364,8 +409,6 @@
 <?php __("Choose what paths can be translated. Supports wildcard at the end of the path.<br>For example, to exclude https://example.com/some/path you can either use the rule /some/path/ or /some/*.<br>Enter each rule on it's own line. To exclude the home page use {{home}}.", "etranslation-multilingual"); ?>
 <?php __("Exclude Paths From Translation", "etranslation-multilingual"); ?>
 <?php __("Translate Only Certain Paths", "etranslation-multilingual"); ?>
-<?php __("Automatically translate slugs", "etranslation-multilingual"); ?>
-<?php __("Generate automatic translations of slugs for posts, pages and Custom Post Types.<br/>Requires SEO Pack Add-on to be installed and activated.<br>The slugs will be automatically translated starting with the second refresh of each page.", "etranslation-multilingual"); ?>
 <?php __("Enable the hreflang x-default tag for language:", "etranslation-multilingual"); ?>
 <?php __("Enables the hreflang=\"x-default\" for an entire language. See documentation for more details.", "etranslation-multilingual"); ?>
 <?php __("Translate numbers and numerals", "etranslation-multilingual"); ?>
@@ -385,9 +428,7 @@
 <?php __("Exclude strings from automatic translation", "etranslation-multilingual"); ?>
 <?php __("Do not automatically translate these strings (ex. names, technical words...)<br>Paragraphs containing these strings will still be translated except for the specified part.", "etranslation-multilingual"); ?>
 <?php __("Fix broken HTML", "etranslation-multilingual"); ?>
-<?php __("General attempt to fix broken or missing HTML on translated pages.<br/><strong>Only try this if the \"Fix spaces between html attribute\" did not solve the issue.</strong>", "etranslation-multilingual"); ?>
-<?php __("Fix spaces between HTML attributes", "etranslation-multilingual"); ?>
-<?php __("Fixes attributes without spaces between them because they are not valid HTML.<br> May help fix missing or broken content from the HTML on translated pages.", "etranslation-multilingual"); ?>
+<?php __("General attempt to fix broken or missing HTML on translated pages.<br/>", "etranslation-multilingual"); ?>
 <?php __("Force slash at end of home url:", "etranslation-multilingual"); ?>
 <?php __("Ads a slash at the end of the home_url() function", "etranslation-multilingual"); ?>
 <?php __("Show Both (recommended)", "etranslation-multilingual"); ?>
@@ -395,10 +436,16 @@
 <?php __("Remove Region Independent Locale", "etranslation-multilingual"); ?>
 <?php __("Remove duplicate hreflang", "etranslation-multilingual"); ?>
 <?php __("Choose which hreflang tags will appear on your website.<br/>We recommend showing both types of hreflang tags as indicated by <a href=\"https://developers.google.com/search/docs/advanced/crawling/localized-versions\" title=\"Google Crawling\" target=\"_blank\">Google documentation</a>.<br/>Removing Country Locale when having multiple Country Locales of the same language (ex. English UK and English US) will result in showing one hreflang tag with link to just one of the region locales for that language.", "etranslation-multilingual"); ?>
+<?php __("Default (example: en-US, fr-CA, etc.)", "etranslation-multilingual"); ?>
+<?php __("Regional (example: en, fr, es, etc.)", "etranslation-multilingual"); ?>
+<?php __("HTML Lang Attribute Format", "etranslation-multilingual"); ?>
+<?php __("Change lang attribute of the html tag to a format that includes country regional or not. <br>In HTML, the lang attribute (<html lang=\"en-US\">)  should be used to  specify the language of text content so that the  browser can correctly display or process  your content (eg. for  hyphenation, styling, spell checking, etc).", "etranslation-multilingual"); ?>
 <?php __("Open language switcher only on click", "etranslation-multilingual"); ?>
 <?php __("Open the language switcher shortcode by clicking on it instead of hovering.<br> Close it by clicking on it, anywhere else on the screen or by pressing the escape key. This will affect only the shortcode language switcher.", "etranslation-multilingual"); ?>
 <?php __("Show opposite language in the language switcher", "etranslation-multilingual"); ?>
 <?php __("Transforms the language switcher into a button showing the other available language, not the current one.<br> Only works when there are exactly two languages, the default one and a translation one.<br>This will affect the shortcode language switcher and floating language switcher as well.<br> To achieve this in menu language switcher go to Appearance->Menus->Language Switcher and select Opposite Language.", "etranslation-multilingual"); ?>
+<?php __("Show regular strings tab in String Translation", "etranslation-multilingual"); ?>
+<?php __("Adds an additional tab on the String Translation interface that allows editing translations of user-inputted strings.", "etranslation-multilingual"); ?>
 <?php __("Click <a href=\"%s\">here</a> to remove duplicate rows from the database.", "etranslation-multilingual"); ?>
 <?php __("Troubleshooting", "etranslation-multilingual"); ?>
 <?php __("Exclude strings", "etranslation-multilingual"); ?>
@@ -416,7 +463,8 @@
 <?php __("Your HTTP referrer is: %s", "etranslation-multilingual"); ?>
 <?php __("There was an error on the server processing your Google Translate key.", "etranslation-multilingual"); ?>
 <?php __("There was an error with your Google Translate key.", "etranslation-multilingual"); ?>
-<?php __("Human reviewed", "etranslation-multilingual"); ?>
+<?php __("Scanning item %1$d of %2$d...", "etranslation-multilingual"); ?>
+<?php __("Manually translated", "etranslation-multilingual"); ?>
 <?php __("Automatically translated", "etranslation-multilingual"); ?>
 <?php __("Not translated", "etranslation-multilingual"); ?>
 <?php __("Bulk Actions", "etranslation-multilingual"); ?>
@@ -424,8 +472,13 @@
 <?php __("Edit", "etranslation-multilingual"); ?>
 <?php __("Translation Status", "etranslation-multilingual"); ?>
 <?php __("Filter", "etranslation-multilingual"); ?>
+<?php __("Clear filters", "etranslation-multilingual"); ?>
 <?php __("Filter by language", "etranslation-multilingual"); ?>
 <?php __("Add New", "etranslation-multilingual"); ?>
+<?php __("Rescan plugins and theme for strings", "etranslation-multilingual"); ?>
+<?php __("Scanning plugins and theme for strings...", "etranslation-multilingual"); ?>
+<?php __("Plugins and theme scan is complete", "etranslation-multilingual"); ?>
+<?php __("Plugins and theme scan did not finish due to an error", "etranslation-multilingual"); ?>
 <?php __("Import / Export", "etranslation-multilingual"); ?>
 <?php __("items", "etranslation-multilingual"); ?>
 <?php __("of", "etranslation-multilingual"); ?>
@@ -433,6 +486,7 @@
 <?php __("See Less", "etranslation-multilingual"); ?>
 <?php __("Apply", "etranslation-multilingual"); ?>
 <?php __("No strings match your query.", "etranslation-multilingual"); ?>
+<?php __("Try to rescan plugins and theme for strings.", "etranslation-multilingual"); ?>
 <?php __("An error occurred while loading results. Most likely you were logged out. Reload page?", "etranslation-multilingual"); ?>
 <?php __("Select All", "etranslation-multilingual"); ?>
 <?php __("Select Visible", "etranslation-multilingual"); ?>
@@ -450,9 +504,27 @@
 <?php __("Incorrect page number. Type a page number between 1 and total number of pages", "etranslation-multilingual"); ?>
 <?php __("Search original strings containing typed keywords while also matching selected filters", "etranslation-multilingual"); ?>
 <?php __("Filter strings according to selected translation status, filters and keywords and selected filters", "etranslation-multilingual"); ?>
+<?php __("Removes selected filters", "etranslation-multilingual"); ?>
 <?php __("See options for selecting all strings", "etranslation-multilingual"); ?>
 <?php __("Click to sort strings by this column", "etranslation-multilingual"); ?>
 <?php __("Language in which the translation status filter applies. Leave unselected for the translation status to apply to ANY language", "etranslation-multilingual"); ?>
+<?php __("Plugins and Theme String Translation", "etranslation-multilingual"); ?>
+<?php __("Gettext", "etranslation-multilingual"); ?>
+<?php __("Search Gettext Strings", "etranslation-multilingual"); ?>
+<?php __("ID", "etranslation-multilingual"); ?>
+<?php __("Original String", "etranslation-multilingual"); ?>
+<?php __("Translation", "etranslation-multilingual"); ?>
+<?php __("Filter by domain", "etranslation-multilingual"); ?>
+<?php __("Filter by type", "etranslation-multilingual"); ?>
+<?php __("Email text", "etranslation-multilingual"); ?>
+<?php __("Emails String Translation", "etranslation-multilingual"); ?>
+<?php __("Emails", "etranslation-multilingual"); ?>
+<?php __("Search Email Strings", "etranslation-multilingual"); ?>
+<?php __("User Inputted String Translation", "etranslation-multilingual"); ?>
+<?php __("Regular", "etranslation-multilingual"); ?>
+<?php __("Search Regular Strings", "etranslation-multilingual"); ?>
+<?php __("Filter by Translation Block", "etranslation-multilingual"); ?>
+<?php __("URL Slugs Translation", "etranslation-multilingual"); ?>
 <?php __("String Translation Editor", "etranslation-multilingual"); ?>
 <?php __("Active*", "etranslation-multilingual"); ?>
 <?php __("<br>* The inactive languages will still be visible and active for the admin. For other users they won't be visible in the language switchers and won't be accessible either.", "etranslation-multilingual"); ?>
@@ -494,11 +566,9 @@
 <?php __("Translator", "etranslation-multilingual"); ?>
 <?php __(" eTranslation Multilingual Settings", "etranslation-multilingual"); ?>
 <?php __("Allow this user to translate the website.", "etranslation-multilingual"); ?>
-<?php __("URL Slugs Translation", "etranslation-multilingual"); ?>
 <?php __("Taxonomy Slugs", "etranslation-multilingual"); ?>
 <?php __("Search Taxonomy Slugs", "etranslation-multilingual"); ?>
 <?php __("Taxonomy Slug", "etranslation-multilingual"); ?>
-<?php __("Translation", "etranslation-multilingual"); ?>
 <?php __("Term Slugs", "etranslation-multilingual"); ?>
 <?php __("Search Term Slugs", "etranslation-multilingual"); ?>
 <?php __("Term Slug", "etranslation-multilingual"); ?>

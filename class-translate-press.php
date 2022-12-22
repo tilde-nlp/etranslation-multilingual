@@ -64,7 +64,7 @@ class TRP_Translate_Press{
         define( 'TRP_PLUGIN_URL', plugin_dir_url( __FILE__ ) );
         define( 'TRP_PLUGIN_BASE', plugin_basename( __DIR__ . '/index.php' ) );
         define( 'TRP_PLUGIN_SLUG', 'etranslation-multilingual' );
-        define( 'TRP_PLUGIN_VERSION', '2.4.3' );
+        define( 'TRP_PLUGIN_VERSION', '2.4.4' );
 
 	    wp_cache_add_non_persistent_groups(array('trp', 'etm'));
 
@@ -134,7 +134,6 @@ class TRP_Translate_Press{
         require_once TRP_PLUGIN_DIR . 'includes/class-woocommerce-emails.php';
 	    require_once TRP_PLUGIN_DIR . 'includes/string-translation/class-string-translation-api-gettext.php';
 	    require_once TRP_PLUGIN_DIR . 'includes/string-translation/class-string-translation-api-regular.php';
-        require_once TRP_PLUGIN_DIR . 'assets/lib/tp-add-ons-listing/tp-add-ons-listing.php';
         require_once TRP_PLUGIN_DIR . 'includes/class-preferred-user-language.php';
         
         if ( did_action( 'elementor/loaded' ) )

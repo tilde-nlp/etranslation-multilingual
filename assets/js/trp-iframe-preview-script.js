@@ -23,6 +23,10 @@ function TRP_Iframe_Preview(){
                 jQuery( this ).attr( 'target', '_self' );
             }
 
+            if ( jQuery(this).hasClass('trp-link-primary') ){
+                jQuery( this ).attr( 'target', '_blank' );
+            }
+
             if( typeof this.href != "undefined" && this.href != '' ) {
                 if (this.action != '' && this.href.indexOf('void(0)') === -1) {
                     if (is_link_previewable(this) && !this.getAttribute('href').startsWith('#')) {

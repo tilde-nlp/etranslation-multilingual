@@ -813,11 +813,11 @@ class TRP_Query{
      * @param string $default_language      Default language. Defaults to the one from settings.
      * @return string                       Table name.
      */
-    public function get_table_name( $language_code, $default_language = null ){
+    public function get_table_name( $language_code, $default_language = null, $only_prefix = false ){
         if ( $default_language == null ) {
             $default_language = $this->settings['default-language'];
         }
-        if ( !trp_is_valid_language_code($language_code) || !trp_is_valid_language_code($default_language) ){
+        if ( (!trp_is_valid_language_code($language_code) && $only_prefix === false) || !trp_is_valid_language_code($default_language) ){
             /* there's are other checks that display an admin notice for this kind of errors */
             return 'trp_language_code_is_invalid_error';
         }
@@ -1026,7 +1026,7 @@ class TRP_Query{
 		    $exception_translation_languages[$key] = $this->get_table_name( $language, $original_language );
 	    }
 	    $return_tables = array();
-	    $table_name = $this->get_table_name( ''  );
+	    $table_name = $this->get_table_name( '', null, true  );
 	    $table_names = $this->db->get_results( "SHOW TABLES LIKE '$table_name%'", ARRAY_N );
 	    foreach ( $table_names as $table_name ){
 	    	if ( isset( $table_name[0]) && ! in_array( $table_name[0], $exception_translation_languages ) ) {

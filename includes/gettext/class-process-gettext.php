@@ -53,10 +53,11 @@ class TRP_Process_Gettext {
         if (isset($_REQUEST['action']) && strpos( sanitize_text_field( $_REQUEST['action'] ), 'trp_') === 0)
             return $translation;
 
+        $skip_gettext_querying = apply_filters( 'trp_skip_gettext_querying', false, $translation, $text, $domain );
         /* get_locale() returns WP Settings Language (WPLANG). It might not be a language in TP so it may not have a TP table. */
         $current_locale = get_locale();
         global $trp_translated_gettext_texts_language;
-        if ( !in_array( $current_locale, $this->settings['translation-languages'] ) || empty( $trp_translated_gettext_texts_language ) || $trp_translated_gettext_texts_language !== $current_locale ) {
+        if ( !$skip_gettext_querying && ( !in_array( $current_locale, $this->settings['translation-languages'] ) || empty( $trp_translated_gettext_texts_language ) || $trp_translated_gettext_texts_language !== $current_locale ) ) {
             return $translation;
         }
 
@@ -85,7 +86,6 @@ class TRP_Process_Gettext {
             }
 
             $db_id                 = '';
-            $skip_gettext_querying = apply_filters( 'trp_skip_gettext_querying', false, $translation, $text, $domain );
             if ( !$skip_gettext_querying ) {
                 global $trp_translated_gettext_texts, $trp_all_gettext_texts;
 

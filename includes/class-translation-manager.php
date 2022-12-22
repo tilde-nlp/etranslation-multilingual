@@ -412,8 +412,7 @@ class TRP_Translation_Manager {
             'help_panel_content'          => $this->get_help_panel_content(),
             'user_meta'                   => $this->get_editor_user_meta(),
             'upgraded_gettext'            => ! ( ( get_option( 'etm_updated_database_gettext_original_id_update', 'yes' ) == 'no' ) ),
-            'notice_upgrade_gettext'      => $this->display_notice_to_upgrade_gettext_in_editor(''),
-            'license_notice_content'      => $this->get_license_notice_content()
+            'notice_upgrade_gettext'      => $this->display_notice_to_upgrade_gettext_in_editor('')
         );
 
         return apply_filters( 'trp_editor_data', $trp_editor_data );

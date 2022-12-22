@@ -25,7 +25,7 @@ class TRP_Upgrade {
 	}
 
 	/**
-	 * Register Settings subpage for TranslatePress
+	 * Register Settings subpage for eTranslation Multilingual
 	 */
 	public function register_menu_page(){
 		add_submenu_page( 'TRPHidden', 'eTranslation Multilingual Remove Duplicate Rows', 'TRPHidden', apply_filters( 'trp_settings_capability', 'manage_options' ), 'etm_remove_duplicate_rows', array($this, 'trp_remove_duplicate_rows') );

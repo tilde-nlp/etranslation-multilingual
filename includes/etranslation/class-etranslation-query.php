@@ -192,7 +192,7 @@ class eTranslation_Query {
     }
 
     private function decode_untranslated_symbols($translations, $originals) {
-        $excluded_words_from_automatic_translation = apply_filters('trp_exclude_words_from_automatic_translation', TRP_eTranslation_Utils::get_strings_to_encode_before_translation());
+        $excluded_words_from_automatic_translation = apply_filters('trp_exclude_words_from_automatic_translation', TRP_eTranslation_Utils::get_strings_to_encode_before_translation(), implode(" ", $originals));
         for ($i = 0; $i < count($translations); $i++) {
             $translation = $translations[$i];
             //check if decoding needed

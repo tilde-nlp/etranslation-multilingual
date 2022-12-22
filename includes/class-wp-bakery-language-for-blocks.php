@@ -37,7 +37,7 @@ class TRP_WPBakery {
     }
 
     /**
-     * Modify the output of a given shortcode if TranslatePress is configured.
+     * Modify the output of a given shortcode if eTranslation Multilingual is configured.
      */
     public function do_shortcode_tag($output, $tag, $attr) {
         return $this->is_hidden($attr) ? '' : $output;
@@ -176,7 +176,7 @@ class TRP_WPBakery {
     }
 
     private function get_group() {
-        return __('TranslatePress', 'etranslation-multilingual');
+        return __('eTranslation Multilingual', 'etranslation-multilingual');
     }
 
     private function get_published_languages($placeholder = false) {

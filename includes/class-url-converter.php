@@ -64,7 +64,7 @@ class TRP_Url_Converter {
 
 
         if ( ! empty( $path ) ){
-            $new_url = trailingslashit($new_url) . ltrim( $path, '/' );
+            $new_url = trailingslashit($new_url) . ltrim( $path, '/');
         }
 
         return apply_filters( 'trp_home_url', $new_url, $abs_home, $TRP_LANGUAGE, $path, $url );
@@ -420,7 +420,7 @@ class TRP_Url_Converter {
                 $arguments = '';
                 //try again, this time trying to correct url_to_replace to include subdirectory
                 if (isset ($this->settings['add-subdirectory-to-default-language']) && $this->settings['add-subdirectory-to-default-language'] === 'yes' && $this->get_lang_from_url_string( $url_to_replace ) == null ) {
-                    $possible_url_to_replace = $this->add_language_to_home_url( $url, ( empty( $url_obj->getQuery() ) ) ? $url_obj->getPath() : rtrim( $url_obj->getPath(), '/' ) . '/?' . $url_obj->getQuery(), $url_obj->getScheme(), get_current_blog_id() );
+                    $possible_url_to_replace = $this->add_language_to_home_url( $url, ( empty( $url_obj->getQuery() ) ) ? (( empty( $url_obj->getFragment() ) ) ? $url_obj->getPath() : $url_obj->getPath() . '#' . $url_obj->getFragment()) : (( empty( $url_obj->getFragment() ) ) ? rtrim( $url_obj->getPath(), '/' ) . '/?' . $url_obj->getQuery() : rtrim( $url_obj->getPath(), '/' ) . '/?' . $url_obj->getQuery() . '#' . $url_obj->getFragment() ), $url_obj->getScheme(), get_current_blog_id() );
                     $arguments = str_replace( untrailingslashit( $processed_permalink ), '', $possible_url_to_replace );
                     if ( $arguments == $possible_url_to_replace ) {
                         $arguments = '';
@@ -429,8 +429,8 @@ class TRP_Url_Converter {
             }
 
             $TRP_LANGUAGE = $language;
-            $fragment = ( $frag = parse_url( $url, PHP_URL_FRAGMENT ) ) ? '#' . $frag : '';
-            $new_url = trailingslashit( get_permalink($post_id) ) . ltrim($arguments, '/') . $fragment;
+
+            $new_url = trailingslashit( get_permalink($post_id) ) . ltrim($arguments, '/');
             trp_bulk_debug($debug, array('url' => $url, 'new url' => $new_url, 'found post id' => $post_id, 'url type' => 'based on permalink', 'for language' => $TRP_LANGUAGE));
             $TRP_LANGUAGE = $trp_language_copy;
 

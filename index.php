@@ -9,7 +9,7 @@ Text Domain: etranslation-multilingual
 Domain Path: /languages
 License: GPL2
 WC requires at least: 2.5.0
-WC tested up to: 7.1.1
+WC tested up to: 7.2.1
 
 == Copyright ==
 Copyright (C) 2022 European Union
