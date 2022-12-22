@@ -2,7 +2,7 @@
     String editor button
 */
 
-.trp-icon {
+.etm-icon {
     width: 30px !important;
     height: 30px !important;
     display: none;
@@ -30,15 +30,15 @@
     letter-spacing: normal !important;
 }
 
-.trp-icon:hover {
+.etm-icon:hover {
     background: #008ec2!important;
 }
 
-.trp-icon:before{
+.etm-icon:before{
     display:block !important;
 }
 
-.trp-icon svg {
+.etm-icon svg {
     fill: #fff;
     min-width: 20px;
     min-height: 20px;
@@ -47,45 +47,45 @@
     margin: auto;
 }
 
-[data-trp-unpreviewable="trp-unpreviewable"]{
+[data-etm-unpreviewable="etm-unpreviewable"]{
     cursor: not-allowed !important;
 }
 
-.trp-highlight{
+.etm-highlight{
     outline: 2px solid #e2e4e7 !important;
 }
 
-.trp-gettext-pencil{
+.etm-gettext-pencil{
     background: #00ba3f !important;
 }
 
-*[data-trp-translate-id] .trp-icon.trp-gettext-pencil{
+*[data-etm-translate-id] .etm-icon.etm-gettext-pencil{
     background: #0085ba!important;
 }
 
-.trp-gettext-pencil:hover{
+.etm-gettext-pencil:hover{
     background: #00ce44 !important;
 }
 
-*[data-trp-translate-id] .trp-gettext-pencil.trp-icon:hover{
+*[data-etm-translate-id] .etm-gettext-pencil.etm-icon:hover{
     background: #008ec2!important;
 }
 
-translate-press{
+etranslation-multilingual{
     pointer-events: all;
 }
 
-.trp-overflow-transform-fixer{
+.etm-overflow-transform-fixer{
     transform: translate3d(0,0,0);
     -moz-transform: translate3d(0,0,0);
     -webkit-transform: translate3d(0,0,0);
 }
 
-.trp-overflow-transform-fixer trp-edit.trp-edit-translation{
+.etm-overflow-transform-fixer etm-edit.etm-edit-translation{
     position:fixed;
 }
 
-.trp-overflow-inside-fixer trp-edit.trp-edit-translation{
+.etm-overflow-inside-fixer etm-edit.etm-edit-translation{
     margin-left:0 !important;
 }
 
@@ -94,18 +94,18 @@ translate-press{
  * Merge icon
  */
 
-.trp-icon.trp-merge {
+.etm-icon.etm-merge {
     display: none;
     margin-left: -60px !important;
     background: #3CB371!important;
 }
 
-.trp-icon.trp-merge:hover {
+.etm-icon.etm-merge:hover {
     display: none;
     background: #40bf79!important;
 }
 
-.trp-icon.trp-merge.trp-active-icon, .trp-icon.trp-merge.trp-active-icon:hover{
+.etm-icon.etm-merge.etm-active-icon, .etm-icon.etm-merge.etm-active-icon:hover{
     display: inline;
 }
 
@@ -113,22 +113,22 @@ translate-press{
  * Split icon
  */
 
-.trp-icon.trp-split{
+.etm-icon.etm-split{
     display: none;
     margin-left: -60px !important;
     background: #ffa500!important;
 }
 
-.trp-icon.trp-split:hover {
+.etm-icon.etm-split:hover {
     display: none;
     background: #ffae19!important;
 }
 
-.trp-icon.trp-split.trp-active-icon, .trp-icon.trp-split.trp-active-icon:hover{
+.etm-icon.etm-split.etm-active-icon, .etm-icon.etm-split.etm-active-icon:hover{
     display: inline;
 }
 
-.trp-editor-notices{
+.etm-editor-notices{
     font-family: inherit;
     font-size: 13px;
     font-style: inherit;
@@ -142,7 +142,7 @@ translate-press{
     overflow-x: hidden;
 }
 
-.trp-notice{
+.etm-notice{
     background: #fff;
     border-left: 4px solid #fff;
     box-shadow: 0 1px 1px 0 rgba(0,0,0,.1);
@@ -150,15 +150,15 @@ translate-press{
     padding: 12px;
 }
 
-.trp-notice-warning {
+.etm-notice-warning {
     border-left-color: #ffb900;
 }
 
-.trp-bad-encoded-strings-list{
+.etm-bad-encoded-strings-list{
     padding-left: 15px;
 }
 
-.trp-button-primary{
+.etm-button-primary{
     background: #2271b1;
     border-color: #2271b1;
     color: #fff;
@@ -181,7 +181,7 @@ translate-press{
 
 }
 
-.trp-button-primary:focus, .trp-button-primary:hover {
+.etm-button-primary:focus, .etm-button-primary:hover {
     background: #135e96;
     border-color: #135e96;
     color: #fff;

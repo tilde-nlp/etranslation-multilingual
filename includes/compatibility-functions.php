@@ -11,37 +11,37 @@
  *
  * @return bool
  */
-function trp_beaver_builder_compatibility( $url ){
+function etm_beaver_builder_compatibility( $url ){
 
     $url = remove_query_arg('fl_builder', $url );
 
     return esc_url ($url);
 
 }
-add_filter( 'trp_edit_translation_url', 'trp_beaver_builder_compatibility' );
+add_filter( 'etm_edit_translation_url', 'etm_beaver_builder_compatibility' );
 
 
 /**
  * Mb Strings missing PHP library error notice
  */
-function trp_mbstrings_notification(){
+function etm_mbstrings_notification(){
     echo '<div class="notice notice-error"><p>' . wp_kses( __( '<strong>eTranslation Multilingual</strong> requires <strong><a href="http://php.net/manual/en/book.mbstring.php">Multibyte String PHP library</a></strong>. Please contact your server administrator to install it on your server.','etranslation-multilingual' ), [ 'a' => [ 'href' => [] ], 'strong' => [] ] ) . '</p></div>';
 }
 
-function trp_missing_mbstrings_library( $allow_to_run ){
+function etm_missing_mbstrings_library( $allow_to_run ){
     if ( ! extension_loaded('mbstring') ) {
-        add_action( 'admin_menu', 'trp_mbstrings_notification' );
+        add_action( 'admin_menu', 'etm_mbstrings_notification' );
         return false;
     }
     return $allow_to_run;
 }
-add_filter( 'trp_allow_tp_to_run', 'trp_missing_mbstrings_library' );
+add_filter( 'etm_allow_tp_to_run', 'etm_missing_mbstrings_library' );
 
 /**
  * Don't have html inside menu title tags. Some themes just put in the title the content of the link without striping HTML
  */
-add_filter( 'nav_menu_link_attributes', 'trp_remove_html_from_menu_title', 10, 3);
-function trp_remove_html_from_menu_title( $atts, $item, $args ){
+add_filter( 'nav_menu_link_attributes', 'etm_remove_html_from_menu_title', 10, 3);
+function etm_remove_html_from_menu_title( $atts, $item, $args ){
     if( isset( $atts['title'] ) )
         $atts['title'] = wp_strip_all_tags($atts['title']);
 
@@ -58,7 +58,7 @@ function trp_remove_html_from_menu_title( $atts, $item, $args ){
  * @param string $more      Optional. What to append if $text needs to be trimmed. Default '&hellip;'.
  * @return string Trimmed text.
  */
-function trp_wp_trim_words( $text, $num_words, $more, $original_text ) {
+function etm_wp_trim_words( $text, $num_words, $more, $original_text ) {
     if ( null === $more ) {
         $more = __( '&hellip;' );//phpcs:ignore
     }
@@ -66,9 +66,9 @@ function trp_wp_trim_words( $text, $num_words, $more, $original_text ) {
     $text = $original_text;
     $text = wp_strip_all_tags( $text );
 
-    $trp = TRP_Translate_Press::get_trp_instance();
-    $trp_settings = $trp->get_component( 'settings' );
-    $settings = $trp_settings->get_settings();
+    $etm = ETM_eTranslation_Multilingual::get_etm_instance();
+    $etm_settings = $etm->get_component( 'settings' );
+    $settings = $etm_settings->get_settings();
 
     $default_language= $settings["default-language"];
 
@@ -99,7 +99,7 @@ function trp_wp_trim_words( $text, $num_words, $more, $original_text ) {
 
     return $text;
 }
-add_filter('wp_trim_words', 'trp_wp_trim_words', 100, 4);
+add_filter('wp_trim_words', 'etm_wp_trim_words', 100, 4);
 
 
 /**
@@ -110,8 +110,8 @@ add_filter('wp_trim_words', 'trp_wp_trim_words', 100, 4);
  * @param array $data   Peepso data
  * @return array
  */
-add_filter( 'peepso_data', 'trp_use_home_url_in_peepso_ajax' );
-function trp_use_home_url_in_peepso_ajax( $data ){
+add_filter( 'peepso_data', 'etm_use_home_url_in_peepso_ajax' );
+function etm_use_home_url_in_peepso_ajax( $data ){
     if ( is_array( $data ) && isset( $data['ajaxurl_legacy'] ) ){
         $data['ajaxurl_legacy'] = home_url( '/peepsoajax/' );
     }
@@ -121,8 +121,8 @@ function trp_use_home_url_in_peepso_ajax( $data ){
 /**
  * Compatibility with Peepso urls having extra / due their link builder not considering home urls having trailing slashes
  */
-add_filter('peepso_get_page', 'trp_remove_peepso_double_slash', 10, 2);
-function trp_remove_peepso_double_slash( $page, $name){
+add_filter('peepso_get_page', 'etm_remove_peepso_double_slash', 10, 2);
+function etm_remove_peepso_double_slash( $page, $name){
 
     // avoid accidentally replacing // from http://
     $page = str_replace('http://', 'http:/', $page );
@@ -146,9 +146,9 @@ function trp_remove_peepso_double_slash( $page, $name){
  * @return string
  */
 
-add_filter('ginger_iframe_banner', 'trp_do_shortcode', 999 );
-add_filter('ginger_text_banner', 'trp_do_shortcode', 999 );
-function trp_do_shortcode($content){
+add_filter('ginger_iframe_banner', 'etm_do_shortcode', 999 );
+add_filter('ginger_text_banner', 'etm_do_shortcode', 999 );
+function etm_do_shortcode($content){
     return do_shortcode(stripcslashes($content));
 }
 
@@ -161,19 +161,19 @@ function trp_do_shortcode($content){
  *
  */
 // fix attachment name in email
-add_filter( 'wpo_wcpdf_filename', 'trp_woo_pdf_invoices_and_packing_slips_compatibility' );
+add_filter( 'wpo_wcpdf_filename', 'etm_woo_pdf_invoices_and_packing_slips_compatibility' );
 
-// fix #trpgettext inside invoice pdf
-add_filter( 'wpo_wcpdf_get_html', 'trp_woo_pdf_invoices_and_packing_slips_compatibility');
-function trp_woo_pdf_invoices_and_packing_slips_compatibility($title){
-    if ( class_exists( 'TRP_Translation_Manager' ) ) {
-        return 	TRP_Translation_Manager::strip_gettext_tags($title);
+// fix #etmgettext inside invoice pdf
+add_filter( 'wpo_wcpdf_get_html', 'etm_woo_pdf_invoices_and_packing_slips_compatibility');
+function etm_woo_pdf_invoices_and_packing_slips_compatibility($title){
+    if ( class_exists( 'ETM_Translation_Manager' ) ) {
+        return 	ETM_Translation_Manager::strip_gettext_tags($title);
     }
 }
 
 // fix font of pdf breaking because of str_get_html() call inside translate_page()
-add_filter( 'trp_stop_translating_page', 'trp_woo_pdf_invoices_and_packing_slips_compatibility_dont_translate_pdf', 10, 2 );
-function trp_woo_pdf_invoices_and_packing_slips_compatibility_dont_translate_pdf( $bool, $output ){
+add_filter( 'etm_stop_translating_page', 'etm_woo_pdf_invoices_and_packing_slips_compatibility_dont_translate_pdf', 10, 2 );
+function etm_woo_pdf_invoices_and_packing_slips_compatibility_dont_translate_pdf( $bool, $output ){
     if ( isset( $_REQUEST['action'] ) && $_REQUEST['action'] == 'generate_wpo_wcpdf' ) {
         return true;
     }
@@ -187,18 +187,18 @@ function trp_woo_pdf_invoices_and_packing_slips_compatibility_dont_translate_pdf
  * @since 1.4.3
  *
  */
-add_filter( 'woocommerce_pdf_invoices_content', 'trp_woo_ultimate_pdf_invoices_compatibility');
-add_filter( 'woocommerce_pdf_invoices_order_data', 'trp_woo_ultimate_pdf_invoices_data_compatibility');
+add_filter( 'woocommerce_pdf_invoices_content', 'etm_woo_ultimate_pdf_invoices_compatibility');
+add_filter( 'woocommerce_pdf_invoices_order_data', 'etm_woo_ultimate_pdf_invoices_data_compatibility');
 
-function trp_woo_ultimate_pdf_invoices_compatibility($title){
-    if ( class_exists( 'TRP_Translation_Manager' ) ) {
-        return 	TRP_Translation_Manager::strip_gettext_tags($title);
+function etm_woo_ultimate_pdf_invoices_compatibility($title){
+    if ( class_exists( 'ETM_Translation_Manager' ) ) {
+        return 	ETM_Translation_Manager::strip_gettext_tags($title);
     }
 }
 
-function trp_woo_ultimate_pdf_invoices_data_compatibility($data_array){
-    if ( class_exists( 'TRP_Translation_Manager' ) ) {
-        $data_array = array_map('TRP_Translation_Manager::strip_gettext_tags',$data_array );
+function etm_woo_ultimate_pdf_invoices_data_compatibility($data_array){
+    if ( class_exists( 'ETM_Translation_Manager' ) ) {
+        $data_array = array_map('ETM_Translation_Manager::strip_gettext_tags',$data_array );
     }
     return $data_array;
 }
@@ -210,8 +210,8 @@ function trp_woo_ultimate_pdf_invoices_data_compatibility($data_array){
  * @since 2.2.7
  *
  */
-add_filter( 'trp_stop_translating_page', 'trp_woocommerce_pdf_catalog_compatibility_dont_translate_pdf', 10, 2 );
-function trp_woocommerce_pdf_catalog_compatibility_dont_translate_pdf( $bool, $output ){
+add_filter( 'etm_stop_translating_page', 'etm_woocommerce_pdf_catalog_compatibility_dont_translate_pdf', 10, 2 );
+function etm_woocommerce_pdf_catalog_compatibility_dont_translate_pdf( $bool, $output ){
 	if ( isset( $_REQUEST['pdf-catalog'] ) ) {
 		return true;
 	}
@@ -222,18 +222,18 @@ function trp_woocommerce_pdf_catalog_compatibility_dont_translate_pdf( $bool, $o
 /**
  * Compatibility with WooCommerce order notes
  *
- * When a new order is placed in secondary languages, in admin area WooCommerce->Orders->Edit Order, the right sidebar contains Order notes which can contain #trpst tags.
+ * When a new order is placed in secondary languages, in admin area WooCommerce->Orders->Edit Order, the right sidebar contains Order notes which can contain #etmst tags.
  *
  * @since 1.4.3
  */
 
 // old orders
-add_filter( 'woocommerce_get_order_note', 'trp_woo_notes_strip_trpst' );
+add_filter( 'woocommerce_get_order_note', 'etm_woo_notes_strip_etmst' );
 // new orders
-add_filter( 'woocommerce_new_order_note_data', 'trp_woo_notes_strip_trpst' );
-function trp_woo_notes_strip_trpst( $note_array ){
+add_filter( 'woocommerce_new_order_note_data', 'etm_woo_notes_strip_etmst' );
+function etm_woo_notes_strip_etmst( $note_array ){
     foreach ( $note_array as $item => $value ){
-        $note_array[$item] = TRP_Translation_Manager::strip_gettext_tags( $value );
+        $note_array[$item] = ETM_Translation_Manager::strip_gettext_tags( $value );
     }
     return $note_array;
 }
@@ -241,10 +241,10 @@ function trp_woo_notes_strip_trpst( $note_array ){
 /*
  * Compatibility with WooCommerce back-end display order shipping taxes
  */
-add_filter('woocommerce_order_item_display_meta_key','trp_woo_data_strip_trpst');
-add_filter('woocommerce_order_item_get_method_title','trp_woo_data_strip_trpst');
-function trp_woo_data_strip_trpst( $data ){
-    return TRP_Translation_Manager::strip_gettext_tags( $data );
+add_filter('woocommerce_order_item_display_meta_key','etm_woo_data_strip_etmst');
+add_filter('woocommerce_order_item_get_method_title','etm_woo_data_strip_etmst');
+function etm_woo_data_strip_etmst( $data ){
+    return ETM_Translation_Manager::strip_gettext_tags( $data );
 }
 
 /**
@@ -253,8 +253,8 @@ function trp_woo_data_strip_trpst( $data ){
  * Skip detection by translate-dom-changes of the list of countries
  *
  */
-add_filter( 'trp_skip_selectors_from_dynamic_translation', 'trp_woo_skip_dynamic_translation' );
-function trp_woo_skip_dynamic_translation( $skip_selectors ){
+add_filter( 'etm_skip_selectors_from_dynamic_translation', 'etm_woo_skip_dynamic_translation' );
+function etm_woo_skip_dynamic_translation( $skip_selectors ){
     if( class_exists( 'WooCommerce' ) ) {
         $add_skip_selectors = array( '#billing_country', '#shipping_country', '#billing_state', '#shipping_state', '#select2-billing_country-results',  '#select2-billing_state-results', '#select2-shipping_country-results', '#select2-shipping_state-results' );
         return array_merge( $skip_selectors, $add_skip_selectors );
@@ -265,13 +265,13 @@ function trp_woo_skip_dynamic_translation( $skip_selectors ){
 /**
  * Prevent translation of names and addresses in WooCommerce emails.
  */
-add_action( 'woocommerce_email_customer_details', 'trp_woo_prevent_address_from_translation_in_emails' );
-function trp_woo_prevent_address_from_translation_in_emails(){
-    add_filter( 'woocommerce_order_get_formatted_shipping_address', 'trp_woo_address_no_translate', 10, 3 );
-    add_filter( 'woocommerce_order_get_formatted_billing_address', 'trp_woo_address_no_translate', 10, 3 );
+add_action( 'woocommerce_email_customer_details', 'etm_woo_prevent_address_from_translation_in_emails' );
+function etm_woo_prevent_address_from_translation_in_emails(){
+    add_filter( 'woocommerce_order_get_formatted_shipping_address', 'etm_woo_address_no_translate', 10, 3 );
+    add_filter( 'woocommerce_order_get_formatted_billing_address', 'etm_woo_address_no_translate', 10, 3 );
 }
 
-function trp_woo_address_no_translate( $address, $raw_address, $order ){
+function etm_woo_address_no_translate( $address, $raw_address, $order ){
     return empty( $address ) ? $address : '<span data-no-translation>' . $address . '</span>';
 }
 
@@ -282,8 +282,8 @@ function trp_woo_address_no_translate( $address, $raw_address, $order ){
  *
  * Product variation name keep changes, but the prefix is the same. Wrap the prefix to allow translating that part separately.
  */
-add_filter( 'woocommerce_product_variation_title', 'trp_woo_wrap_variation', 8, 4);
-function trp_woo_wrap_variation($name, $product, $title_base, $title_suffix){
+add_filter( 'woocommerce_product_variation_title', 'etm_woo_wrap_variation', 8, 4);
+function etm_woo_wrap_variation($name, $product, $title_base, $title_suffix){
     $separator  = '<span> - </span>';
     return $title_suffix ? $title_base . $separator . $title_suffix : $title_base;
 }
@@ -294,15 +294,15 @@ function trp_woo_wrap_variation($name, $product, $title_base, $title_suffix){
  *
  * Remove their HTML and reappend it after translate_page function finishes
  */
-add_filter('trp_before_translate_content', 'trp_qm_strip_query_monitor_html', 10, 1 );
-function trp_qm_strip_query_monitor_html( $output ) {
+add_filter('etm_before_translate_content', 'etm_qm_strip_query_monitor_html', 10, 1 );
+function etm_qm_strip_query_monitor_html( $output ) {
 
-    $query_monitor = apply_filters( 'trp_query_monitor_begining_string', '<!-- Begin Query Monitor output -->' );
+    $query_monitor = apply_filters( 'etm_query_monitor_begining_string', '<!-- Begin Query Monitor output -->' );
     $pos = strpos( $output, $query_monitor );
 
     if ( $pos !== false ){
-        global $trp_query_monitor_string;
-        $trp_query_monitor_string = substr( $output, $pos );
+        global $etm_query_monitor_string;
+        $etm_query_monitor_string = substr( $output, $pos );
         $output = substr( $output, 0, $pos );
 
     }
@@ -310,29 +310,29 @@ function trp_qm_strip_query_monitor_html( $output ) {
     return $output;
 }
 
-add_filter( 'trp_translated_html', 'trp_qm_reappend_query_monitor_html', 10, 1 );
-function trp_qm_reappend_query_monitor_html( $final_html ){
-    global $trp_query_monitor_string;
+add_filter( 'etm_translated_html', 'etm_qm_reappend_query_monitor_html', 10, 1 );
+function etm_qm_reappend_query_monitor_html( $final_html ){
+    global $etm_query_monitor_string;
 
-    if ( isset( $trp_query_monitor_string ) && !empty( $trp_query_monitor_string ) ){
-        $final_html .= $trp_query_monitor_string;
+    if ( isset( $etm_query_monitor_string ) && !empty( $etm_query_monitor_string ) ){
+        $final_html .= $etm_query_monitor_string;
     }
 
     return $final_html;
 }
 
-// trpgettext tags don't get escaped because they add <small> tags through a regex.
-add_filter( 'qm/output/title', 'trp_qm_strip_gettext', 100);
-function trp_qm_strip_gettext( $data ){
+// etmgettext tags don't get escaped because they add <small> tags through a regex.
+add_filter( 'qm/output/title', 'etm_qm_strip_gettext', 100);
+function etm_qm_strip_gettext( $data ){
     if ( is_array( $data ) ) {
         foreach( $data as $key => $value ){
-            $data[$key] = trp_qm_strip_gettext($value);
+            $data[$key] = etm_qm_strip_gettext($value);
         }
     }else {
         // remove small tags
         $data = preg_replace('(<(\/)?small>)', '', $data);
         // strip gettext (not needed, they are just numbers shown in admin bar anyway)
-        $data = TRP_Translation_Manager::strip_gettext_tags( $data );
+        $data = ETM_Translation_Manager::strip_gettext_tags( $data );
         // add small tags back the same way they do it in the filter 'qm/output/title'
         $data = preg_replace( '#\s?([^0-9,\.]+)#', '<small>$1</small>', $data );
     }
@@ -344,18 +344,18 @@ function trp_qm_strip_gettext( $data ){
  *
  * Manually include the scripts and styles if do_action('enqueue_scripts') is not called
  */
-add_filter( 'trp_translated_html', 'trp_force_include_scripts', 10, 4 );
-function trp_force_include_scripts( $final_html, $TRP_LANGUAGE, $language_code, $preview_mode ){
+add_filter( 'etm_translated_html', 'etm_force_include_scripts', 10, 4 );
+function etm_force_include_scripts( $final_html, $ETM_LANGUAGE, $language_code, $preview_mode ){
     if ( $preview_mode ){
-        $trp = TRP_Translate_Press::get_trp_instance();
-        $translation_render = $trp->get_component( 'translation_render' );
-        $trp_data = $translation_render->get_trp_data();
+        $etm = ETM_eTranslation_Multilingual::get_etm_instance();
+        $translation_render = $etm->get_component( 'translation_render' );
+        $etm_data = $translation_render->get_etm_data();
 
-        $scripts_and_styles = apply_filters('trp_editor_missing_scripts_and_styles', array(
+        $scripts_and_styles = apply_filters('etm_editor_missing_scripts_and_styles', array(
             'jquery'                        => "<script type='text/javascript' src='" . includes_url( '/js/jquery/jquery.js' ) . "'></script>",
-            'trp-iframe-preview-script.js'  => "<script type='text/javascript' src='" . TRP_PLUGIN_URL . "assets/js/trp-iframe-preview-script.js'></script>",
-            'trp-translate-dom-changes.js'  => "<script>trp_data = '" . addslashes(json_encode($trp_data) ) . "'; trp_data = JSON.parse(trp_data);</script><script type='text/javascript' src='" . TRP_PLUGIN_URL . "assets/js/trp-translate-dom-changes.js'></script>",
-            'trp-preview-iframe-style-css'  => "<link rel='stylesheet' id='trp-preview-iframe-style-css'  href='" . TRP_PLUGIN_URL . "assets/css/trp-preview-iframe-style.css' type='text/css' media='all' />",
+            'etm-iframe-preview-script.js'  => "<script type='text/javascript' src='" . ETM_PLUGIN_URL . "assets/js/etm-iframe-preview-script.js'></script>",
+            'etm-translate-dom-changes.js'  => "<script>etm_data = '" . addslashes(json_encode($etm_data) ) . "'; etm_data = JSON.parse(etm_data);</script><script type='text/javascript' src='" . ETM_PLUGIN_URL . "assets/js/etm-translate-dom-changes.js'></script>",
+            'etm-preview-iframe-style-css'  => "<link rel='stylesheet' id='etm-preview-iframe-style-css'  href='" . ETM_PLUGIN_URL . "assets/css/etm-preview-iframe-style.css' type='text/css' media='all' />",
             'dashicons'                     => "<link rel='stylesheet' id='dashicons-css'  href='" . includes_url( '/css/dashicons.min.css' ) . "' type='text/css' media='all' />"
         ));
 
@@ -367,7 +367,7 @@ function trp_force_include_scripts( $final_html, $TRP_LANGUAGE, $language_code, 
         }
 
         if ( $missing_script !== '' ){
-            $html = TranslatePress\str_get_html( $final_html, true, true, TRP_DEFAULT_TARGET_CHARSET, false, TRP_DEFAULT_BR_TEXT, TRP_DEFAULT_SPAN_TEXT );
+            $html = eTranslationMultilingual\str_get_html( $final_html, true, true, ETM_DEFAULT_TARGET_CHARSET, false, ETM_DEFAULT_BR_TEXT, ETM_DEFAULT_SPAN_TEXT );
             if ( $html === false ) {
                 return $final_html;
             }
@@ -389,24 +389,24 @@ function trp_force_include_scripts( $final_html, $TRP_LANGUAGE, $language_code, 
  * Strip gettext wrappings from the requests made from http->post()
  */
 // Strip of gettext wrappings all the values of the body request array
-add_filter( 'http_request_args', 'trp_strip_trpst_from_requests', 10, 2 );
-function trp_strip_trpst_from_requests($args, $url){
+add_filter( 'http_request_args', 'etm_strip_etmst_from_requests', 10, 2 );
+function etm_strip_etmst_from_requests($args, $url){
     if( is_array( $args['body'] ) ) {
-        array_walk_recursive( $args['body'], 'trp_array_walk_recursive_strip_gettext_tags' );
+        array_walk_recursive( $args['body'], 'etm_array_walk_recursive_strip_gettext_tags' );
     }else{
-        $args['body'] = TRP_Translation_Manager::strip_gettext_tags( $args['body'] );
+        $args['body'] = ETM_Translation_Manager::strip_gettext_tags( $args['body'] );
     }
     return $args;
 }
-function trp_array_walk_recursive_strip_gettext_tags( &$value ){
-    $value = TRP_Translation_Manager::strip_gettext_tags( $value );
+function etm_array_walk_recursive_strip_gettext_tags( &$value ){
+    $value = ETM_Translation_Manager::strip_gettext_tags( $value );
 }
 
 // Strip of gettext wrappings the customer_name and customer_email keys. Found in WC Stripe and Cartflows
-add_filter( 'wc_stripe_payment_metadata', 'trp_strip_request_metadata_keys' );
-function trp_strip_request_metadata_keys( $metadata ){
+add_filter( 'wc_stripe_payment_metadata', 'etm_strip_request_metadata_keys' );
+function etm_strip_request_metadata_keys( $metadata ){
     foreach( $metadata as $key => $value ) {
-        $stripped_key = TRP_Translation_Manager::strip_gettext_tags( $key );
+        $stripped_key = ETM_Translation_Manager::strip_gettext_tags( $key );
         if ( $stripped_key != $key ) {
             $metadata[ $stripped_key ] = $value;
             unset( $metadata[ $key ] );
@@ -419,8 +419,8 @@ function trp_strip_request_metadata_keys( $metadata ){
  * Compatibility with NextGEN Gallery
  *
  * They start an output buffer at init -1 (before ours at init 0). They print footer scripts after we run translate_page,
- * resulting in outputting scripts that won't be stripped of trpst trp-gettext wrappings.
- * This includes WooCommerce Checkout scripts, resulting in trpst wrappings around form fields like Street Address.
+ * resulting in outputting scripts that won't be stripped of etmst etm-gettext wrappings.
+ * This includes WooCommerce Checkout scripts, resulting in etmst wrappings around form fields like Street Address.
  * Another issue is that translation editor is a blank page.
  *
  * We cannot move their hook to priority 1 because we do not have access to the object that gets hooked is not retrievable so we can't call remove_filter()
@@ -428,8 +428,8 @@ function trp_strip_request_metadata_keys( $metadata ){
  *
  * So the only solution that works is to move our hook to -2.
  */
-add_filter( 'trp_start_output_buffer_priority', 'trp_nextgen_compatibility' );
-function trp_nextgen_compatibility( $priority ){
+add_filter( 'etm_start_output_buffer_priority', 'etm_nextgen_compatibility' );
+function etm_nextgen_compatibility( $priority ){
     if ( class_exists( 'C_Photocrati_Resource_Manager' ) ) {
         return '-2';
     }
@@ -443,9 +443,9 @@ function trp_nextgen_compatibility( $priority ){
  *
  * This filter prevents ngg from hooking the filters to alter the html.
  */
-add_filter( 'run_ngg_resource_manager', 'trp_nextgen_disable_nextgen_in_translation_editor');
-function trp_nextgen_disable_nextgen_in_translation_editor( $bool ){
-    if ( isset( $_REQUEST['trp-edit-translation'] ) && sanitize_text_field( $_REQUEST['trp-edit-translation'] ) === 'true' ) {
+add_filter( 'run_ngg_resource_manager', 'etm_nextgen_disable_nextgen_in_translation_editor');
+function etm_nextgen_disable_nextgen_in_translation_editor( $bool ){
+    if ( isset( $_REQUEST['etm-edit-translation'] ) && sanitize_text_field( $_REQUEST['etm-edit-translation'] ) === 'true' ) {
         return false;
     }
     return $bool;
@@ -459,8 +459,8 @@ function trp_nextgen_disable_nextgen_in_translation_editor( $bool ){
  * The title of product is added through sprintf %s of a Gettext.
  *
  */
-add_filter( 'the_title', 'trp_woo_translate_product_title_added_to_cart', 10, 2 );
-function trp_woo_translate_product_title_added_to_cart( ...$args ){
+add_filter( 'the_title', 'etm_woo_translate_product_title_added_to_cart', 10, 2 );
+function etm_woo_translate_product_title_added_to_cart( ...$args ){
     // fix themes that don't implement the_title filter correctly. Works on PHP 5.6 >.
     // Implemented this because users we getting this error frequently.
     if( isset($args[0])){
@@ -478,12 +478,12 @@ function trp_woo_translate_product_title_added_to_cart( ...$args ){
             $callstack_functions = debug_backtrace(DEBUG_BACKTRACE_IGNORE_ARGS);
         }
 
-        $list_of_functions = apply_filters( 'trp_woo_translate_title_before_translate_page', array( 'wc_add_to_cart_message' ) );
+        $list_of_functions = apply_filters( 'etm_woo_translate_title_before_translate_page', array( 'wc_add_to_cart_message' ) );
         if( !empty( $callstack_functions ) ) {
             foreach ( $callstack_functions as $callstack_function ) {
                 if ( in_array( $callstack_function['function'], $list_of_functions ) ) {
-                    $trp = TRP_Translate_Press::get_trp_instance();
-                    $translation_render = $trp->get_component( 'translation_render' );
+                    $etm = ETM_eTranslation_Multilingual::get_etm_instance();
+                    $translation_render = $etm->get_component( 'translation_render' );
                     $title = $translation_render->translate_page($title);
                     break;
                 }
@@ -503,9 +503,9 @@ function trp_woo_translate_product_title_added_to_cart( ...$args ){
  */
 
 if( class_exists( 'WooCommerce' ) ) {
-	add_filter( 'woocommerce_cart_item_removed_title', 'trp_woo_fix_product_remove_from_cart_notice', 10, 2 );
+	add_filter( 'woocommerce_cart_item_removed_title', 'etm_woo_fix_product_remove_from_cart_notice', 10, 2 );
 
-	function trp_woo_fix_product_remove_from_cart_notice($message, $cart_item){
+	function etm_woo_fix_product_remove_from_cart_notice($message, $cart_item){
 		$product = wc_get_product( $cart_item['product_id'] );
 		if ($product){
 			$message =  sprintf( _x( '&ldquo; %s &rdquo;', 'Item name in quotes', 'woocommerce' ), $product->get_name() ); //phpcs:ignore
@@ -517,18 +517,18 @@ if( class_exists( 'WooCommerce' ) ) {
 /**
  * Compatibility with WooTour plugin
  *
- * They replace spaces (" ") with \u0020, after we apply #trpst and because we don't strip them it breaks html
+ * They replace spaces (" ") with \u0020, after we apply #etmst and because we don't strip them it breaks html
  */
-add_action('init', 'trp_wootour_add_gettext_filter');
-function trp_wootour_add_gettext_filter(){
+add_action('init', 'etm_wootour_add_gettext_filter');
+function etm_wootour_add_gettext_filter(){
     if ( class_exists( 'WooTour_Booking' ) ){
-        add_filter('gettext', 'trp_wootour_exclude_gettext_strings', 1000, 3 );
+        add_filter('gettext', 'etm_wootour_exclude_gettext_strings', 1000, 3 );
     }
 }
-function trp_wootour_exclude_gettext_strings($translation, $text, $domain){
+function etm_wootour_exclude_gettext_strings($translation, $text, $domain){
     if ( $domain == 'woo-tour' ){
         if ( in_array( $text, array( 'Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December' ) ) ){
-            return TRP_Translation_Manager::strip_gettext_tags( $translation );
+            return ETM_Translation_Manager::strip_gettext_tags( $translation );
         }
     }
     return $translation;
@@ -542,8 +542,8 @@ function trp_wootour_exclude_gettext_strings($translation, $text, $domain){
  * Somehow in the cart is the minus one, in the shop listing is the longer separator.
  * Make the cart contain the same type of character which is obtained using get_the_title.
  */
-add_filter( 'woocommerce_cart_item_name', 'trp_woo_cart_item_name', 8, 3 );
-function trp_woo_cart_item_name( $product_name, $cart_item, $cart_item_key ){
+add_filter( 'woocommerce_cart_item_name', 'etm_woo_cart_item_name', 8, 3 );
+function etm_woo_cart_item_name( $product_name, $cart_item, $cart_item_key ){
     if ( isset( $cart_item['product_id'] ) ){
         $title = get_the_title( $cart_item['product_id'] );
         if ( !empty( $title )){
@@ -561,17 +561,17 @@ function trp_woo_cart_item_name( $product_name, $cart_item, $cart_item_key ){
  *
  * Translate product name and variation (meta) in pdf invoices.
  */
-add_filter( 'wpo_wcpdf_order_item_data', 'trp_woo_wcpdf_translate_product_name', 10, 3 );
-function trp_woo_wcpdf_translate_product_name( $data, $order, $type ){
+add_filter( 'wpo_wcpdf_order_item_data', 'etm_woo_wcpdf_translate_product_name', 10, 3 );
+function etm_woo_wcpdf_translate_product_name( $data, $order, $type ){
     if ( isset( $data['name'] ) ) {
-        $trp = TRP_Translate_Press::get_trp_instance();
-        $translation_render = $trp->get_component('translation_render');
-        remove_filter( 'trp_stop_translating_page', 'trp_woo_pdf_invoices_and_packing_slips_compatibility_dont_translate_pdf', 10 );
+        $etm = ETM_eTranslation_Multilingual::get_etm_instance();
+        $translation_render = $etm->get_component('translation_render');
+        remove_filter( 'etm_stop_translating_page', 'etm_woo_pdf_invoices_and_packing_slips_compatibility_dont_translate_pdf', 10 );
         $data['name'] = $translation_render->translate_page($data['name']);
         if ( isset( $data['meta'] ) ) {
             $data['meta'] = $translation_render->translate_page($data['meta']);
         }
-        add_filter( 'trp_stop_translating_page', 'trp_woo_pdf_invoices_and_packing_slips_compatibility_dont_translate_pdf', 10, 2 );
+        add_filter( 'etm_stop_translating_page', 'etm_woo_pdf_invoices_and_packing_slips_compatibility_dont_translate_pdf', 10, 2 );
     }
     return $data;
 }
@@ -584,14 +584,14 @@ function trp_woo_wcpdf_translate_product_name( $data, $order, $type ){
  * No other filters were found. Advanced settings strip meta did not work.
  * It's being added through WC->add_fee and inserted directly in db in custom table.
  */
-add_action( 'woocommerce_cart_calculate_fees', 'trp_woo_checkout_add_ons_filter_trpstr', 10, 2);
-function trp_woo_checkout_add_ons_filter_trpstr(){
+add_action( 'woocommerce_cart_calculate_fees', 'etm_woo_checkout_add_ons_filter_etmstr', 10, 2);
+function etm_woo_checkout_add_ons_filter_etmstr(){
     if ( class_exists('WC_Checkout_Add_Ons_Frontend') ) {
-        add_filter('trp_skip_gettext_processing', 'trp_woo_checkout_exclude_strings', 1000, 4);
+        add_filter('etm_skip_gettext_processing', 'etm_woo_checkout_exclude_strings', 1000, 4);
     }
 }
 
-function trp_woo_checkout_exclude_strings( $return, $translation, $text, $domain) {
+function etm_woo_checkout_exclude_strings( $return, $translation, $text, $domain) {
     if ( $domain === 'woocommerce-checkout-add-ons' ) {
         $add_ons = wc_checkout_add_ons()->get_add_ons();
         foreach ($add_ons as $add_on) {
@@ -605,23 +605,23 @@ function trp_woo_checkout_exclude_strings( $return, $translation, $text, $domain
 /**
  * Compatibility with WooCommerce Fondy Payment gateway
  */
-add_action('init', 'trp_woo_fondy_payment_gateway_add_gettext_filter');
-function trp_woo_fondy_payment_gateway_add_gettext_filter(){
+add_action('init', 'etm_woo_fondy_payment_gateway_add_gettext_filter');
+function etm_woo_fondy_payment_gateway_add_gettext_filter(){
     if ( class_exists( 'WC_fondy' ) ){
-        add_filter('gettext', 'trp_woo_fondy_payment_gateway_exclude_gettext_strings', 1000, 3 );
+        add_filter('gettext', 'etm_woo_fondy_payment_gateway_exclude_gettext_strings', 1000, 3 );
     }
 }
 
-function trp_woo_fondy_payment_gateway_exclude_gettext_strings($translation, $text, $domain){
+function etm_woo_fondy_payment_gateway_exclude_gettext_strings($translation, $text, $domain){
     if ( $domain == 'fondy-woocommerce-payment-gateway' && $text == 'Order: ' ){
-        return TRP_Translation_Manager::strip_gettext_tags( $translation );
+        return ETM_Translation_Manager::strip_gettext_tags( $translation );
     }
     return $translation;
 }
 
 /**
  * Compatibility with Woocommerce Product Filters plugin
- * They stop the buffering at priority -150 and that leaves #trpst style tags before we get to remove them
+ * They stop the buffering at priority -150 and that leaves #etmst style tags before we get to remove them
  *
  * The caveat to removing or adding a foreign filter is that it can be done via
  * a) static class call or b) through an object instance
@@ -630,9 +630,9 @@ function trp_woo_fondy_payment_gateway_exclude_gettext_strings($translation, $te
  * and their public methods.
  */
 
-add_action( 'init', 'trp_woo_product_filters', 10 );
+add_action( 'init', 'etm_woo_product_filters', 10 );
 
-function trp_woo_product_filters(){
+function etm_woo_product_filters(){
 	if( isset( $GLOBALS['wcpf_plugin'] ) && class_exists( 'WooCommerce_Product_Filter_Plugin\Filters' ) ){
 		$wcpf_plugin = $GLOBALS['wcpf_plugin'];
 		$component_register = $wcpf_plugin->get_component_register();
@@ -649,8 +649,8 @@ function trp_woo_product_filters(){
  * The url is urlencoded so we add the language to it but we shouldn't.
  *
  */
-add_filter('trp_skip_url_for_language', 'trp_skip_elementor_popup_action_from_url_converter', 10, 2);
-function trp_skip_elementor_popup_action_from_url_converter($value, $url){
+add_filter('etm_skip_url_for_language', 'etm_skip_elementor_popup_action_from_url_converter', 10, 2);
+function etm_skip_elementor_popup_action_from_url_converter($value, $url){
 	if(strpos($url, '%23elementor-action') !== false){
 		return true;
 	}
@@ -660,13 +660,13 @@ function trp_skip_elementor_popup_action_from_url_converter($value, $url){
 /**
  * Strip gettext wrapping from get_the_date function parameter $d
  */
-add_filter('get_the_date','trp_strip_gettext_from_get_the_date', 1, 3);
-function trp_strip_gettext_from_get_the_date($the_date, $d = NULL, $post = NULL){
+add_filter('get_the_date','etm_strip_gettext_from_get_the_date', 1, 3);
+function etm_strip_gettext_from_get_the_date($the_date, $d = NULL, $post = NULL){
 	if ( $d === NULL || $post === NULL ){
 		return $the_date;
 	}
 
-    $d = TRP_Translation_Manager::strip_gettext_tags( $d );
+    $d = ETM_Translation_Manager::strip_gettext_tags( $d );
     $post = get_post( $post );
 
     if ( ! $post ) {
@@ -686,16 +686,16 @@ function trp_strip_gettext_from_get_the_date($the_date, $d = NULL, $post = NULL)
 /**
  * Compatibility with Affiliate Theme
  * It's adding parameters found in the filter forms automatically, braking the query.
- * TranslatePress adds the trp-form-language for other reasons. So we need to remove it in this case.
+ * eTranslation Multilingual adds the etm-form-language for other reasons. So we need to remove it in this case.
  * https://affiliatetheme.io
  *
  */
-add_filter('at_set_product_filter_query', 'trp_remove_lang_param_from_query');
-function trp_remove_lang_param_from_query($args){
+add_filter('at_set_product_filter_query', 'etm_remove_lang_param_from_query');
+function etm_remove_lang_param_from_query($args){
 
 	if ( isset( $args['meta_query'] ) && is_array( $args['meta_query']) ){
 		foreach($args['meta_query'] as $key => $value){
-			if ($value['key'] == 'trp-form-language'){
+			if ($value['key'] == 'etm-form-language'){
 				unset( $args['meta_query'][$key] );
 			}
 		}
@@ -711,13 +711,13 @@ function trp_remove_lang_param_from_query($args){
  * Only set it if an existing locale isn't set already, in case the registration comes from a form that sets the locale manually.
  *
  */
-add_action( 'user_register', 'trp_add_user_prefered_language', 10 );
-function trp_add_user_prefered_language($user_id) {
-	global $TRP_LANGUAGE;
-	if ( ! empty( $TRP_LANGUAGE ) ) {
+add_action( 'user_register', 'etm_add_user_prefered_language', 10 );
+function etm_add_user_prefered_language($user_id) {
+	global $ETM_LANGUAGE;
+	if ( ! empty( $ETM_LANGUAGE ) ) {
 		$user_locale = get_user_meta( $user_id, 'locale', true );
 		if ( empty( $user_locale ) ) {
-			update_user_meta( $user_id, 'locale', $TRP_LANGUAGE );
+			update_user_meta( $user_id, 'locale', $ETM_LANGUAGE );
 		}
 	}
 }
@@ -727,8 +727,8 @@ function trp_add_user_prefered_language($user_id) {
  * With Secondary Language First, it deferes jquery and scripts don't load on the Elementor Editor.
  * Not sure exactly what's causing. I assume it's because Elementor loads with Ajax certain elements and that comes back broken somehow.
  */
-add_action('wp_enqueue_scripts', 'trp_remove_dflip_defer_script', 9999);
-function trp_remove_dflip_defer_script(){
+add_action('wp_enqueue_scripts', 'etm_remove_dflip_defer_script', 9999);
+function etm_remove_dflip_defer_script(){
 	if(class_exists('DFlip')){
 		$dflip_instance = DFlip::get_instance();
 		remove_filter( 'script_loader_tag', array( $dflip_instance, 'add_defer_attribute' ), 10, 2 );
@@ -739,11 +739,11 @@ function trp_remove_dflip_defer_script(){
  * Ignore WooCommerce display_name gettext
  * _x( '%1$s %2$s', 'display name', 'woocommerce' ) || wordpress\wp-content\plugins\woocommerce\includes\class-wc-customer.php
  * _x( '%1$s %2$s', 'Display name based on first name and last name')   || wordpress\wp-includes\user.php
- * This will insert trpstr strings in the database. So just ignore it.
+ * This will insert etmstr strings in the database. So just ignore it.
  *
  */
-add_filter('trp_skip_gettext_processing', 'trp_exclude_woo_display_name_gettext', 2000, 4 );
-function trp_exclude_woo_display_name_gettext ( $return, $translation, $text, $domain ){
+add_filter('etm_skip_gettext_processing', 'etm_exclude_woo_display_name_gettext', 2000, 4 );
+function etm_exclude_woo_display_name_gettext ( $return, $translation, $text, $domain ){
 	if($text == '%1$s %2$s' && $domain == 'woocommerce'){
 		return true;
 	}
@@ -759,8 +759,8 @@ function trp_exclude_woo_display_name_gettext ( $return, $translation, $text, $d
  *
  *  Moving their script later so that dynamic translation detects their strings.
  */
-add_action('wp_head','trp_superfly_change_menu_loading_hook', 5);
-function trp_superfly_change_menu_loading_hook(){
+add_action('wp_head','etm_superfly_change_menu_loading_hook', 5);
+function etm_superfly_change_menu_loading_hook(){
     if ( remove_action ('wp_head', 'sf_dynamic') ){
         add_action ('wp_print_footer_scripts', 'sf_dynamic', 20);
     }
@@ -770,22 +770,22 @@ function trp_superfly_change_menu_loading_hook(){
  * Compatibility with Yoast SEO Canonical URL and Opengraph URL
  * Yoast places the canonical wrongly and it's not processed correctly.
  */
-add_filter( 'wpseo_canonical', 'trp_wpseo_canonical_compat', 99999, 2);
-function trp_wpseo_canonical_compat( $canonical, $presentation_class = null ){
-    global $TRP_LANGUAGE;
-    $trp           = TRP_Translate_Press::get_trp_instance();
-    $url_converter = $trp->get_component( 'url_converter' );
-    $canonical     = $url_converter->get_url_for_language( $TRP_LANGUAGE, $canonical, '' );
+add_filter( 'wpseo_canonical', 'etm_wpseo_canonical_compat', 99999, 2);
+function etm_wpseo_canonical_compat( $canonical, $presentation_class = null ){
+    global $ETM_LANGUAGE;
+    $etm           = ETM_eTranslation_Multilingual::get_etm_instance();
+    $url_converter = $etm->get_component( 'url_converter' );
+    $canonical     = $url_converter->get_url_for_language( $ETM_LANGUAGE, $canonical, '' );
 
     return $canonical;
 };
 
-add_filter( 'wpseo_opengraph_url', 'trp_opengraph_url', 99999 );
-function trp_opengraph_url( $url ) {
-	global $TRP_LANGUAGE;
-	$trp = TRP_Translate_Press::get_trp_instance();
-	$url_converter = $trp->get_component( 'url_converter' );
-	$url = $url_converter->get_url_for_language($TRP_LANGUAGE, $url, '');
+add_filter( 'wpseo_opengraph_url', 'etm_opengraph_url', 99999 );
+function etm_opengraph_url( $url ) {
+	global $ETM_LANGUAGE;
+	$etm = ETM_eTranslation_Multilingual::get_etm_instance();
+	$url_converter = $etm->get_component( 'url_converter' );
+	$url = $url_converter->get_url_for_language($ETM_LANGUAGE, $url, '');
 
 	return $url;
 }
@@ -795,18 +795,18 @@ function trp_opengraph_url( $url ) {
  *
  * Improves stylesheet loading time by disabling gettext and regular text detection for pages loaded with xlink=css
  */
-add_action( 'trp_before_running_hooks', 'trp_oxygen_remove_gettext_hooks', 10, 1 );
-function trp_oxygen_remove_gettext_hooks( $trp_loader ) {
+add_action( 'etm_before_running_hooks', 'etm_oxygen_remove_gettext_hooks', 10, 1 );
+function etm_oxygen_remove_gettext_hooks( $etm_loader ) {
     if ( isset( $_REQUEST['xlink'] ) && $_REQUEST['xlink'] === 'css' ) {
-        $trp                 = TRP_Translate_Press::get_trp_instance();
-        $gettext_manager = $trp->get_component( 'gettext_manager' );
-        $translation_render = $trp->get_component( 'translation_render' );
-        $trp_loader->remove_hook( 'init', 'create_gettext_translated_global', $gettext_manager );
-        $trp_loader->remove_hook( 'init', 'initialize_gettext_processing', $gettext_manager );
-        $trp_loader->remove_hook( 'shutdown', 'machine_translate_gettext', $gettext_manager );
-        $trp_loader->remove_hook( 'init', 'start_output_buffer', $translation_render );
-        $trp_loader->remove_hook( 'the_title', 'wrap_with_post_id', $translation_render );
-        $trp_loader->remove_hook( 'the_content', 'wrap_with_post_id', $translation_render );
+        $etm                 = ETM_eTranslation_Multilingual::get_etm_instance();
+        $gettext_manager = $etm->get_component( 'gettext_manager' );
+        $translation_render = $etm->get_component( 'translation_render' );
+        $etm_loader->remove_hook( 'init', 'create_gettext_translated_global', $gettext_manager );
+        $etm_loader->remove_hook( 'init', 'initialize_gettext_processing', $gettext_manager );
+        $etm_loader->remove_hook( 'shutdown', 'machine_translate_gettext', $gettext_manager );
+        $etm_loader->remove_hook( 'init', 'start_output_buffer', $translation_render );
+        $etm_loader->remove_hook( 'the_title', 'wrap_with_post_id', $translation_render );
+        $etm_loader->remove_hook( 'the_content', 'wrap_with_post_id', $translation_render );
     }
 }
 
@@ -819,7 +819,7 @@ if( function_exists('ct_is_show_builder') ) {
     function tp_oxygen_search_compatibility($output, $tag, $attr, $m){
     	// we're skiping the oxygen $tag as that one represents a dynamic shortcode based on custom fields. At times it contains images, links, numbers. Rarely we see actual content.
     	if( $tag === 'ct_headline' || $tag === 'ct_text_block' ) {
-            global $post, $TRP_LANGUAGE;
+            global $post, $ETM_LANGUAGE;
 
             if (empty($post->ID))
                 return $output;
@@ -828,13 +828,13 @@ if( function_exists('ct_is_show_builder') ) {
             if (!is_main_query())
                 return $output;
 
-            $trp = TRP_Translate_Press::get_trp_instance();
-            $trp_settings = $trp->get_component( 'settings' );
-            $settings = $trp_settings->get_settings();
+            $etm = ETM_eTranslation_Multilingual::get_etm_instance();
+            $etm_settings = $etm->get_component( 'settings' );
+            $settings = $etm_settings->get_settings();
 
-            if ($TRP_LANGUAGE !== $settings['default-language']) {
+            if ($ETM_LANGUAGE !== $settings['default-language']) {
                 if (is_singular() && !empty($post->ID)) {
-                    $output = "<trp-post-container data-trp-post-id='" . $post->ID . "'>" . $output . "</trp-post-container>";//changed " to ' to not break cases when the filter is applied inside an html attribute (title for example)
+                    $output = "<etm-post-container data-etm-post-id='" . $post->ID . "'>" . $output . "</etm-post-container>";//changed " to ' to not break cases when the filter is applied inside an html attribute (title for example)
                 }
             }
         }
@@ -843,10 +843,10 @@ if( function_exists('ct_is_show_builder') ) {
     }
 
     /**
-     * Disable TRP when the Oxygen Builder is being loaded
+     * Disable ETM when the Oxygen Builder is being loaded
      */
-    add_filter( 'trp_stop_translating_page', 'trp_oxygen_disable_trp_in_builder');
-    function trp_oxygen_disable_trp_in_builder(){
+    add_filter( 'etm_stop_translating_page', 'etm_oxygen_disable_etm_in_builder');
+    function etm_oxygen_disable_etm_in_builder(){
 
         if( defined( 'SHOW_CT_BUILDER' ) )
             return true;
@@ -856,8 +856,8 @@ if( function_exists('ct_is_show_builder') ) {
     /**
      * Hide Floating Language Switcher when the Oxygen is shown
      */
-    add_filter( 'trp_floating_ls_html', 'trp_page_builder_compatibility_disable_language_switcher' );
-    function trp_page_builder_compatibility_disable_language_switcher( $html ){
+    add_filter( 'etm_floating_ls_html', 'etm_page_builder_compatibility_disable_language_switcher' );
+    function etm_page_builder_compatibility_disable_language_switcher( $html ){
 
         if( isset( $_GET['ct_builder'] ) && $_GET['ct_builder'] == 'true' )
             return '';
@@ -872,16 +872,16 @@ if( function_exists( 'ct_is_show_builder' ) || defined( 'FL_BUILDER_VERSION' ) )
 
     /**
      * Used to redirect Oxygen Builder front-end to the default language.
-     * Hooked before TRP_Language_Switcher::redirect_to_correct_language() so we don't redirect twice
+     * Hooked before ETM_Language_Switcher::redirect_to_correct_language() so we don't redirect twice
      */
-    add_action( 'template_redirect', 'trp_page_builder_compatibility_redirect_to_default_language', 10 );
-    function trp_page_builder_compatibility_redirect_to_default_language(){
+    add_action( 'template_redirect', 'etm_page_builder_compatibility_redirect_to_default_language', 10 );
+    function etm_page_builder_compatibility_redirect_to_default_language(){
 
         if( !is_admin() && ( ( isset( $_GET['ct_builder'] ) && $_GET['ct_builder'] == 'true' ) || isset( $_GET['fl_builder'] ) ) ){
 
-            $trp           = TRP_Translate_Press::get_trp_instance();
-            $url_converter = $trp->get_component('url_converter');
-            $settings      = ( new TRP_Settings() )->get_settings();
+            $etm           = ETM_eTranslation_Multilingual::get_etm_instance();
+            $url_converter = $etm->get_component('url_converter');
+            $settings      = ( new ETM_Settings() )->get_settings();
 
             $current_url  = $url_converter->cur_page_url();
             $current_lang = $url_converter->get_lang_from_url_string( $current_url );
@@ -903,8 +903,8 @@ if( function_exists( 'ct_is_show_builder' ) || defined( 'FL_BUILDER_VERSION' ) )
     /**
      * Disable automatic language redirect when the Oxygen or Beaver Builders are showing
      */
-    add_filter( 'trp_ald_enqueue_redirecting_script', 'trp_ald_dont_redirect_inside_page_builders');
-    function trp_ald_dont_redirect_inside_page_builders( $enqueue_redirecting_script ){
+    add_filter( 'etm_ald_enqueue_redirecting_script', 'etm_ald_dont_redirect_inside_page_builders');
+    function etm_ald_dont_redirect_inside_page_builders( $enqueue_redirecting_script ){
         if( ( isset( $_GET['ct_builder'] ) && $_GET['ct_builder'] == 'true' ) || isset( $_GET['fl_builder'] ) ){
             return false;
         }
@@ -915,8 +915,8 @@ if( function_exists( 'ct_is_show_builder' ) || defined( 'FL_BUILDER_VERSION' ) )
 /**
  * Compatibility with Brizy editor
  */
-add_filter( 'trp_enable_dynamic_translation', 'trp_brizy_disable_dynamic_translation' );
-function trp_brizy_disable_dynamic_translation( $enable ){
+add_filter( 'etm_enable_dynamic_translation', 'etm_brizy_disable_dynamic_translation' );
+function etm_brizy_disable_dynamic_translation( $enable ){
     if ( isset( $_REQUEST['brizy-edit-iframe'] ) ){
         return false;
     }
@@ -928,8 +928,8 @@ function trp_brizy_disable_dynamic_translation( $enable ){
  * Compatibility with Brizy assets loading with language slug in url (the 'process' function)
  */
 if( defined( 'BRIZY_PRO_VERSION' ) || defined( 'BRIZY_VERSION' ) ){
-    add_filter( 'trp_home_url', 'trp_brizy_menu_pro_compatibility', 10, 5 );
-    function trp_brizy_menu_pro_compatibility( $new_url, $abs_home, $TRP_LANGUAGE, $path, $url ){
+    add_filter( 'etm_home_url', 'etm_brizy_menu_pro_compatibility', 10, 5 );
+    function etm_brizy_menu_pro_compatibility( $new_url, $abs_home, $ETM_LANGUAGE, $path, $url ){
         if ( version_compare( PHP_VERSION, '5.4.0', '>=' ) ) {
             $callstack_functions = debug_backtrace(DEBUG_BACKTRACE_IGNORE_ARGS, 15);//set a limit if it is supported to improve performance
         }
@@ -955,8 +955,8 @@ if( defined( 'BRIZY_PRO_VERSION' ) || defined( 'BRIZY_VERSION' ) ){
  * Compatibility with woocommerce-pdf-vouchers plugin, removed language from download link of the vouchers
  */
 if( defined( 'WOO_VOU_PLUGIN_VERSION' ) ){
-    add_filter( 'trp_home_url', 'trp_woocommerce_pdf_vouchers_download_file_compatibility', 10, 5 );
-    function trp_woocommerce_pdf_vouchers_download_file_compatibility( $new_url, $abs_home, $TRP_LANGUAGE, $path, $url ){
+    add_filter( 'etm_home_url', 'etm_woocommerce_pdf_vouchers_download_file_compatibility', 10, 5 );
+    function etm_woocommerce_pdf_vouchers_download_file_compatibility( $new_url, $abs_home, $ETM_LANGUAGE, $path, $url ){
         if ( version_compare( PHP_VERSION, '5.4.0', '>=' ) ) {
             $callstack_functions = debug_backtrace(DEBUG_BACKTRACE_IGNORE_ARGS, 15);//set a limit if it is supported to improve performance
         }
@@ -983,16 +983,16 @@ if( defined( 'WOO_VOU_PLUGIN_VERSION' ) ){
  * Returns post ids where searched key matches translated version of post.
  */
 
-add_filter( 'aws_search_results_products_ids', 'trp_aws_search_results_products_ids', 10, 2 );
-function trp_aws_search_results_products_ids(  $posts_ids, $s ){
-    global $TRP_LANGUAGE;
-    $trp = TRP_Translate_Press::get_trp_instance();
-    $trp_settings = $trp->get_component( 'settings' );
-    $settings = $trp_settings->get_settings();
+add_filter( 'aws_search_results_products_ids', 'etm_aws_search_results_products_ids', 10, 2 );
+function etm_aws_search_results_products_ids(  $posts_ids, $s ){
+    global $ETM_LANGUAGE;
+    $etm = ETM_eTranslation_Multilingual::get_etm_instance();
+    $etm_settings = $etm->get_component( 'settings' );
+    $settings = $etm_settings->get_settings();
 
-    if ( $TRP_LANGUAGE !== $settings['default-language'] ) {
-        $trp_search = $trp->get_component( 'search' );
-        $search_result_ids = $trp_search->get_post_ids_containing_search_term($s, null);
+    if ( $ETM_LANGUAGE !== $settings['default-language'] ) {
+        $etm_search = $etm->get_component( 'search' );
+        $search_result_ids = $etm_search->get_post_ids_containing_search_term($s, null);
 
         if (!empty ( $search_result_ids) ) {
             return $search_result_ids;
@@ -1006,36 +1006,36 @@ function trp_aws_search_results_products_ids(  $posts_ids, $s ){
  * Compatibility with Advanced WooCommerce Search 2/2
  * Solves issue with caching results in a different language
  */
-add_filter( 'wpml_current_language', 'trp_aws_current_language' );
-function trp_aws_current_language( $lang ) {
+add_filter( 'wpml_current_language', 'etm_aws_current_language' );
+function etm_aws_current_language( $lang ) {
     if ( class_exists( 'AWS_Main' ) ) {
-        global $TRP_LANGUAGE;
-        $lang = $TRP_LANGUAGE;
+        global $ETM_LANGUAGE;
+        $lang = $ETM_LANGUAGE;
     }
     return $lang;
 }
 /**
  * Compatibility with thrive Arhitect plugin which does a "nice" little trick with remove_all_filters( 'template_include' ); so we need to stop that or else it will not load our translation editor
  */
-add_filter('tcb_allow_landing_page_edit', 'trp_thrive_arhitect_compatibility');
-add_filter('tcb_is_editor_page', 'trp_thrive_arhitect_compatibility');//this is for Thrive theme
-function trp_thrive_arhitect_compatibility($bool)    {
-    if (isset($_REQUEST['trp-edit-translation']))
+add_filter('tcb_allow_landing_page_edit', 'etm_thrive_arhitect_compatibility');
+add_filter('tcb_is_editor_page', 'etm_thrive_arhitect_compatibility');//this is for Thrive theme
+function etm_thrive_arhitect_compatibility($bool)    {
+    if (isset($_REQUEST['etm-edit-translation']))
         $bool = false;
 
     return $bool;
 }
 // do not redirect the URL's that are used inside Thrive Architect Editor
-add_filter( 'trp_allow_language_redirect', 'trp_thrive_no_redirect_in_editor', 10, 3 );
-function trp_thrive_no_redirect_in_editor( $allow_redirect, $needed_language, $current_page_url ){
+add_filter( 'etm_allow_language_redirect', 'etm_thrive_no_redirect_in_editor', 10, 3 );
+function etm_thrive_no_redirect_in_editor( $allow_redirect, $needed_language, $current_page_url ){
 	if ( strpos($current_page_url, 'tve=true&tcbf')!== false ){
 		return false;
 	}
 	return $allow_redirect;
 };
 // skip the URL's that are used inside Thrive Architect Editor as they are stripped of parameters in certain cases and the editor isn't working.
-add_filter('trp_skip_url_for_language', 'trp_thrive_skip_language_in_editor', 10, 2);
-function trp_thrive_skip_language_in_editor($skip, $url){
+add_filter('etm_skip_url_for_language', 'etm_thrive_skip_language_in_editor', 10, 2);
+function etm_thrive_skip_language_in_editor($skip, $url){
 	if ( strpos($url, 'tve=true&tcbf') !== false ){
 		return true;
 	}
@@ -1043,11 +1043,11 @@ function trp_thrive_skip_language_in_editor($skip, $url){
 }
 
 /**
- * Compatibility with the RECON gateway for woocommerce. We must not send the "trp-form-language" hidden field in the post request to the gateway
+ * Compatibility with the RECON gateway for woocommerce. We must not send the "etm-form-language" hidden field in the post request to the gateway
  */
 if( class_exists('WC_Gateway_RECON') ) {
-    add_filter('trp_form_inputs', 'trp_recon_gateway_compatibility', 10, 4);
-    function trp_recon_gateway_compatibility($input, $trp_language, $slug, $row)
+    add_filter('etm_form_inputs', 'etm_recon_gateway_compatibility', 10, 4);
+    function etm_recon_gateway_compatibility($input, $etm_language, $slug, $row)
     {
         if (isset($row->attr['name']) && $row->attr['name'] === 'checkout') {
             $input = '';
@@ -1061,14 +1061,14 @@ if( class_exists('WC_Gateway_RECON') ) {
  * Compatibility with Classified Listing plugin Search in secondary language
  */
 // do not return inline autocomplete because when clicking the results, the input is filled with original title instead of translated
-add_filter( 'rtcl_inline_search_autocomplete_args', 'trp_rtcl_autocomplete_search_results', 10, 2 );
-function trp_rtcl_autocomplete_search_results( $args, $request ){
-    global $TRP_LANGUAGE;
-    $trp = TRP_Translate_Press::get_trp_instance();
-    $trp_settings = $trp->get_component( 'settings' );
-    $settings = $trp_settings->get_settings();
+add_filter( 'rtcl_inline_search_autocomplete_args', 'etm_rtcl_autocomplete_search_results', 10, 2 );
+function etm_rtcl_autocomplete_search_results( $args, $request ){
+    global $ETM_LANGUAGE;
+    $etm = ETM_eTranslation_Multilingual::get_etm_instance();
+    $etm_settings = $etm->get_component( 'settings' );
+    $settings = $etm_settings->get_settings();
 
-    if ( $TRP_LANGUAGE !== $settings['default-language'] ) {
+    if ( $ETM_LANGUAGE !== $settings['default-language'] ) {
         $args['post__in'] = array('1');
         return $args;
     }
@@ -1076,37 +1076,37 @@ function trp_rtcl_autocomplete_search_results( $args, $request ){
     return $args;
 }
 
-// Otherwise trp-post-container is not added
-add_action( 'wp_body_open', 'trp_overrule_main_query_condition', 10, 2 );
-function trp_overrule_main_query_condition(){
+// Otherwise etm-post-container is not added
+add_action( 'wp_body_open', 'etm_overrule_main_query_condition', 10, 2 );
+function etm_overrule_main_query_condition(){
     if ( class_exists('Rtcl') ) {
-        add_filter( 'trp_wrap_with_post_id_overrule', '__return_false' );
+        add_filter( 'etm_wrap_with_post_id_overrule', '__return_false' );
     }
 }
 
-// Otherwise trp-post-container is stripped
-add_filter( 'wp_kses_allowed_html', 'trp_prevent_kses_from_stripping_trp_post_container', 10, 2 );
-function trp_prevent_kses_from_stripping_trp_post_container( $allowedposttags, $context  ) {
+// Otherwise etm-post-container is stripped
+add_filter( 'wp_kses_allowed_html', 'etm_prevent_kses_from_stripping_etm_post_container', 10, 2 );
+function etm_prevent_kses_from_stripping_etm_post_container( $allowedposttags, $context  ) {
     if ( class_exists('Rtcl') && $context === 'post' ){
-        $allowedposttags['trp-post-container'] = array( 'data-trp-post-id' => true );
+        $allowedposttags['etm-post-container'] = array( 'data-etm-post-id' => true );
     }
     return $allowedposttags;
 }
 
 // Filter search results to show secondary language results
-add_action('rtcl_listing_query', 'trp_rtcl_search_results', 10, 2);
-function trp_rtcl_search_results ($q, $t){
+add_action('rtcl_listing_query', 'etm_rtcl_search_results', 10, 2);
+function etm_rtcl_search_results ($q, $t){
     if ( empty( $q->get('s')) ){
         return;
     }
-    global $TRP_LANGUAGE;
-    $trp = TRP_Translate_Press::get_trp_instance();
-    $trp_settings = $trp->get_component( 'settings' );
-    $settings = $trp_settings->get_settings();
+    global $ETM_LANGUAGE;
+    $etm = ETM_eTranslation_Multilingual::get_etm_instance();
+    $etm_settings = $etm->get_component( 'settings' );
+    $settings = $etm_settings->get_settings();
 
-    if ( $TRP_LANGUAGE !== $settings['default-language'] ) {
-        $trp_search = $trp->get_component( 'search' );
-        $search_result_ids = $trp_search->get_post_ids_containing_search_term($q->get('s'), null);
+    if ( $ETM_LANGUAGE !== $settings['default-language'] ) {
+        $etm_search = $etm->get_component( 'search' );
+        $search_result_ids = $etm_search->get_post_ids_containing_search_term($q->get('s'), null);
         $q->set('s', '');
         if ( empty($search_result_ids)){
             $search_result_ids = array(0);
@@ -1121,8 +1121,8 @@ function trp_rtcl_search_results ($q, $t){
  * Skip detection by translate-dom-changes of the url change when hitting the share button
  *
  */
-add_filter( 'trp_skip_selectors_from_dynamic_translation', 'trp_add_to_any_skip_dynamic_translation' );
-function trp_add_to_any_skip_dynamic_translation( $skip_selectors ){
+add_filter( 'etm_skip_selectors_from_dynamic_translation', 'etm_add_to_any_skip_dynamic_translation' );
+function etm_add_to_any_skip_dynamic_translation( $skip_selectors ){
     if( function_exists( 'A2A_SHARE_SAVE_init' ) ) {
         $add_skip_selectors = array( '.addtoany_list' );
         return array_merge( $skip_selectors, $add_skip_selectors );
@@ -1136,8 +1136,8 @@ function trp_add_to_any_skip_dynamic_translation( $skip_selectors ){
  * Skip detection by translate-dom-changes of the url change when hitting the menu
  *
  */
-add_filter( 'trp_skip_selectors_from_dynamic_translation', 'trp_uncode_skip_dynamic_translation' );
-function trp_uncode_skip_dynamic_translation( $skip_selectors ){
+add_filter( 'etm_skip_selectors_from_dynamic_translation', 'etm_uncode_skip_dynamic_translation' );
+function etm_uncode_skip_dynamic_translation( $skip_selectors ){
     if( function_exists( 'uncode_setup' ) ) {
         $add_skip_selectors = array( '.menu-horizontal .menu-smart' );
         return array_merge( $skip_selectors, $add_skip_selectors );
@@ -1152,8 +1152,8 @@ function trp_uncode_skip_dynamic_translation( $skip_selectors ){
  *
  */
 // first we need to disable adding the language to home_url() because the plugin is using it to construct a url.
-add_filter( 'trp_home_url', 'trp_skip_home_url_processing_for_pdfemb_server_url', 10, 5 );
-function trp_skip_home_url_processing_for_pdfemb_server_url(  $new_url, $abs_home, $TRP_LANGUAGE, $path, $url ){
+add_filter( 'etm_home_url', 'etm_skip_home_url_processing_for_pdfemb_server_url', 10, 5 );
+function etm_skip_home_url_processing_for_pdfemb_server_url(  $new_url, $abs_home, $ETM_LANGUAGE, $path, $url ){
 	if( class_exists( 'core_pdf_embedder' ) ){
 		$callstack_functions = debug_backtrace(DEBUG_BACKTRACE_IGNORE_ARGS);
 
@@ -1170,8 +1170,8 @@ function trp_skip_home_url_processing_for_pdfemb_server_url(  $new_url, $abs_hom
 	return $new_url;
 }
 // and after that we need to make sure we're not adding the language when we process the url's in the page.
-add_filter( 'trp_skip_url_for_language', 'trp_skip_link_processing_for_pdfemb_server_url', 10, 2 );
-function trp_skip_link_processing_for_pdfemb_server_url( $skip, $url ){
+add_filter( 'etm_skip_url_for_language', 'etm_skip_link_processing_for_pdfemb_server_url', 10, 2 );
+function etm_skip_link_processing_for_pdfemb_server_url( $skip, $url ){
 	if( strpos($url, '?pdfemb-serveurl') !== false ) {
 		$skip = true;
 	}
@@ -1182,8 +1182,8 @@ function trp_skip_link_processing_for_pdfemb_server_url( $skip, $url ){
  * Add compatibility with blockquote tweet button in elementor
  * if the quote has one parameter it will be automatically translated, if not then you need to use conditional language shortcodes
  */
-add_filter( 'wp_parse_str', 'trp_elementor_blockquote_translate_tweet_button' );
-function trp_elementor_blockquote_translate_tweet_button( $array ){
+add_filter( 'wp_parse_str', 'etm_elementor_blockquote_translate_tweet_button' );
+function etm_elementor_blockquote_translate_tweet_button( $array ){
     if( array_key_exists( 'text', $array ) ){
 
         if ( version_compare( PHP_VERSION, '5.4.0', '>=' ) ) {
@@ -1208,8 +1208,8 @@ function trp_elementor_blockquote_translate_tweet_button( $array ){
                     $tweet_link_text = implode( ' — ', $tweet_link_text );
 
                     //try and translate the text
-                    $trp = TRP_Translate_Press::get_trp_instance();
-                    $translation_render = $trp->get_component( 'translation_render' );
+                    $etm = ETM_eTranslation_Multilingual::get_etm_instance();
+                    $translation_render = $etm->get_component( 'translation_render' );
                     $array['text'] = $translation_render->translate_page($tweet_link_text);
 
                     //add author if it was eliminated
@@ -1229,8 +1229,8 @@ function trp_elementor_blockquote_translate_tweet_button( $array ){
  * Add compatibility with blockquote tweet button in elementor pro that had the link broken, it doubled the language in the url
  */
 if( function_exists('elementor_pro_load_plugin') ) {
-    add_filter('trp_home_url', 'trp_elementor_blockquote_tweet_button_url', 10, 5);
-    function trp_elementor_blockquote_tweet_button_url($new_url, $abs_home, $TRP_LANGUAGE, $path, $url)
+    add_filter('etm_home_url', 'etm_elementor_blockquote_tweet_button_url', 10, 5);
+    function etm_elementor_blockquote_tweet_button_url($new_url, $abs_home, $ETM_LANGUAGE, $path, $url)
     {
         if (version_compare(PHP_VERSION, '5.4.0', '>=')) {
             $callstack_functions = debug_backtrace(DEBUG_BACKTRACE_IGNORE_ARGS, 15);//set a limit if it is supported to improve performance
@@ -1256,8 +1256,8 @@ if( function_exists('elementor_pro_load_plugin') ) {
  * this allows twitter button to have a translated text
  */
 if( defined('ELEMENTOR_VERSION') ) {
-    add_filter('the_post', 'trp_elementor_translate_tweet_button_excerpt');
-    function trp_elementor_translate_tweet_button_excerpt($post){
+    add_filter('the_post', 'etm_elementor_translate_tweet_button_excerpt');
+    function etm_elementor_translate_tweet_button_excerpt($post){
         if (!empty($post->post_excerpt)) {
             $post->post_excerpt = do_shortcode($post->post_excerpt);
         }
@@ -1273,21 +1273,21 @@ if( defined('ELEMENTOR_VERSION') ) {
  * Always adds them to secondary languages.
  * Add them to default language if Use subdirectory is set to Yes
  */
-add_filter('wp_nav_menu_objects', 'trp_add_current_menu_item_css_class');
-function trp_add_current_menu_item_css_class( $items ){
-    global $TRP_LANGUAGE;
-    $trp = TRP_Translate_Press::get_trp_instance();
-    $url_converter = $trp->get_component('url_converter');
-    $trp_settings = $trp->get_component( 'settings' );
-    $settings = $trp_settings->get_settings();
+add_filter('wp_nav_menu_objects', 'etm_add_current_menu_item_css_class');
+function etm_add_current_menu_item_css_class( $items ){
+    global $ETM_LANGUAGE;
+    $etm = ETM_eTranslation_Multilingual::get_etm_instance();
+    $url_converter = $etm->get_component('url_converter');
+    $etm_settings = $etm->get_component( 'settings' );
+    $settings = $etm_settings->get_settings();
 
-    add_filter('pre_get_posts', 'trp_the_event_calendar_set_query_to_true', 2, 1);
+    add_filter('pre_get_posts', 'etm_the_event_calendar_set_query_to_true', 2, 1);
 
     foreach( $items as $item ){
-        if ( !( $TRP_LANGUAGE === $settings['default-language'] && isset( $settings['add-subdirectory-to-default-language']) && $settings['add-subdirectory-to-default-language'] !== 'yes'  ) &&
+        if ( !( $ETM_LANGUAGE === $settings['default-language'] && isset( $settings['add-subdirectory-to-default-language']) && $settings['add-subdirectory-to-default-language'] !== 'yes'  ) &&
             !in_array( 'current-menu-item', $item->classes ) && !in_array( 'menu-item-object-language_switcher', $item->classes ) && ( !empty($item->url) && $item->url !== '#')
         ){
-            $url_for_language = $url_converter->get_url_for_language( $TRP_LANGUAGE, $item->url );
+            $url_for_language = $url_converter->get_url_for_language( $ETM_LANGUAGE, $item->url );
             $url_for_language = strpos( $url_for_language, '#' ) ? substr( $url_for_language, 0, strpos( $url_for_language, '#' ) ) : $url_for_language;
             $cur_page_url = set_url_scheme( untrailingslashit( $url_converter->cur_page_url() ) );
 
@@ -1302,13 +1302,13 @@ function trp_add_current_menu_item_css_class( $items ){
                 $current_language = $settings['default-language'];
             }
 
-            if($current_language == $TRP_LANGUAGE){
+            if($current_language == $ETM_LANGUAGE){
                 $item->classes[] = 'current-language-menu-item';
             }
         }
     }
 
-    remove_filter('pre_get_posts', 'trp_the_event_calendar_set_query_to_true', 2);
+    remove_filter('pre_get_posts', 'etm_the_event_calendar_set_query_to_true', 2);
     return $items;
 }
 
@@ -1318,7 +1318,7 @@ function trp_add_current_menu_item_css_class( $items ){
  * @param $query
  * @return mixed
  */
-function trp_the_event_calendar_set_query_to_true($query){
+function etm_the_event_calendar_set_query_to_true($query){
     $query->set('tribe_suppress_query_filters', false);
 
     return $query;
@@ -1329,8 +1329,8 @@ function trp_the_event_calendar_set_query_to_true($query){
  * a class from the search form got translated
  */
 if( function_exists('initial_ETC') ) {
-    add_filter('trp_skip_gettext_processing', 'trp_exclude_xstore_search_class', 999, 4);
-    function trp_exclude_xstore_search_class($return, $translation, $text, $domain){
+    add_filter('etm_skip_gettext_processing', 'etm_exclude_xstore_search_class', 999, 4);
+    function etm_exclude_xstore_search_class($return, $translation, $text, $domain){
 
         if (version_compare(PHP_VERSION, '5.4.0', '>=')) {
             $callstack_functions = debug_backtrace(DEBUG_BACKTRACE_IGNORE_ARGS, 15);//set a limit if it is supported to improve performance
@@ -1356,8 +1356,8 @@ if( function_exists('initial_ETC') ) {
  * Add compatibility with Business Directory Plugin that requires to update permalinks when we are on other languages or else it will throw a 404 error
  */
 if( defined( 'WPBDP_PLUGIN_FILE' ) ) {
-    add_filter('trp_prevent_permalink_update_on_other_languages', 'trp_prevent_permalink_update_on_other_languages');
-    function trp_prevent_permalink_update_on_other_languages($bool){
+    add_filter('etm_prevent_permalink_update_on_other_languages', 'etm_prevent_permalink_update_on_other_languages');
+    function etm_prevent_permalink_update_on_other_languages($bool){
         return false;
     }
 }
@@ -1366,8 +1366,8 @@ if( defined( 'WPBDP_PLUGIN_FILE' ) ) {
 /**
  * Exclude some problematic gettext strings from being translated
  */
-add_filter('trp_skip_gettext_processing', 'trp_exclude_problematic_gettext_strings', 999, 4 );
-function trp_exclude_problematic_gettext_strings ( $return, $translation, $text, $domain ){
+add_filter('etm_skip_gettext_processing', 'etm_exclude_problematic_gettext_strings', 999, 4 );
+function etm_exclude_problematic_gettext_strings ( $return, $translation, $text, $domain ){
     $exclude_strings = array(
         // some examples on how to use: (domain is optional)
         //array( 'string' => 'Some Text', 'domain' => 'some-domain' )
@@ -1395,20 +1395,20 @@ function trp_exclude_problematic_gettext_strings ( $return, $translation, $text,
  *
  * When the IPN request comes do not translate anything outputted.
  * MyPOS expects "OK" string which does not have to be translated as regular string.
- * Paypal had trpst in the details sent.
+ * Paypal had etmst in the details sent.
  */
-add_action( 'woocommerce_api_request', 'trp_woo_wc_api_handle_api_request', 1 );
-function trp_woo_wc_api_handle_api_request( ){
-    add_filter( 'trp_skip_gettext_processing', '__return_true' );
-    add_filter( 'trp_stop_translating_page', '__return_true' );
+add_action( 'woocommerce_api_request', 'etm_woo_wc_api_handle_api_request', 1 );
+function etm_woo_wc_api_handle_api_request( ){
+    add_filter( 'etm_skip_gettext_processing', '__return_true' );
+    add_filter( 'etm_stop_translating_page', '__return_true' );
 }
 
 /**
  * Compatibility with WooCommerce Min/Max Quantities that wrongly add data-quantity attribute two times on the link and our parser breaks this. The update of the parser to 1.9.1 should render this redundant
  */
 if( class_exists('WC_Min_Max_Quantities') ) {
-    add_filter('woocommerce_loop_add_to_cart_link', 'trp_check_duplicate_quantity_attribute_on_link', 99, 2);
-    function trp_check_duplicate_quantity_attribute_on_link($html, $product){
+    add_filter('woocommerce_loop_add_to_cart_link', 'etm_check_duplicate_quantity_attribute_on_link', 99, 2);
+    function etm_check_duplicate_quantity_attribute_on_link($html, $product){
         $occurrences = substr_count($html, " data-quantity=");
         if ($occurrences > 1) {
             $html = preg_replace('/(data-quantity="\d+"(?!.*data-quantity="\d+"))/', '', $html, 1);
@@ -1421,8 +1421,8 @@ if( class_exists('WC_Min_Max_Quantities') ) {
 /**
  * Add here compatibility with search plugins
  */
-add_filter('trp_force_search', 'trp_force_search' );
-function trp_force_search( $bool ){
+add_filter('etm_force_search', 'etm_force_search' );
+function etm_force_search( $bool ){
     //force search in xstore theme ajax search
     if( isset( $_REQUEST['action'] ) && $_REQUEST['action'] === 'etheme_ajax_search' )
         $bool = true;
@@ -1442,16 +1442,16 @@ function trp_force_search( $bool ){
  */
 if( class_exists('WooCommerce_Product_Search_Service') ) {
 
-    add_filter('woocommerce_product_search_request_search_query', 'trp_woocommerce_product_search_compatibility');
+    add_filter('woocommerce_product_search_request_search_query', 'etm_woocommerce_product_search_compatibility');
 
-    function trp_woocommerce_product_search_compatibility($search_query)
+    function etm_woocommerce_product_search_compatibility($search_query)
     {
-        global $TRP_LANGUAGE;
-        $trp = TRP_Translate_Press::get_trp_instance();
-        $trp_settings = $trp->get_component('settings');
-        $settings = $trp_settings->get_settings();
+        global $ETM_LANGUAGE;
+        $etm = ETM_eTranslation_Multilingual::get_etm_instance();
+        $etm_settings = $etm->get_component('settings');
+        $settings = $etm_settings->get_settings();
 
-        if ($TRP_LANGUAGE !== $settings['default-language']) {
+        if ($ETM_LANGUAGE !== $settings['default-language']) {
             $title = isset($_REQUEST[WooCommerce_Product_Search_Service::TITLE]) ? intval($_REQUEST[WooCommerce_Product_Search_Service::TITLE]) > 0 : WooCommerce_Product_Search_Service::DEFAULT_TITLE;
             $excerpt = isset($_REQUEST[WooCommerce_Product_Search_Service::EXCERPT]) ? intval($_REQUEST[WooCommerce_Product_Search_Service::EXCERPT]) > 0 : WooCommerce_Product_Search_Service::DEFAULT_EXCERPT;
             $content = isset($_REQUEST[WooCommerce_Product_Search_Service::CONTENT]) ? intval($_REQUEST[WooCommerce_Product_Search_Service::CONTENT]) > 0 : WooCommerce_Product_Search_Service::DEFAULT_CONTENT;
@@ -1492,8 +1492,8 @@ if( class_exists('WooCommerce_Product_Search_Service') ) {
                 'on_sale' => $on_sale
             )));
 
-            $trp_search = $trp->get_component('search');
-            $include = $trp_search->get_post_ids_containing_search_term($search_query, null);
+            $etm_search = $etm->get_component('search');
+            $include = $etm_search->get_post_ids_containing_search_term($search_query, null);
             wp_cache_set($cache_key, $include, WooCommerce_Product_Search_Service::POST_CACHE_GROUP, WooCommerce_Product_Search_Service::CACHE_LIFETIME);
         }
 
@@ -1506,17 +1506,17 @@ if( class_exists('WooCommerce_Product_Search_Service') ) {
 /**
  * Strip tags manually from a problematic string coming from the My Listing theme
  */
- add_action('init', 'trp_mylisting_hook_exclude_string' );
- function trp_mylisting_hook_exclude_string(){
+ add_action('init', 'etm_mylisting_hook_exclude_string' );
+ function etm_mylisting_hook_exclude_string(){
      if( class_exists( 'MyListing\\App' ) ){
-         add_filter('gettext_with_context', 'trp_mylisting_exclude_string', 101, 4 );
+         add_filter('gettext_with_context', 'etm_mylisting_exclude_string', 101, 4 );
      }
  }
 
- function trp_mylisting_exclude_string( $translation, $text, $context, $domain ){
+ function etm_mylisting_exclude_string( $translation, $text, $context, $domain ){
 
      if( $domain == 'my-listing' && $text == 'my-listings' )
-         $translation = TRP_Translation_Manager::strip_gettext_tags( $translation );
+         $translation = ETM_Translation_Manager::strip_gettext_tags( $translation );
 
      return $translation;
 
@@ -1531,10 +1531,10 @@ if( class_exists('WooCommerce_Product_Search_Service') ) {
  * To replicate, set TP option "Add language to subdirectory" Yes and use Complianz plugin, wizard step 2,
  * to perform re-scan of cookies. This triggered the disconnect.
  */
-add_filter('googlesitekit_canonical_home_url', 'trp_googlesitekit_compatibility_home_url' );
-function trp_googlesitekit_compatibility_home_url( $url ) {
-    $trp = TRP_Translate_Press::get_trp_instance();
-    $url_converter = $trp->get_component('url_converter');
+add_filter('googlesitekit_canonical_home_url', 'etm_googlesitekit_compatibility_home_url' );
+function etm_googlesitekit_compatibility_home_url( $url ) {
+    $etm = ETM_eTranslation_Multilingual::get_etm_instance();
+    $url_converter = $etm->get_component('url_converter');
     return $url_converter->get_abs_home();
 }
 
@@ -1546,12 +1546,12 @@ function trp_googlesitekit_compatibility_home_url( $url ) {
  * there were no translations found. This results in duplicate row inserting and unnecessary automatic translation
  * usage.
  */
-add_filter('trp_get_existing_translations', 'trp_wpengine_query_limit_check', 10, 3 );
-function trp_wpengine_query_limit_check($dictionary, $prepared_query, $strings_array){
+add_filter('etm_get_existing_translations', 'etm_wpengine_query_limit_check', 10, 3 );
+function etm_wpengine_query_limit_check($dictionary, $prepared_query, $strings_array){
     if ( function_exists('is_wpe') && ( !defined ('WPE_GOVERNOR') || ( defined ('WPE_GOVERNOR') && WPE_GOVERNOR != false ) ) && strlen($prepared_query) >= 16000 ){
-        $trp = TRP_Translate_Press::get_trp_instance();
-        $trp_query = $trp->get_component( 'query' );
-        $trp_query->maybe_record_automatic_translation_error(array( 'details' => esc_html__("Detected long query limitation on WPEngine hosting. Some large pages may appear untranslated. You can remove limitation by adding the following to your site’s wp-config.php: define( 'WPE_GOVERNOR', false ); ", 'etranslation-multilingual')), true );
+        $etm = ETM_eTranslation_Multilingual::get_etm_instance();
+        $etm_query = $etm->get_component( 'query' );
+        $etm_query->maybe_record_automatic_translation_error(array( 'details' => esc_html__("Detected long query limitation on WPEngine hosting. Some large pages may appear untranslated. You can remove limitation by adding the following to your site’s wp-config.php: define( 'WPE_GOVERNOR', false ); ", 'etranslation-multilingual')), true );
         return false;
     }else{
         return $dictionary;
@@ -1565,9 +1565,9 @@ function trp_wpengine_query_limit_check($dictionary, $prepared_query, $strings_a
  * Dates are run through gettext and the this breaks further functions because of wrappings
  */
 if ( class_exists('WeDevs_Dokan')) {
-    add_filter( 'trp_skip_gettext_processing', 'trp_exclude_dokan_date_strings', 20, 4 );
+    add_filter( 'etm_skip_gettext_processing', 'etm_exclude_dokan_date_strings', 20, 4 );
 }
-function trp_exclude_dokan_date_strings($return, $translation, $text, $domain) {
+function etm_exclude_dokan_date_strings($return, $translation, $text, $domain) {
     $skip_text = array('Y/m/d g:i:s A', 'Y/m/d');
     if ($domain == 'dokan' && in_array( $text, $skip_text) ){
         return true;
@@ -1575,47 +1575,47 @@ function trp_exclude_dokan_date_strings($return, $translation, $text, $domain) {
     return $return;
 }
 
-function trp_add_language_to_pms_wppb_restriction_redirect_url( $redirect_url ){
+function etm_add_language_to_pms_wppb_restriction_redirect_url( $redirect_url ){
 
-    global $TRP_LANGUAGE;
+    global $ETM_LANGUAGE;
 
-    $trp = TRP_Translate_Press::get_trp_instance();
-    $url_converter = $trp->get_component('url_converter');
+    $etm = ETM_eTranslation_Multilingual::get_etm_instance();
+    $url_converter = $etm->get_component('url_converter');
 
-    return $url_converter->get_url_for_language( $TRP_LANGUAGE, $redirect_url, '' );
+    return $url_converter->get_url_for_language( $ETM_LANGUAGE, $redirect_url, '' );
 
 }
 
 if( defined( 'PMS_VERSION' ) )
-    add_filter( 'pms_restricted_post_redirect_url', 'trp_add_language_to_pms_wppb_restriction_redirect_url' );
+    add_filter( 'pms_restricted_post_redirect_url', 'etm_add_language_to_pms_wppb_restriction_redirect_url' );
 
 if( function_exists( 'wppb_plugin_init' ) )
-    add_filter( 'wppb_restricted_post_redirect_url', 'trp_add_language_to_pms_wppb_restriction_redirect_url' );
+    add_filter( 'wppb_restricted_post_redirect_url', 'etm_add_language_to_pms_wppb_restriction_redirect_url' );
 
 /**
  * Compatibility with wp-Typography
- * The $filters array is set to empty, so it does not affect the strings anymore in the function trp_remove_filters_wp_typography.
- * Then it is reset with a higher priority by calling the function process() inside the trp_add_filters_wp_typography function.
+ * The $filters array is set to empty, so it does not affect the strings anymore in the function etm_remove_filters_wp_typography.
+ * Then it is reset with a higher priority by calling the function process() inside the etm_add_filters_wp_typography function.
  */
 
 if(class_exists('WP_Typography')) {
-    add_action('plugins_loaded', 'trp_wp_typography');
+    add_action('plugins_loaded', 'etm_wp_typography');
 }
 
-function trp_wp_typography(){
-    global $TRP_LANGUAGE;
-    $trp = TRP_Translate_Press::get_trp_instance();
-    $trp_settings = $trp->get_component('settings');
-    $settings = $trp_settings->get_settings();
+function etm_wp_typography(){
+    global $ETM_LANGUAGE;
+    $etm = ETM_eTranslation_Multilingual::get_etm_instance();
+    $etm_settings = $etm->get_component('settings');
+    $settings = $etm_settings->get_settings();
 
-    if ($TRP_LANGUAGE !== $settings['default-language']) {
-        add_filter( 'typo_content_filters', 'trp_remove_filters_wp_typography' );
-        add_filter( 'trp_translated_html', 'trp_add_filters_wp_typography', 100000, 1 );
+    if ($ETM_LANGUAGE !== $settings['default-language']) {
+        add_filter( 'typo_content_filters', 'etm_remove_filters_wp_typography' );
+        add_filter( 'etm_translated_html', 'etm_add_filters_wp_typography', 100000, 1 );
         add_filter('run_wptexturize', '__return_null', 11);
     }
 }
 
-function trp_remove_filters_wp_typography($filters){
+function etm_remove_filters_wp_typography($filters){
     $filters = [];
 
     return $filters;
@@ -1623,7 +1623,7 @@ function trp_remove_filters_wp_typography($filters){
 
 
 
-function trp_add_filters_wp_typography($final_html){
+function etm_add_filters_wp_typography($final_html){
     $wpt= WP_Typography::get_instance();
 
     add_filter('run_wptexturize', '__return_false', 11);
@@ -1653,7 +1653,7 @@ if(function_exists('aioseo')){
                 foreach ($callstack_function["object"]->{"callbacks"}[10] as $key=>$value){
                     if(strpos($key, 'actionScheduler')){
                         if(array_key_exists('breadcrumbs_archiveFormat',  $callstack_function["object"]->{"callbacks"}[10][ $key ]["function"][0]->{"options"}->{"localized"}  )) {
-                            add_action( 'trp_before_running_hooks', 'trp_AIOSEO_remove_gettext_hooks', 10, 1 );
+                            add_action( 'etm_before_running_hooks', 'etm_AIOSEO_remove_gettext_hooks', 10, 1 );
                         }
                     }
                 }
@@ -1662,10 +1662,10 @@ if(function_exists('aioseo')){
     }
 }
 
-function trp_AIOSEO_remove_gettext_hooks($trp_loader){
-    $trp                = TRP_Translate_Press::get_trp_instance();
-    $translation_render = $trp->get_component( 'translation_render' );
-    $trp_loader->remove_hook( 'the_title', 'wrap_with_post_id', $translation_render );
+function etm_AIOSEO_remove_gettext_hooks($etm_loader){
+    $etm                = ETM_eTranslation_Multilingual::get_etm_instance();
+    $translation_render = $etm->get_component( 'translation_render' );
+    $etm_loader->remove_hook( 'the_title', 'wrap_with_post_id', $translation_render );
 }
 
 
@@ -1673,8 +1673,8 @@ function trp_AIOSEO_remove_gettext_hooks($trp_loader){
  * Compatibility with Elementor/Divi/WPBakery when "Use a subdirectory for the default language" is set to Yes
  * Making sure the page edited with Elementor/Divi/WPBakery appears in the default language instead of the first language from the Language list
  */
-add_filter( 'trp_needed_language', 'trp_page_builders_compatibility_with_subdirectory_for_default_language', 10, 4 );
-function trp_page_builders_compatibility_with_subdirectory_for_default_language( $needed_language, $lang_from_url, $settings, $trp) {
+add_filter( 'etm_needed_language', 'etm_page_builders_compatibility_with_subdirectory_for_default_language', 10, 4 );
+function etm_page_builders_compatibility_with_subdirectory_for_default_language( $needed_language, $lang_from_url, $settings, $etm) {
     if ( ( ( isset( $_GET['action'] ) && $_GET['action'] === 'elementor' ) || isset( $_GET['elementor-preview'] ) ) //Elementor
         || ( ( isset( $_GET['et_fb'] ) && $_GET['et_fb'] === '1' ) && ( isset( $_GET['PageSpeed'] ) && $_GET['PageSpeed'] === "off" ) ) //Divi
         || ( ( isset( $_GET['vc_action'] ) && $_GET['vc_action'] === 'vc_inline' ) || ( isset( $_GET['vc_editable'] ) && $_GET['vc_editable'] === 'true' ) ) ) { //WPBakery
@@ -1690,8 +1690,8 @@ function trp_page_builders_compatibility_with_subdirectory_for_default_language(
  * When automatic translation is active and we are on secondary language, clicking the Donate button will not redirect you to the confirmation page.
  * This happens because "Give WP" expects an admin ajax request to return "success" but TP translates it in another language.
  */
-add_filter( 'trp_stop_translating_page', 'trp_give_wp_compatibility', 10, 2 );
-function trp_give_wp_compatibility( $bool, $output ){
+add_filter( 'etm_stop_translating_page', 'etm_give_wp_compatibility', 10, 2 );
+function etm_give_wp_compatibility( $bool, $output ){
     if ( isset( $_REQUEST['give_ajax'] ) && $_REQUEST['give_ajax'] == 'true' ) {
         return true;
     }
@@ -1699,16 +1699,16 @@ function trp_give_wp_compatibility( $bool, $output ){
 }
 
 /*
- * Divi is filtering the locale which is in turn accessed on every gettext call by TranslatePress. Together these two things slow down the site to 20+ seconds
+ * Divi is filtering the locale which is in turn accessed on every gettext call by eTranslation Multilingual. Together these two things slow down the site to 20+ seconds
  * The fix is to remove the Divi hook and replace it with another one that caches the result, so it's fast.
  * Ideally this is a fix Divi should do, however, it negatively impacts TP, so we're doing it for them.
  */
-add_filter('locale', 'trp_remove_divi_locale_filter', 999999);
-function trp_remove_divi_locale_filter($lang){
+add_filter('locale', 'etm_remove_divi_locale_filter', 999999);
+function etm_remove_divi_locale_filter($lang){
     remove_filter( 'locale', 'et_divi_maybe_change_frontend_locale' );
     return $lang;
 }
-function trp_et_divi_maybe_change_frontend_locale( $locale ) {
+function etm_et_divi_maybe_change_frontend_locale( $locale ) {
     $cache_key = 'et_divi_option';
     $theme_options = wp_cache_get( $cache_key );
     $option_name   = 'divi_disable_translations';
@@ -1722,4 +1722,4 @@ function trp_et_divi_maybe_change_frontend_locale( $locale ) {
     }
     return $locale;
 }
-add_filter( 'locale', 'trp_et_divi_maybe_change_frontend_locale' );
+add_filter( 'locale', 'etm_et_divi_maybe_change_frontend_locale' );

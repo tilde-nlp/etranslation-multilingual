@@ -1,7 +1,7 @@
 <?php
 
-add_filter( 'trp_register_advanced_settings', 'trp_register_exclude_selectors', 110 );
-function trp_register_exclude_selectors( $settings_array ){
+add_filter( 'etm_register_advanced_settings', 'etm_register_exclude_selectors', 110 );
+function etm_register_exclude_selectors( $settings_array ){
     $settings_array[] = array(
         'name'          => 'exclude_translate_selectors',
         'type'          => 'list',
@@ -15,8 +15,8 @@ function trp_register_exclude_selectors( $settings_array ){
 }
 
 
-add_filter( 'trp_no_translate_selectors', 'trp_skip_translation_for_selectors' );
-function trp_skip_translation_for_selectors( $skip_selectors ){
+add_filter( 'etm_no_translate_selectors', 'etm_skip_translation_for_selectors' );
+function etm_skip_translation_for_selectors( $skip_selectors ){
     $option = get_option( 'etm_advanced_settings', true );
     $add_skip_selectors = array( );
     if ( isset( $option['exclude_translate_selectors'] ) && is_array( $option['exclude_translate_selectors']['selector'] ) ) {

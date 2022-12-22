@@ -1,27 +1,27 @@
 <?php
 
 
-class TRP_String_Translation_API_Regular {
+class ETM_String_Translation_API_Regular {
     protected $type = 'regular';
     protected $helper;
 
-    /* @var TRP_Query */
+    /* @var ETM_Query */
 
     public function __construct( $settings ) {
-        $this->helper = new TRP_String_Translation_Helper();
+        $this->helper = new ETM_String_Translation_Helper();
     }
 
 	public function get_strings(){
 
-		$trp                = TRP_Translate_Press::get_trp_instance();
-		$trp_query          = $trp->get_component( 'query' );
-		$trp_settings       = $trp->get_component( 'settings' );
-		$settings           = $trp_settings->get_settings();
+		$etm                = ETM_eTranslation_Multilingual::get_etm_instance();
+		$etm_query          = $etm->get_component( 'query' );
+		$etm_settings       = $etm->get_component( 'settings' );
+		$settings           = $etm_settings->get_settings();
 
 		$originals_results = $this->helper->get_originals_results(
 			$this->type,
-			$trp_query->get_table_name_for_original_strings(),
-			$trp_query->get_table_name_for_original_meta(),
+			$etm_query->get_table_name_for_original_strings(),
+			$etm_query->get_table_name_for_original_meta(),
 			'get_table_name',
 			array( 'status' => 'status', 'block_type' => 'translation-block-type' )
 		);
@@ -33,14 +33,14 @@ class TRP_String_Translation_API_Regular {
 				if ( $language === $settings['default-language'] ) {
 					continue;
 				}
-				$dictionaries[ $language ] = $trp_query->get_string_rows( $originals_results['original_ids'], array(), $language, 'OBJECT_K', true );
+				$dictionaries[ $language ] = $etm_query->get_string_rows( $originals_results['original_ids'], array(), $language, 'OBJECT_K', true );
 			}
-			$dictionary_by_original = trp_sort_dictionary_by_original( $dictionaries, $this->type, null, null );
+			$dictionary_by_original = etm_sort_dictionary_by_original( $dictionaries, $this->type, null, null );
 		}else{
 			$dictionary_by_original = array();
 		}
 
-		echo trp_safe_json_encode( array( // phpcs:ignore
+		echo etm_safe_json_encode( array( // phpcs:ignore
 			'dictionary' => $dictionary_by_original,
 			'totalItems' => $originals_results['total_item_count']
 		) );

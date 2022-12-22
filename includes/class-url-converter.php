@@ -1,18 +1,18 @@
 <?php
 
 /**
- * Class TRP_Url_Converter
+ * Class ETM_Url_Converter
  *
  * Manages urls of translated pages.
  */
-class TRP_Url_Converter {
+class ETM_Url_Converter {
 
     protected $absolute_home;
     protected $settings;
     protected $admin_url;
 
     /**
-     * TRP_Url_Converter constructor.
+     * ETM_Url_Converter constructor.
      *
      * @param array $settings       Settings option.
      */
@@ -34,21 +34,21 @@ class TRP_Url_Converter {
      * @return string
      */
     public function add_language_to_home_url( $url, $path, $orig_scheme, $blog_id ){
-        global $TRP_LANGUAGE;
+        global $ETM_LANGUAGE;
 
-        //if this is not set then don't do anything as this is an exception/error and $TRP_LANGUAGE should always be set
-        if( empty( $TRP_LANGUAGE ) )
+        //if this is not set then don't do anything as this is an exception/error and $ETM_LANGUAGE should always be set
+        if( empty( $ETM_LANGUAGE ) )
             return $url;
 
-        if ( isset( $this->settings['add-subdirectory-to-default-language'] ) && $this->settings['add-subdirectory-to-default-language'] == 'no' && $TRP_LANGUAGE == $this->settings['default-language'] ) {
+        if ( isset( $this->settings['add-subdirectory-to-default-language'] ) && $this->settings['add-subdirectory-to-default-language'] == 'no' && $ETM_LANGUAGE == $this->settings['default-language'] ) {
             return $url;
         }
 
-        if( apply_filters( 'trp_add_language_to_home_url_check_for_admin', true, $url, $path ) &&
+        if( apply_filters( 'etm_add_language_to_home_url_check_for_admin', true, $url, $path ) &&
             ( is_customize_preview() || $this->is_admin_request()  || $this->is_sitemap_path( $path ) || $this->url_is_file( $path ) ) )
             return $url;
 
-        $url_slug = $this->get_url_slug( $TRP_LANGUAGE );
+        $url_slug = $this->get_url_slug( $ETM_LANGUAGE );
 
         //if this is not set then don't do anything as this is an exception/error if we don't have an $url_slug we don't need to do anything
         if( empty( $url_slug ) )
@@ -56,7 +56,7 @@ class TRP_Url_Converter {
 
         $abs_home = $this->get_abs_home();
 
-        if ( trp_force_slash_at_end_of_link( $this->settings ) ) {
+        if ( etm_force_slash_at_end_of_link( $this->settings ) ) {
             $new_url = trailingslashit( trailingslashit( $abs_home ) . $url_slug );
         } else {
             $new_url = trailingslashit( $abs_home ) . $url_slug;
@@ -67,7 +67,7 @@ class TRP_Url_Converter {
             $new_url = trailingslashit($new_url) . ltrim( $path, '/');
         }
 
-        return apply_filters( 'trp_home_url', $new_url, $abs_home, $TRP_LANGUAGE, $path, $url );
+        return apply_filters( 'etm_home_url', $new_url, $abs_home, $ETM_LANGUAGE, $path, $url );
     }
 
     /**
@@ -157,13 +157,13 @@ class TRP_Url_Converter {
 
         // exclude hreflang for URL
         $default_language = $this->settings["default-language"];
-        $original_url     = str_replace( '#TRPLINKPROCESSED', '', $this->get_url_for_language( $default_language ) );
-        if ( apply_filters( 'trp-exclude-hreflang', false, $original_url ) ) {
+        $original_url     = str_replace( '#ETMLINKPROCESSED', '', $this->get_url_for_language( $default_language ) );
+        if ( apply_filters( 'etm-exclude-hreflang', false, $original_url ) ) {
             return;
         }
 
         $languages = $this->settings['publish-languages'];
-        if ( isset( $_GET['trp-edit-translation'] ) && $_GET['trp-edit-translation'] == 'preview' ) {
+        if ( isset( $_GET['etm-edit-translation'] ) && $_GET['etm-edit-translation'] == 'preview' ) {
             $languages = $this->settings['translation-languages'];
         }
 
@@ -171,17 +171,17 @@ class TRP_Url_Converter {
             $hreflang_duplicates = array();
             $hreflang_duplicates_region_independent  = array();
         foreach ( $languages as $language ) {
-            if( apply_filters( 'trp_add_country_hreflang_tags', true ) ){
+            if( apply_filters( 'etm_add_country_hreflang_tags', true ) ){
                 // hreflang should have - instead of _ . For example: en-EN, not en_EN like the locale
                 $hreflang = str_replace( '_', '-', $language );
-                $hreflang = apply_filters( 'trp_hreflang', $hreflang, $language );
+                $hreflang = apply_filters( 'etm_hreflang', $hreflang, $language );
                 $hreflang_duplicates[] = $hreflang;
                 echo '<link rel="alternate" hreflang="' . esc_attr( $hreflang ) . '" href="' . esc_url( $this->get_url_for_language( $language ) ) . '"/>' . "\n";
             }
 
-            if ( apply_filters( 'trp_add_region_independent_hreflang_tags', true ) ) {
+            if ( apply_filters( 'etm_add_region_independent_hreflang_tags', true ) ) {
                 $language_independent_hreflang = strtok( $language, '_' );
-                $language_independent_hreflang = apply_filters( 'trp_hreflang', $language_independent_hreflang, $language);
+                $language_independent_hreflang = apply_filters( 'etm_hreflang', $language_independent_hreflang, $language);
                 if ( !empty( $language_independent_hreflang ) && !in_array( $language_independent_hreflang, $region_independent_languages ) ) {
                     $region_independent_languages[] = $language_independent_hreflang;
                     $hreflang_duplicates_region_independent[$language] = '<link rel="alternate" hreflang="' . esc_attr( $language_independent_hreflang ) . '" href="' . esc_url( $this->get_url_for_language( $language ) ) . '"/>' . "\n";
@@ -192,7 +192,7 @@ class TRP_Url_Converter {
 
         foreach ($languages as $language){
             $language_hreflang = strtok( $language, '_' );
-            $language_hreflang = apply_filters( 'trp_hreflang', $language_hreflang, $language );
+            $language_hreflang = apply_filters( 'etm_hreflang', $language_hreflang, $language );
             if (!in_array($language_hreflang, $hreflang_duplicates)){
                 if(isset($hreflang_duplicates_region_independent[ $language ] )) {
                     echo $hreflang_duplicates_region_independent[ $language ]; /* phpcs:ignore */ /* escaped inside the array */
@@ -200,8 +200,8 @@ class TRP_Url_Converter {
             }
         }
 
-            if ( isset( $this->settings['trp_advanced_settings']['enable_hreflang_xdefault'] ) && $this->settings['trp_advanced_settings']['enable_hreflang_xdefault'] != 'disabled' ) {
-                $default_lang = $this->settings['trp_advanced_settings']['enable_hreflang_xdefault'];
+            if ( isset( $this->settings['etm_advanced_settings']['enable_hreflang_xdefault'] ) && $this->settings['etm_advanced_settings']['enable_hreflang_xdefault'] != 'disabled' ) {
+                $default_lang = $this->settings['etm_advanced_settings']['enable_hreflang_xdefault'];
                 echo '<link rel="alternate" hreflang="x-default" href="' . esc_url( $this->get_url_for_language( $default_lang ) ) . '"/>' . "\n";
             }
         }
@@ -213,7 +213,7 @@ class TRP_Url_Converter {
 
     public function replace_iso_2_with_iso_3_for_hreflang($hreflang, $language = null){
 
-        $hreflang_iso_1 = apply_filters('trp_add_hreflang_correct_iso_code', array(
+        $hreflang_iso_1 = apply_filters('etm_add_hreflang_correct_iso_code', array(
             'bel' => 'be'
         ));
 
@@ -233,14 +233,14 @@ class TRP_Url_Converter {
      * @return string
      */
     public function change_lang_attr_in_html_tag( $output ){
-        global $TRP_LANGUAGE;
+        global $ETM_LANGUAGE;
         $lang = get_bloginfo('language');
-        if ( $lang && !empty($TRP_LANGUAGE) ) {
-            if ( apply_filters( 'trp_add_default_lang_tags', true ) ) {
-                $output = str_replace( 'lang="' . $lang . '"', 'lang="' . str_replace( '_', '-', $TRP_LANGUAGE ) . '"', $output );
+        if ( $lang && !empty($ETM_LANGUAGE) ) {
+            if ( apply_filters( 'etm_add_default_lang_tags', true ) ) {
+                $output = str_replace( 'lang="' . $lang . '"', 'lang="' . str_replace( '_', '-', $ETM_LANGUAGE ) . '"', $output );
             }
-            if ( apply_filters( 'trp_add_regional_lang_tags', true ) ) {
-                $language = strtok($TRP_LANGUAGE, '_');
+            if ( apply_filters( 'etm_add_regional_lang_tags', true ) ) {
+                $language = strtok($ETM_LANGUAGE, '_');
                 $output = str_replace( 'lang="' . $lang . '"', 'lang="' . $language . '"', $output );
 
             }
@@ -256,8 +256,8 @@ class TRP_Url_Converter {
      * adds a new attribute in footer, tp_language_lang, for Automatic User Language Detection to rely on for finding the current language
      */
     public function add_tp_language_lang_attribute(){
-        global $TRP_LANGUAGE;
-        $html ='<template id="tp-language" data-tp-language="'. esc_attr($TRP_LANGUAGE) . '"></template>';
+        global $ETM_LANGUAGE;
+        $html ='<template id="tp-language" data-tp-language="'. esc_attr($ETM_LANGUAGE) . '"></template>';
         echo $html; /* phpcs:ignore *///ignored because the html is constructed by us
     }
 
@@ -268,111 +268,111 @@ class TRP_Url_Converter {
      *
      * @param string $language Language code that we want to translate into.
      * @param string $url Url to encode.
-     * @param string $trp_link_is_processed
+     * @param string $etm_link_is_processed
      * @return string
      */
 
-    public function get_url_for_language ( $language = null, $url = null, $trp_link_is_processed = '#TRPLINKPROCESSED') {
+    public function get_url_for_language ( $language = null, $url = null, $etm_link_is_processed = '#ETMLINKPROCESSED') {
 	    $debug = false;
 	    // initializations
-	    global $TRP_LANGUAGE;
-        global  $trp_current_url_term_slug, $trp_current_url_taxonomy;//these are globals that we set on the 'request' filter in our SEO addon
+	    global $ETM_LANGUAGE;
+        global  $etm_current_url_term_slug, $etm_current_url_taxonomy;//these are globals that we set on the 'request' filter in our SEO addon
 
 	    if ( empty($url) ){
 		    $url = $this->cur_page_url();
 	    }
 
-	    if(apply_filters('trp_skip_url_for_language', false, $url)){
+	    if(apply_filters('etm_skip_url_for_language', false, $url)){
 		    return (string)$url;
 	    }
 
-        $hash = hash( 'md4', (string)$language . (string)$url . (string)$trp_link_is_processed . (string)$TRP_LANGUAGE );
+        $hash = hash( 'md4', (string)$language . (string)$url . (string)$etm_link_is_processed . (string)$ETM_LANGUAGE );
         // set $new_url to false when debugging and developing new features
-        $new_url = trp_cache_get('get_url_for_language_' . $hash, 'trp');
+        $new_url = etm_cache_get('get_url_for_language_' . $hash, 'etm');
         if ( $new_url !== false ){
             return $new_url;
         }
 
-        $trp_language_copy = $TRP_LANGUAGE;
+        $etm_language_copy = $ETM_LANGUAGE;
         if ( empty( $language ) ) {
-            $language = $TRP_LANGUAGE;
+            $language = $ETM_LANGUAGE;
         }
 
-        $url_obj = trp_cache_get('url_obj_' . hash('md4', $url), 'trp');
+        $url_obj = etm_cache_get('url_obj_' . hash('md4', $url), 'etm');
         if( $url_obj === false ){
-            $url_obj = new \TranslatePress\Uri($url);
-            wp_cache_set('url_obj_' . hash('md4', $url), $url_obj, 'trp' );
+            $url_obj = new \eTranslationMultilingual\Uri($url);
+            wp_cache_set('url_obj_' . hash('md4', $url), $url_obj, 'etm' );
         }
 
-        $abs_home_url_obj = trp_cache_get('url_obj_' . hash('md4',  $this->get_abs_home() ), 'trp');
+        $abs_home_url_obj = etm_cache_get('url_obj_' . hash('md4',  $this->get_abs_home() ), 'etm');
         if( $abs_home_url_obj === false ){
-            $abs_home_url_obj = new \TranslatePress\Uri( $this->get_abs_home() );
-            wp_cache_set('url_obj_' . hash('md4', $this->get_abs_home()), $abs_home_url_obj, 'trp' );
+            $abs_home_url_obj = new \eTranslationMultilingual\Uri( $this->get_abs_home() );
+            wp_cache_set('url_obj_' . hash('md4', $this->get_abs_home()), $abs_home_url_obj, 'etm' );
         }
 
-        if( $TRP_LANGUAGE == $this->settings['default-language'] ){
-            $trp_link_is_processed = '';
+        if( $ETM_LANGUAGE == $this->settings['default-language'] ){
+            $etm_link_is_processed = '';
         }
 
         // actual logic of the function
 
         if ( $this->is_sitemap_path('') ){
-            trp_bulk_debug($debug, array('url' => $url, 'abort' => 'is file'));
-            wp_cache_set('get_url_for_language_' . $hash, $url . $trp_link_is_processed, 'trp');
-            return $url . $trp_link_is_processed; //abort for files
+            etm_bulk_debug($debug, array('url' => $url, 'abort' => 'is file'));
+            wp_cache_set('get_url_for_language_' . $hash, $url . $etm_link_is_processed, 'etm');
+            return $url . $etm_link_is_processed; //abort for files
         }
 
         if ( $this->url_is_file($url) ){
-            trp_bulk_debug($debug, array('url' => $url, 'abort' => 'is file'));
-            wp_cache_set('get_url_for_language_' . $hash, $url . $trp_link_is_processed, 'trp');
-            return $url . $trp_link_is_processed; //abort for files
+            etm_bulk_debug($debug, array('url' => $url, 'abort' => 'is file'));
+            wp_cache_set('get_url_for_language_' . $hash, $url . $etm_link_is_processed, 'etm');
+            return $url . $etm_link_is_processed; //abort for files
         }
 
         if ( !$url_obj->isSchemeless() && $url_obj->getScheme() != 'http' && $url_obj->getScheme() != 'https' ){
-            trp_bulk_debug($debug, array('url' => $url, 'abort' => "is different scheme ".$url_obj->getScheme()));
-            wp_cache_set('get_url_for_language_' . $hash, $url . $trp_link_is_processed, 'trp');
-            return $url . $trp_link_is_processed; // abort for non-http/https links
+            etm_bulk_debug($debug, array('url' => $url, 'abort' => "is different scheme ".$url_obj->getScheme()));
+            wp_cache_set('get_url_for_language_' . $hash, $url . $etm_link_is_processed, 'etm');
+            return $url . $etm_link_is_processed; // abort for non-http/https links
         }
 
         if ( $url_obj->isSchemeless() && !$url_obj->getPath() ){
-            trp_bulk_debug($debug, array('url' => $url, 'abort' => "is anchor or has get params"));
-            wp_cache_set('get_url_for_language_' . $hash, $url, 'trp');
+            etm_bulk_debug($debug, array('url' => $url, 'abort' => "is anchor or has get params"));
+            wp_cache_set('get_url_for_language_' . $hash, $url, 'etm');
             return $url; // abort for anchors or params only.
         }
 
         if ( $url_obj->getHost() && $abs_home_url_obj->getHost() && $url_obj->getHost() != $abs_home_url_obj->getHost() ){
-            trp_bulk_debug($debug, array('url' => $url, 'abort' => "is external url "));
-            wp_cache_set('get_url_for_language_' . $hash, $url, 'trp');
+            etm_bulk_debug($debug, array('url' => $url, 'abort' => "is external url "));
+            wp_cache_set('get_url_for_language_' . $hash, $url, 'etm');
             return $url; // abort for external url's
         }
 
         if( $this->get_lang_from_url_string($url) === null && $this->settings['default-language'] === $language && $this->settings['add-subdirectory-to-default-language'] !== 'yes' ){
-            trp_bulk_debug($debug, array('url' => $url, 'abort' => "URL already has the correct language added to it and default language has subdir"));
-            wp_cache_set('get_url_for_language_' . $hash, $url, 'trp');
+            etm_bulk_debug($debug, array('url' => $url, 'abort' => "URL already has the correct language added to it and default language has subdir"));
+            wp_cache_set('get_url_for_language_' . $hash, $url, 'etm');
             return $url;
         }
 
         if( $this->get_lang_from_url_string($url) === $language ){
-            trp_bulk_debug($debug, array('url' => $url, 'abort' => "URL already has the correct language added to it"));
-            wp_cache_set('get_url_for_language_' . $hash, $url, 'trp');
+            etm_bulk_debug($debug, array('url' => $url, 'abort' => "URL already has the correct language added to it"));
+            wp_cache_set('get_url_for_language_' . $hash, $url, 'etm');
             return $url;
         }
 
         // maybe find the post_id for the current URL
-        $possible_post_id = trp_cache_get( 'possible_post_id_'. hash('md4', $url ), 'trp' );
+        $possible_post_id = etm_cache_get( 'possible_post_id_'. hash('md4', $url ), 'etm' );
         if ( $possible_post_id ){
             $post_id = $possible_post_id;
-            trp_bulk_debug($debug, array('url' => $url, 'found post id' => $post_id, 'for language' => $TRP_LANGUAGE));
+            etm_bulk_debug($debug, array('url' => $url, 'found post id' => $post_id, 'for language' => $ETM_LANGUAGE));
         } else {
             $post_id = url_to_postid( $url );
-            wp_cache_set( 'possible_post_id_' . hash('md4', $url ), $post_id, 'trp' );
-            if ( $post_id ) { trp_bulk_debug($debug, array('url' => $url, 'found post id' => $post_id, 'for default language' => $TRP_LANGUAGE)); }
+            wp_cache_set( 'possible_post_id_' . hash('md4', $url ), $post_id, 'etm' );
+            if ( $post_id ) { etm_bulk_debug($debug, array('url' => $url, 'found post id' => $post_id, 'for default language' => $ETM_LANGUAGE)); }
 
             if ( $post_id == 0 ) {
                 /* try again but this time switch to default language home_url
 	            *  becasue url_to_postid() uses the global language setting to accurately retrieve a post ID
                 */
-                $TRP_LANGUAGE = $this->settings['default-language'];
+                $ETM_LANGUAGE = $this->settings['default-language'];
 
                 /* In order to accurately find the posst ID the passed URL to url_to_postid() needs to be accurate
 	            * if the option add subdir to default language is on we need to add that to the URL
@@ -383,16 +383,16 @@ class TRP_Url_Converter {
 					$possible_url = $this->add_language_to_home_url($url, $url_obj->getPath(), $url_obj->getScheme(), get_current_blog_id() );
 				}
                 $post_id = url_to_postid( $possible_url );
-                wp_cache_set( 'possible_post_id_' . hash('md4', $possible_url ), $post_id, 'trp' );
-                if($post_id){ trp_bulk_debug($debug, array('url' => $url, 'found post id' => $post_id, 'for default language' => $TRP_LANGUAGE)); }
-                $TRP_LANGUAGE = $trp_language_copy;
+                wp_cache_set( 'possible_post_id_' . hash('md4', $possible_url ), $post_id, 'etm' );
+                if($post_id){ etm_bulk_debug($debug, array('url' => $url, 'found post id' => $post_id, 'for default language' => $ETM_LANGUAGE)); }
+                $ETM_LANGUAGE = $etm_language_copy;
             }
         }
 
-        $TRP_LANGUAGE = $this->get_lang_from_url_string( $url );
+        $ETM_LANGUAGE = $this->get_lang_from_url_string( $url );
 
-        if ($TRP_LANGUAGE == null){
-            $TRP_LANGUAGE = $this->settings['default-language'];
+        if ($ETM_LANGUAGE == null){
+            $ETM_LANGUAGE = $this->settings['default-language'];
         }
 
         $new_url_has_been_determined = false;
@@ -405,7 +405,7 @@ class TRP_Url_Converter {
              * We need the permalink based on the language IN THE URL, not the one passed to this function,
              * as that represents the language to be translated into.
              *
-             * WE ARE NOT USING \TranslatePress\Uri
+             * WE ARE NOT USING \eTranslationMultilingual\Uri
              * due to URL's having extra path elements after the permalink slug. Using the class would strip those end points.
              *
              */
@@ -428,30 +428,30 @@ class TRP_Url_Converter {
                 }
             }
 
-            $TRP_LANGUAGE = $language;
+            $ETM_LANGUAGE = $language;
 
             $new_url = trailingslashit( get_permalink($post_id) ) . ltrim($arguments, '/');
-            trp_bulk_debug($debug, array('url' => $url, 'new url' => $new_url, 'found post id' => $post_id, 'url type' => 'based on permalink', 'for language' => $TRP_LANGUAGE));
-            $TRP_LANGUAGE = $trp_language_copy;
+            etm_bulk_debug($debug, array('url' => $url, 'new url' => $new_url, 'found post id' => $post_id, 'url type' => 'based on permalink', 'for language' => $ETM_LANGUAGE));
+            $ETM_LANGUAGE = $etm_language_copy;
 
             $new_url_has_been_determined = true;
 
         }
 
-        if( isset( $trp_current_url_term_slug ) && isset($trp_current_url_taxonomy) && $new_url_has_been_determined === false){
+        if( isset( $etm_current_url_term_slug ) && isset($etm_current_url_taxonomy) && $new_url_has_been_determined === false){
             // check here if it is a term link
-            $current_term_link = get_term_link( $trp_current_url_term_slug, $trp_current_url_taxonomy);
+            $current_term_link = get_term_link( $etm_current_url_term_slug, $etm_current_url_taxonomy);
             if (!is_wp_error($current_term_link)){
-                $language_to_replace = $TRP_LANGUAGE;
-                $TRP_LANGUAGE = $language;
-                $current_term_link= apply_filters( 'trp_get_url_for_language', $current_term_link, $url, $language_to_replace, $this->get_abs_home(), $this->get_lang_from_url_string($url), $this->get_url_slug( $language ) );
-                $check_term_link = get_term_link($trp_current_url_term_slug, $trp_current_url_taxonomy);
+                $language_to_replace = $ETM_LANGUAGE;
+                $ETM_LANGUAGE = $language;
+                $current_term_link= apply_filters( 'etm_get_url_for_language', $current_term_link, $url, $language_to_replace, $this->get_abs_home(), $this->get_lang_from_url_string($url), $this->get_url_slug( $language ) );
+                $check_term_link = get_term_link($etm_current_url_term_slug, $etm_current_url_taxonomy);
                 if (!is_wp_error($check_term_link) && strpos(urldecode( $url ), $current_term_link) === 0) {
                     $new_url = str_replace( $current_term_link, $check_term_link, urldecode( $url ) );
-                    $new_url = apply_filters( 'trp_get_url_for_language', $new_url, $url, $language, $this->get_abs_home(), $this->get_lang_from_url_string($url), $this->get_url_slug( $language ) );
+                    $new_url = apply_filters( 'etm_get_url_for_language', $new_url, $url, $language, $this->get_abs_home(), $this->get_lang_from_url_string($url), $this->get_url_slug( $language ) );
                     $new_url_has_been_determined = true;
                 }
-                $TRP_LANGUAGE = $trp_language_copy;
+                $ETM_LANGUAGE = $etm_language_copy;
             }
         }
 
@@ -472,13 +472,13 @@ class TRP_Url_Converter {
         if( is_home() && $url_stripped === $posts_archive_link && ( isset( $_SERVER['REQUEST_URI'] ) && strpos( esc_url_raw( $_SERVER['REQUEST_URI'] ), 'sitemap') === false && strpos( esc_url_raw( $_SERVER['REQUEST_URI'] ), '.xml') === false ) &&
         $new_url_has_been_determined === false)
         {//for some reason in yoast sitemap is_home() is true ..so we need to check if we are not in the sitemap itself
-            $TRP_LANGUAGE = $language;
+            $ETM_LANGUAGE = $language;
             if ( empty($url_obj->getQuery()) ) {
 	            $new_url = $this->maybe_add_pagination_to_blog_page( trailingslashit(get_post_type_archive_link( 'post' ) ));
             } else {
 	            $new_url = rtrim( $this->maybe_add_pagination_to_blog_page( get_post_type_archive_link( 'post' ) ), '/') . '/?' . $url_obj->getQuery();
             }
-            $TRP_LANGUAGE = $trp_language_copy;
+            $ETM_LANGUAGE = $etm_language_copy;
 
             $new_url_has_been_determined = true;
         }
@@ -495,7 +495,7 @@ class TRP_Url_Converter {
                 $new_url_obj->setPath(trailingslashit(trailingslashit($abs_home_url_obj->getPath()) . trailingslashit($this->get_url_slug($language)) . $abs_home_considered_path));
                 $new_url = $new_url_obj->getUri();
 
-                trp_bulk_debug($debug, array('url' => $url, 'new url' => $new_url, 'lang' => $language, 'url type' => 'custom url without language parameter'));
+                etm_bulk_debug($debug, array('url' => $url, 'new url' => $new_url, 'lang' => $language, 'url type' => 'custom url without language parameter'));
             } else {
                 // these have language param in them and we need to replace them with the new language
                 $abs_home_considered_path = trim(str_replace($abs_home_url_obj->getPath(), '', $url_obj->getPath()), '/');
@@ -512,39 +512,39 @@ class TRP_Url_Converter {
                 $new_url_obj->setPath(trailingslashit(trailingslashit($abs_home_url_obj->getPath()) . $url_lang_slug . ltrim($no_lang_orig_path, '/')));
                 $new_url = $new_url_obj->getUri();
 
-                trp_bulk_debug($debug, array('url' => $url, 'new url' => $new_url, 'lang' => $language, 'url type' => 'custom url with language', 'abs home path' => $abs_home_url_obj->getPath()));
+                etm_bulk_debug($debug, array('url' => $url, 'new url' => $new_url, 'lang' => $language, 'url type' => 'custom url with language', 'abs home path' => $abs_home_url_obj->getPath()));
 
                 $new_url_has_been_determined = true;
 
             }
         }
-        $TRP_LANGUAGE = $trp_language_copy;
+        $ETM_LANGUAGE = $etm_language_copy;
 
         /* fix links for woocommerce on language switcher for product categories and product tags */
         if( class_exists( 'WooCommerce' ) ){
             $english_woocommerce_slugs = array('product-category', 'product-tag', 'product');
             foreach ($english_woocommerce_slugs as $english_woocommerce_slug){
                 // current woo slugs are based on the localized default language OR the current language
-                $current_slug = trp_get_transient( 'tp_'.$english_woocommerce_slug.'_'. $this->settings['default-language'] );
+                $current_slug = etm_get_transient( 'tp_'.$english_woocommerce_slug.'_'. $this->settings['default-language'] );
                 if( $current_slug === false ){
-                    $current_slug = trp_x( $english_woocommerce_slug, 'slug', 'woocommerce', $this->settings['default-language'] );
+                    $current_slug = etm_x( $english_woocommerce_slug, 'slug', 'woocommerce', $this->settings['default-language'] );
                     set_transient( 'tp_'.$english_woocommerce_slug.'_'. $this->settings['default-language'], $current_slug, 12 * HOUR_IN_SECONDS );
                 }
 
                 //only replace url here if we are in a default Woocommerce case, meaning the slug in Permalinks page is not changed manually by the user
-                if( $this->trp_get_woocommerce_saved_permalink($english_woocommerce_slug) === $current_slug ) {
+                if( $this->etm_get_woocommerce_saved_permalink($english_woocommerce_slug) === $current_slug ) {
 
                     if (strpos($new_url, '/' . $current_slug . '/') === false) {
-                        $current_slug = trp_get_transient('tp_' . $english_woocommerce_slug . '_' . $TRP_LANGUAGE);
+                        $current_slug = etm_get_transient('tp_' . $english_woocommerce_slug . '_' . $ETM_LANGUAGE);
                         if ($current_slug === false) {
-                            $current_slug = trp_x($english_woocommerce_slug, 'slug', 'woocommerce', $TRP_LANGUAGE);
-                            set_transient('tp_' . $english_woocommerce_slug . '_' . $TRP_LANGUAGE, $current_slug, 12 * HOUR_IN_SECONDS);
+                            $current_slug = etm_x($english_woocommerce_slug, 'slug', 'woocommerce', $ETM_LANGUAGE);
+                            set_transient('tp_' . $english_woocommerce_slug . '_' . $ETM_LANGUAGE, $current_slug, 12 * HOUR_IN_SECONDS);
                         }
                     }
 
-                    $translated_slug = trp_get_transient('tp_' . $english_woocommerce_slug . '_' . $language);
+                    $translated_slug = etm_get_transient('tp_' . $english_woocommerce_slug . '_' . $language);
                     if ($translated_slug === false) {
-                        $translated_slug = trp_x($english_woocommerce_slug, 'slug', 'woocommerce', $language);
+                        $translated_slug = etm_x($english_woocommerce_slug, 'slug', 'woocommerce', $language);
                         set_transient('tp_' . $english_woocommerce_slug . '_' . $language, $translated_slug, 12 * HOUR_IN_SECONDS);
                     }
                     $new_url = str_replace('/' . $current_slug . '/', '/' . $translated_slug . '/', $new_url);
@@ -556,9 +556,9 @@ class TRP_Url_Converter {
             $new_url = $url;
         }
 
-	    $new_url = apply_filters( 'trp_get_url_for_language', $new_url, $url, $language, $this->get_abs_home(), $this->get_lang_from_url_string($url), $this->get_url_slug( $language ) );
-        wp_cache_set('get_url_for_language_' . $hash, $new_url . $trp_link_is_processed, 'trp');
-        return $new_url . $trp_link_is_processed ;
+	    $new_url = apply_filters( 'etm_get_url_for_language', $new_url, $url, $language, $this->get_abs_home(), $this->get_lang_from_url_string($url), $this->get_url_slug( $language ) );
+        wp_cache_set('get_url_for_language_' . $hash, $new_url . $etm_link_is_processed, 'etm');
+        return $new_url . $etm_link_is_processed ;
 
     }
 
@@ -569,8 +569,8 @@ class TRP_Url_Converter {
      * @return bool
      */
     public function url_is_file( $url = null ){
-        $trp = TRP_Translate_Press::get_trp_instance();
-        $translation_render = $trp->get_component("translation_render");
+        $etm = ETM_eTranslation_Multilingual::get_etm_instance();
+        $translation_render = $etm->get_component("translation_render");
 
         if ( empty( $url ) || $translation_render->is_external_link($url) ){
             $return = false;
@@ -580,7 +580,7 @@ class TRP_Url_Converter {
             }else {
                 $path = trailingslashit( ABSPATH ) . str_replace( untrailingslashit( $this->get_abs_home() ), '', $url );
 
-                if(apply_filters('trp_is_file', true, $path)) {
+                if(apply_filters('etm_is_file', true, $path)) {
                     $return = is_file( $path );
                 }else{
                     $return = true;
@@ -588,11 +588,11 @@ class TRP_Url_Converter {
             }
         }
 
-        return apply_filters( 'trp_url_is_file', $return, $url, $this->get_abs_home() );
+        return apply_filters( 'etm_url_is_file', $return, $url, $this->get_abs_home() );
     }
 
     public function does_url_contains_array($return, $path){
-        $elements_to_avoid = apply_filters( 'trp_elements_to_avoid_when_is_file_is_called', array("index.php", "/../"));
+        $elements_to_avoid = apply_filters( 'etm_elements_to_avoid_when_is_file_is_called', array("index.php", "/../"));
         foreach ($elements_to_avoid as $element){
             if( strpos($path, $element) !== false ){
                 $return = false;
@@ -646,7 +646,7 @@ class TRP_Url_Converter {
      * @return string
      */
     public function get_abs_home() {
-	    $this->absolute_home = trp_cache_get('get_abs_home', 'trp');
+	    $this->absolute_home = etm_cache_get('get_abs_home', 'etm');
 	    if ( $this->absolute_home !== false ){
 		    return $this->absolute_home;
 	    }
@@ -674,7 +674,7 @@ class TRP_Url_Converter {
         if( empty($this->absolute_home) ){
             $this->absolute_home = get_option("siteurl");
         }
-        if ( apply_filters('trp_adjust_absolute_home_https_based_on_server_variable', true) ) {
+        if ( apply_filters('etm_adjust_absolute_home_https_based_on_server_variable', true) ) {
             // always return absolute_home based on the http or https version of the current page request. This means no more redirects.
             if ( !empty( $_SERVER['HTTPS'] ) && strtolower( sanitize_text_field( $_SERVER['HTTPS'] ) ) != 'off' ) {
                 $this->absolute_home = str_replace( 'http://', 'https://', $this->absolute_home );
@@ -683,7 +683,7 @@ class TRP_Url_Converter {
             }
         }
 
-        $this->absolute_home = apply_filters('trp_filter_absolute_home_result', $this->absolute_home);
+        $this->absolute_home = apply_filters('etm_filter_absolute_home_result', $this->absolute_home);
 
         wp_cache_set( 'get_abs_home', $this->absolute_home, 'etm' );
 
@@ -703,21 +703,21 @@ class TRP_Url_Converter {
             $url = $this->cur_page_url();
         }
 
-        $language = trp_cache_get('url_language_' . hash('md4', $url) , 'trp' );
+        $language = etm_cache_get('url_language_' . hash('md4', $url) , 'etm' );
         if ( $language !== false ){
             return $language;
         }
 
-        $url_obj = trp_cache_get('url_obj_' . hash('md4', $url), 'trp');
+        $url_obj = etm_cache_get('url_obj_' . hash('md4', $url), 'etm');
         if( $url_obj === false ){
-            $url_obj = new \TranslatePress\Uri($url);
-            wp_cache_set('url_obj_' . hash('md4', $url), $url_obj, 'trp' );
+            $url_obj = new \eTranslationMultilingual\Uri($url);
+            wp_cache_set('url_obj_' . hash('md4', $url), $url_obj, 'etm' );
         }
 
-        $abs_home_url_obj = trp_cache_get('url_obj_' . hash('md4',  $this->get_abs_home() ), 'trp');
+        $abs_home_url_obj = etm_cache_get('url_obj_' . hash('md4',  $this->get_abs_home() ), 'etm');
         if( $abs_home_url_obj === false ){
-            $abs_home_url_obj = new \TranslatePress\Uri( $this->get_abs_home() );
-            wp_cache_set('url_obj_' . hash('md4', $this->get_abs_home()), $abs_home_url_obj, 'trp' );
+            $abs_home_url_obj = new \eTranslationMultilingual\Uri( $this->get_abs_home() );
+            wp_cache_set('url_obj_' . hash('md4', $this->get_abs_home()), $abs_home_url_obj, 'etm' );
         }
 
         if( $url_obj->getPath() ){
@@ -739,25 +739,25 @@ class TRP_Url_Converter {
             $lang = ltrim( $possible_path,'/' );
             $lang = explode('/', $lang);
             if( $lang == false ){
-                wp_cache_set('url_language_' . hash('md4', $url), null, 'trp');
+                wp_cache_set('url_language_' . hash('md4', $url), null, 'etm');
                 return null;
             }
             // If we have a language in the URL, the first element of the array should be it.
             $lang = $lang[0];
 
-            $lang = apply_filters( 'trp_get_lang_from_url_string', $lang, $url );
+            $lang = apply_filters( 'etm_get_lang_from_url_string', $lang, $url );
 
             // the lang slug != actual lang. So we need to do array_search so we don't end up with en instead of en_US
             if( isset($this->settings['url-slugs']) && in_array($lang, $this->settings['url-slugs']) ){
                 $language = array_search($lang, $this->settings['url-slugs']);
                 if ( in_array( $language, $this->settings['publish-languages'] ) ||
-                    ( in_array( $language, $this->settings['translation-languages'] ) && current_user_can(apply_filters( 'trp_translating_capability', 'manage_options' )) ) ) {
-                    wp_cache_set( 'url_language_' . hash( 'md4', $url ), $language, 'trp' );
+                    ( in_array( $language, $this->settings['translation-languages'] ) && current_user_can(apply_filters( 'etm_translating_capability', 'manage_options' )) ) ) {
+                    wp_cache_set( 'url_language_' . hash( 'md4', $url ), $language, 'etm' );
                     return $language;
                 }
             }
         }
-        wp_cache_set('url_language_' . hash('md4', $url), null, 'trp');
+        wp_cache_set('url_language_' . hash('md4', $url), null, 'etm');
         return null;
     }
 
@@ -768,7 +768,7 @@ class TRP_Url_Converter {
      */
     public function cur_page_url() {
 
-        $req_uri = trp_cache_get('cur_page_url', 'trp');
+        $req_uri = etm_cache_get('cur_page_url', 'etm');
         if ( $req_uri ){
             return $req_uri;
         }
@@ -792,8 +792,8 @@ class TRP_Url_Converter {
         $req_uri = trim($abs_home, '/') . '/' . ltrim( $req_uri, '/' );
 
 
-        if ( function_exists('apply_filters') ) $req_uri = apply_filters('trp_curpageurl', $req_uri);
-        wp_cache_set('cur_page_url', $req_uri, 'trp');
+        if ( function_exists('apply_filters') ) $req_uri = apply_filters('etm_curpageurl', $req_uri);
+        wp_cache_set('cur_page_url', $req_uri, 'etm');
         return $req_uri;
     }
 
@@ -804,32 +804,32 @@ class TRP_Url_Converter {
      */
     public function woocommerce_filter_permalinks_on_other_languages( $rewrite_rules ){
         if( class_exists( 'WooCommerce' ) ){
-            global $TRP_LANGUAGE;
+            global $ETM_LANGUAGE;
 
-            if( $TRP_LANGUAGE != $this->settings['default-language'] ){
+            if( $ETM_LANGUAGE != $this->settings['default-language'] ){
                 global $default_language_wc_permalink_structure; //we use a global because apparently you can't do switch to locale and restore multiple times. I should keep an eye on this
                 /* get rewrite rules from original language */
                 if( empty($default_language_wc_permalink_structure) ) {
-                    $default_language_wc_permalink_structure = trp_get_transient( 'tp_default_language_wc_permalink_structure_'.$this->settings['default-language'] );
+                    $default_language_wc_permalink_structure = etm_get_transient( 'tp_default_language_wc_permalink_structure_'.$this->settings['default-language'] );
                     if( $default_language_wc_permalink_structure === false ) {
                         $default_language_wc_permalink_structure = array();
-                        $default_language_wc_permalink_structure['product_rewrite_slug'] = trp_x('product', 'slug', 'woocommerce', $this->settings['default-language']);
-                        $default_language_wc_permalink_structure['category_rewrite_slug'] = trp_x('product-category', 'slug', 'woocommerce', $this->settings['default-language']);
-                        $default_language_wc_permalink_structure['tag_rewrite_slug'] = trp_x('product-tag', 'slug', 'woocommerce', $this->settings['default-language']);
+                        $default_language_wc_permalink_structure['product_rewrite_slug'] = etm_x('product', 'slug', 'woocommerce', $this->settings['default-language']);
+                        $default_language_wc_permalink_structure['category_rewrite_slug'] = etm_x('product-category', 'slug', 'woocommerce', $this->settings['default-language']);
+                        $default_language_wc_permalink_structure['tag_rewrite_slug'] = etm_x('product-tag', 'slug', 'woocommerce', $this->settings['default-language']);
 
                         set_transient('tp_default_language_wc_permalink_structure_' . $this->settings['default-language'], $default_language_wc_permalink_structure, 12 * HOUR_IN_SECONDS);
                     }
                 }
 
-                $current_language_permalink_structure = trp_get_transient( 'tp_current_language_wc_permalink_structure_'.$TRP_LANGUAGE );
+                $current_language_permalink_structure = etm_get_transient( 'tp_current_language_wc_permalink_structure_'.$ETM_LANGUAGE );
                 if( $current_language_permalink_structure === false ) {
                     //always generate the slugs for defaults on the current language
                     $current_language_permalink_structure = array();
-                    $current_language_permalink_structure['product_rewrite_slug'] = trp_x('product', 'slug', 'woocommerce', $TRP_LANGUAGE);
-                    $current_language_permalink_structure['category_rewrite_slug'] = trp_x('product-category', 'slug', 'woocommerce', $TRP_LANGUAGE);
-                    $current_language_permalink_structure['tag_rewrite_slug'] = trp_x('product-tag', 'slug', 'woocommerce', $TRP_LANGUAGE);
+                    $current_language_permalink_structure['product_rewrite_slug'] = etm_x('product', 'slug', 'woocommerce', $ETM_LANGUAGE);
+                    $current_language_permalink_structure['category_rewrite_slug'] = etm_x('product-category', 'slug', 'woocommerce', $ETM_LANGUAGE);
+                    $current_language_permalink_structure['tag_rewrite_slug'] = etm_x('product-tag', 'slug', 'woocommerce', $ETM_LANGUAGE);
 
-                    set_transient( 'tp_current_language_wc_permalink_structure_'.$TRP_LANGUAGE, $current_language_permalink_structure, 12 * HOUR_IN_SECONDS );
+                    set_transient( 'tp_current_language_wc_permalink_structure_'.$ETM_LANGUAGE, $current_language_permalink_structure, 12 * HOUR_IN_SECONDS );
                 }
 
 
@@ -856,32 +856,32 @@ class TRP_Url_Converter {
 
     /* on frontend on other languages dinamically generate the woo permalink structure for the default slugs */
     function woocommerce_filter_permalink_option( $value ){
-        global $TRP_LANGUAGE, $trp_wc_permalinks;
+        global $ETM_LANGUAGE, $etm_wc_permalinks;
 
         //keep the unfiltered value in a global, we might need it later
-        if( !isset( $trp_wc_permalinks ) )
-            $trp_wc_permalinks = $value;
+        if( !isset( $etm_wc_permalinks ) )
+            $etm_wc_permalinks = $value;
 
-        if( $TRP_LANGUAGE != $this->settings['default-language'] ) {
-            if( trim($value['product_base'], '/') === trp_x( 'product', 'slug', 'woocommerce', $this->settings['default-language'] ) ){
+        if( $ETM_LANGUAGE != $this->settings['default-language'] ) {
+            if( trim($value['product_base'], '/') === etm_x( 'product', 'slug', 'woocommerce', $this->settings['default-language'] ) ){
                 $value['product_base'] = '';
                 /* in ajax it seems the language is not set correctly and we get the slug for the original language if we leave it blank. detected in sober theme
                 Will only do it for products for now as I am not 100% sure it won't impact other things */
                 if( wp_doing_ajax() ){
-                    $value['product_base'] = trp_x( 'product', 'slug', 'woocommerce', $TRP_LANGUAGE );
+                    $value['product_base'] = etm_x( 'product', 'slug', 'woocommerce', $ETM_LANGUAGE );
                 }
             }else{
             	// if the custom base permalink starts with product, WooCommerce will translate it when on other languages
 	            if ( substr( $value['product_base'], 0, strlen('/product/' ) ) === '/product/' ) {
-		            $value['product_base'] = substr_replace( $value['product_base'], '/' . trp_x( 'product', 'slug', 'woocommerce', $TRP_LANGUAGE ) . '/', 0, strlen('/product/' ) );
+		            $value['product_base'] = substr_replace( $value['product_base'], '/' . etm_x( 'product', 'slug', 'woocommerce', $ETM_LANGUAGE ) . '/', 0, strlen('/product/' ) );
 	            }
             }
 
-            if( trim($value['category_base'], '/') === trp_x( 'product-category', 'slug', 'woocommerce', $this->settings['default-language'] ) ){
+            if( trim($value['category_base'], '/') === etm_x( 'product-category', 'slug', 'woocommerce', $this->settings['default-language'] ) ){
                 $value['category_base'] = '';
             }
 
-            if( trim($value['tag_base'], '/') === trp_x( 'product-tag', 'slug', 'woocommerce', $this->settings['default-language'] ) ){
+            if( trim($value['tag_base'], '/') === etm_x( 'product-tag', 'slug', 'woocommerce', $this->settings['default-language'] ) ){
                 $value['tag_base'] = '';
             }
 
@@ -898,9 +898,9 @@ class TRP_Url_Converter {
      * @return mixed
      */
     function prevent_permalink_update_on_other_languages( $value, $old_value ){
-        global $TRP_LANGUAGE;
+        global $ETM_LANGUAGE;
 
-        if( isset($TRP_LANGUAGE) && $TRP_LANGUAGE != $this->settings['default-language'] && apply_filters( 'trp_prevent_permalink_update_on_other_languages', true ) ) {
+        if( isset($ETM_LANGUAGE) && $ETM_LANGUAGE != $this->settings['default-language'] && apply_filters( 'etm_prevent_permalink_update_on_other_languages', true ) ) {
             $value = $old_value;
         }
 
@@ -948,7 +948,7 @@ class TRP_Url_Converter {
      * @param $english_woocommerce_slug
      * @return false|mixed|void
      */
-    function trp_get_woocommerce_saved_permalink( $english_woocommerce_slug ){
+    function etm_get_woocommerce_saved_permalink( $english_woocommerce_slug ){
         $wc_options = get_option('woocommerce_permalinks');
         switch($english_woocommerce_slug){
             case 'product-category':
@@ -967,9 +967,9 @@ class TRP_Url_Converter {
         if( !empty( $wc_options ) && !empty( $wc_options[$option_index] ) )
             return $wc_options[$option_index];
         elseif( empty( $wc_options[$option_index] ) ){//if it's the default from _x() it won't save in the db
-            $current_slug = trp_get_transient( 'tp_'.$english_woocommerce_slug.'_'. $this->settings['default-language'] );
+            $current_slug = etm_get_transient( 'tp_'.$english_woocommerce_slug.'_'. $this->settings['default-language'] );
             if( $current_slug === false ){
-                $current_slug = trp_x( $english_woocommerce_slug, 'slug', 'woocommerce', $this->settings['default-language'] );
+                $current_slug = etm_x( $english_woocommerce_slug, 'slug', 'woocommerce', $this->settings['default-language'] );
                 set_transient( 'tp_'.$english_woocommerce_slug.'_'. $this->settings['default-language'], $current_slug, 12 * HOUR_IN_SECONDS );
             }
             return $current_slug;

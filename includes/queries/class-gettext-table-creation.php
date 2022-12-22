@@ -1,23 +1,23 @@
 <?php
 
 /**
- * Class TRP_Gettext_Table_Creation
+ * Class ETM_Gettext_Table_Creation
  *
  * Queries for creating gettext tables.
  *
  * To access this component use:
- * 		$trp = TRP_Translate_Press::get_trp_instance();
- *      $trp_query = $trp->get_component( 'query' );
- *      $gettext_table_creation = $trp_query->get_query_component('gettext_table_creation');
+ * 		$etm = ETM_eTranslation_Multilingual::get_etm_instance();
+ *      $etm_query = $etm->get_component( 'query' );
+ *      $gettext_table_creation = $etm_query->get_query_component('gettext_table_creation');
  *
  */
-class TRP_Gettext_Table_Creation extends TRP_Query{
+class ETM_Gettext_Table_Creation extends ETM_Query{
 
     public $db;
     protected $settings;
 
     /**
-     * TRP_Gettext_Table_Creation constructor.
+     * ETM_Gettext_Table_Creation constructor.
      * @param $settings
      */
     public function __construct( $settings ){

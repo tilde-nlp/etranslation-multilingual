@@ -1,6 +1,6 @@
 <?php
 
-class TRP_Woocommerce_Emails{
+class ETM_Woocommerce_Emails{
 
     public function __construct(){}
 
@@ -40,8 +40,8 @@ class TRP_Woocommerce_Emails{
             add_action( 'woocommerce_new_customer_note_notification', array( $this, 'prepare_order_id_for_note_emails' ), 5, 1 );
 
             // Hijack execution to translate emails in user language accordingly
-            add_filter( 'woocommerce_allow_switching_email_locale', array( $this, 'trp_woo_setup_locale' ), 10, 2 );
-            add_filter( 'woocommerce_allow_restoring_email_locale', array( $this, 'trp_woo_restore_locale' ), 10, 2 );
+            add_filter( 'woocommerce_allow_switching_email_locale', array( $this, 'etm_woo_setup_locale' ), 10, 2 );
+            add_filter( 'woocommerce_allow_restoring_email_locale', array( $this, 'etm_woo_restore_locale' ), 10, 2 );
         }
     }
 
@@ -53,11 +53,11 @@ class TRP_Woocommerce_Emails{
      * @return void
      */
     public function save_language_on_checkout( $order_id, $posted ) {
-        global $TRP_LANGUAGE, $TRP_EMAIL_ORDER;
+        global $ETM_LANGUAGE, $ETM_EMAIL_ORDER;
         $order = wc_get_order($order_id);
         $user_id = $order->get_user_id();
 
-        $TRP_EMAIL_ORDER = $order_id;
+        $ETM_EMAIL_ORDER = $order_id;
         if( $user_id != 0 ){
 
             $user_preferred_language = get_user_meta($user_id, 'etm_language', true);
@@ -68,32 +68,32 @@ class TRP_Woocommerce_Emails{
                 update_post_meta( $order_id, 'etm_language', $user_preferred_language );
 
             }else {
-                update_user_meta( $user_id, 'etm_language', $TRP_LANGUAGE );
-                update_post_meta( $order_id, 'etm_language', $TRP_LANGUAGE );
+                update_user_meta( $user_id, 'etm_language', $ETM_LANGUAGE );
+                update_post_meta( $order_id, 'etm_language', $ETM_LANGUAGE );
             }
         }
         else{
-            update_post_meta( $order_id, 'etm_language', $TRP_LANGUAGE );
+            update_post_meta( $order_id, 'etm_language', $ETM_LANGUAGE );
         }
     }
 
     /**
      * Save current user language
      *
-     * The hook was added on 'wp_footer' to prevent logout or backend admin actions from resetting $TRP_LANGUAGE to TRP default language
+     * The hook was added on 'wp_footer' to prevent logout or backend admin actions from resetting $ETM_LANGUAGE to ETM default language
      *
      * @return void
      */
     public function save_current_language(){
-        global $TRP_LANGUAGE;
+        global $ETM_LANGUAGE;
         $user_id = get_current_user_id();
 
         if( $user_id > 0 ){
             $language_meta = get_user_meta( $user_id, 'etm_language', true);
             $always_use_this_language = get_user_meta( $user_id, 'etm_always_use_this_language', true );
 
-            if( $language_meta != $TRP_LANGUAGE && $always_use_this_language !== 'yes') {
-                update_user_meta( $user_id, 'etm_language', $TRP_LANGUAGE );
+            if( $language_meta != $ETM_LANGUAGE && $always_use_this_language !== 'yes') {
+                update_user_meta( $user_id, 'etm_language', $ETM_LANGUAGE );
             }
         }
     }
@@ -105,8 +105,8 @@ class TRP_Woocommerce_Emails{
      * @return void
      */
     public function store_email_order_id( $order_id ) {
-        global $TRP_EMAIL_ORDER;
-        $TRP_EMAIL_ORDER = $order_id;
+        global $ETM_EMAIL_ORDER;
+        $ETM_EMAIL_ORDER = $order_id;
     }
 
     /**
@@ -139,22 +139,22 @@ class TRP_Woocommerce_Emails{
      * @param $wc_email
      * @return false
      */
-    public function trp_woo_setup_locale( $bool, $wc_email ) {
-        global $TRP_LANGUAGE;
+    public function etm_woo_setup_locale( $bool, $wc_email ) {
+        global $ETM_LANGUAGE;
         $is_customer_email  = $wc_email->is_customer_email();
         $recipients         = explode( ',', $wc_email->get_recipient() );
-        $language           = $TRP_LANGUAGE;
+        $language           = $ETM_LANGUAGE;
         $user_id            = 0;
 
         if( $is_customer_email ){
-            global $TRP_EMAIL_ORDER;
-            $order = wc_get_order( $TRP_EMAIL_ORDER );
+            global $ETM_EMAIL_ORDER;
+            $order = wc_get_order( $ETM_EMAIL_ORDER );
             if ( $order ) {
                 $user_id = $order->get_user_id();
                 if ( $user_id > 0 ) {
                     $language = get_user_meta( $user_id, 'etm_language', true );
                 } else {
-                    $language = get_post_meta( $TRP_EMAIL_ORDER, 'etm_language', true );
+                    $language = get_post_meta( $ETM_EMAIL_ORDER, 'etm_language', true );
                 }
             }
         }
@@ -167,8 +167,8 @@ class TRP_Woocommerce_Emails{
             }
         }
 
-        $language = apply_filters( 'trp_woo_email_language', $language, $is_customer_email, $recipients, $user_id );
-        trp_switch_language($language);
+        $language = apply_filters( 'etm_woo_email_language', $language, $is_customer_email, $recipients, $user_id );
+        etm_switch_language($language);
 
         WC()->load_plugin_textdomain();
 
@@ -188,9 +188,9 @@ class TRP_Woocommerce_Emails{
      * @param $wc_email
      * @return false
      */
-    public function trp_woo_restore_locale( $bool, $wc_email ) {
+    public function etm_woo_restore_locale( $bool, $wc_email ) {
 
-        trp_restore_language();
+        etm_restore_language();
         WC()->load_plugin_textdomain();
 
         return false;

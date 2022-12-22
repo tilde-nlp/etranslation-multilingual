@@ -1,7 +1,7 @@
 <?php
 
-add_filter( 'trp_register_advanced_settings', 'trp_translation_for_gettext_strings', 523 );
-function trp_translation_for_gettext_strings( $settings_array ){
+add_filter( 'etm_register_advanced_settings', 'etm_translation_for_gettext_strings', 523 );
+function etm_translation_for_gettext_strings( $settings_array ){
     $settings_array[] = array(
         'name'          => 'disable_translation_for_gettext_strings',
         'type'          => 'checkbox',
@@ -11,19 +11,19 @@ function trp_translation_for_gettext_strings( $settings_array ){
     return $settings_array;
 }
 
-add_action( 'trp_before_running_hooks', 'trp_remove_hooks_to_disable_gettext_translation', 10, 1);
-function trp_remove_hooks_to_disable_gettext_translation( $trp_loader ){
+add_action( 'etm_before_running_hooks', 'etm_remove_hooks_to_disable_gettext_translation', 10, 1);
+function etm_remove_hooks_to_disable_gettext_translation( $etm_loader ){
     $option = get_option( 'etm_advanced_settings', true );
     if ( isset( $option['disable_translation_for_gettext_strings'] ) && $option['disable_translation_for_gettext_strings'] === 'yes' ) {
-        $trp             = TRP_Translate_Press::get_trp_instance();
-        $gettext_manager = $trp->get_component( 'gettext_manager' );
-        $trp_loader->remove_hook( 'init', 'create_gettext_translated_global', $gettext_manager );
-        $trp_loader->remove_hook( 'shutdown', 'machine_translate_gettext', $gettext_manager );
+        $etm             = ETM_eTranslation_Multilingual::get_etm_instance();
+        $gettext_manager = $etm->get_component( 'gettext_manager' );
+        $etm_loader->remove_hook( 'init', 'create_gettext_translated_global', $gettext_manager );
+        $etm_loader->remove_hook( 'shutdown', 'machine_translate_gettext', $gettext_manager );
     }
 }
 
-add_filter( 'trp_skip_gettext_querying', 'trp_skip_gettext_querying', 10, 4 );
-function trp_skip_gettext_querying( $skip, $translation, $text, $domain ){
+add_filter( 'etm_skip_gettext_querying', 'etm_skip_gettext_querying', 10, 4 );
+function etm_skip_gettext_querying( $skip, $translation, $text, $domain ){
     $option = get_option( 'etm_advanced_settings', true );
     if ( isset( $option['disable_translation_for_gettext_strings'] ) && $option['disable_translation_for_gettext_strings'] === 'yes' ) {
         return true;
@@ -33,8 +33,8 @@ function trp_skip_gettext_querying( $skip, $translation, $text, $domain ){
 
 
 
-add_action( 'trp_editor_notices', 'display_message_for_disable_gettext_in_editor', 10, 1 );
-function display_message_for_disable_gettext_in_editor( $trp_editor_notices ) {
+add_action( 'etm_editor_notices', 'display_message_for_disable_gettext_in_editor', 10, 1 );
+function display_message_for_disable_gettext_in_editor( $etm_editor_notices ) {
     $option = get_option( 'etm_advanced_settings', true );
     if ( isset( $option['disable_translation_for_gettext_strings'] ) && $option['disable_translation_for_gettext_strings'] === 'yes' ) {
 
@@ -43,14 +43,14 @@ function display_message_for_disable_gettext_in_editor( $trp_editor_notices ) {
         ), site_url('wp-admin/admin.php') );
 
         // maybe change notice color to blue #28B1FF
-        $html = "<div class='trp-notice trp-notice-warning'>";
+        $html = "<div class='etm-notice etm-notice-warning'>";
         $html .= '<p><strong>' . esc_html__( 'Gettext Strings translation is disabled', 'etranslation-multilingual' ) . '</strong></p>';
 
-        $html .= '<p>' . esc_html__( 'To enable it go to ', 'etranslation-multilingual' ) . '<a class="trp-link-primary" target="_blank" href="' . esc_url( $url ) . '">' . esc_html__( 'eTranslation Multilingual->Advanced Settings->Debug->Disable translation for gettext strings', 'etranslation-multilingual' ) . '</a>' . esc_html__(' and uncheck the Checkbox.', 'etranslation-multilingual') .'</p>';
+        $html .= '<p>' . esc_html__( 'To enable it go to ', 'etranslation-multilingual' ) . '<a class="etm-link-primary" target="_blank" href="' . esc_url( $url ) . '">' . esc_html__( 'eTranslation Multilingual->Advanced Settings->Debug->Disable translation for gettext strings', 'etranslation-multilingual' ) . '</a>' . esc_html__(' and uncheck the Checkbox.', 'etranslation-multilingual') .'</p>';
         $html .= '</div>';
 
-        $trp_editor_notices = $html;
+        $etm_editor_notices = $html;
     }
 
-    return $trp_editor_notices;
+    return $etm_editor_notices;
 }

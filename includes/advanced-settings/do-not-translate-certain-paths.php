@@ -1,7 +1,7 @@
 <?php
 
-add_filter( 'trp_register_advanced_settings', 'trp_register_do_not_translate_certain_paths', 120 );
-function trp_register_do_not_translate_certain_paths( $settings_array ){
+add_filter( 'etm_register_advanced_settings', 'etm_register_do_not_translate_certain_paths', 120 );
+function etm_register_do_not_translate_certain_paths( $settings_array ){
 
     $settings_array[] = array(
         'type'        => 'custom',
@@ -15,28 +15,28 @@ function trp_register_do_not_translate_certain_paths( $settings_array ){
 
 }
 
-add_filter( 'trp_advanced_setting_custom_translateable_content', 'trp_output_do_not_translate_certain_paths' );
-function trp_output_do_not_translate_certain_paths( $setting ){
+add_filter( 'etm_advanced_setting_custom_translateable_content', 'etm_output_do_not_translate_certain_paths' );
+function etm_output_do_not_translate_certain_paths( $setting ){
 
-    $trp_settings = ( new TRP_Settings() )->get_settings();
+    $etm_settings = ( new ETM_Settings() )->get_settings();
 
     ?>
-    <tr id="trp-adv-translate-certain-paths">
+    <tr id="etm-adv-translate-certain-paths">
         <th scope="row"><?php echo esc_html( $setting['label'] ); ?></th>
         <td>
-            <div class="trp-adv-holder">
+            <div class="etm-adv-holder">
                 <label>
-                    <input type='radio' id='$setting_name' name="etm_advanced_settings[<?php echo esc_attr( $setting['name'] ); ?>][option]" value="exclude" <?php echo isset( $trp_settings['trp_advanced_settings'][$setting['name']]['option'] ) && $trp_settings['trp_advanced_settings'][$setting['name']]['option'] == 'exclude' ? 'checked' : ''; ?>>
+                    <input type='radio' id='$setting_name' name="etm_advanced_settings[<?php echo esc_attr( $setting['name'] ); ?>][option]" value="exclude" <?php echo isset( $etm_settings['etm_advanced_settings'][$setting['name']]['option'] ) && $etm_settings['etm_advanced_settings'][$setting['name']]['option'] == 'exclude' ? 'checked' : ''; ?>>
                     <?php esc_html_e( 'Exclude Paths From Translation', 'etranslation-multilingual' ); ?>
                 </label>
 
                 <label>
-                    <input type='radio' id='$setting_name' name="etm_advanced_settings[<?php echo esc_attr( $setting['name'] ); ?>][option]" value="include" <?php echo isset( $trp_settings['trp_advanced_settings'][$setting['name']]['option'] ) && $trp_settings['trp_advanced_settings'][$setting['name']]['option'] == 'include' ? 'checked' : ''; ?> >
+                    <input type='radio' id='$setting_name' name="etm_advanced_settings[<?php echo esc_attr( $setting['name'] ); ?>][option]" value="include" <?php echo isset( $etm_settings['etm_advanced_settings'][$setting['name']]['option'] ) && $etm_settings['etm_advanced_settings'][$setting['name']]['option'] == 'include' ? 'checked' : ''; ?> >
                     <?php esc_html_e( 'Translate Only Certain Paths', 'etranslation-multilingual' ); ?>
                 </label>
             </div>
 
-            <textarea class="trp-adv-big-textarea" name="etm_advanced_settings[<?php echo esc_attr( $setting['name'] ); ?>][paths]"><?php echo isset( $trp_settings['trp_advanced_settings'][$setting['name']]['paths'] ) ? esc_textarea( $trp_settings['trp_advanced_settings'][$setting['name']]['paths'] ) : ''; ?></textarea>
+            <textarea class="etm-adv-big-textarea" name="etm_advanced_settings[<?php echo esc_attr( $setting['name'] ); ?>][paths]"><?php echo isset( $etm_settings['etm_advanced_settings'][$setting['name']]['paths'] ) ? esc_textarea( $etm_settings['etm_advanced_settings'][$setting['name']]['paths'] ) : ''; ?></textarea>
 
             <p class="description"><?php echo wp_kses_post( $setting['description'] ); ?></p>
         </td>
@@ -47,7 +47,7 @@ function trp_output_do_not_translate_certain_paths( $setting ){
     return;
 }
 
-function trp_test_current_slug( &$current_slug, &$array_slugs ) {
+function etm_test_current_slug( &$current_slug, &$array_slugs ) {
     $current_slug = trim($current_slug, "/");
 
     // Explode get params
@@ -71,7 +71,7 @@ function trp_test_current_slug( &$current_slug, &$array_slugs ) {
     }
 }
 
-function trp_return_exclude_include_url($paths, $current_slug, $array_slugs) {
+function etm_return_exclude_include_url($paths, $current_slug, $array_slugs) {
     // $paths contains all the paths set in the advance tab
     foreach( $paths as $path ) {
 
@@ -104,17 +104,17 @@ function trp_return_exclude_include_url($paths, $current_slug, $array_slugs) {
     }
 }
 
-// Prevent TranslatePress from loading on excluded pages
-add_action( 'trp_allow_tp_to_run', 'trp_exclude_include_paths_to_run_on', 2 );
-function trp_exclude_include_paths_to_run_on(){
+// Prevent eTranslation Multilingual from loading on excluded pages
+add_action( 'etm_allow_tp_to_run', 'etm_exclude_include_paths_to_run_on', 2 );
+function etm_exclude_include_paths_to_run_on(){
 
     if( is_admin() )
         return true;
 
-    if( isset( $_GET['trp-edit-translation'] ) && ( $_GET['trp-edit-translation'] == 'true' || $_GET['trp-edit-translation'] == 'preview' ) )
+    if( isset( $_GET['etm-edit-translation'] ) && ( $_GET['etm-edit-translation'] == 'true' || $_GET['etm-edit-translation'] == 'preview' ) )
         return true;
 
-    if( isset( $_GET['trp-string-translation'] ) && $_GET['trp-string-translation'] == 'true' )
+    if( isset( $_GET['etm-string-translation'] ) && $_GET['etm-string-translation'] == 'true' )
         return true;
 
     $settings          = get_option( 'etm_settings', false );
@@ -123,8 +123,8 @@ function trp_exclude_include_paths_to_run_on(){
     if( empty( $advanced_settings ) || !isset( $advanced_settings['translateable_content'] ) || !isset( $advanced_settings['translateable_content']['option'] ) || empty( $advanced_settings['translateable_content']['paths'] ) )
         return true;
 
-    $trp           = TRP_Translate_Press::get_trp_instance();
-    $url_converter = $trp->get_component('url_converter');
+    $etm           = ETM_eTranslation_Multilingual::get_etm_instance();
+    $url_converter = $etm->get_component('url_converter');
     $current_lang  = $url_converter->get_lang_from_url_string( $url_converter->cur_page_url() );
 
     if( empty( $current_lang ) )
@@ -150,16 +150,16 @@ function trp_exclude_include_paths_to_run_on(){
 
     // $array_slugs contains each part of $curent_slug split on "/"
     $array_slugs = array();
-    trp_test_current_slug($current_slug, $array_slugs );
+    etm_test_current_slug($current_slug, $array_slugs );
 
     if( $advanced_settings['translateable_content']['option'] == 'exclude' ){
 
-        if ( trp_return_exclude_include_url($paths, $current_slug, $array_slugs) )
+        if ( etm_return_exclude_include_url($paths, $current_slug, $array_slugs) )
             return false;
 
     } else if( $advanced_settings['translateable_content']['option'] == 'include' ){
 
-        if ( trp_return_exclude_include_url($paths, $current_slug, $array_slugs) )
+        if ( etm_return_exclude_include_url($paths, $current_slug, $array_slugs) )
             return true;
 
         return false;
@@ -170,13 +170,13 @@ function trp_exclude_include_paths_to_run_on(){
 
 }
 
-add_filter( 'trp_allow_language_redirect', 'trp_exclude_include_do_not_redirect_on_excluded_pages', 20, 3 );
-function trp_exclude_include_do_not_redirect_on_excluded_pages( $redirect, $language, $url ){
+add_filter( 'etm_allow_language_redirect', 'etm_exclude_include_do_not_redirect_on_excluded_pages', 20, 3 );
+function etm_exclude_include_do_not_redirect_on_excluded_pages( $redirect, $language, $url ){
 
-    if( isset( $_GET['trp-edit-translation'] ) && ( $_GET['trp-edit-translation'] == 'true' || $_GET['trp-edit-translation'] == 'preview' ) )
+    if( isset( $_GET['etm-edit-translation'] ) && ( $_GET['etm-edit-translation'] == 'true' || $_GET['etm-edit-translation'] == 'preview' ) )
         return $redirect;
 
-    if( isset( $_GET['trp-string-translation'] ) && $_GET['trp-string-translation'] == 'true' )
+    if( isset( $_GET['etm-string-translation'] ) && $_GET['etm-string-translation'] == 'true' )
         return $redirect;
 
     $settings          = get_option( 'etm_settings', false );
@@ -196,16 +196,16 @@ function trp_exclude_include_do_not_redirect_on_excluded_pages( $redirect, $lang
 
     // $array_slugs contains each part of $curent_slug split on "/"
     $array_slugs = array();
-    trp_test_current_slug($current_slug, $array_slugs );
+    etm_test_current_slug($current_slug, $array_slugs );
 
     if( $advanced_settings['translateable_content']['option'] == 'exclude' ){
 
-        if ( trp_return_exclude_include_url($paths, $current_slug, $array_slugs) )
+        if ( etm_return_exclude_include_url($paths, $current_slug, $array_slugs) )
             return false;
 
     } else if( $advanced_settings['translateable_content']['option'] == 'include' ){
 
-        if ( trp_return_exclude_include_url($paths, $current_slug, $array_slugs) )
+        if ( etm_return_exclude_include_url($paths, $current_slug, $array_slugs) )
             return $redirect;
 
         return false;
@@ -223,13 +223,13 @@ function trp_exclude_include_do_not_redirect_on_excluded_pages( $redirect, $lang
  *
  * Redirects to the excluded page in the default language.
  */
-add_action( 'template_redirect', 'trp_exclude_include_redirect_to_default_language', 1 );
-function trp_exclude_include_redirect_to_default_language(){
+add_action( 'template_redirect', 'etm_exclude_include_redirect_to_default_language', 1 );
+function etm_exclude_include_redirect_to_default_language(){
 
-    if( isset( $_GET['trp-edit-translation'] ) && ( $_GET['trp-edit-translation'] == 'true' || $_GET['trp-edit-translation'] == 'preview' ) )
+    if( isset( $_GET['etm-edit-translation'] ) && ( $_GET['etm-edit-translation'] == 'true' || $_GET['etm-edit-translation'] == 'preview' ) )
         return;
 
-    if( isset( $_GET['trp-string-translation'] ) && $_GET['trp-string-translation'] == 'true' )
+    if( isset( $_GET['etm-string-translation'] ) && $_GET['etm-string-translation'] == 'true' )
         return;
 
     if( is_admin() )
@@ -241,14 +241,14 @@ function trp_exclude_include_redirect_to_default_language(){
     if( empty( $advanced_settings ) || !isset( $advanced_settings['translateable_content'] ) || !isset( $advanced_settings['translateable_content']['option'] ) || empty( $advanced_settings['translateable_content']['paths'] ) )
         return;
 
-    global $TRP_LANGUAGE;
-    $trp           = TRP_Translate_Press::get_trp_instance();
-    $url_converter = $trp->get_component('url_converter');
+    global $ETM_LANGUAGE;
+    $etm           = ETM_eTranslation_Multilingual::get_etm_instance();
+    $url_converter = $etm->get_component('url_converter');
 
     $current_original_url = $url_converter->get_url_for_language( $settings['default-language'], null, '' );
 
     // Attempt to redirect on default language only if the current URL contains the language
-    if( !isset( $TRP_LANGUAGE ) || $settings['default-language'] == $TRP_LANGUAGE ){
+    if( !isset( $ETM_LANGUAGE ) || $settings['default-language'] == $ETM_LANGUAGE ){
 
         if( $url_converter->get_lang_from_url_string( $current_original_url ) === null )
             return;
@@ -269,13 +269,13 @@ function trp_exclude_include_redirect_to_default_language(){
 
     // $array_slugs contains each part of $curent_slug split on "/"
     $array_slugs = array();
-    trp_test_current_slug($current_slug, $array_slugs );
+    etm_test_current_slug($current_slug, $array_slugs );
 
     if( $advanced_settings['translateable_content']['option'] == 'exclude' ){
 
-        if ( trp_return_exclude_include_url($paths, $current_slug, $array_slugs) )
+        if ( etm_return_exclude_include_url($paths, $current_slug, $array_slugs) )
             if( $url_converter->cur_page_url() != $current_original_url ){
-                $status = apply_filters( 'trp_redirect_status', 301, 'redirect_to_default_language_because_link_is_excluded_from_translation' );
+                $status = apply_filters( 'etm_redirect_status', 301, 'redirect_to_default_language_because_link_is_excluded_from_translation' );
                 wp_redirect( $current_original_url, $status );
                 exit;
             }
@@ -283,11 +283,11 @@ function trp_exclude_include_redirect_to_default_language(){
 
     } else if( $advanced_settings['translateable_content']['option'] == 'include' ){
 
-        if ( trp_return_exclude_include_url($paths, $current_slug, $array_slugs) )
+        if ( etm_return_exclude_include_url($paths, $current_slug, $array_slugs) )
             return;
 
         if( $url_converter->cur_page_url() != $current_original_url ){
-            $status = apply_filters( 'trp_redirect_status', 301, 'redirect_to_default_language_because_link_is_excluded_from_translation' );
+            $status = apply_filters( 'etm_redirect_status', 301, 'redirect_to_default_language_because_link_is_excluded_from_translation' );
             wp_redirect( $current_original_url, $status );
             exit;
         }
@@ -297,13 +297,13 @@ function trp_exclude_include_redirect_to_default_language(){
 }
 
 // only force custom links in paths that are translatable
-add_filter( 'trp_force_custom_links', 'trp_exclude_include_filter_custom_links', 10, 4);
-function trp_exclude_include_filter_custom_links( $new_url, $url, $TRP_LANGUAGE, $a_href ){
+add_filter( 'etm_force_custom_links', 'etm_exclude_include_filter_custom_links', 10, 4);
+function etm_exclude_include_filter_custom_links( $new_url, $url, $ETM_LANGUAGE, $a_href ){
 
-    if( isset( $_GET['trp-edit-translation'] ) && ( $_GET['trp-edit-translation'] == 'true' || $_GET['trp-edit-translation'] == 'preview' ) )
+    if( isset( $_GET['etm-edit-translation'] ) && ( $_GET['etm-edit-translation'] == 'true' || $_GET['etm-edit-translation'] == 'preview' ) )
         return $new_url;
 
-    if( isset( $_GET['trp-string-translation'] ) && $_GET['trp-string-translation'] == 'true' )
+    if( isset( $_GET['etm-string-translation'] ) && $_GET['etm-string-translation'] == 'true' )
         return $new_url;
 
     $advanced_settings = get_option( 'etm_advanced_settings', false );
@@ -312,11 +312,11 @@ function trp_exclude_include_filter_custom_links( $new_url, $url, $TRP_LANGUAGE,
     if( empty( $advanced_settings ) || !isset( $advanced_settings['translateable_content'] ) || !isset( $advanced_settings['translateable_content']['option'] ) || empty( $advanced_settings['translateable_content']['paths'] ) )
         return $new_url;
 
-    global $TRP_LANGUAGE;
-    $trp           = TRP_Translate_Press::get_trp_instance();
-    $url_converter = $trp->get_component('url_converter');
+    global $ETM_LANGUAGE;
+    $etm           = ETM_eTranslation_Multilingual::get_etm_instance();
+    $url_converter = $etm->get_component('url_converter');
 
-    if( !isset( $TRP_LANGUAGE ) || $settings['default-language'] == $TRP_LANGUAGE )
+    if( !isset( $ETM_LANGUAGE ) || $settings['default-language'] == $ETM_LANGUAGE )
         return;
 
     $current_original_url = $url_converter->get_url_for_language( $settings['default-language'], $new_url, '' );
@@ -331,16 +331,16 @@ function trp_exclude_include_filter_custom_links( $new_url, $url, $TRP_LANGUAGE,
 
     // $array_slugs contains each part of $curent_slug split on "/"
     $array_slugs = array();
-    trp_test_current_slug($current_slug, $array_slugs );
+    etm_test_current_slug($current_slug, $array_slugs );
 
     if( $advanced_settings['translateable_content']['option'] == 'exclude' ){
 
-        if ( trp_return_exclude_include_url($paths, $current_slug, $array_slugs) )
+        if ( etm_return_exclude_include_url($paths, $current_slug, $array_slugs) )
             return $current_original_url;
 
     } else if( $advanced_settings['translateable_content']['option'] == 'include' ){
 
-        if ( trp_return_exclude_include_url($paths, $current_slug, $array_slugs) )
+        if ( etm_return_exclude_include_url($paths, $current_slug, $array_slugs) )
             return $new_url;
 
         return $current_original_url;
@@ -351,13 +351,13 @@ function trp_exclude_include_filter_custom_links( $new_url, $url, $TRP_LANGUAGE,
 
 }
 
-add_action( 'init', 'trp_exclude_include_add_sitemap_filter' );
-function trp_exclude_include_add_sitemap_filter(){
-    if (class_exists('TRP_IN_Seo_Pack'))
-        add_filter( 'trp_xml_sitemap_output_for_url', 'trp_exclude_include_filter_sitemap_links', 10, 6 );
+add_action( 'init', 'etm_exclude_include_add_sitemap_filter' );
+function etm_exclude_include_add_sitemap_filter(){
+    if (class_exists('ETM_IN_Seo_Pack'))
+        add_filter( 'etm_xml_sitemap_output_for_url', 'etm_exclude_include_filter_sitemap_links', 10, 6 );
 }
 
-function trp_exclude_include_filter_sitemap_links( $new_output, $output, $settings, $alternate, $all_lang_urls, $url ){
+function etm_exclude_include_filter_sitemap_links( $new_output, $output, $settings, $alternate, $all_lang_urls, $url ){
 
     $advanced_settings = get_option( 'etm_advanced_settings', false );
     $settings          = get_option( 'etm_settings', false );
@@ -365,9 +365,9 @@ function trp_exclude_include_filter_sitemap_links( $new_output, $output, $settin
     if( empty( $advanced_settings ) || !isset( $advanced_settings['translateable_content'] ) || !isset( $advanced_settings['translateable_content']['option'] ) || empty( $advanced_settings['translateable_content']['paths'] ) )
         return $new_output;
 
-    global $TRP_LANGUAGE;
-    $trp           = TRP_Translate_Press::get_trp_instance();
-    $url_converter = $trp->get_component('url_converter');
+    global $ETM_LANGUAGE;
+    $etm           = ETM_eTranslation_Multilingual::get_etm_instance();
+    $url_converter = $etm->get_component('url_converter');
 
     if( empty( $url['loc'] ) )
         return $new_output;
@@ -380,16 +380,16 @@ function trp_exclude_include_filter_sitemap_links( $new_output, $output, $settin
 
     // $array_slugs contains each part of $curent_slug split on "/"
     $array_slugs = array();
-    trp_test_current_slug($current_slug, $array_slugs );
+    etm_test_current_slug($current_slug, $array_slugs );
 
     if( $advanced_settings['translateable_content']['option'] == 'exclude' ){
 
-        if ( trp_return_exclude_include_url($paths, $current_slug, $array_slugs) )
+        if ( etm_return_exclude_include_url($paths, $current_slug, $array_slugs) )
             return $output;
 
     } else if( $advanced_settings['translateable_content']['option'] == 'include' ){
 
-        if ( trp_return_exclude_include_url($paths, $current_slug, $array_slugs) )
+        if ( etm_return_exclude_include_url($paths, $current_slug, $array_slugs) )
             return $new_output;
 
         return $output;

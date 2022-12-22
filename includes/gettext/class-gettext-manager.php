@@ -1,17 +1,17 @@
 <?php
 
 /**
- * Class TRP_Gettext_Manager
+ * Class ETM_Gettext_Manager
  *
  * Handles Gettext strings
  */
-class TRP_Gettext_Manager {
+class ETM_Gettext_Manager {
 	protected $settings;
-	/** @var TRP_Query */
-	protected $trp_query;
-	/** @var TRP_Process_Gettext */
+	/** @var ETM_Query */
+	protected $etm_query;
+	/** @var ETM_Process_Gettext */
 	protected $process_gettext;
-	/** @var TRP_Plural_Forms */
+	/** @var ETM_Plural_Forms */
 	protected $plural_forms;
 	protected $machine_translator;
 	protected $url_converter;
@@ -19,14 +19,14 @@ class TRP_Gettext_Manager {
 
 
 	/**
-	 * TRP_Gettext_Manager constructor.
+	 * ETM_Gettext_Manager constructor.
 	 *
 	 * @param array $settings Settings option.
 	 */
 	public function __construct( $settings ) {
 		$this->settings        = $settings;
-		$this->plural_forms    = new TRP_Plural_Forms( $this->settings );
-		$this->process_gettext = new TRP_Process_Gettext( $this->settings, $this->plural_forms );
+		$this->plural_forms    = new ETM_Plural_Forms( $this->settings );
+		$this->process_gettext = new ETM_Process_Gettext( $this->settings, $this->plural_forms );
 	}
 
 	public function get_gettext_component( $component ) {
@@ -39,31 +39,31 @@ class TRP_Gettext_Manager {
 	 */
 	public function create_gettext_translated_global() {
 
-		global $trp_translated_gettext_texts, $trp_translated_gettext_texts_language;
+		global $etm_translated_gettext_texts, $etm_translated_gettext_texts_language;
 		if ( $this->processing_gettext_is_needed() ) {
 			$language = get_locale();
 
 			if ( in_array( $language, $this->settings['translation-languages'] ) ) {
-				$trp_translated_gettext_texts_language = $language;
-				$trp                                   = TRP_Translate_Press::get_trp_instance();
-				if ( ! $this->trp_query ) {
-					$this->trp_query = $trp->get_component( 'query' );
+				$etm_translated_gettext_texts_language = $language;
+				$etm                                   = ETM_eTranslation_Multilingual::get_etm_instance();
+				if ( ! $this->etm_query ) {
+					$this->etm_query = $etm->get_component( 'query' );
 				}
 
-				$strings = $this->trp_query->get_all_gettext_strings( $language );
+				$strings = $this->etm_query->get_all_gettext_strings( $language );
 				if ( ! empty( $strings ) ) {
-					$trp_translated_gettext_texts = $strings;
-					$trp_strings                  = array();
-					foreach ( $trp_translated_gettext_texts as $key => $value ) {
-						$context     = ( $value['context'] ) ? $value['context'] : 'trp_context';
+					$etm_translated_gettext_texts = $strings;
+					$etm_strings                  = array();
+					foreach ( $etm_translated_gettext_texts as $key => $value ) {
+						$context     = ( $value['context'] ) ? $value['context'] : 'etm_context';
 						$plural_form = ( $value['plural_form'] ) ? $value['plural_form'] : 0;
 						$domain      = ( $value['domain'] ) ? $value['domain'] : $value['tt_domain'];
 						$original    = ( $value['original'] ) ? $value['original'] : $value['tt_original'];
 
-						// trp_context::0::domain::original
-						$trp_strings[ $context . '::' . $plural_form . '::' . $domain . '::' . $original ] = $value;
+						// etm_context::0::domain::original
+						$etm_strings[ $context . '::' . $plural_form . '::' . $domain . '::' . $original ] = $value;
 					}
-					$trp_translated_gettext_texts = $trp_strings;
+					$etm_translated_gettext_texts = $etm_strings;
 				}
 			}
 		}
@@ -76,14 +76,14 @@ class TRP_Gettext_Manager {
 		$is_ajax_on_frontend = $this::is_ajax_on_frontend();
 
 		/* on ajax hooks from frontend that have the init hook ( we found WooCommerce has it ) apply it earlier */
-		if ( $is_ajax_on_frontend || apply_filters( 'trp_apply_gettext_early', false ) ) {
+		if ( $is_ajax_on_frontend || apply_filters( 'etm_apply_gettext_early', false ) ) {
 			add_action( 'wp_loaded', array( $this, 'apply_gettext_filter' ) );
 		} else {//otherwise start from the wp_head hook
 			add_action( 'wp_head', array( $this, 'apply_gettext_filter' ), 100 );
 		}
 
 		//if we have woocommerce installed and it is not an ajax request add a gettext hook starting from wp_loaded and remove it on wp_head
-		if ( class_exists( 'WooCommerce' ) && ! $is_ajax_on_frontend && ! apply_filters( 'trp_apply_gettext_early', false ) ) {
+		if ( class_exists( 'WooCommerce' ) && ! $is_ajax_on_frontend && ! apply_filters( 'etm_apply_gettext_early', false ) ) {
 			// WooCommerce launches some ajax calls before wp_head, so we need to apply_gettext_filter earlier to catch them
 			add_action( 'wp_loaded', array( $this, 'apply_woocommerce_gettext_filter' ), 19 );
 		}
@@ -110,8 +110,8 @@ class TRP_Gettext_Manager {
 		global $pagenow;
 
 		if ( ! $this->url_converter ) {
-			$trp                 = TRP_Translate_Press::get_trp_instance();
-			$this->url_converter = $trp->get_component( 'url_converter' );
+			$etm                 = ETM_eTranslation_Multilingual::get_etm_instance();
+			$this->url_converter = $etm->get_component( 'url_converter' );
 		}
 		if ( $this->is_admin_request === null ) {
 			$this->is_admin_request = $this->url_converter->is_admin_request();
@@ -137,7 +137,7 @@ class TRP_Gettext_Manager {
 				$prefix . 'process_ngettext_strings_with_context'
 			), 100, 6 );
 
-			do_action( 'trp_call_gettext_filters' );
+			do_action( 'etm_call_gettext_filters' );
 		}
 	}
 
@@ -192,7 +192,7 @@ class TRP_Gettext_Manager {
 		}
 
 		// do this function only once per execution. The init hook can be called more than once
-		remove_action( 'trp_call_gettext_filters', array( $this, 'verify_locale_of_loaded_textdomain' ) );
+		remove_action( 'etm_call_gettext_filters', array( $this, 'verify_locale_of_loaded_textdomain' ) );
 	}
 
 	/**
@@ -202,12 +202,12 @@ class TRP_Gettext_Manager {
 	static function is_ajax_on_frontend() {
 
 		/* for our own actions return false */
-		if ( isset( $_REQUEST['action'] ) && strpos( sanitize_text_field( $_REQUEST['action'] ), 'trp_' ) === 0 ) {
+		if ( isset( $_REQUEST['action'] ) && strpos( sanitize_text_field( $_REQUEST['action'] ), 'etm_' ) === 0 ) {
 			return false;
 		}
 
-		$trp           = TRP_Translate_Press::get_trp_instance();
-		$url_converter = $trp->get_component( "url_converter" );
+		$etm           = ETM_eTranslation_Multilingual::get_etm_instance();
+		$url_converter = $etm->get_component( "url_converter" );
 
 		//check here for wp ajax or woocommerce ajax
 		if ( ( defined( 'DOING_AJAX' ) && DOING_AJAX ) || ( defined( 'WC_DOING_AJAX' ) && WC_DOING_AJAX ) ) {
@@ -237,7 +237,7 @@ class TRP_Gettext_Manager {
 
 			//if the request did not come from the admin set propper variables for the request (being processed in ajax they got lost) and return true
 			if ( ( strpos( $referer, admin_url() ) === false ) ) {
-				TRP_Gettext_Manager::set_vars_in_frontend_ajax_request( $referer );
+				ETM_Gettext_Manager::set_vars_in_frontend_ajax_request( $referer );
 
 				return true;
 			}
@@ -254,30 +254,30 @@ class TRP_Gettext_Manager {
 	static function set_vars_in_frontend_ajax_request( $referer ) {
 
 		/* for our own actions don't do nothing */
-		if ( isset( $_REQUEST['action'] ) && strpos( sanitize_text_field( $_REQUEST['action'] ), 'trp_' ) === 0 ) {
+		if ( isset( $_REQUEST['action'] ) && strpos( sanitize_text_field( $_REQUEST['action'] ), 'etm_' ) === 0 ) {
 			return;
 		}
 
 		/* if the request came from preview mode make sure to keep it */
-		if ( strpos( $referer, 'trp-edit-translation=preview' ) !== false && ! isset( $_REQUEST['trp-edit-translation'] ) ) {
-			$_REQUEST['trp-edit-translation'] = 'preview';
+		if ( strpos( $referer, 'etm-edit-translation=preview' ) !== false && ! isset( $_REQUEST['etm-edit-translation'] ) ) {
+			$_REQUEST['etm-edit-translation'] = 'preview';
 		}
 
-		if ( strpos( $referer, 'trp-edit-translation=preview' ) !== false && strpos( $referer, 'trp-view-as=' ) !== false && strpos( $referer, 'trp-view-as-nonce=' ) !== false ) {
+		if ( strpos( $referer, 'etm-edit-translation=preview' ) !== false && strpos( $referer, 'etm-view-as=' ) !== false && strpos( $referer, 'etm-view-as-nonce=' ) !== false ) {
 			$parts = parse_url( $referer );
 			parse_str( $parts['query'], $query );
-			$_REQUEST['trp-view-as']       = $query['trp-view-as'];
-			$_REQUEST['trp-view-as-nonce'] = $query['trp-view-as-nonce'];
+			$_REQUEST['etm-view-as']       = $query['etm-view-as'];
+			$_REQUEST['etm-view-as-nonce'] = $query['etm-view-as-nonce'];
 		}
 
-		global $TRP_LANGUAGE;
-		$trp           = TRP_Translate_Press::get_trp_instance();
-		$url_converter = $trp->get_component( 'url_converter' );
-		$TRP_LANGUAGE  = $url_converter->get_lang_from_url_string( $referer );
-		if ( empty( $TRP_LANGUAGE ) ) {
-			$settings_obj = new TRP_Settings();
+		global $ETM_LANGUAGE;
+		$etm           = ETM_eTranslation_Multilingual::get_etm_instance();
+		$url_converter = $etm->get_component( 'url_converter' );
+		$ETM_LANGUAGE  = $url_converter->get_lang_from_url_string( $referer );
+		if ( empty( $ETM_LANGUAGE ) ) {
+			$settings_obj = new ETM_Settings();
 			$settings     = $settings_obj->get_settings();
-			$TRP_LANGUAGE = $settings["default-language"];
+			$ETM_LANGUAGE = $settings["default-language"];
 		}
 	}
 
@@ -287,62 +287,62 @@ class TRP_Gettext_Manager {
 	 */
 	public function machine_translate_gettext() {
 		/* @todo  set the original language to detect and also decide if we automatically translate for the default language */
-		global $TRP_LANGUAGE, $trp_gettext_strings_for_machine_translation;
-		if ( ! empty( $trp_gettext_strings_for_machine_translation ) ) {
+		global $ETM_LANGUAGE, $etm_gettext_strings_for_machine_translation;
+		if ( ! empty( $etm_gettext_strings_for_machine_translation ) ) {
 			if ( ! $this->machine_translator ) {
-				$trp                      = TRP_Translate_Press::get_trp_instance();
-				$this->machine_translator = $trp->get_component( 'machine_translator' );
+				$etm                      = ETM_eTranslation_Multilingual::get_etm_instance();
+				$this->machine_translator = $etm->get_component( 'machine_translator' );
 			}
 
 			// Gettext strings are considered by default to be in the English language
-			$source_language = apply_filters( 'trp_gettext_source_language', 'en_GB', $TRP_LANGUAGE, array(), $trp_gettext_strings_for_machine_translation );
+			$source_language = apply_filters( 'etm_gettext_source_language', 'en_GB', $ETM_LANGUAGE, array(), $etm_gettext_strings_for_machine_translation );
 			// machine translate new strings
-			if ( $this->machine_translator->is_available( array( $source_language, $TRP_LANGUAGE ) ) ) {
+			if ( $this->machine_translator->is_available( array( $source_language, $ETM_LANGUAGE ) ) ) {
 
 				/* Transform associative array into ordered numeric array. We need to keep keys numeric and ordered because $new_strings and $machine_strings depend on it.
 				 * Array was constructed as associative with db ids as keys to avoid duplication.
 				 */
-				$trp_gettext_strings_for_machine_translation = array_values( $trp_gettext_strings_for_machine_translation );
+				$etm_gettext_strings_for_machine_translation = array_values( $etm_gettext_strings_for_machine_translation );
 
 				$new_strings = array();
-				foreach ( $trp_gettext_strings_for_machine_translation as $trp_gettext_string_for_machine_translation ) {
-					$new_strings[] = ( $trp_gettext_string_for_machine_translation['original_plural'] && (int)$trp_gettext_string_for_machine_translation['plural_form'] > 0 ) ? $trp_gettext_string_for_machine_translation['original_plural'] : $trp_gettext_string_for_machine_translation['original'];
+				foreach ( $etm_gettext_strings_for_machine_translation as $etm_gettext_string_for_machine_translation ) {
+					$new_strings[] = ( $etm_gettext_string_for_machine_translation['original_plural'] && (int)$etm_gettext_string_for_machine_translation['plural_form'] > 0 ) ? $etm_gettext_string_for_machine_translation['original_plural'] : $etm_gettext_string_for_machine_translation['original'];
 				}
 
-				if ( apply_filters( 'trp_gettext_allow_machine_translation', true, $source_language, $TRP_LANGUAGE, $new_strings, $trp_gettext_strings_for_machine_translation ) ) {
-					$machine_strings = $this->machine_translator->translate( $new_strings, $TRP_LANGUAGE, $source_language );
+				if ( apply_filters( 'etm_gettext_allow_machine_translation', true, $source_language, $ETM_LANGUAGE, $new_strings, $etm_gettext_strings_for_machine_translation ) ) {
+					$machine_strings = $this->machine_translator->translate( $new_strings, $ETM_LANGUAGE, $source_language );
 				} else {
-					$machine_strings = apply_filters( 'trp_gettext_machine_translate_strings', array(), $new_strings, $TRP_LANGUAGE, $trp_gettext_strings_for_machine_translation );
+					$machine_strings = apply_filters( 'etm_gettext_machine_translate_strings', array(), $new_strings, $ETM_LANGUAGE, $etm_gettext_strings_for_machine_translation );
 				}
 
 				foreach ( $new_strings as $key => $new_string ) {
 					if (isset($machine_strings[ $new_string ])) {
-						$trp_gettext_strings_for_machine_translation[ $key ]['translated'] = $machine_strings[ $new_string ];
+						$etm_gettext_strings_for_machine_translation[ $key ]['translated'] = $machine_strings[ $new_string ];
 					} else {
-						$trp_gettext_strings_for_machine_translation[ $key ]['translated'] = "";
+						$etm_gettext_strings_for_machine_translation[ $key ]['translated'] = "";
 					}
 				}
 
-				if ( ! $this->trp_query ) {
-					$trp             = TRP_Translate_Press::get_trp_instance();
-					$this->trp_query = $trp->get_component( 'query' );
+				if ( ! $this->etm_query ) {
+					$etm             = ETM_eTranslation_Multilingual::get_etm_instance();
+					$this->etm_query = $etm->get_component( 'query' );
 				}
-				$gettext_insert_update = $this->trp_query->get_query_component( 'gettext_insert_update' );
-				$gettext_insert_update->update_gettext_strings( $trp_gettext_strings_for_machine_translation, $TRP_LANGUAGE );
+				$gettext_insert_update = $this->etm_query->get_query_component( 'gettext_insert_update' );
+				$gettext_insert_update->update_gettext_strings( $etm_gettext_strings_for_machine_translation, $ETM_LANGUAGE );
 			}
 		}
 	}
 
 
 	/**
-	 * make sure we remove the trp-gettext wrap from the format the date_i18n receives
+	 * make sure we remove the etm-gettext wrap from the format the date_i18n receives
 	 * ideally if in the gettext filter we would know 100% that a string is a valid date format then we would not wrap it but it seems that it is not easy to determine that ( explore further in the future $d = DateTime::createFromFormat('Y', date('y a') method); )
 	 */
 	public function handle_date_i18n_function_for_gettext( $j, $dateformatstring, $unixtimestamp, $gmt ) {
 
-		/* remove trp-gettext wrap */
-		$dateformatstring = preg_replace( '/#!trpst#trp-gettext (.*?)#!trpen#/i', '', $dateformatstring );
-		$dateformatstring = preg_replace( '/#!trpst#(.?)\/trp-gettext#!trpen#/i', '', $dateformatstring );
+		/* remove etm-gettext wrap */
+		$dateformatstring = preg_replace( '/#!etmst#etm-gettext (.*?)#!etmen#/i', '', $dateformatstring );
+		$dateformatstring = preg_replace( '/#!etmst#(.?)\/etm-gettext#!etmen#/i', '', $dateformatstring );
 
 
 		global $wp_locale;
@@ -405,11 +405,11 @@ class TRP_Gettext_Manager {
 	 * @since 1.3.8
 	 *
 	 */
-	public function trp_strip_gettext_tags_from_esc_url( $good_protocol_url, $original_url, $_context ) {
-		if ( strpos( $good_protocol_url, '%20data-trpgettextoriginal=' ) !== false ) {
+	public function etm_strip_gettext_tags_from_esc_url( $good_protocol_url, $original_url, $_context ) {
+		if ( strpos( $good_protocol_url, '%20data-etmgettextoriginal=' ) !== false ) {
 			// first replace %20 with space  so that gettext tags can be stripped.
-			$good_protocol_url = str_replace( '%20data-trpgettextoriginal=', ' data-trpgettextoriginal=', $good_protocol_url );
-			$good_protocol_url = TRP_Gettext_Manager::strip_gettext_tags( $good_protocol_url );
+			$good_protocol_url = str_replace( '%20data-etmgettextoriginal=', ' data-etmgettextoriginal=', $good_protocol_url );
+			$good_protocol_url = ETM_Gettext_Manager::strip_gettext_tags( $good_protocol_url );
 		}
 
 		return $good_protocol_url;
@@ -418,7 +418,7 @@ class TRP_Gettext_Manager {
 	/**
 	 * Filter sanitize_title() to use our own remove_accents() function so it's based on the default language, not current locale.
 	 *
-	 * Also removes trp gettext tags before running the filter because it strip # and ! and / making it impossible to strip the #trpst later
+	 * Also removes etm gettext tags before running the filter because it strip # and ! and / making it impossible to strip the #etmst later
 	 *
 	 * @param string $title
 	 * @param string $raw_title
@@ -428,17 +428,17 @@ class TRP_Gettext_Manager {
 	 * @since 1.3.1
 	 *
 	 */
-	public function trp_sanitize_title( $title, $raw_title, $context ) {
-		// remove trp_tags before sanitization, because otherwise some characters (#,!,/, spaces ) are stripped later, and it becomes impossible to strip trp-gettext later
-		$raw_title = TRP_Gettext_Manager::strip_gettext_tags( $raw_title );
+	public function etm_sanitize_title( $title, $raw_title, $context ) {
+		// remove etm_tags before sanitization, because otherwise some characters (#,!,/, spaces ) are stripped later, and it becomes impossible to strip etm-gettext later
+		$raw_title = ETM_Gettext_Manager::strip_gettext_tags( $raw_title );
 
 		if ( 'save' == $context ) {
-			$title = trp_remove_accents( $raw_title );
+			$title = etm_remove_accents( $raw_title );
 		}
 
-		remove_filter( 'sanitize_title', array( $this, 'trp_sanitize_title' ), 1 );
+		remove_filter( 'sanitize_title', array( $this, 'etm_sanitize_title' ), 1 );
 		$title = apply_filters( 'sanitize_title', $title, $raw_title, $context );
-		add_filter( 'sanitize_title', array( $this, 'trp_sanitize_title' ), 1, 3 );
+		add_filter( 'sanitize_title', array( $this, 'etm_sanitize_title' ), 1, 3 );
 
 		return $title;
 	}
@@ -452,14 +452,14 @@ class TRP_Gettext_Manager {
 	 * @return mixed
 	 */
 	static function strip_gettext_tags( $string ) {
-		if ( is_string( $string ) && strpos( $string, 'data-trpgettextoriginal=' ) !== false ) {
+		if ( is_string( $string ) && strpos( $string, 'data-etmgettextoriginal=' ) !== false ) {
 			// final 'i' is for case insensitive. same for the 'i' in  str_ireplace
-			$string = preg_replace( '/ data-trpgettextoriginal=\d+#!trpen#/i', '', $string );
-			$string = preg_replace( '/data-trpgettextoriginal=\d+#!trpen#/i', '', $string );//sometimes it can be without space
-			$string = str_ireplace( '#!trpst#trp-gettext', '', $string );
-			$string = str_ireplace( '#!trpst#/trp-gettext', '', $string );
-			$string = str_ireplace( '#!trpst#\/trp-gettext', '', $string );
-			$string = str_ireplace( '#!trpen#', '', $string );
+			$string = preg_replace( '/ data-etmgettextoriginal=\d+#!etmen#/i', '', $string );
+			$string = preg_replace( '/data-etmgettextoriginal=\d+#!etmen#/i', '', $string );//sometimes it can be without space
+			$string = str_ireplace( '#!etmst#etm-gettext', '', $string );
+			$string = str_ireplace( '#!etmst#/etm-gettext', '', $string );
+			$string = str_ireplace( '#!etmst#\/etm-gettext', '', $string );
+			$string = str_ireplace( '#!etmen#', '', $string );
 		}
 
 
@@ -480,20 +480,20 @@ class TRP_Gettext_Manager {
 	 */
 	public function add_missing_language_file_translations( $dictionary, $language ) {
 
-		$trp_plural_forms    = $this->get_gettext_component( 'plural_forms' );
-		if ( ! $this->trp_query ) {
-			$trp             = TRP_Translate_Press::get_trp_instance();
-			$this->trp_query = $trp->get_component( 'query' );
+		$etm_plural_forms    = $this->get_gettext_component( 'plural_forms' );
+		if ( ! $this->etm_query ) {
+			$etm             = ETM_eTranslation_Multilingual::get_etm_instance();
+			$this->etm_query = $etm->get_component( 'query' );
 		}
 		$insert_gettext_strings = array();
 		$update_gettext_strings = array();
 
-		$number_of_plural_forms = $trp_plural_forms->get_number_of_plural_forms( $language );
+		$number_of_plural_forms = $etm_plural_forms->get_number_of_plural_forms( $language );
 		if ( ! empty( $dictionary ) ) {
 			foreach ( $dictionary as $current_key => $current_string ) {
 
 				$translations = get_translations_for_domain( $current_string['domain'] );
-				$context      = ( $current_string['context'] === 'trp_context' ) ? null : $current_string['context'];
+				$context      = ( $current_string['context'] === 'etm_context' ) ? null : $current_string['context'];
 				$translated = '';
 				if ( $current_string['original_plural'] ) {
 
@@ -520,7 +520,7 @@ class TRP_Gettext_Manager {
 							}
 						}
 						if ( ! $translation_exists_for_plural_form ) {
-							$translated = $trp_plural_forms->translate_plural( $current_string['original'], $current_string['original_plural'], $plural_form_i, $context, $translations );
+							$translated = $etm_plural_forms->translate_plural( $current_string['original'], $current_string['original_plural'], $plural_form_i, $context, $translations );
 
 							if ( $translated && $translated != $current_string['original'] && $translated != $current_string['original_plural'] ) {
 								$status = 2;
@@ -553,7 +553,7 @@ class TRP_Gettext_Manager {
 
 					// Insert translation for this current string
 					if ( $current_string['status'] == 0 ) {
-						$translated = $trp_plural_forms->translate_plural( $current_string['original'], $current_string['original_plural'], (int) $current_string['plural_form'], $context, $translations );
+						$translated = $etm_plural_forms->translate_plural( $current_string['original'], $current_string['original_plural'], (int) $current_string['plural_form'], $context, $translations );
 					}
 				} else {
 					if ( $current_string['status'] == 0 && empty( $current_string['translated'] ) ) {
@@ -591,7 +591,7 @@ class TRP_Gettext_Manager {
 				}
 
 			}
-			$gettext_insert_update = $this->trp_query->get_query_component( 'gettext_insert_update' );
+			$gettext_insert_update = $this->etm_query->get_query_component( 'gettext_insert_update' );
 			$gettext_insert_update->insert_gettext_strings($insert_gettext_strings, $language);
 			$gettext_insert_update->update_gettext_strings($update_gettext_strings, $language, array('translated', 'id', 'status'));
 		}

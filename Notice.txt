@@ -23,7 +23,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 ========================================================================================
 This product includes software developed by third parties which is provided under their respective licences:
 
-TranslatePress 2.3.3
+TranslatePress 2.4.4
 
 ----------------
 

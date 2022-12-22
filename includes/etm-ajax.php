@@ -1,28 +1,28 @@
 <?php
 
 /**
- * Class TRP_Ajax
+ * Class ETM_Ajax
  *
  * Custom Ajax to get translation of dynamic elements.
  */
-class TRP_Ajax{
+class ETM_Ajax{
 
     protected $connection;
     protected $table_prefix;
 
     /**
-     * TRP_Ajax constructor.
+     * ETM_Ajax constructor.
      *
      * Establishes db connection and triggers function to output translations.
      */
     public function __construct( ){
 
-        if ( !isset( $_POST['action'] ) || $_POST['action'] !== 'trp_get_translations_regular' || empty( $_POST['originals'] ) || empty( $_POST['language'] ) || empty( $_POST['original_language'] ) ) {
+        if ( !isset( $_POST['action'] ) || $_POST['action'] !== 'etm_get_translations_regular' || empty( $_POST['originals'] ) || empty( $_POST['language'] ) || empty( $_POST['original_language'] ) ) {
             die();
         }
 
         include './external-functions.php';
-        if ( !trp_is_valid_language_code( $_POST['language'] ) || !trp_is_valid_language_code( $_POST['original_language'] ) ) {//phpcs:ignore
+        if ( !etm_is_valid_language_code( $_POST['language'] ) || !etm_is_valid_language_code( $_POST['original_language'] ) ) {//phpcs:ignore
             echo json_encode( 'eTranslation Multilingual Error: Invalid language code' );
             exit;
         }
@@ -56,7 +56,7 @@ class TRP_Ajax{
         $strings = json_decode( $posted_strings );
         if ( is_array( $strings ) ) {
             foreach ($strings as $key => $string) {
-	            $strings[$key] = mysqli_real_escape_string( $this->connection, trp_full_trim( $string, array( 'numerals'=> $numerals_option ) ) );
+	            $strings[$key] = mysqli_real_escape_string( $this->connection, etm_full_trim( $string, array( 'numerals'=> $numerals_option ) ) );
             }
         }
         return $strings;
@@ -164,7 +164,7 @@ class TRP_Ajax{
                 $dictionaries[$language][] = $row;
             }
 
-	        $dictionary_by_original = trp_sort_dictionary_by_original( $dictionaries, 'regular', 'dynamicstrings', null, null );
+	        $dictionary_by_original = etm_sort_dictionary_by_original( $dictionaries, 'regular', 'dynamicstrings', null, null );
             echo json_encode($dictionary_by_original);
         }
 
@@ -179,7 +179,7 @@ class TRP_Ajax{
     }
 }
 
-new TRP_Ajax;
+new ETM_Ajax;
 
 die();
 

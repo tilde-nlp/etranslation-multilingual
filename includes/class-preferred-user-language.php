@@ -1,42 +1,42 @@
 <?php
 
-class TRP_Preferred_User_Language{
+class ETM_Preferred_User_Language{
 
     protected $settings;
-    /** @var TRP_Languages */
-    protected $trp_languages;
-    /** @var TRP_Translate_Press */
-    protected $trp;
+    /** @var ETM_Languages */
+    protected $etm_languages;
+    /** @var ETM_eTranslation_Multilingual */
+    protected $etm;
 
     public function __construct(){}
 
     public function get_published_languages(){
-        if ( ! $this->trp_languages ){
-            $trp = TRP_Translate_Press::get_trp_instance();
-            $this->trp_languages = $trp->get_component( 'languages' );
+        if ( ! $this->etm_languages ){
+            $etm = ETM_eTranslation_Multilingual::get_etm_instance();
+            $this->etm_languages = $etm->get_component( 'languages' );
         }
         if ( ! $this->settings ){
-            $trp = TRP_Translate_Press::get_trp_instance();
-            $trp_settings = $trp->get_component( 'settings' );
-            $this->settings = $trp_settings->get_settings();
+            $etm = ETM_eTranslation_Multilingual::get_etm_instance();
+            $etm_settings = $etm->get_component( 'settings' );
+            $this->settings = $etm_settings->get_settings();
         }
 
         $languages_to_display = $this->settings['publish-languages'];
 
-        $published_languages = $this->trp_languages->get_language_names( $languages_to_display );
+        $published_languages = $this->etm_languages->get_language_names( $languages_to_display );
 
         return $published_languages;
     }
 
     public function always_use_this_language($user){
 
-        global $TRP_LANGUAGE;
+        global $ETM_LANGUAGE;
 
         $published_languages = $this->get_published_languages();
 
         $user_ID = 0;
         $user_ID = $user->ID;
-        $language = $TRP_LANGUAGE;
+        $language = $ETM_LANGUAGE;
 
         if ($user_ID > 0) {
             $language = get_user_meta( $user_ID, 'etm_language', true );
@@ -56,7 +56,7 @@ class TRP_Preferred_User_Language{
     <tr>
         <th><label for="preferred_language"><?php esc_html_e( 'Preferred language to navigate the site', 'etranslation-multilingual' ); ?></label></th>
         <td>
-            <select style="width: 350px" name="trp_selected_language">
+            <select style="width: 350px" name="etm_selected_language">
                 <option value="<?php echo esc_attr( $language ); ?>"><?php echo esc_html($last_visited_language); ?></option>
                 <?php foreach ($published_languages as $language_code => $language_name){
                     if ($language_code != $language){ ?>
@@ -79,7 +79,7 @@ class TRP_Preferred_User_Language{
         <td>
             <label><input type="checkbox"
                    id="always_use_this_language_checkbox"
-                   name="trp_always_use_this_language_checkbox"
+                   name="etm_always_use_this_language_checkbox"
                    value="yes"
             <?php if (!empty($always_use_this_language) && $always_use_this_language == 'yes'){ ?> checked <?php } ?>>
             <strong><?php esc_html_e( 'Always use this language', 'etranslation-multilingual' ); ?></strong>
@@ -102,14 +102,14 @@ class TRP_Preferred_User_Language{
 
         $published_languages = $this->get_published_languages();
 
-        if(isset($_POST['trp_selected_language']) && in_array($_POST['trp_selected_language'], $this->settings['publish-languages']) && trp_is_valid_language_code($_POST['trp_selected_language'] ) ) { /* phpcs:ignore */
+        if(isset($_POST['etm_selected_language']) && in_array($_POST['etm_selected_language'], $this->settings['publish-languages']) && etm_is_valid_language_code($_POST['etm_selected_language'] ) ) { /* phpcs:ignore */
 
-            update_user_meta( $user_id, 'etm_language', $_POST['trp_selected_language'] ); /* phpcs:ignore */  /* the variable was checked in the if statement  */
+            update_user_meta( $user_id, 'etm_language', $_POST['etm_selected_language'] ); /* phpcs:ignore */  /* the variable was checked in the if statement  */
         }else{
             update_user_meta( $user_id, 'etm_language', $this->settings['default-language'] );
         }
 
-        if(isset($_POST['trp_always_use_this_language_checkbox']) && $_POST['trp_always_use_this_language_checkbox'] == 'yes') {
+        if(isset($_POST['etm_always_use_this_language_checkbox']) && $_POST['etm_always_use_this_language_checkbox'] == 'yes') {
             update_user_meta( $user_id, 'etm_always_use_this_language', "yes" );
         }else{
             update_user_meta( $user_id, 'etm_always_use_this_language', "no" );

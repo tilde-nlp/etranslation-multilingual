@@ -1,19 +1,19 @@
 <?php
 
 /**
- * Class TRP_Error_Manager
+ * Class ETM_Error_Manager
  */
-class TRP_Error_Manager{
+class ETM_Error_Manager{
     protected $settings;
-    /* @var TRP_Settings */
-    protected $trp_settings;
+    /* @var ETM_Settings */
+    protected $etm_settings;
 
     public function __construct( $settings){
         $this->settings = $settings;
     }
 
     public function is_error_manager_disabled(){
-        return apply_filters( 'trp_disable_error_manager', false );
+        return apply_filters( 'etm_disable_error_manager', false );
     }
 
     /**
@@ -45,18 +45,18 @@ class TRP_Error_Manager{
         // specific actions for this error: add notification message and disable machine translation
         if ( isset( $error_details['disable_automatic_translations'] ) && $error_details['disable_automatic_translations'] === true ){
 
-            if ( ! $this->trp_settings ) {
-                $trp = TRP_Translate_Press::get_trp_instance();
-                $this->trp_settings = $trp->get_component( 'settings' );
+            if ( ! $this->etm_settings ) {
+                $etm = ETM_eTranslation_Multilingual::get_etm_instance();
+                $this->etm_settings = $etm->get_component( 'settings' );
             }
 
-            $mt_settings_option = get_option('etm_machine_translation_settings', $this->trp_settings->get_default_trp_machine_translation_settings() );
+            $mt_settings_option = get_option('etm_machine_translation_settings', $this->etm_settings->get_default_etm_machine_translation_settings() );
             if ( $mt_settings_option['machine-translation'] != 'no' ) {
                 $mt_settings_option['machine-translation'] = 'no';
                 update_option('etm_machine_translation_settings', $mt_settings_option );
 
                 // filter is needed to block automatic translation in this execution. The settings don't update throughout the plugin for this request. Only the next request will have machine translation turned off.
-                add_filter( 'trp_disable_automatic_translations_due_to_error', __return_true() );
+                add_filter( 'etm_disable_automatic_translations_due_to_error', __return_true() );
 
                 $error_message = wp_kses( __('Automatic translation has been disabled.','etranslation-multilingual'), array('strong' => array() ) ) . ' ' . $error_message ;
             }
@@ -87,7 +87,7 @@ class TRP_Error_Manager{
      *
      * Necessary in order to allow logging of this error in the future. Basically allow creation of new notifications about this error.
      *
-     * Hooked to trp_dismiss_notification
+     * Hooked to etm_dismiss_notification
      *
      * @param $notification_id
      * @param $current_user
@@ -145,25 +145,25 @@ class TRP_Error_Manager{
         $option = get_option( 'etm_db_errors', false );
         if ( $option !== false && isset($option['notifications'])) {
             foreach( $option['notifications'] as $logged_notification ) {
-                $notifications = TRP_Plugin_Notifications::get_instance();
+                $notifications = ETM_Plugin_Notifications::get_instance();
 
                 $notification_id = $logged_notification['notification_id'];
 
                 $message = '<p style="padding-right:30px;">' . $logged_notification['message'] . '</p>';
-                //make sure to use the trp_dismiss_admin_notification arg
-                $message .= '<a href="' . add_query_arg(array('trp_dismiss_admin_notification' => $notification_id)) . '" type="button" class="notice-dismiss" style="text-decoration: none;z-index:100;"><span class="screen-reader-text">' . esc_html__('Dismiss this notice.', 'etranslation-multilingual') . '</span></a>';
+                //make sure to use the etm_dismiss_admin_notification arg
+                $message .= '<a href="' . add_query_arg(array('etm_dismiss_admin_notification' => $notification_id)) . '" type="button" class="notice-dismiss" style="text-decoration: none;z-index:100;"><span class="screen-reader-text">' . esc_html__('Dismiss this notice.', 'etranslation-multilingual') . '</span></a>';
 
-                $notifications->add_notification($notification_id, $message, 'trp-notice trp-narrow notice error is-dismissible', true, array('translate-press'), true);
+                $notifications->add_notification($notification_id, $message, 'etm-notice etm-narrow notice error is-dismissible', true, array('etranslation-multilingual'), true);
             }
         }
     }
 
     public function register_submenu_errors_page(){
-        add_submenu_page( 'TRPHidden', 'eTranslation Multilingual Error Manager', 'TRPHidden', apply_filters( 'trp_settings_capability', 'manage_options' ), 'etm_error_manager', array( $this, 'error_manager_page_content' ) );
+        add_submenu_page( 'ETMHidden', 'eTranslation Multilingual Error Manager', 'ETMHidden', apply_filters( 'etm_settings_capability', 'manage_options' ), 'etm_error_manager', array( $this, 'error_manager_page_content' ) );
     }
 
     public function error_manager_page_content(){
-        require_once TRP_PLUGIN_DIR . 'partials/error-manager-page.php';
+        require_once ETM_PLUGIN_DIR . 'partials/error-manager-page.php';
     }
 
     public function output_db_errors( $html_content ){
@@ -188,14 +188,14 @@ class TRP_Error_Manager{
     }
 
     /**
-     * Hooked to trp_error_manager_page_output
+     * Hooked to etm_error_manager_page_output
      *
      * @param $html_content
      * @return string
      */
     public function show_instructions_on_how_to_fix( $html_content ){
         $html_content .= '<h2>' . esc_html__('Why are these errors occuring', 'etranslation-multilingual') . '</h2>';
-        $html_content .= '<p>' . esc_html__('If eTranslation Multilingual detects something wrong when executing queries on your database, it may disable the Automatic Translation feature in order to avoid any extra charging by Google. Automatic Translation needs to be manually turned on, after you solve the issues.', 'etranslation-multilingual') . '</p>';
+        $html_content .= '<p>' . esc_html__('If eTranslation Multilingual detects something wrong when executing queries on your database, it may disable the Automatic Translation feature. Automatic Translation needs to be manually turned on, after you solve the issues.', 'etranslation-multilingual') . '</p>';
         $html_content .= '<p>' . esc_html__('The SQL errors detected can occur for various reasons including missing tables, missing permissions for the SQL user to create tables or perform other operations, problems after site migration or changes to SQL server configuration.', 'etranslation-multilingual') . '</p>';
 
         $html_content .= '<h2>' . esc_html__('What you can do in this situation', 'etranslation-multilingual') . '</h2>';

@@ -1,16 +1,16 @@
 <?php
 
-add_filter( 'trp_machine_translation_engines', 'trp_etranslation_add_engine', 5 );
-function trp_etranslation_add_engine( $engines ){
+add_filter( 'etm_machine_translation_engines', 'etm_etranslation_add_engine', 5 );
+function etm_etranslation_add_engine( $engines ){
     $engines[] = array( 'value' => 'etranslation', 'label' => __( 'eTranslation', 'etranslation-multilingual' ) );
 
     return $engines;
 }
 
-add_action( 'trp_machine_translation_extra_settings_middle', 'trp_etranslation_add_settings' );
-function trp_etranslation_add_settings( $mt_settings ){
-    $trp                = TRP_Translate_Press::get_trp_instance();
-    $machine_translator = $trp->get_component( 'machine_translator' );
+add_action( 'etm_machine_translation_extra_settings_middle', 'etm_etranslation_add_settings' );
+function etm_etranslation_add_settings( $mt_settings ){
+    $etm                = ETM_eTranslation_Multilingual::get_etm_instance();
+    $machine_translator = $etm->get_component( 'machine_translator' );
 
     $translation_engine = isset( $mt_settings['translation-engine'] ) ? $mt_settings['translation-engine'] : '';
 
@@ -28,10 +28,10 @@ function trp_etranslation_add_settings( $mt_settings ){
     }
 
     $text_input_classes = array(
-        'trp-text-input',
+        'etm-text-input',
     );
     if ( $show_errors && 'etranslation' === $translation_engine ) {
-        $text_input_classes[] = 'trp-text-input-error';
+        $text_input_classes[] = 'etm-text-input-error';
     }
     ?>
     <tr>
@@ -41,7 +41,7 @@ function trp_etranslation_add_settings( $mt_settings ){
             // Display an error message above the input.
             if ( $show_errors && 'etranslation' === $translation_engine ) {
                 ?>
-                <p class="trp-error-inline">
+                <p class="etm-error-inline">
                     <?php echo wp_kses_post( $error_message ); ?>
                 </p>
                 <?php
@@ -56,7 +56,7 @@ function trp_etranslation_add_settings( $mt_settings ){
             <input type="password" class="<?php echo esc_html( implode( ' ', $text_input_classes ) ); ?>" name="etm_machine_translation_settings[etranslation-pwd]" value="<?php if( !empty( $mt_settings['etranslation-pwd'] ) ) echo esc_attr( $mt_settings['etranslation-pwd']);?>"/>
             <?php
             // Only show errors if eTranslation is active.
-            if ( $machine_translator->is_available() && 'etranslation' === $translation_engine && function_exists( 'trp_output_svg' ) ) {
+            if ( $machine_translator->is_available() && 'etranslation' === $translation_engine && function_exists( 'etm_output_svg' ) ) {
                 $machine_translator->automatic_translation_svg_output( $show_errors );
             }
             ?>
@@ -69,15 +69,15 @@ function trp_etranslation_add_settings( $mt_settings ){
     <?php
 }
 
-add_filter( 'trp_machine_translation_sanitize_settings', 'trp_etranslation_sanitize_settings' );
-function trp_etranslation_sanitize_settings( $mt_settings ){
+add_filter( 'etm_machine_translation_sanitize_settings', 'etm_etranslation_sanitize_settings' );
+function etm_etranslation_sanitize_settings( $mt_settings ){
     if( !empty( $mt_settings['etranslation-app-name'] ) )
         $mt_settings['etranslation-app-name'] = sanitize_text_field( $mt_settings['etranslation-app-name']  );
 
     return $mt_settings;
 }
 
-function trp_etranslation_response_codes( $code ) {
+function etm_etranslation_response_codes( $code ) {
     $is_error       = false;
     $code           = intval( $code );
     $return_message = '';
@@ -99,7 +99,7 @@ function trp_etranslation_response_codes( $code ) {
 add_filter( 'pre_update_option_etm_machine_translation_settings', function( $new_value, $old_value ) {
     $key = 'etranslation-pwd';
     if ($new_value && $new_value[$key] && (!$old_value || $old_value[$key] != $new_value[$key])) {        
-        $new_value[$key] = TRP_eTranslation_Utils::encrypt_password($new_value[$key]);
+        $new_value[$key] = ETM_eTranslation_Utils::encrypt_password($new_value[$key]);
     }
     return $new_value; 
  }, 10, 2);

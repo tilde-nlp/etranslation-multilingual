@@ -1,9 +1,9 @@
 <?php
 
-class TRP_String_Translation_Helper {
-	/* @var TRP_Query */
-	protected $trp_query;
-	/* @var TRP_String_Translation */
+class ETM_String_Translation_Helper {
+	/* @var ETM_Query */
+	protected $etm_query;
+	/* @var ETM_String_Translation */
 	protected $string_translation;
 	protected $settings;
 
@@ -13,7 +13,7 @@ class TRP_String_Translation_Helper {
 		if ( defined( 'DOING_AJAX' ) && DOING_AJAX ) {
 			check_ajax_referer( 'string_translation_' . $get_or_save . '_strings_' . $type, 'security' );
 
-			$action = ( $get_or_save === 'save' ) ? 'trp_save_translations_' : 'trp_string_translation_get_strings_';
+			$action = ( $get_or_save === 'save' ) ? 'etm_save_translations_' : 'etm_string_translation_get_strings_';
 			if ( isset( $_POST['action'] ) && $_POST['action'] === $action . $type ) {
 				return true;
 			}
@@ -22,16 +22,16 @@ class TRP_String_Translation_Helper {
 	}
 
 	public function get_sanitized_query_args( $string_type ) {
-		$trp = TRP_Translate_Press::get_trp_instance();
+		$etm = ETM_eTranslation_Multilingual::get_etm_instance();
 		if ( ! $this->string_translation ) {
-			$this->string_translation = $trp->get_component( 'string_translation' );
+			$this->string_translation = $etm->get_component( 'string_translation' );
 		}
-		if ( ! $this->trp_query ) {
-			$this->trp_query = $trp->get_component( 'query' );
+		if ( ! $this->etm_query ) {
+			$this->etm_query = $etm->get_component( 'query' );
 		}
 		if ( ! $this->settings ) {
-			$trp_settings   = $trp->get_component( 'settings' );
-			$this->settings = $trp_settings->get_settings();
+			$etm_settings   = $etm->get_component( 'settings' );
+			$this->settings = $etm_settings->get_settings();
 		}
 		$query_args   = array();
 		$posted_query = ( empty( $_POST['query'] ) ) ? array() : json_decode( stripslashes( $_POST['query'] ), true ); /* phpcs:ignore */ /* sanitized below */
@@ -42,7 +42,7 @@ class TRP_String_Translation_Helper {
 		foreach ( $translation_status_filters['translation_status'] as $translation_status_key => $value ) {
 			if ( ! empty( $posted_query[ $translation_status_key ] ) && ( $posted_query[ $translation_status_key ] === true || $posted_query[ $translation_status_key ] === 'true' ) ) {
 				$constant_func_name     = 'get_constant_' . $translation_status_key;
-				$query_args['status'][] = $this->trp_query->$constant_func_name();
+				$query_args['status'][] = $this->etm_query->$constant_func_name();
 			}
 		}
 		if ( count( $query_args['status'] ) === 3 ) {
@@ -77,7 +77,7 @@ class TRP_String_Translation_Helper {
 					$posted_query[ $specific_filter_key ] : '';
 		}
 
-		return apply_filters( 'trp_sanitized_query_args', $query_args, $string_type, $string_types );
+		return apply_filters( 'etm_sanitized_query_args', $query_args, $string_type, $string_types );
 	}
 
 
@@ -148,11 +148,11 @@ class TRP_String_Translation_Helper {
 
 		$this->check_ajax( $type, 'get' );
 
-		$trp                = TRP_Translate_Press::get_trp_instance();
-		$string_translation = $trp->get_component( 'string_translation' );
-		$trp_query          = $trp->get_component( 'query' );
-		$trp_settings       = $trp->get_component( 'settings' );
-		$settings           = $trp_settings->get_settings();
+		$etm                = ETM_eTranslation_Multilingual::get_etm_instance();
+		$string_translation = $etm->get_component( 'string_translation' );
+		$etm_query          = $etm->get_component( 'query' );
+		$etm_settings       = $etm->get_component( 'settings' );
+		$settings           = $etm_settings->get_settings();
 		$config             = $string_translation->get_configuration_options();
 		$sanitized_args     = $this->get_sanitized_query_args( $type );
 		$where_clauses      = array();
@@ -191,7 +191,7 @@ class TRP_String_Translation_Helper {
 
 			// joining translation tables is needed only when we have filter for translation status or for translation block type
 			foreach ( $translation_languages as $language ) {
-				$query .= $this->get_join_language_table_sql( sanitize_text_field( $trp_query->$get_table_name_func( $language ) ), esc_sql( sanitize_text_field( $language ) ) );
+				$query .= $this->get_join_language_table_sql( sanitize_text_field( $etm_query->$get_table_name_func( $language ) ), esc_sql( sanitize_text_field( $language ) ) );
 			}
 
 			// translation status and block type
@@ -200,12 +200,12 @@ class TRP_String_Translation_Helper {
 		}
 
 		// original_meta table only needed when filter by type is set
-		if ( ! empty( $sanitized_args['type'] ) && $sanitized_args['type'] !== 'trp_default' ) {
+		if ( ! empty( $sanitized_args['type'] ) && $sanitized_args['type'] !== 'etm_default' ) {
 			$query .= $this->get_join_meta_table_sql( $original_meta_table );
 		}
 
 		// Filter by type ( email )
-		if ( ! empty( $sanitized_args['type'] ) && $sanitized_args['type'] !== 'trp_default' ) {
+		if ( ! empty( $sanitized_args['type'] ) && $sanitized_args['type'] !== 'etm_default' ) {
 			if ( $sanitized_args['type'] === 'email' ) {
 				$where_clauses[] = "original_meta.meta_key='in_email' and original_meta.meta_value = 'yes' ";
 			}

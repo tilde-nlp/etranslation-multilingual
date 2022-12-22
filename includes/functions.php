@@ -5,9 +5,9 @@
  *
  * Uses customization options from Shortcode language switcher.
  */
-function trp_the_language_switcher(){
-    $trp = TRP_Translate_Press::get_trp_instance();
-    $language_switcher = $trp->get_component( 'language_switcher' );
+function etm_the_language_switcher(){
+    $etm = ETM_eTranslation_Multilingual::get_etm_instance();
+    $language_switcher = $etm->get_component( 'language_switcher' );
     echo $language_switcher->language_switcher(); /* phpcs:ignore */ /* escaped inside the function */
 }
 
@@ -16,8 +16,8 @@ function trp_the_language_switcher(){
  * @param $value
  * @return mixed|string|void
  */
-function trp_safe_json_encode($value){
-    if (version_compare(PHP_VERSION, '5.4.0') >= 0 && apply_filters('trp_safe_json_encode_pretty_print', true )) {
+function etm_safe_json_encode($value){
+    if (version_compare(PHP_VERSION, '5.4.0') >= 0 && apply_filters('etm_safe_json_encode_pretty_print', true )) {
         $encoded = json_encode($value, JSON_PRETTY_PRINT);
     } else {
         $encoded = json_encode($value);
@@ -34,8 +34,8 @@ function trp_safe_json_encode($value){
         case JSON_ERROR_SYNTAX:
             return 'Syntax error, malformed JSON'; // or trigger_error() or throw new Exception()
         case JSON_ERROR_UTF8:
-            $clean = trp_utf8ize($value);
-            return trp_safe_json_encode($clean);
+            $clean = etm_utf8ize($value);
+            return etm_safe_json_encode($clean);
         default:
             return 'Unknown error'; // or trigger_error() or throw new Exception()
 
@@ -43,14 +43,14 @@ function trp_safe_json_encode($value){
 }
 
 /**
- * Helper function for trp_safe_json_encode that helps eliminate utf8 json encode errors
+ * Helper function for etm_safe_json_encode that helps eliminate utf8 json encode errors
  * @param $mixed
  * @return array|string
  */
-function trp_utf8ize($mixed) {
+function etm_utf8ize($mixed) {
     if (is_array($mixed)) {
         foreach ($mixed as $key => $value) {
-            $mixed[$key] = trp_utf8ize($value);
+            $mixed[$key] = etm_utf8ize($value);
         }
     } else if (is_string ($mixed)) {
         return utf8_encode($mixed);
@@ -62,29 +62,29 @@ function trp_utf8ize($mixed) {
  * function that gets the translation for a string with context directly from a .mo file
  * @TODO this was developped firstly for woocommerce so it maybe needs further development.
 */
-function trp_x( $text, $context, $domain, $language ){
+function etm_x( $text, $context, $domain, $language ){
     $original_text = $text;
     /* try to find the correct path for the textdomain */
-    $path = trp_find_translation_location_for_domain( $domain, $language );
+    $path = etm_find_translation_location_for_domain( $domain, $language );
 
     if( !empty( $path ) ) {
 
-        $mo_file = trp_cache_get( 'trp_x_' . $domain .'_'. $language );
+        $mo_file = etm_cache_get( 'etm_x_' . $domain .'_'. $language );
 
         if( false === $mo_file ){
             $mo_file = new MO();
             $mo_file->import_from_file( $path );
-            wp_cache_set( 'trp_x_' . $domain .'_'. $language, $mo_file );
+            wp_cache_set( 'etm_x_' . $domain .'_'. $language, $mo_file );
         }
 
-        if ( !$mo_file ) return apply_filters('trp_x', $text, $original_text, $context, $domain, $language );
+        if ( !$mo_file ) return apply_filters('etm_x', $text, $original_text, $context, $domain, $language );
 
 
         if (!empty($mo_file->entries[$context . '' . $text]))
             $text = $mo_file->entries[$context . '' . $text]->translations[0];
     }
 
-    return apply_filters('trp_x', $text, $original_text,  $context, $domain, $language );
+    return apply_filters('etm_x', $text, $original_text,  $context, $domain, $language );
 }
 
 /**
@@ -93,11 +93,11 @@ function trp_x( $text, $context, $domain, $language ){
  * @param $language the language in which you want the translation
  * @return string the path of the mo file if it is found else an empty string
  */
-function trp_find_translation_location_for_domain( $domain, $language ){
-    global $trp_template_directory;
-    if ( !isset($trp_template_directory)){
+function etm_find_translation_location_for_domain( $domain, $language ){
+    global $etm_template_directory;
+    if ( !isset($etm_template_directory)){
         // "caching" this because it sometimes leads to increased page load time due to many calls
-        $trp_template_directory = get_template_directory();
+        $etm_template_directory = get_template_directory();
     }
     $path = '';
 
@@ -111,8 +111,8 @@ function trp_find_translation_location_for_domain( $domain, $language ){
     } else {
         $possible_translation_folders = array( '', 'languages/', 'language/', 'translations/', 'translation/', 'lang/' );
         foreach( $possible_translation_folders as $possible_translation_folder ){
-            if (file_exists($trp_template_directory . '/' . $possible_translation_folder . $domain . '-' . $language . '.mo')) {
-                $path = $trp_template_directory . '/' . $possible_translation_folder . $domain . '-' . $language . '.mo';
+            if (file_exists($etm_template_directory . '/' . $possible_translation_folder . $domain . '-' . $language . '.mo')) {
+                $path = $etm_template_directory . '/' . $possible_translation_folder . $domain . '-' . $language . '.mo';
             } elseif ( file_exists(WP_PLUGIN_DIR . '/' . $domain . '/' . $possible_translation_folder . $domain . '-' . $language . '.mo') ) {
                 $path = WP_PLUGIN_DIR . '/' . $domain . '/' . $possible_translation_folder . $domain . '-' . $language . '.mo';
             }
@@ -127,22 +127,22 @@ function trp_find_translation_location_for_domain( $domain, $language ){
  * @param $link string the given url to append
  * @return string url with the added affiliate_id
  */
-function trp_add_affiliate_id_to_link( $link ){
+function etm_add_affiliate_id_to_link( $link ){
 
     //Avangate Affiliate Network
-    $avg_affiliate_id = get_option('translatepress_avg_affiliate_id');
+    $avg_affiliate_id = get_option('etranslation_multilingual_avg_affiliate_id');
     if  ( !empty( $avg_affiliate_id ) ) {
         $link = add_query_arg( 'avgref', $avg_affiliate_id, $link );
     }
     else{
         // AffiliateWP
-        $affiliate_id = get_option('translatepress_affiliate_id');
+        $affiliate_id = get_option('etranslation_multilinguals_affiliate_id');
         if  ( !empty( $affiliate_id ) ) {
             $link = add_query_arg( 'ref', $affiliate_id, $link );
         }
     }
 
-    return esc_url( apply_filters( 'trp_affiliate_link', $link ) );
+    return esc_url( apply_filters( 'etm_affiliate_link', $link ) );
 }
 
 /**
@@ -152,7 +152,7 @@ function trp_add_affiliate_id_to_link( $link ){
  * Removes any unwanted html code from the string.
  * Do not confuse with trim.
  */
-function trp_sanitize_string( $filtered, $execute_wp_kses = true ){
+function etm_sanitize_string( $filtered, $execute_wp_kses = true ){
 	$filtered = preg_replace( '/<script\b[^>]*>(.*?)<\/script>/is', '', $filtered );
 
 	// don't remove \r \n \t. They are part of the translation, they give structure and context to the text.
@@ -171,25 +171,25 @@ function trp_sanitize_string( $filtered, $execute_wp_kses = true ){
 	}
 
     if ( $execute_wp_kses ){
-        $filtered = trp_wp_kses( $filtered );
+        $filtered = etm_wp_kses( $filtered );
     }
     return $filtered;
 }
 
-function trp_wp_kses($string){
-    if ( apply_filters('trp_apply_wp_kses_on_strings', true) ){
+function etm_wp_kses($string){
+    if ( apply_filters('etm_apply_wp_kses_on_strings', true) ){
         $string = wp_kses_post($string);
     }
     return $string;
 }
 
 /**
- * function that checks if $_REQUEST['trp-edit-translation'] is set or if it has a certain value
+ * function that checks if $_REQUEST['etm-edit-translation'] is set or if it has a certain value
  */
-function trp_is_translation_editor( $value = '' ){
-    if( isset( $_REQUEST['trp-edit-translation'] ) ){
+function etm_is_translation_editor( $value = '' ){
+    if( isset( $_REQUEST['etm-edit-translation'] ) ){
         if( !empty( $value ) ) {
-            if( $_REQUEST['trp-edit-translation'] === $value ) {
+            if( $_REQUEST['etm-edit-translation'] === $value ) {
                 return true;
             }
             else{
@@ -198,7 +198,7 @@ function trp_is_translation_editor( $value = '' ){
         }
         else{
             $possible_values = array ('preview', 'true');
-            if( in_array( $_REQUEST['trp-edit-translation'], $possible_values ) ) {
+            if( in_array( $_REQUEST['etm-edit-translation'], $possible_values ) ) {
                 return true;
             }
         }
@@ -207,7 +207,7 @@ function trp_is_translation_editor( $value = '' ){
     return false;
 }
 
-function trp_remove_accents( $string ){
+function etm_remove_accents( $string ){
 
     if ( !preg_match('/[\x80-\xff]/', $string) )
         return $string;
@@ -390,9 +390,9 @@ function trp_remove_accents( $string ){
         );
 
         // Used for locale-specific rules
-        $trp = TRP_Translate_Press::get_trp_instance();
-        $trp_settings = $trp->get_component( 'settings' );
-        $settings = $trp_settings->get_settings();
+        $etm = ETM_eTranslation_Multilingual::get_etm_instance();
+        $etm_settings = $etm->get_component( 'settings' );
+        $settings = $etm_settings->get_settings();
 
         $default_language= $settings["default-language"];
         $locale = $default_language;
@@ -451,16 +451,16 @@ function trp_remove_accents( $string ){
  *
  * @param string $icon The icon to output. Default no icon.
  */
-function trp_output_svg( $icon = '' ) {
+function etm_output_svg( $icon = '' ) {
     switch ( $icon ) {
         case 'check':
             ?>
-            <svg class="trp-svg-icon fas-check-circle"><use xlink:href="#check-circle"></use></svg>
+            <svg class="etm-svg-icon fas-check-circle"><use xlink:href="#check-circle"></use></svg>
             <?php
             break;
         case 'error':
             ?>
-            <svg class="trp-svg-icon fas-times-circle"><use xlink:href="#times-circle"></use></svg>
+            <svg class="etm-svg-icon fas-times-circle"><use xlink:href="#times-circle"></use></svg>
             <?php
             break;
         default:
@@ -476,7 +476,7 @@ function trp_output_svg( $icon = '' ) {
  * @param bool $enabled
  * @param array $logger
  */
-function trp_bulk_debug($debug = false, $logger = array()){
+function etm_bulk_debug($debug = false, $logger = array()){
     if(!$debug){
         return;
     }
@@ -498,36 +498,7 @@ function trp_bulk_debug($debug = false, $logger = array()){
  *
  * @return bool
  */
-function trp_is_paid_version() {
-/*	$licence = get_option( 'trp_licence_key' );
-
-	if ( ! empty( $licence ) ) {
-		return true;
-	}
-
-	//list of class names
-	$addons = apply_filters( 'trp_paid_addons', array(
-		'TRP_IN_Automatic_Language_Detection',
-		'TRP_IN_Browse_as_other_Role',
-		'TRP_IN_Extra_Languages',
-		'TRP_IN_Navigation_Based_on_Language',
-		'TRP_IN_Seo_Pack',
-		'TRP_IN_Translator_Accounts',
-        'TRP_Automatic_Language_Detection',
-        'TRP_Browse_as_other_Role',
-        'TRP_Extra_Languages',
-        'TRP_Navigation_Based_on_Language',
-        'TRP_Seo_Pack',
-        'TRP_Translator_Accounts',
-	) );
-
-	foreach ( $addons as $className ) {
-		if ( class_exists( $className ) ) {
-			return true;
-		}
-	}
-
-	return false;*/
+function etm_is_paid_version() {
     return true;
 }
 
@@ -538,7 +509,7 @@ function trp_is_paid_version() {
  * @param $tags_allowed     array       Array of tags allowed to be executed
  * @return string           string      Resulted string
  */
-function trp_do_these_shortcodes( $content, $tags_allowed ){
+function etm_do_these_shortcodes( $content, $tags_allowed ){
     global $shortcode_tags;
     $copy_shortcode_tags = $shortcode_tags;
 
@@ -570,11 +541,11 @@ function trp_do_these_shortcodes( $content, $tags_allowed ){
  * @return mixed array with key/value pairs of published language codes and names
  *
  */
-function trp_get_languages($nodefault=null)
+function etm_get_languages($nodefault=null)
 {
-    $trp_obj = TRP_Translate_Press::get_trp_instance();
-    $settings_obj = $trp_obj->get_component('settings');
-    $lang_obj = $trp_obj->get_component('languages');
+    $etm_obj = ETM_eTranslation_Multilingual::get_etm_instance();
+    $settings_obj = $etm_obj->get_component('settings');
+    $lang_obj = $etm_obj->get_component('languages');
 
     $default_lang_labels = $settings_obj->get_setting('default-language');
     $published_lang = $settings_obj->get_setting('publish-languages');
@@ -586,7 +557,7 @@ function trp_get_languages($nodefault=null)
 }
 
 /**
- * Wrapper function for wp_cache_get() that bypasses cache if TRP_DEBUG is on
+ * Wrapper function for wp_cache_get() that bypasses cache if ETM_DEBUG is on
  * @param int|string $key   The key under which the cache contents are stored.
  * @param string     $group Optional. Where the cache contents are grouped. Default empty.
  * @param bool       $force Optional. Whether to force an update of the local cache
@@ -596,8 +567,8 @@ function trp_get_languages($nodefault=null)
  * @return mixed|false The cache contents on success, false on failure to retrieve contents or false when WP_DEBUG is on
  *
  */
-function trp_cache_get( $key, $group = '', $force = false, &$found = null ){
-    if( defined( 'TRP_DEBUG' ) && TRP_DEBUG == true )
+function etm_cache_get( $key, $group = '', $force = false, &$found = null ){
+    if( defined( 'ETM_DEBUG' ) && ETM_DEBUG == true )
         return false;
 
     $cache = wp_cache_get( $key, $group, $force, $found );
@@ -605,10 +576,10 @@ function trp_cache_get( $key, $group = '', $force = false, &$found = null ){
 }
 
 /**
- * Wrapper function for get_transient() that bypasses cache if TRP_DEBUG is on
+ * Wrapper function for get_transient() that bypasses cache if ETM_DEBUG is on
  */
-function trp_get_transient( $transient ){
-    if( ( defined( 'TRP_DEBUG' ) && TRP_DEBUG == true ) || defined( 'TRP_DEBUG_TRANSIENT' ) && TRP_DEBUG_TRANSIENT == true  )
+function etm_get_transient( $transient ){
+    if( ( defined( 'ETM_DEBUG' ) && ETM_DEBUG == true ) || defined( 'ETM_DEBUG_TRANSIENT' ) && ETM_DEBUG_TRANSIENT == true  )
         return false;
 
     return get_transient($transient);
@@ -616,11 +587,11 @@ function trp_get_transient( $transient ){
 
 /**
  * Determine if the setting in Advanced Options should make us add a slash at end of string
- * @param $settings the TranslatePress settings object
+ * @param $settings the eTranslation Multilingual settings object
  * @return bool
  */
-function trp_force_slash_at_end_of_link( $settings ){
-    if ( !empty( $settings['trp_advanced_settings'] ) && isset( $settings['trp_advanced_settings']['force_slash_at_end_of_links'] ) && $settings['trp_advanced_settings']['force_slash_at_end_of_links'] === 'yes' )
+function etm_force_slash_at_end_of_link( $settings ){
+    if ( !empty( $settings['etm_advanced_settings'] ) && isset( $settings['etm_advanced_settings']['force_slash_at_end_of_links'] ) && $settings['etm_advanced_settings']['force_slash_at_end_of_links'] === 'yes' )
         return true;
     else
         return false;
@@ -635,16 +606,16 @@ function trp_force_slash_at_end_of_link( $settings ){
  * The array returned has the following indexes: language_name, language_code, short_language_name, flag_link, current_page_url
  */
 
-function trp_custom_language_switcher() {
-    $trp           = TRP_Translate_Press::get_trp_instance();
-    $trp_languages = $trp->get_component( 'languages' );
-    $trp_settings  = $trp->get_component( 'settings' );
-    $settings      = $trp_settings->get_settings();
+function etm_custom_language_switcher() {
+    $etm           = ETM_eTranslation_Multilingual::get_etm_instance();
+    $etm_languages = $etm->get_component( 'languages' );
+    $etm_settings  = $etm->get_component( 'settings' );
+    $settings      = $etm_settings->get_settings();
 
     $languages_to_display  = $settings['publish-languages'];
-    $translation_languages = $trp_languages->get_language_names( $languages_to_display );
+    $translation_languages = $etm_languages->get_language_names( $languages_to_display );
 
-    $url_converter = $trp->get_component( 'url_converter' );
+    $url_converter = $etm->get_component( 'url_converter' );
 
     $custom_ls_array = array();
 
@@ -654,11 +625,11 @@ function trp_custom_language_switcher() {
         $custom_ls_array[ $item ]['language_code']       = $item;
         $custom_ls_array[ $item ]['short_language_name'] = $url_converter->get_url_slug( $item, false );
 
-        $flags_path = TRP_PLUGIN_URL . 'assets/images/flags/';
-        $flags_path = apply_filters( 'trp_flags_path', $flags_path, $item );
+        $flags_path = ETM_PLUGIN_URL . 'assets/images/flags/';
+        $flags_path = apply_filters( 'etm_flags_path', $flags_path, $item );
 
         $flag_file_name = $item . '.png';
-        $flag_file_name = apply_filters( 'trp_flag_file_name', $flag_file_name, $item );
+        $flag_file_name = apply_filters( 'etm_flag_file_name', $flag_file_name, $item );
 
         $custom_ls_array[ $item ]['flag_link'] = esc_url( $flags_path . $flag_file_name );
 
@@ -675,27 +646,27 @@ function trp_custom_language_switcher() {
  * @param string $language is the language you want to translate the content into, if it is left undefined the content will be translated
  * to the current language; it's set to current language by default
  * @param bool $prevent_over_translation is a parameter that prevents the translated content from being translated again during the translation
- * of the page. This can be set to false if the translated content is used in a way that TranslatePress can't detect the text.
+ * of the page. This can be set to false if the translated content is used in a way that eTranslation Multilingual can't detect the text.
  * It's set to true by default
  * @return string is the translated content in the chosen language
  */
-function trp_translate( $content, $language = null, $prevent_over_translation = true ){
-    $trp = TRP_Translate_Press::get_trp_instance();
-    $trp_render = $trp->get_component( 'translation_render' );
-    global $TRP_LANGUAGE;
+function etm_translate( $content, $language = null, $prevent_over_translation = true ){
+    $etm = ETM_eTranslation_Multilingual::get_etm_instance();
+    $etm_render = $etm->get_component( 'translation_render' );
+    global $ETM_LANGUAGE;
 
-    $lang_backup = $TRP_LANGUAGE;
+    $lang_backup = $ETM_LANGUAGE;
 
     if ($language !== null){
-        $TRP_LANGUAGE = $language;
+        $ETM_LANGUAGE = $language;
     }
-    $translated_custom_content = $trp_render->translate_page($content);
+    $translated_custom_content = $etm_render->translate_page($content);
 
     if ($prevent_over_translation === true){
         $translated_custom_content = '<span data-no-translation>' . $translated_custom_content .'</span>';
     }
 
-    $TRP_LANGUAGE = $lang_backup;
+    $ETM_LANGUAGE = $lang_backup;
 
     return $translated_custom_content;
 }
@@ -707,54 +678,54 @@ function trp_translate( $content, $language = null, $prevent_over_translation = 
  * @param $language
  * @return void
  */
-function trp_switch_language($language){
-    global $TRP_LANGUAGE, $TRP_LANGUAGE_COPY, $TRP_LANGUAGE_ORIGINAL;
-    $language = trp_validate_language( $language );
-    $TRP_LANGUAGE_ORIGINAL = $TRP_LANGUAGE;
-    $TRP_LANGUAGE = $language;
-    $TRP_LANGUAGE_COPY = $language;
+function etm_switch_language($language){
+    global $ETM_LANGUAGE, $ETM_LANGUAGE_COPY, $ETM_LANGUAGE_ORIGINAL;
+    $language = etm_validate_language( $language );
+    $ETM_LANGUAGE_ORIGINAL = $ETM_LANGUAGE;
+    $ETM_LANGUAGE = $language;
+    $ETM_LANGUAGE_COPY = $language;
 
-    // Because of 'trp_before_translate_content' filter function is_ajax_frontend() is called and it changes the global $TRP_LANGUAGE according to the url from which it was called.
-    // Function trp_reset_language() is added on the hook in order to set global $TRP_LANGUAGE according to our need for the email language instead.
-    add_filter( 'trp_before_translate_content', 'trp_reset_language', 99999999 );
+    // Because of 'etm_before_translate_content' filter function is_ajax_frontend() is called and it changes the global $ETM_LANGUAGE according to the url from which it was called.
+    // Function etm_reset_language() is added on the hook in order to set global $ETM_LANGUAGE according to our need for the email language instead.
+    add_filter( 'etm_before_translate_content', 'etm_reset_language', 99999999 );
 
     switch_to_locale($language);
-    add_filter( 'plugin_locale', 'trp_get_locale', 99999999);
+    add_filter( 'plugin_locale', 'etm_get_locale', 99999999);
 }
 
 /**
- * Return $TRP_LANGUAGE as plugin locale
+ * Return $ETM_LANGUAGE as plugin locale
  *
  * @return mixed
  */
-function trp_get_locale() {
-    global $TRP_LANGUAGE;
-    return $TRP_LANGUAGE;
+function etm_get_locale() {
+    global $ETM_LANGUAGE;
+    return $ETM_LANGUAGE;
 }
 
 /**
- * The value of $TRP_LANGUAGE is set according to the url, which can be problematic in some cases when sending emails
- * Restore the $TRP_LANGUAGE value in which email will be sent
+ * The value of $ETM_LANGUAGE is set according to the url, which can be problematic in some cases when sending emails
+ * Restore the $ETM_LANGUAGE value in which email will be sent
  *
  * @param $output
  * @return mixed
  */
-function trp_reset_language( $output ){
-    global $TRP_LANGUAGE, $TRP_LANGUAGE_COPY;
-    $TRP_LANGUAGE = $TRP_LANGUAGE_COPY;
+function etm_reset_language( $output ){
+    global $ETM_LANGUAGE, $ETM_LANGUAGE_COPY;
+    $ETM_LANGUAGE = $ETM_LANGUAGE_COPY;
     return $output;
 }
 
 /**
- * Return a valid TRP language in which the email will be sent
+ * Return a valid ETM language in which the email will be sent
  *
  * @param $language
  * @return mixed
  */
-function trp_validate_language( $language ){
-    $trp = TRP_Translate_Press::get_trp_instance();
-    $trp_settings = $trp->get_component( 'settings' );
-    $settings = $trp_settings->get_settings();
+function etm_validate_language( $language ){
+    $etm = ETM_eTranslation_Multilingual::get_etm_instance();
+    $etm_settings = $etm->get_component( 'settings' );
+    $settings = $etm_settings->get_settings();
     if( empty( $language ) || !in_array( $language, $settings['translation-languages'] ) ){
         $language = $settings['default-language'];
     }
@@ -762,23 +733,23 @@ function trp_validate_language( $language ){
 }
 
 /**
- * Used by third parties to restore original language after using trp_switch_language
+ * Used by third parties to restore original language after using etm_switch_language
  */
-function trp_restore_language(){
-    global $TRP_LANGUAGE, $TRP_LANGUAGE_ORIGINAL;
-    remove_filter( 'trp_before_translate_content', 'trp_reset_language' );
+function etm_restore_language(){
+    global $ETM_LANGUAGE, $ETM_LANGUAGE_ORIGINAL;
+    remove_filter( 'etm_before_translate_content', 'etm_reset_language' );
 
     restore_previous_locale();
-    remove_filter( 'plugin_locale', 'trp_get_locale' );
-    $TRP_LANGUAGE = $TRP_LANGUAGE_ORIGINAL;
+    remove_filter( 'plugin_locale', 'etm_get_locale' );
+    $ETM_LANGUAGE = $ETM_LANGUAGE_ORIGINAL;
 }
 
-/**trp_language
+/**etm_language
  * Determine user language
  *
  * @param $user_id
  * @return mixed
  */
-function trp_get_user_language( $user_id ){
-    return trp_validate_language( get_user_meta( $user_id, 'etm_language', true ) );
+function etm_get_user_language( $user_id ){
+    return etm_validate_language( get_user_meta( $user_id, 'etm_language', true ) );
 }

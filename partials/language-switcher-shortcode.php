@@ -2,16 +2,16 @@
 $current_language_preference = $this->add_shortcode_preferences($shortcode_settings, $current_language['code'], $current_language['name']);
 
 ?>
-<div class="trp_language_switcher_shortcode">
-<div class="trp-language-switcher trp-language-switcher-container" data-no-translation <?php echo ( isset( $_GET['trp-edit-translation'] ) && $_GET['trp-edit-translation'] == 'preview' ) ? 'data-trp-unpreviewable="trp-unpreviewable"' : '' ?>>
-    <div class="trp-ls-shortcode-current-language">
-        <a href="#" class="trp-ls-shortcode-disabled-language trp-ls-disabled-language" title="<?php echo esc_attr( $current_language['name'] ); ?>" onclick="event.preventDefault()">
+<div class="etm_language_switcher_shortcode">
+<div class="etm-language-switcher etm-language-switcher-container" data-no-translation <?php echo ( isset( $_GET['etm-edit-translation'] ) && $_GET['etm-edit-translation'] == 'preview' ) ? 'data-etm-unpreviewable="etm-unpreviewable"' : '' ?>>
+    <div class="etm-ls-shortcode-current-language">
+        <a href="#" class="etm-ls-shortcode-disabled-language etm-ls-disabled-language" title="<?php echo esc_attr( $current_language['name'] ); ?>" onclick="event.preventDefault()">
 			<?php echo $current_language_preference; /* phpcs:ignore */ /* escaped inside the function that generates the output */ ?>
 		</a>
     </div>
-    <div class="trp-ls-shortcode-language">
-        <?php if ( apply_filters('trp_ls_shortcode_show_disabled_language', true, $current_language, $current_language_preference, $this->settings ) ){ ?>
-        <a href="#" class="trp-ls-shortcode-disabled-language trp-ls-disabled-language"  title="<?php echo esc_attr( $current_language['name'] ); ?>" onclick="event.preventDefault()">
+    <div class="etm-ls-shortcode-language">
+        <?php if ( apply_filters('etm_ls_shortcode_show_disabled_language', true, $current_language, $current_language_preference, $this->settings ) ){ ?>
+        <a href="#" class="etm-ls-shortcode-disabled-language etm-ls-disabled-language"  title="<?php echo esc_attr( $current_language['name'] ); ?>" onclick="event.preventDefault()">
 			<?php echo $current_language_preference; /* phpcs:ignore */ /* escaped inside the function that generates the output */ ?>
 		</a>
         <?php } ?>
@@ -27,19 +27,19 @@ $current_language_preference = $this->add_shortcode_preferences($shortcode_setti
     </div>
     <script type="application/javascript">
         // need to have the same with set from JS on both divs. Otherwise it can push stuff around in HTML
-        var trp_ls_shortcodes = document.querySelectorAll('.trp_language_switcher_shortcode .trp-language-switcher');
-        if ( trp_ls_shortcodes.length > 0) {
+        var etm_ls_shortcodes = document.querySelectorAll('.etm_language_switcher_shortcode .etm-language-switcher');
+        if ( etm_ls_shortcodes.length > 0) {
             // get the last language switcher added
-            var trp_el = trp_ls_shortcodes[trp_ls_shortcodes.length - 1];
+            var etm_el = etm_ls_shortcodes[etm_ls_shortcodes.length - 1];
 
-            var trp_shortcode_language_item = trp_el.querySelector( '.trp-ls-shortcode-language' )
+            var etm_shortcode_language_item = etm_el.querySelector( '.etm-ls-shortcode-language' )
             // set width
-            var trp_ls_shortcode_width                                               = trp_shortcode_language_item.offsetWidth + 16;
-            trp_shortcode_language_item.style.width                                  = trp_ls_shortcode_width + 'px';
-            trp_el.querySelector( '.trp-ls-shortcode-current-language' ).style.width = trp_ls_shortcode_width + 'px';
+            var etm_ls_shortcode_width                                               = etm_shortcode_language_item.offsetWidth + 16;
+            etm_shortcode_language_item.style.width                                  = etm_ls_shortcode_width + 'px';
+            etm_el.querySelector( '.etm-ls-shortcode-current-language' ).style.width = etm_ls_shortcode_width + 'px';
 
             // We're putting this on display: none after we have its width.
-            trp_shortcode_language_item.style.display = 'none';
+            etm_shortcode_language_item.style.display = 'none';
         }
     </script>
 </div>

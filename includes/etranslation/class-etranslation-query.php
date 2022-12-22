@@ -150,18 +150,18 @@ class eTranslation_Query {
     }
 
     private function update_translation_manually($details_row, $translations) {
-        $trp = TRP_Translate_Press::get_trp_instance();
-        $trp_query = $trp->get_component( 'query' );
+        $etm = ETM_eTranslation_Multilingual::get_etm_instance();
+        $etm_query = $etm->get_component( 'query' );
 
         if ($details_row->from && $details_row->to && $details_row->from != $details_row->to) {
-            $dict_table = 'wp_etm_dictionary_' . $details_row->from . '_' . $details_row->to;
+            $dict_table = $etm_query->get_table_name($details_row->to, $details_row->from);
             $delimiter = "\n";
             $original_strings = explode($delimiter, $details_row->original);
             $decoded_translations = self::decode_untranslated_symbols(explode($delimiter, $translations), $original_strings);
-            $translation_strings = TRP_eTranslation_Utils::arr_restore_spaces_after_translation($original_strings, $decoded_translations);
+            $translation_strings = ETM_eTranslation_Utils::arr_restore_spaces_after_translation($original_strings, $decoded_translations);
         
             //insert original strings in table if they don't exist        
-            $original_inserts = $trp_query->original_strings_sync($details_row->to, $original_strings);
+            $original_inserts = $etm_query->original_strings_sync($details_row->to, $original_strings);
         
             $max_id = $this->db->get_row("SELECT MAX(id) as id FROM $dict_table")->id;
             $next_id = intval($max_id) + 1;
@@ -173,26 +173,26 @@ class eTranslation_Query {
                     'id'          => $next_id + $i,
                     'original_id' => $original_inserts[ $string ]->id,
                     'original'    => $string,
-                    'translated'  => trp_sanitize_string( $translation_strings[ $i ] ),
-                    'status'      => $trp_query->get_constant_machine_translated() ) );
+                    'translated'  => etm_sanitize_string( $translation_strings[ $i ] ),
+                    'status'      => $etm_query->get_constant_machine_translated() ) );
             }
         
             //insert translations
-            $updated_rows = $trp_query->update_strings( $update_strings, $details_row->to, array( 'id', 'original', 'translated', 'status', 'original_id' ) );
+            $updated_rows = $etm_query->update_strings( $update_strings, $details_row->to, array( 'id', 'original', 'translated', 'status', 'original_id' ) );
     
             if (count($update_strings) != $updated_rows) {
                 error_log("Translation list size differs from updated row count (" . count($update_strings) . " vs " . $updated_rows . ")");
             }
         
             //delete previously inserted untranslated rows 
-            $trp_query->remove_possible_duplicates($update_strings, $details_row->to, 'regular');
+            $etm_query->remove_possible_duplicates($update_strings, $details_row->to, 'regular');
         } else {
-            error_log("Cannot update translations manually - invalid langauge pair '$details_row->from -> $details_row->to'");
+            error_log("Cannot update translations manually - invalid language pair '$details_row->from -> $details_row->to'");
         }        
     }
 
     private function decode_untranslated_symbols($translations, $originals) {
-        $excluded_words_from_automatic_translation = apply_filters('trp_exclude_words_from_automatic_translation', TRP_eTranslation_Utils::get_strings_to_encode_before_translation(), implode(" ", $originals));
+        $excluded_words_from_automatic_translation = apply_filters('etm_exclude_words_from_automatic_translation', ETM_eTranslation_Utils::get_strings_to_encode_before_translation(), implode(" ", $originals));
         for ($i = 0; $i < count($translations); $i++) {
             $translation = $translations[$i];
             //check if decoding needed

@@ -1,6 +1,6 @@
 <?php
 
-class TRP_eTranslation_Utils {
+class ETM_eTranslation_Utils {
 
     public static $punt_preceding_space = [", ", ". ", "; ", ") ", ": ", "? ", "! "];
     private function __construct() {}

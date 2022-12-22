@@ -1,15 +1,15 @@
 <?php
 
-$trp                = TRP_Translate_Press::get_trp_instance();
-$machine_translator = $trp->get_component( 'machine_translator' );
+$etm                = ETM_eTranslation_Multilingual::get_etm_instance();
+$machine_translator = $etm->get_component( 'machine_translator' );
 $response           = $machine_translator->test_request();
 $api_key            = $machine_translator->get_api_key();
 ?>
 
-<div id="trp-addons-page" class="wrap">
+<div id="etm-addons-page" class="wrap">
 
     <h1> <?php esc_html_e( 'eTranslation Multilingual Settings', 'etranslation-multilingual' );?></h1>
-    <?php do_action ( 'trp_settings_navigation_tabs' ); ?>
+    <?php do_action ( 'etm_settings_navigation_tabs' ); ?>
 
     <div class="grid feat-header">
         <div class="grid-cell">

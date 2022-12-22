@@ -1,7 +1,7 @@
 <?php
 
-add_filter( 'trp_register_advanced_settings', 'trp_register_html_lang_attribute', 1001 );
-function trp_register_html_lang_attribute( $settings_array ){
+add_filter( 'etm_register_advanced_settings', 'etm_register_html_lang_attribute', 1001 );
+function etm_register_html_lang_attribute( $settings_array ){
     $settings_array[] = array(
         'name'          => 'html_lang_remove_locale',
         'type'          => 'radio',
@@ -14,19 +14,19 @@ function trp_register_html_lang_attribute( $settings_array ){
     return $settings_array;
 }
 
-add_filter( 'trp_add_default_lang_tags', 'trp_display_default_lang_tag' );
-function trp_display_default_lang_tag( $display ){
-    $option = get_option( 'trp_advanced_settings', true );
+add_filter( 'etm_add_default_lang_tags', 'etm_display_default_lang_tag' );
+function etm_display_default_lang_tag( $display ){
+    $option = get_option( 'etm_advanced_settings', true );
     if ( isset( $option['html_lang_remove_locale'] ) && $option['html_lang_remove_locale'] === 'default' ) {
         return true;
     }
     return false;
 }
 
-add_filter( 'trp_add_regional_lang_tags', 'trp_display_regional_lang_tag' );
-function trp_display_regional_lang_tag( $display ){
+add_filter( 'etm_add_regional_lang_tags', 'etm_display_regional_lang_tag' );
+function etm_display_regional_lang_tag( $display ){
 
-    $option = get_option( 'trp_advanced_settings', true );
+    $option = get_option( 'etm_advanced_settings', true );
     if ( isset( $option['html_lang_remove_locale'] ) && $option['html_lang_remove_locale'] === 'regional' ) {
         return true;
     }

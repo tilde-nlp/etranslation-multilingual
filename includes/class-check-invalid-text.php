@@ -1,13 +1,13 @@
 <?php
 /**
- * Class TRP_Check_Invalid_Text
+ * Class ETM_Check_Invalid_Text
  *
  * Used to exclude problematic strings triggering 'WordPress database error: Could not perform query because it contains invalid data.' from TP query functions.
  *
  * Divide et impera method used to minimise number of queries needed to detect needle in haystack. Applied for key functions:
  * get_existing_translations, insert_strings and update_strings.
  */
-class TRP_Check_Invalid_Text{
+class ETM_Check_Invalid_Text{
     protected $table_charset;
     protected $check_current_query;
     protected $col_meta;
@@ -24,13 +24,13 @@ class TRP_Check_Invalid_Text{
                 $entry->invalid_data = true;
                 return array( $strings_array[0] => $entry);
             }else{
-                $trp = TRP_Translate_Press::get_trp_instance();
-                $trp_query = $trp->get_component( 'query' );
+                $etm = ETM_eTranslation_Multilingual::get_etm_instance();
+                $etm_query = $etm->get_component( 'query' );
 
                 $half = floor( $count / 2 );
 
-                $array1 = $trp_query->get_existing_translations( array_slice( $strings_array, 0, $half ), $language_code, $block_type );
-                $array2 = $trp_query->get_existing_translations( array_slice( $strings_array, $half ), $language_code, $block_type );
+                $array1 = $etm_query->get_existing_translations( array_slice( $strings_array, 0, $half ), $language_code, $block_type );
+                $array2 = $etm_query->get_existing_translations( array_slice( $strings_array, $half ), $language_code, $block_type );
                 return array_merge( $array1, $array2 );
             }
         }
@@ -43,13 +43,13 @@ class TRP_Check_Invalid_Text{
             if ( $count <= 1 ){
                 return;
             }else{
-                $trp = TRP_Translate_Press::get_trp_instance();
-                $trp_query = $trp->get_component( 'query' );
+                $etm = ETM_eTranslation_Multilingual::get_etm_instance();
+                $etm_query = $etm->get_component( 'query' );
 
                 $half = floor( $count / 2 );
 
-                $trp_query->insert_strings( array_slice( $new_strings, 0, $half ), $language_code, $block_type );
-                $trp_query->insert_strings( array_slice( $new_strings, $half ), $language_code, $block_type );
+                $etm_query->insert_strings( array_slice( $new_strings, 0, $half ), $language_code, $block_type );
+                $etm_query->insert_strings( array_slice( $new_strings, $half ), $language_code, $block_type );
                 return;
             }
         }
@@ -62,13 +62,13 @@ class TRP_Check_Invalid_Text{
             if ( $count <= 1 ){
                 return;
             }else{
-                $trp = TRP_Translate_Press::get_trp_instance();
-                $trp_query = $trp->get_component( 'query' );
+                $etm = ETM_eTranslation_Multilingual::get_etm_instance();
+                $etm_query = $etm->get_component( 'query' );
 
                 $half = floor( $count / 2 );
 
-                $trp_query->update_strings( array_slice( $update_strings, 0, $half ), $language_code, $block_type );
-                $trp_query->update_strings( array_slice( $update_strings, $half ), $language_code, $block_type );
+                $etm_query->update_strings( array_slice( $update_strings, 0, $half ), $language_code, $block_type );
+                $etm_query->update_strings( array_slice( $update_strings, $half ), $language_code, $block_type );
                 return;
             }
         }
@@ -76,10 +76,10 @@ class TRP_Check_Invalid_Text{
     }
 
     public function is_invalid_data_error(){
-        // Using $trp_disable_invalid_data_detection as a sort of apply_filters to turn off this feature.
+        // Using $etm_disable_invalid_data_detection as a sort of apply_filters to turn off this feature.
         // Not using proper WP filter to reduce page load time. This function is executed many times.
-        global $wpdb, $trp_disable_invalid_data_detection;
-        if ( !empty($wpdb->last_error) && !isset( $trp_disable_invalid_data_detection) ) {
+        global $wpdb, $etm_disable_invalid_data_detection;
+        if ( !empty($wpdb->last_error) && !isset( $etm_disable_invalid_data_detection) ) {
             $invalid_data_error = __( 'WordPress database error: Could not perform query because it contains invalid data.' );  /* phpcs:ignore */ /* $domain arg is purposely omitted because we want to identify the exact wpdb last_error message. Only used for comparison reasons, it's not actually displayed. */
             if ( $wpdb->last_error == $invalid_data_error ) {
                 return true;

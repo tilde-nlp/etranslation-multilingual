@@ -1,18 +1,18 @@
 <?php
 
 
-class TRP_Gettext_Scan {
+class ETM_Gettext_Scan {
 
 	public function __construct( $settings ) {
 		$this->settings = $settings;
 	}
 
 	public function scan_gettext() {
-		if ( defined( 'DOING_AJAX' ) && DOING_AJAX && current_user_can( apply_filters( 'trp_translating_capability', 'manage_options' ) ) ) {
-			if ( isset( $_POST['action'] ) && $_POST['action'] === 'trp_scan_gettext' ) {
+		if ( defined( 'DOING_AJAX' ) && DOING_AJAX && current_user_can( apply_filters( 'etm_translating_capability', 'manage_options' ) ) ) {
+			if ( isset( $_POST['action'] ) && $_POST['action'] === 'etm_scan_gettext' ) {
 				check_ajax_referer( 'scangettextnonce', 'security' );
 				$status = $this->scan();
-				echo trp_safe_json_encode( $status ); //phpcs:ignore
+				echo etm_safe_json_encode( $status ); //phpcs:ignore
 
 			}
 		}
@@ -20,14 +20,14 @@ class TRP_Gettext_Scan {
 	}
 
 	public function scan() {
-		global $trp_gettext_strings_discovered;
-		require_once TRP_PLUGIN_DIR . 'assets/lib/potx/potx.php';
+		global $etm_gettext_strings_discovered;
+		require_once ETM_PLUGIN_DIR . 'assets/lib/potx/potx.php';
 		$start_time      = microtime( true );
-		$scan_paths_completed = get_option( 'trp_gettext_scan_paths_completed', array( 'paths_completed' => 0, 'current_filename' => null ) );
-		$paths_to_scan   = apply_filters( 'trp_paths_to_scan_for_gettext', array_merge( $this->get_active_plugins_paths(), $this->get_active_theme_paths() ) );
+		$scan_paths_completed = get_option( 'etm_gettext_scan_paths_completed', array( 'paths_completed' => 0, 'current_filename' => null ) );
+		$paths_to_scan   = apply_filters( 'etm_paths_to_scan_for_gettext', array_merge( $this->get_active_plugins_paths(), $this->get_active_theme_paths() ) );
 		$filename = '';
 
-		$trp_gettext_strings_discovered = array();
+		$etm_gettext_strings_discovered = array();
 		$path_key                       = 0;
 
 		foreach ( $paths_to_scan as $path_key => $path ) {
@@ -36,7 +36,7 @@ class TRP_Gettext_Scan {
 			}
 			$interrupted_in_the_recursive_scan = false;
 			if ( is_file( $path ) ) {
-				trp_potx_process_file( realpath( $path ), 0, 'trp_save_gettext_string' );
+				etm_potx_process_file( realpath( $path ), 0, 'etm_save_gettext_string' );
 			} else {
 				$iterator = new RecursiveDirectoryIterator( $path );
 
@@ -57,7 +57,7 @@ class TRP_Gettext_Scan {
 						if ( ! empty( $current_file_pathinfo['extension'] ) && $current_file_pathinfo['extension'] == "php" ) {
 
 							if ( file_exists( $current_file ) ) {
-								trp_potx_process_file( realpath( $current_file ), 0, 'trp_save_gettext_string' );
+								etm_potx_process_file( realpath( $current_file ), 0, 'etm_save_gettext_string' );
 
 								if ( ( microtime( true ) - $start_time ) > 2 ) {
 									$path_key--;
@@ -83,10 +83,10 @@ class TRP_Gettext_Scan {
 		                              'progress_message' => sprintf( esc_html__( 'Scanning item %1$d of %2$d...', 'etranslation-multilingual' ), $paths_completed, $total_paths_to_scan )
 		);
 		if ( $paths_completed >= $total_paths_to_scan ) {
-			delete_option( 'trp_gettext_scan_paths_completed' );
+			delete_option( 'etm_gettext_scan_paths_completed' );
 			$return_array['completed'] = true;
 		} else {
-			update_option( 'trp_gettext_scan_paths_completed', array( 'paths_completed' => $paths_completed, 'current_filename' => $filename ) )  ;
+			update_option( 'etm_gettext_scan_paths_completed', array( 'paths_completed' => $paths_completed, 'current_filename' => $filename ) )  ;
 		}
 
 		return $return_array;
@@ -121,14 +121,14 @@ class TRP_Gettext_Scan {
 	}
 
 	public function insert_gettext_in_db() {
-		global $trp_gettext_strings_discovered;
-		$trp                   = TRP_Translate_Press::get_trp_instance();
-		$trp_query             = $trp->get_component( 'query' );
-		$gettext_insert_update = $trp_query->get_query_component( 'gettext_insert_update' );
+		global $etm_gettext_strings_discovered;
+		$etm                   = ETM_eTranslation_Multilingual::get_etm_instance();
+		$etm_query             = $etm->get_component( 'query' );
+		$gettext_insert_update = $etm_query->get_query_component( 'gettext_insert_update' );
 
-		$inserted_original_ids = $gettext_insert_update->gettext_original_strings_sync( $trp_gettext_strings_discovered );
+		$inserted_original_ids = $gettext_insert_update->gettext_original_strings_sync( $etm_gettext_strings_discovered );
 
-		$email_paths       = apply_filters( 'trp_email_paths_', array(
+		$email_paths       = apply_filters( 'etm_email_paths_', array(
 			'templates/emails/',
 			'includes/emails/',
 			'woocommerce/emails/'
@@ -142,7 +142,7 @@ class TRP_Gettext_Scan {
 		$email_paths = array_merge($email_paths, $reverse_paths );
 
 		$strings_in_emails = array();
-		foreach ( $trp_gettext_strings_discovered as $key => $string ) {
+		foreach ( $etm_gettext_strings_discovered as $key => $string ) {
 			foreach ( $email_paths as $email_path ) {
 				if ( strpos( $string['file'], $email_path ) !== false ) {
 					$strings_in_emails[] = $inserted_original_ids[$key];
@@ -155,15 +155,15 @@ class TRP_Gettext_Scan {
 	}
 }
 
-function trp_save_gettext_string( $original, $domain, $context, $file, $line, $string_mode, $text_plural = false ) {
-	global $trp_gettext_strings_discovered;
+function etm_save_gettext_string( $original, $domain, $context, $file, $line, $string_mode, $text_plural = false ) {
+	global $etm_gettext_strings_discovered;
 	if ( !empty( $original ) ) {
 		$domain      = ( empty( $domain ) ) ? 'default' : $domain;
-		$context     = ( empty( $context ) ) ? 'trp_context' : $context;
+		$context     = ( empty( $context ) ) ? 'etm_context' : $context;
 		$text_plural = ( empty( $text_plural ) ) ? '' : $text_plural;
 
-		if ( ! isset( $trp_gettext_strings_discovered[ $context . '::' . $domain . '::' . $original ] ) ) {
-			$trp_gettext_strings_discovered[ $context . '::' . $domain . '::' . $original ] = array(
+		if ( ! isset( $etm_gettext_strings_discovered[ $context . '::' . $domain . '::' . $original ] ) ) {
+			$etm_gettext_strings_discovered[ $context . '::' . $domain . '::' . $original ] = array(
 				'original'        => $original,
 				'domain'          => $domain,
 				'context'         => $context,

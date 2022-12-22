@@ -3,7 +3,7 @@
 // Exit if accessed directly
 if ( ! defined( 'ABSPATH' ) ) exit;
 
-class TRP_eTranslation_Machine_Translator extends TRP_Machine_Translator {
+class ETM_eTranslation_Machine_Translator extends ETM_Machine_Translator {
 
     private $db_query_interval = 0.1; //100ms
     private $etranslation_service;
@@ -18,7 +18,7 @@ class TRP_eTranslation_Machine_Translator extends TRP_Machine_Translator {
 
     private function check_document($id, $start_timestamp): string {
         $last_checked = microtime(true);
-        $timeout = $this->settings['trp_advanced_settings']['etranslation_wait_timeout'] ?? DEFAULT_ETRANSLATION_TIMEOUT;
+        $timeout = $this->settings['etm_advanced_settings']['etranslation_wait_timeout'] ?? DEFAULT_ETRANSLATION_TIMEOUT;
         while (($last_checked - $start_timestamp) < $timeout || $timeout <= 0) {
             $translation = $this->etranslation_query->search_saved_translation($id);
             if ($translation != null) {
@@ -64,7 +64,7 @@ class TRP_eTranslation_Machine_Translator extends TRP_Machine_Translator {
             if ($translation_count != $original_count && !($translation_count == $original_count + 1 && end($result) == "")) {
                 error_log("Original string list size differs from translation list size (". count($strings_array) . " != " . count($result) . ") [ID=$id]");
             }
-            return TRP_eTranslation_Utils::arr_restore_spaces_after_translation(array_values($strings_array), $result);
+            return ETM_eTranslation_Utils::arr_restore_spaces_after_translation(array_values($strings_array), $result);
         } else {
             return array();
         }
@@ -152,11 +152,11 @@ class TRP_eTranslation_Machine_Translator extends TRP_Machine_Translator {
     }
 
     public function get_app_name() {
-        return isset( $this->settings['trp_machine_translation_settings'], $this->settings['trp_machine_translation_settings']['etranslation-app-name'] ) ? $this->settings['trp_machine_translation_settings']['etranslation-app-name'] : '';
+        return isset( $this->settings['etm_machine_translation_settings'], $this->settings['etm_machine_translation_settings']['etranslation-app-name'] ) ? $this->settings['etm_machine_translation_settings']['etranslation-app-name'] : '';
     }
 
     public function get_password() {
-        return isset( $this->settings['trp_machine_translation_settings'], $this->settings['trp_machine_translation_settings']['etranslation-pwd'] ) ? TRP_eTranslation_Utils::decrypt_password($this->settings['trp_machine_translation_settings']['etranslation-pwd']) : '';
+        return isset( $this->settings['etm_machine_translation_settings'], $this->settings['etm_machine_translation_settings']['etranslation-pwd'] ) ? ETM_eTranslation_Utils::decrypt_password($this->settings['etm_machine_translation_settings']['etranslation-pwd']) : '';
     }
 
     public function get_api_key() {
@@ -195,7 +195,7 @@ class TRP_eTranslation_Machine_Translator extends TRP_Machine_Translator {
     }
 
     public function get_engine_specific_language_codes($languages) {
-        return $this->trp_languages->get_iso_codes($languages);
+        return $this->etm_languages->get_iso_codes($languages);
     }
 
     public function check_formality(){
@@ -207,13 +207,13 @@ class TRP_eTranslation_Machine_Translator extends TRP_Machine_Translator {
 
     public function check_api_key_validity() {
         $machine_translator = $this;
-        $translation_engine = $this->settings['trp_machine_translation_settings']['translation-engine'];
+        $translation_engine = $this->settings['etm_machine_translation_settings']['translation-engine'];
         $api_key            = $machine_translator->get_api_key();
 
         $is_error       = false;
         $return_message = '';
 
-        if ( 'etranslation' === $translation_engine && $this->settings['trp_machine_translation_settings']['machine-translation'] === 'yes') {
+        if ( 'etranslation' === $translation_engine && $this->settings['etm_machine_translation_settings']['machine-translation'] === 'yes') {
 
             if ( isset( $this->correct_api_key ) && $this->correct_api_key != null ) {
                 return $this->correct_api_key;
@@ -227,7 +227,7 @@ class TRP_eTranslation_Machine_Translator extends TRP_Machine_Translator {
                 $code     = $response["response"];
                 if ( 200 !== $code ) {
                     $is_error        = true;
-                    $translate_response = trp_etranslation_response_codes( $code );
+                    $translate_response = etm_etranslation_response_codes( $code );
                     $return_message     = $translate_response['message'];
 
                     error_log("Error on eTranslation request: " . print_r($response, true));

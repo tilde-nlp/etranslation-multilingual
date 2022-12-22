@@ -1,6 +1,6 @@
 <?php
 
-class TRP_Advanced_Tab {
+class ETM_Advanced_Tab {
 
     private $settings;
 
@@ -12,7 +12,7 @@ class TRP_Advanced_Tab {
 	/*
 	 * Add new tab to TP settings
 	 *
-	 * Hooked to trp_settings_tabs
+	 * Hooked to etm_settings_tabs
 	 */
 	public function add_advanced_tab_to_settings( $tab_array ){
 		$tab_array[] =  array(
@@ -29,7 +29,7 @@ class TRP_Advanced_Tab {
 	 * Hooked to admin_menu
 	 */
 	public function add_submenu_page_advanced() {
-		add_submenu_page( 'TRPHidden', 'eTranslation Multilingual Advanced Settings', 'TRPHidden', apply_filters( 'trp_settings_capability', 'manage_options' ), 'etm_advanced_page', array(
+		add_submenu_page( 'ETMHidden', 'eTranslation Multilingual Advanced Settings', 'ETMHidden', apply_filters( 'etm_settings_capability', 'manage_options' ), 'etm_advanced_page', array(
 			$this,
 			'advanced_page_content'
 		) );
@@ -181,11 +181,11 @@ class TRP_Advanced_Tab {
 
 		} //end foreach of parsing all the registered settings array
 
-        if ( apply_filters( 'trp_saving_advanced_settings_is_successful', true, $settings, $submitted_settings ) ) {
+        if ( apply_filters( 'etm_saving_advanced_settings_is_successful', true, $settings, $submitted_settings ) ) {
             add_settings_error( 'etm_advanced_settings', 'settings_updated', esc_html__( 'Settings saved.', 'etranslation-multilingual' ), 'updated' );
         }
 
-		return apply_filters( 'trp_extra_sanitize_advanced_settings', $settings, $submitted_settings, $prev_settings );
+		return apply_filters( 'etm_extra_sanitize_advanced_settings', $settings, $submitted_settings, $prev_settings );
 	}
 
 	/*
@@ -193,7 +193,7 @@ class TRP_Advanced_Tab {
 	 */
 
 	public function get_registered_advanced_settings(){
-		return apply_filters( 'trp_register_advanced_settings', array() );
+		return apply_filters( 'etm_register_advanced_settings', array() );
 	}
 
 	/*
@@ -201,7 +201,7 @@ class TRP_Advanced_Tab {
 	 */
 
 	public function advanced_page_content(){
-		require_once TRP_PLUGIN_DIR . 'partials/advanced-settings-page.php';
+		require_once ETM_PLUGIN_DIR . 'partials/advanced-settings-page.php';
 	}
 
 	/*
@@ -209,49 +209,48 @@ class TRP_Advanced_Tab {
 	 */
 
 	public function include_custom_codes(){
-        include_once(TRP_PLUGIN_DIR . 'includes/advanced-settings/disable-dynamic-translation.php');
-        include_once(TRP_PLUGIN_DIR . 'includes/advanced-settings/force-slash-at-end-of-links.php');
-        include_once(TRP_PLUGIN_DIR . 'includes/advanced-settings/enable-numerals-translation.php');
-        include_once(TRP_PLUGIN_DIR . 'includes/advanced-settings/custom-date-format.php');
-		include_once(TRP_PLUGIN_DIR . 'includes/advanced-settings/custom-language.php');
-		include_once(TRP_PLUGIN_DIR . 'includes/advanced-settings/exclude-dynamic-selectors.php');
-        include_once(TRP_PLUGIN_DIR . 'includes/advanced-settings/exclude-gettext-strings.php');
-        include_once(TRP_PLUGIN_DIR . 'includes/advanced-settings/exclude-selectors.php');
-		include_once(TRP_PLUGIN_DIR . 'includes/advanced-settings/exclude-selectors-automatic-translation.php');
-        include_once(TRP_PLUGIN_DIR . 'includes/advanced-settings/fix-broken-html.php');
-        include_once(TRP_PLUGIN_DIR . 'includes/advanced-settings/show-dynamic-content-before-translation.php');
-        include_once(TRP_PLUGIN_DIR . 'includes/advanced-settings/enable-hreflang-xdefault.php');
-        include_once(TRP_PLUGIN_DIR . 'includes/advanced-settings/strip-gettext-post-content.php');
-        include_once(TRP_PLUGIN_DIR . 'includes/advanced-settings/strip-gettext-post-meta.php');
-        include_once(TRP_PLUGIN_DIR . 'includes/advanced-settings/exclude-words-from-auto-translate.php');
-        include_once(TRP_PLUGIN_DIR . 'includes/advanced-settings/disable-post-container-tags.php');
-        include_once(TRP_PLUGIN_DIR . 'includes/advanced-settings/separators.php');
-        include_once(TRP_PLUGIN_DIR . 'includes/advanced-settings/disable-languages-sitemap.php');
-        include_once(TRP_PLUGIN_DIR . 'includes/advanced-settings/remove-duplicates-from-db.php');
-        include_once(TRP_PLUGIN_DIR . 'includes/advanced-settings/do-not-translate-certain-paths.php');
-        include_once (TRP_PLUGIN_DIR . 'includes/advanced-settings/opposite-flag-shortcode.php');
-        include_once (TRP_PLUGIN_DIR . 'includes/advanced-settings/regular-tab-string-translation.php');
-        include_once (TRP_PLUGIN_DIR . 'includes/advanced-settings/open-language-switcher-shortcode-on-click.php');
-        include_once(TRP_PLUGIN_DIR . 'includes/advanced-settings/hreflang-remove-locale.php');
-        include_once (TRP_PLUGIN_DIR . 'includes/advanced-settings/etranslation-wait-timeout.php');
-        include_once(TRP_PLUGIN_DIR . 'includes/advanced-settings/html-lang-remove-locale.php');
-        include_once(TRP_PLUGIN_DIR . 'includes/advanced-settings/disable-gettext-strings.php');
+        include_once(ETM_PLUGIN_DIR . 'includes/advanced-settings/disable-dynamic-translation.php');
+        include_once(ETM_PLUGIN_DIR . 'includes/advanced-settings/force-slash-at-end-of-links.php');
+        include_once(ETM_PLUGIN_DIR . 'includes/advanced-settings/enable-numerals-translation.php');
+        include_once(ETM_PLUGIN_DIR . 'includes/advanced-settings/custom-date-format.php');
+		include_once(ETM_PLUGIN_DIR . 'includes/advanced-settings/custom-language.php');
+		include_once(ETM_PLUGIN_DIR . 'includes/advanced-settings/exclude-dynamic-selectors.php');
+        include_once(ETM_PLUGIN_DIR . 'includes/advanced-settings/exclude-gettext-strings.php');
+        include_once(ETM_PLUGIN_DIR . 'includes/advanced-settings/exclude-selectors.php');
+		include_once(ETM_PLUGIN_DIR . 'includes/advanced-settings/exclude-selectors-automatic-translation.php');
+        include_once(ETM_PLUGIN_DIR . 'includes/advanced-settings/fix-broken-html.php');
+        include_once(ETM_PLUGIN_DIR . 'includes/advanced-settings/show-dynamic-content-before-translation.php');
+        include_once(ETM_PLUGIN_DIR . 'includes/advanced-settings/enable-hreflang-xdefault.php');
+        include_once(ETM_PLUGIN_DIR . 'includes/advanced-settings/strip-gettext-post-content.php');
+        include_once(ETM_PLUGIN_DIR . 'includes/advanced-settings/strip-gettext-post-meta.php');
+        include_once(ETM_PLUGIN_DIR . 'includes/advanced-settings/exclude-words-from-auto-translate.php');
+        include_once(ETM_PLUGIN_DIR . 'includes/advanced-settings/disable-post-container-tags.php');
+        include_once(ETM_PLUGIN_DIR . 'includes/advanced-settings/separators.php');
+        include_once(ETM_PLUGIN_DIR . 'includes/advanced-settings/remove-duplicates-from-db.php');
+        include_once(ETM_PLUGIN_DIR . 'includes/advanced-settings/do-not-translate-certain-paths.php');
+        include_once (ETM_PLUGIN_DIR . 'includes/advanced-settings/opposite-flag-shortcode.php');
+        include_once (ETM_PLUGIN_DIR . 'includes/advanced-settings/regular-tab-string-translation.php');
+        include_once (ETM_PLUGIN_DIR . 'includes/advanced-settings/open-language-switcher-shortcode-on-click.php');
+        include_once(ETM_PLUGIN_DIR . 'includes/advanced-settings/hreflang-remove-locale.php');
+        include_once (ETM_PLUGIN_DIR . 'includes/advanced-settings/etranslation-wait-timeout.php');
+        include_once(ETM_PLUGIN_DIR . 'includes/advanced-settings/html-lang-remove-locale.php');
+        include_once(ETM_PLUGIN_DIR . 'includes/advanced-settings/disable-gettext-strings.php');
 	}
 
 	/*
-	 * Hooked to trp_before_output_advanced_settings_options
+	 * Hooked to etm_before_output_advanced_settings_options
 	 */
 
-    function trp_advanced_settings_content_table(){
+    function etm_advanced_settings_content_table(){
         $advanced_settings_array = $this->get_registered_advanced_settings();
 
-        $html = '<p id="trp_advanced_tab_content_table">';
-        $advanced_settings_array = apply_filters('trp_advanced_tab_add_element', $advanced_settings_array);
+        $html = '<p id="etm_advanced_tab_content_table">';
+        $advanced_settings_array = apply_filters('etm_advanced_tab_add_element', $advanced_settings_array);
         foreach( $advanced_settings_array as $setting ){
             if ( $setting['type'] !== 'separator' ){
                 continue;
             }
-            $html .= '<a class="trp_advanced_tab_content_table_item" href="#' . esc_attr( $setting['name'] ) . '">' . esc_html( $setting['label'] ) . '</a> | ';
+            $html .= '<a class="etm_advanced_tab_content_table_item" href="#' . esc_attr( $setting['name'] ) . '">' . esc_html( $setting['label'] ) . '</a> | ';
         }
         $html = rtrim($html, " | ");
         $html .= '</p>';
@@ -260,7 +259,7 @@ class TRP_Advanced_Tab {
 
 
     /*
-     * Hooked to trp_settings_navigation_tabs
+     * Hooked to etm_settings_navigation_tabs
      */
 	public function output_advanced_options(){
 		$advanced_settings_array = $this->get_registered_advanced_settings();
@@ -311,7 +310,7 @@ class TRP_Advanced_Tab {
 	 * @return 'string'
 	 */
 	public function checkbox_setting( $setting ){
-        $adv_option = $this->settings['trp_advanced_settings'];
+        $adv_option = $this->settings['etm_advanced_settings'];
 		$checked = ( isset( $adv_option[ $setting['name'] ] ) && $adv_option[ $setting['name'] ] === 'yes' ) ? 'checked' : '';
 		$html = "
              <tr>
@@ -326,7 +325,7 @@ class TRP_Advanced_Tab {
                     </p>
                 </td>
             </tr>";
-		return apply_filters('trp_advanced_setting_checkbox', $html );
+		return apply_filters('etm_advanced_setting_checkbox', $html );
 	}
 
     /**
@@ -337,11 +336,11 @@ class TRP_Advanced_Tab {
      * @return 'string'
      */
     public function radio_setting( $setting ){
-        $adv_option = $this->settings['trp_advanced_settings'];
+        $adv_option = $this->settings['etm_advanced_settings'];
         $html = "
              <tr>
                 <th scope='row'>" . esc_html($setting['label'] ) . "</th>
-                <td class='trp-adst-radio'>";
+                <td class='etm-adst-radio'>";
 
         foreach($setting[ 'options' ] as $key => $option ){
 
@@ -374,7 +373,7 @@ class TRP_Advanced_Tab {
                     </p>
                 </td>
             </tr>";
-        return apply_filters('trp_advanced_setting_radio', $html );
+        return apply_filters('etm_advanced_setting_radio', $html );
     }
 
     /**
@@ -386,7 +385,7 @@ class TRP_Advanced_Tab {
      * @return 'string'
      */
     public function input_setting( $setting, $type = 'text'){
-        $adv_option = $this->settings['trp_advanced_settings'];
+        $adv_option = $this->settings['etm_advanced_settings'];
         $default = ( isset( $setting['default'] )) ? $setting['default'] : '';
         $value = ( isset( $adv_option[ $setting['name'] ] ) ) ? $adv_option[ $setting['name'] ] : $default;
         $html = "
@@ -401,7 +400,7 @@ class TRP_Advanced_Tab {
                     </p>
                 </td>
             </tr>";
-        return apply_filters('trp_advanced_setting_input', $html );
+        return apply_filters('etm_advanced_setting_input', $html );
     }
 
 	/**
@@ -413,7 +412,7 @@ class TRP_Advanced_Tab {
 	 * @return 'string'
 	 */
 	public function input_array_setting ($setting, $type = 'text'){
-	    $adv_option = $this->settings['trp_advanced_settings'];
+	    $adv_option = $this->settings['etm_advanced_settings'];
 	    $default = ( isset( $setting['default'] )) ? $setting['default'] : '';
 
 	    $html = "
@@ -434,7 +433,7 @@ class TRP_Advanced_Tab {
 <p class='description'>". wp_kses_post( $setting['description'] ) ."</p>
                 </td>
             </tr>";
-	    return apply_filters('trp_advanced_setting_input_array', $html );
+	    return apply_filters('etm_advanced_setting_input_array', $html );
     }
 
     /**
@@ -470,7 +469,7 @@ class TRP_Advanced_Tab {
                     </p>
                 </td>
             </tr>";
-        return apply_filters('trp_advanced_setting_select', $html );
+        return apply_filters('etm_advanced_setting_select', $html );
     }
 
     /**
@@ -490,7 +489,7 @@ class TRP_Advanced_Tab {
             </tr>";
         }
         $html .="<tr><td><h2>" . esc_html( $setting['label'] ) . "<h2></td></tr>";
-        return apply_filters('trp_advanced_setting_separator', $html );
+        return apply_filters('etm_advanced_setting_separator', $html );
     }
 
 	/**
@@ -501,12 +500,12 @@ class TRP_Advanced_Tab {
 	 * @return 'string'
 	 */
 	public function add_to_list_setting( $setting ){
-		$adv_option = $this->settings['trp_advanced_settings'];
+		$adv_option = $this->settings['etm_advanced_settings'];
 		$html = "
              <tr>
                 <th scope='row'>" . esc_html( $setting['label'] ) . "</th>
                 <td>
-	                <table class='trp-adst-list-option'>
+	                <table class='etm-adst-list-option'>
 						<thead>
 							";
 		foreach( $setting['columns'] as $key => $value ){
@@ -525,22 +524,22 @@ class TRP_Advanced_Tab {
 		}
 		if ( isset( $adv_option[ $setting['name'] ] ) && is_array( $adv_option[ $setting['name'] ] ) ) {
 			foreach ( $adv_option[ $setting['name'] ][ $first_column ] as $index => $value ) {
-				$html .= "<tr class='trp-list-entry'>";
+				$html .= "<tr class='etm-list-entry'>";
 				foreach ( $setting['columns'] as $column => $column_name ) {
 					$html .= "<td><textarea name='etm_advanced_settings[" . esc_attr( $setting['name'] ). "][" . esc_attr( $column ) . "][]'>" . htmlspecialchars($adv_option[ $setting['name'] ][ $column ][ $index ], ENT_QUOTES) . "</textarea></td>";
 				}
-				$html .= "<td><span class='trp-adst-remove-element' data-confirm-message='" . esc_html__('Are you sure you want to remove this item?', 'etranslation-multilingual') . "'>" . esc_html__( 'Remove', 'etranslation-multilingual' ) . "</span></td>";
+				$html .= "<td><span class='etm-adst-remove-element' data-confirm-message='" . esc_html__('Are you sure you want to remove this item?', 'etranslation-multilingual') . "'>" . esc_html__( 'Remove', 'etranslation-multilingual' ) . "</span></td>";
 				$html .= "</tr>";
 			}
 		}
 
 		// add new entry to list
-		$html .= "<tr class='trp-add-list-entry trp-list-entry'>";
+		$html .= "<tr class='etm-add-list-entry etm-list-entry'>";
 		foreach( $setting['columns'] as $column => $column_name ) {
 			$html .= "<td><textarea id='new_entry_" . esc_attr( $setting['name'] ) . "_" . esc_attr( $column ) . "' data-name='etm_advanced_settings[" . esc_attr( $setting['name'] ) . "][" . esc_attr( $column ) . "][]' data-setting-name='" . esc_attr( $setting['name'] ) . "' data-column-name='" . esc_attr( $column ) . "'></textarea></td>";
 
 		}
-		$html .= "<td><input type='button' class='button-secondary trp-adst-button-add-new-item' value='" . esc_html__( 'Add', 'etranslation-multilingual' ) . "'><span class='trp-adst-remove-element' style='display: none;' data-confirm-message='" . esc_html__('Are you sure you want to remove this item?', 'etranslation-multilingual') . "'>" . esc_html__( 'Remove', 'etranslation-multilingual' ) . "</span></td>";
+		$html .= "<td><input type='button' class='button-secondary etm-adst-button-add-new-item' value='" . esc_html__( 'Add', 'etranslation-multilingual' ) . "'><span class='etm-adst-remove-element' style='display: none;' data-confirm-message='" . esc_html__('Are you sure you want to remove this item?', 'etranslation-multilingual') . "'>" . esc_html__( 'Remove', 'etranslation-multilingual' ) . "</span></td>";
 		;
 		$html .= "</tr></table>";
 
@@ -549,7 +548,7 @@ class TRP_Advanced_Tab {
                     </p>
                 </td>
             </tr>";
-		return apply_filters( 'trp_advanced_setting_list', $html );
+		return apply_filters( 'etm_advanced_setting_list', $html );
 	}
 
     /**
@@ -569,21 +568,21 @@ class TRP_Advanced_Tab {
                     </p>
                 </td>
             </tr>";
-        return apply_filters('trp_advanced_setting_text', $html );
+        return apply_filters('etm_advanced_setting_text', $html );
     }
 
 	public function mixed_setting($setting){
-		$adv_option = $this->settings['trp_advanced_settings'];
+		$adv_option = $this->settings['etm_advanced_settings'];
 		$html = "
              <tr>
                 <th scope='row'>" . esc_html( $setting['label'] ) . "</th>
                 <td>
-	                <table class='trp-adst-list-option'>
+	                <table class='etm-adst-list-option'>
 						<thead>
 							";
 		foreach( $setting['columns'] as $option_name => $option_details ){
             if(isset($setting['columns'][$option_name]['required']) && $setting['columns'][$option_name]['required'] === true){
-                $html .= '<th class="trp_lang_code"><strong>' . esc_html( $option_details['label'] ). '<span title="Required"> *</span> </strong></th>';
+                $html .= '<th class="etm_lang_code"><strong>' . esc_html( $option_details['label'] ). '<span title="Required"> *</span> </strong></th>';
             }else{
                 $html .= '<th><strong>' . esc_html( $option_details['label'] ) . '</strong></th>';
             }
@@ -605,19 +604,19 @@ class TRP_Advanced_Tab {
 		if ( isset( $adv_option[ $setting['name'] ] ) && is_array( $adv_option[ $setting['name'] ] )) {
 			foreach ( $adv_option[ $setting['name'] ][ $first_column ] as $index => $value ) {
 
-				$html .= "<tr class='trp-list-entry'>";
+				$html .= "<tr class='etm-list-entry'>";
 
 				foreach ( $setting['columns'] as $option_name => $option_details ) {
 					switch ( $option_details['type']) {
 						case 'text':
-							$html .= "<td class=' ". $option_name ." '><input class='trp_narrow_input' type='text' name='etm_advanced_settings[" . esc_attr( $setting['name'] ) . "][" . esc_attr( $option_name ) . "][]' value='" . htmlspecialchars($adv_option[ $setting['name'] ][ $option_name ][ $index ], ENT_QUOTES) . "'></td>";
+							$html .= "<td class=' ". $option_name ." '><input class='etm_narrow_input' type='text' name='etm_advanced_settings[" . esc_attr( $setting['name'] ) . "][" . esc_attr( $option_name ) . "][]' value='" . htmlspecialchars($adv_option[ $setting['name'] ][ $option_name ][ $index ], ENT_QUOTES) . "'></td>";
 
 							break;
 						case 'textarea':
-							$html .= "<td><textarea class='trp_narrow_input' name='etm_advanced_settings[" . esc_attr( $setting['name'] ) . "][" . esc_attr(  $option_name ) . "][]'>" . htmlspecialchars($adv_option[ $setting['name'] ][ $option_name ][ $index ], ENT_QUOTES) . "</textarea></td>";
+							$html .= "<td><textarea class='etm_narrow_input' name='etm_advanced_settings[" . esc_attr( $setting['name'] ) . "][" . esc_attr(  $option_name ) . "][]'>" . htmlspecialchars($adv_option[ $setting['name'] ][ $option_name ][ $index ], ENT_QUOTES) . "</textarea></td>";
 							break;
 						case 'select':
-							$html .= "<td><select class='trp-select-advanced' name='etm_advanced_settings[" . esc_attr(  $setting['name'] ) . "][" . esc_attr(  $option_name ) . "][]'>";
+							$html .= "<td><select class='etm-select-advanced' name='etm_advanced_settings[" . esc_attr(  $setting['name'] ) . "][" . esc_attr(  $option_name ) . "][]'>";
 							$html .= "<option value=''>" . esc_html__( 'Select...', 'etranslation-multilingual' ) . "</option>";
 							foreach ( $option_details["values"] as $select_key => $select_value ) {
 								$selected = ($adv_option[ $setting['name'] ][ $option_name ][ $index ] === $select_value ) ? "selected='selected'" : '';
@@ -628,27 +627,27 @@ class TRP_Advanced_Tab {
 						case 'checkbox':
 							$datavalue = isset($adv_option[ $setting['name'] ][ $option_name ][ $index ]) ? htmlspecialchars($adv_option[ $setting['name'] ][ $option_name ][ $index ], ENT_QUOTES) : '';
 							$checked = ($datavalue === 'yes') ? "checked='checked'" : '';
-							$html .= "<td><input type='checkbox' class='trp-adv-chk' name='etm_advanced_settings[" . esc_attr( $setting['name'] ) . "][" . esc_attr( $option_name ) . "][]' id='new_entry_" . esc_attr( $setting['name'] ) . "_" . esc_attr( $option_name ) . "' data-name='etm_advanced_settings[" . esc_attr( $setting['name'] ) . "][" . esc_attr( $option_name ) . "][]' data-setting-name='" . esc_attr(  $setting['name'] ) . "' data-column-name='" . esc_attr(  $option_name ) . "' value='yes' ".$checked .">";
+							$html .= "<td><input type='checkbox' class='etm-adv-chk' name='etm_advanced_settings[" . esc_attr( $setting['name'] ) . "][" . esc_attr( $option_name ) . "][]' id='new_entry_" . esc_attr( $setting['name'] ) . "_" . esc_attr( $option_name ) . "' data-name='etm_advanced_settings[" . esc_attr( $setting['name'] ) . "][" . esc_attr( $option_name ) . "][]' data-setting-name='" . esc_attr(  $setting['name'] ) . "' data-column-name='" . esc_attr(  $option_name ) . "' value='yes' ".$checked .">";
 							$html .= "<input type='hidden' name='etm_advanced_settings[" . esc_attr( $setting['name'] ) . "][" . esc_attr(  $option_name ) . "][]' id='new_entry_" . esc_attr(  $setting['name'] ) . "_" . esc_attr(  $option_name ) . "' data-name='etm_advanced_settings[" . esc_attr( $setting['name'] ) . "][" . esc_attr( $option_name ) . "][]' data-setting-name='" . esc_attr( $setting['name'] ) . "' data-column-name='" . esc_attr( $option_name ) . "' value=''>";
 							$html .="</td>";
 							break;
 					}
 				}
-				$html .= "<td><span class='trp-adst-remove-element' data-confirm-message='" . esc_html__('Are you sure you want to remove this item?', 'etranslation-multilingual') . "'>" . esc_html__( 'Remove', 'etranslation-multilingual' ) . "</span></td>";
+				$html .= "<td><span class='etm-adst-remove-element' data-confirm-message='" . esc_html__('Are you sure you want to remove this item?', 'etranslation-multilingual') . "'>" . esc_html__( 'Remove', 'etranslation-multilingual' ) . "</span></td>";
 				$html .= "</tr>";
 			}
 		}
 		// Add new entry to list; renders the last row which is initially empty.
-		$html .= "<tr class='trp-add-list-entry trp-list-entry'>";
+		$html .= "<tr class='etm-add-list-entry etm-list-entry'>";
 
 		foreach( $setting['columns'] as $option_name => $option_details ) {
 
 			switch ( $option_details['type']) {
 				case 'text':
-				    $html .= "<td class=' " . $option_name . " '><input type='text' class='trp_narrow_input' id='new_entry_" . esc_attr( $setting['name'] ) . "_" . esc_attr( $option_name ) . "' data-name='etm_advanced_settings[" . esc_attr( $setting['name'] ) . "][" . esc_attr( $option_name ) . "][]' data-setting-name='" . esc_attr( $setting['name'] ) . "' data-column-name='" . esc_attr( $option_name ) . "' placeholder='" . esc_attr( $setting['columns'][ $option_name ]['placeholder'] ) . "' '></input></td>";
+				    $html .= "<td class=' " . $option_name . " '><input type='text' class='etm_narrow_input' id='new_entry_" . esc_attr( $setting['name'] ) . "_" . esc_attr( $option_name ) . "' data-name='etm_advanced_settings[" . esc_attr( $setting['name'] ) . "][" . esc_attr( $option_name ) . "][]' data-setting-name='" . esc_attr( $setting['name'] ) . "' data-column-name='" . esc_attr( $option_name ) . "' placeholder='" . esc_attr( $setting['columns'][ $option_name ]['placeholder'] ) . "' '></input></td>";
 					break;
 				case 'textarea':
-					$html .= "<td class='trp_narrow_input'><textarea id='new_entry_" . esc_attr( $setting['name'] ) . "_" . esc_attr( $option_name ) . "' data-name='etm_advanced_settings[" . esc_attr( $setting['name'] ) . "][" . esc_attr( $option_name ) . "][]' data-setting-name='" . esc_attr( $setting['name'] ) . "' data-column-name='" . esc_attr( $option_name ) . "'></textarea></td>";
+					$html .= "<td class='etm_narrow_input'><textarea id='new_entry_" . esc_attr( $setting['name'] ) . "_" . esc_attr( $option_name ) . "' data-name='etm_advanced_settings[" . esc_attr( $setting['name'] ) . "][" . esc_attr( $option_name ) . "][]' data-setting-name='" . esc_attr( $setting['name'] ) . "' data-column-name='" . esc_attr( $option_name ) . "'></textarea></td>";
 					break;
 				case 'select':
 					$html .= "<td><select id='new_entry_" . esc_attr( $setting['name'] ) . "_" . esc_attr( $option_name ) . "' data-name='etm_advanced_settings[" . esc_attr( $setting['name'] ) . "][" . esc_attr( $option_name ) . "][]' data-setting-name='" . esc_attr( $setting['name'] ) . "' data-column-name='" . esc_attr( $option_name ) . "'>";
@@ -659,13 +658,13 @@ class TRP_Advanced_Tab {
 					$html .="</select></td>";
 					break;
 				case 'checkbox':
-					$html .= "<td><input type='checkbox' class='trp-adv-chk' id='new_entry_" . esc_attr( $setting['name'] ) . "_" . esc_attr(  $option_name ) . "' data-name='etm_advanced_settings[" . esc_attr(  $setting['name'] ) . "][" . esc_attr( $option_name ) . "][]' data-column-name='" . esc_attr( $option_name ) ."' value='yes'>";
+					$html .= "<td><input type='checkbox' class='etm-adv-chk' id='new_entry_" . esc_attr( $setting['name'] ) . "_" . esc_attr(  $option_name ) . "' data-name='etm_advanced_settings[" . esc_attr(  $setting['name'] ) . "][" . esc_attr( $option_name ) . "][]' data-column-name='" . esc_attr( $option_name ) ."' value='yes'>";
 					$html .= "<input type='hidden' id='new_entry_" . esc_attr( $setting['name'] ) . "_" . esc_attr( $option_name ) . "' data-name='etm_advanced_settings[" . esc_attr(  $setting['name'] ) . "][" . esc_attr( $option_name ) . "][]' data-column-name='" . esc_attr( $option_name ) ."' value=''>";
 					$html .="</td>";
 					break;
 			}
 		}
-		$html .= "<td><input type='button' id='button_add_" . esc_attr( $setting['name'] ) . "' class='button-secondary trp-adst-button-add-new-item' value='" . esc_html__( 'Add', 'etranslation-multilingual' ) . "'><span class='trp-adst-remove-element' style='display: none;' data-confirm-message='" . esc_html__('Are you sure you want to remove this item?', 'etranslation-multilingual') . "'>" . esc_html__( 'Remove', 'etranslation-multilingual' ) . "</span></td>";
+		$html .= "<td><input type='button' id='button_add_" . esc_attr( $setting['name'] ) . "' class='button-secondary etm-adst-button-add-new-item' value='" . esc_html__( 'Add', 'etranslation-multilingual' ) . "'><span class='etm-adst-remove-element' style='display: none;' data-confirm-message='" . esc_html__('Are you sure you want to remove this item?', 'etranslation-multilingual') . "'>" . esc_html__( 'Remove', 'etranslation-multilingual' ) . "</span></td>";
 		$html .= "</tr></table>";
 		$html .= "<p class='description'>
                         " . wp_kses_post( $setting['description'] ) . "
@@ -673,7 +672,7 @@ class TRP_Advanced_Tab {
                 </td>
             </tr>";
 
-		return apply_filters( 'trp_advanced_setting_list', $html );
+		return apply_filters( 'etm_advanced_setting_list', $html );
 
 	}
 
@@ -688,7 +687,7 @@ class TRP_Advanced_Tab {
         if( empty( $setting['name'] ) )
             return;
 
-        return apply_filters( 'trp_advanced_setting_custom_' . $setting['name'], $setting );
+        return apply_filters( 'etm_advanced_setting_custom_' . $setting['name'], $setting );
 
     }
 

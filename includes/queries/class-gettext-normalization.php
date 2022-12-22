@@ -1,24 +1,24 @@
 <?php
 
 /**
- * Class TRP_Gettext_Normalization
+ * Class ETM_Gettext_Normalization
  *
  * Queries for transitioning to normalized gettext table structure
  *
  * To access this component use:
- * 		$trp = TRP_Translate_Press::get_trp_instance();
- *      $trp_query = $trp->get_component( 'query' );
- *      $gettext_normalization = $trp_query->get_query_component('gettext_normalization');
+ * 		$etm = ETM_eTranslation_Multilingual::get_etm_instance();
+ *      $etm_query = $etm->get_component( 'query' );
+ *      $gettext_normalization = $etm_query->get_query_component('gettext_normalization');
  *
  */
-class TRP_Gettext_Normalization extends TRP_Query {
+class ETM_Gettext_Normalization extends ETM_Query {
 
     public $db;
     protected $settings;
     protected $error_manager;
 
     /**
-     * TRP_Query constructor.
+     * ETM_Query constructor.
      * @param $settings
      */
     public function __construct( $settings ){
@@ -60,8 +60,8 @@ class TRP_Gettext_Normalization extends TRP_Query {
     public function gettext_original_ids_insert( $language_code, $inferior_limit, $batch_size ){
 
         if( !$this->error_manager ){
-            $trp = TRP_Translate_Press::get_trp_instance();
-            $this->error_manager = $trp->get_component( 'error_manager' );
+            $etm = ETM_eTranslation_Multilingual::get_etm_instance();
+            $this->error_manager = $etm->get_component( 'error_manager' );
         }
 
         $originals_table = $this->get_table_name_for_gettext_original_strings();
@@ -86,8 +86,8 @@ class TRP_Gettext_Normalization extends TRP_Query {
      */
     public function gettext_original_ids_cleanup(){
         if( !$this->error_manager ){
-            $trp = TRP_Translate_Press::get_trp_instance();
-            $this->error_manager = $trp->get_component( 'error_manager' );
+            $etm = ETM_eTranslation_Multilingual::get_etm_instance();
+            $this->error_manager = $etm->get_component( 'error_manager' );
         }
 
         $originals_table = $this->get_table_name_for_gettext_original_strings();
@@ -110,8 +110,8 @@ class TRP_Gettext_Normalization extends TRP_Query {
      */
     public function gettext_original_ids_reindex( $language_code, $inferior_limit, $batch_size ){
         if( !$this->error_manager ){
-            $trp = TRP_Translate_Press::get_trp_instance();
-            $this->error_manager = $trp->get_component( 'error_manager' );
+            $etm = ETM_eTranslation_Multilingual::get_etm_instance();
+            $this->error_manager = $etm->get_component( 'error_manager' );
         }
 
         $originals_table = $this->get_table_name_for_gettext_original_strings();

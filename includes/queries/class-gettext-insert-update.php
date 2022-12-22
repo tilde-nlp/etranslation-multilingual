@@ -1,24 +1,24 @@
 <?php
 
 /**
- * Class TRP_Gettext_Normalization
+ * Class ETM_Gettext_Normalization
  *
  * Queries for inserting and updating strings in gettext tables
  *
  * To access this component use:
- *        $trp = TRP_Translate_Press::get_trp_instance();
- *      $trp_query = $trp->get_component( 'query' );
- *      $gettext_insert_update = $trp_query->get_query_component('gettext_insert_update');
+ *        $etm = ETM_eTranslation_Multilingual::get_etm_instance();
+ *      $etm_query = $etm->get_component( 'query' );
+ *      $gettext_insert_update = $etm_query->get_query_component('gettext_insert_update');
  *
  */
-class TRP_Gettext_Insert_Update extends TRP_Query {
+class ETM_Gettext_Insert_Update extends ETM_Query {
 
 	public    $db;
 	protected $settings;
 	protected $error_manager;
 
 	/**
-	 * TRP_Query constructor.
+	 * ETM_Query constructor.
 	 *
 	 * @param $settings
 	 */
@@ -29,7 +29,7 @@ class TRP_Gettext_Insert_Update extends TRP_Query {
 	}
 
 	/**
-	 * Inserts gettext strings in trp_gettext_{language_code} table and trp_gettext_original_strings table
+	 * Inserts gettext strings in etm_gettext_{language_code} table and etm_gettext_original_strings table
 	 *
 	 * @param $new_strings
 	 * @param $language_code
@@ -152,7 +152,7 @@ class TRP_Gettext_Insert_Update extends TRP_Query {
 	}
 
 	/**
-	 * Update gettext strings in trp_gettext_{language_code} table
+	 * Update gettext strings in etm_gettext_{language_code} table
 	 *
 	 * @param $updated_strings
 	 * @param $language_code

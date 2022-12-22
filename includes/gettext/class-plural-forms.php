@@ -1,11 +1,11 @@
 <?php
 
 /**
- * Class TRP_Plural_Form
+ * Class ETM_Plural_Form
  *
  * Helpful gettext plural form functions
  */
-class TRP_Plural_Forms {
+class ETM_Plural_Forms {
 
     protected $_gettext_select_plural_form;
     protected $settings;
@@ -13,7 +13,7 @@ class TRP_Plural_Forms {
     protected $cached_language = null;
 
     /**
-     * TRP_Plural_Form constructor.
+     * ETM_Plural_Form constructor.
      *
      * @param array $settings Settings option.
      */
@@ -52,7 +52,7 @@ class TRP_Plural_Forms {
     }
 
     /**
-     * Gets plural form headers from trp_db_stored_data option.
+     * Gets plural form headers from etm_db_stored_data option.
      *
      * Auto-completes missing headers from default textdomain mo files
      *
@@ -62,15 +62,15 @@ class TRP_Plural_Forms {
     public function set_plural_forms_headers( $languages ){
         global $l10n;
 
-        $trp_db_stored_data = get_option( 'trp_db_stored_data', array() );
-        if ( !isset($trp_db_stored_data['gettext_plural_forms_header']) ){
-            $trp_db_stored_data['gettext_plural_forms_header'] = array();
+        $etm_db_stored_data = get_option( 'etm_db_stored_data', array() );
+        if ( !isset($etm_db_stored_data['gettext_plural_forms_header']) ){
+            $etm_db_stored_data['gettext_plural_forms_header'] = array();
         }
 
         $changes = false;
         $current_locale = get_locale();
         foreach( $languages as $language_code ){
-            if ( !isset( $trp_db_stored_data['gettext_plural_forms_header'][$language_code] ) ){
+            if ( !isset( $etm_db_stored_data['gettext_plural_forms_header'][$language_code] ) ){
                 load_default_textdomain($language_code);
 
                 if ( isset($l10n['default']->headers['Plural-Forms'] ) ) {
@@ -78,18 +78,18 @@ class TRP_Plural_Forms {
                 }else{
                     $header = 'nplurals=2; plural=n != 1;';
                 }
-                $trp_db_stored_data['gettext_plural_forms_header'][$language_code] = $header;
+                $etm_db_stored_data['gettext_plural_forms_header'][$language_code] = $header;
                 $changes = true;
             }
         }
         if ( $changes ) {
-            update_option( 'trp_db_stored_data', $trp_db_stored_data );
+            update_option( 'etm_db_stored_data', $etm_db_stored_data );
 
             // restore previous textdomain
             load_default_textdomain($current_locale);
         }
 
-        return $trp_db_stored_data['gettext_plural_forms_header'];
+        return $etm_db_stored_data['gettext_plural_forms_header'];
     }
 
 

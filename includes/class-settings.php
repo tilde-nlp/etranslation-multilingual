@@ -1,16 +1,16 @@
 <?php
 
 /**
- * Class TRP_Settings
+ * Class ETM_Settings
  *
  * In charge of settings page and settings option.
  */
-class TRP_Settings{
+class ETM_Settings{
 
     protected $settings;
-    protected $trp_query;
+    protected $etm_query;
     protected $url_converter;
-    protected $trp_languages;
+    protected $etm_languages;
     protected $machine_translator;
 
     /**
@@ -22,7 +22,7 @@ class TRP_Settings{
      * @return array            Array with customization options.
      */
     public function get_language_switcher_options(){
-        $ls_options = apply_filters( 'trp_language_switcher_output', array(
+        $ls_options = apply_filters( 'etm_language_switcher_output', array(
             'full-names'         => array( 'full_names'  => true, 'short_names'  => false, 'flags' => false, 'no_html' => false, 'label' => __( 'Full Language Names', 'etranslation-multilingual' ) ),
             'short-names'        => array( 'full_names'  => false, 'short_names'  => true, 'flags' => false, 'no_html' => false, 'label' => __( 'Short Language Names', 'etranslation-multilingual' ) ),
             'flags-full-names'   => array( 'full_names'  => true, 'short_names'  => false, 'flags' => true, 'no_html' => false, 'label' => __( 'Flags with Full Language Names', 'etranslation-multilingual' ) ),
@@ -45,7 +45,7 @@ class TRP_Settings{
 	    if ($ls_type !== 'menu-options'){
 	    	unset($ls_options['full-names-no-html']);
 	    }
-        $output = '<select id="' . esc_attr( $ls_type ) . '" name="etm_settings[' . esc_attr( $ls_type ) .']" class="trp-select trp-ls-select-option">';
+        $output = '<select id="' . esc_attr( $ls_type ) . '" name="etm_settings[' . esc_attr( $ls_type ) .']" class="etm-select etm-ls-select-option">';
         foreach( $ls_options as $key => $ls_option ){
             $selected = ( $ls_setting == $key ) ? 'selected' : '';
             $output .= '<option value="' . esc_attr( $key ) . '" ' . esc_attr( $selected ) . ' >' . esc_html( $ls_option['label'] ). '</option>';
@@ -70,7 +70,7 @@ class TRP_Settings{
 
         );
 
-        $output = '<select id="floater-position" name="etm_settings[floater-position]" class="trp-select trp-ls-select-option">';
+        $output = '<select id="floater-position" name="etm_settings[floater-position]" class="etm-select etm-ls-select-option">';
         foreach( $ls_options as $key => $ls_option ){
             $selected = ( $ls_position == $key ) ? 'selected' : '';
             $output .= '<option value="' . esc_attr( $key ) . '" ' . esc_attr( $selected ) . ' >' . esc_html( $ls_option['label'] ). '</option>';
@@ -92,7 +92,7 @@ class TRP_Settings{
 			'light'   => array( 'label' => __( 'Light', 'etranslation-multilingual' ) ),
 		);
 
-		$output = '<select id="floater-color" name="etm_settings[floater-color]" class="trp-select trp-ls-select-option">';
+		$output = '<select id="floater-color" name="etm_settings[floater-color]" class="etm-select etm-ls-select-option">';
 		foreach( $ls_options as $key => $ls_option ){
 			$selected = ( $ls_color == $key ) ? 'selected' : '';
 			$output .= '<option value="' . esc_attr( $key ) . '" ' . esc_attr( $selected ) . ' >' . esc_html( $ls_option['label'] ). '</option>';
@@ -131,52 +131,24 @@ class TRP_Settings{
     }
 
     /**
-     * Register Settings subpage for TranslatePress
+     * Register Settings subpage for eTranslation Multilingual
      */
     public function register_menu_page(){
-        add_options_page( 'eTranslation Multilingual', 'eTranslation Multilingual', apply_filters( 'trp_settings_capability', 'manage_options' ), 'etranslation-multilingual', array( $this, 'settings_page_content' ) );
-
-        //add_submenu_page( 'TRPHidden', 'eTranslation Multilingual Addons', 'TRPHidden', 'manage_options', 'etm_addons_page', array($this, 'addons_page_content') );
+        add_options_page( 'eTranslation Multilingual', 'eTranslation Multilingual', apply_filters( 'etm_settings_capability', 'manage_options' ), 'etranslation-multilingual', array( $this, 'settings_page_content' ) );
     }
 
     /**
      * Settings page content.
      */
     public function settings_page_content(){
-	    if ( ! $this->trp_languages ){
-            $trp                 = TRP_Translate_Press::get_trp_instance();
-            $this->trp_languages = $trp->get_component( 'languages' );
+	    if ( ! $this->etm_languages ){
+            $etm                 = ETM_eTranslation_Multilingual::get_etm_instance();
+            $this->etm_languages = $etm->get_component( 'languages' );
         }
 
-        $languages = $this->trp_languages->get_languages( 'english_name' );
+        $languages = $this->etm_languages->get_languages( 'english_name' );
 
-        require_once TRP_PLUGIN_DIR . 'partials/main-settings-page.php';
-    }
-
-    /**
-     * Addons page content.
-     */
-    public function addons_page_content(){
-        $trp = TRP_Translate_Press::get_trp_instance();
-        $install_plugins = $trp->get_component('install_plugins');
-
-        $active_plugin = __('Active', 'etranslation-multilingual');
-        $inactive_plugin = __('Install & Activate', 'etranslation-multilingual');
-
-        $plugins = array( 'pb', 'pms' );
-        $plugin_settings = array();
-        foreach($plugins as $plugin ){
-            $plugin_settings[$plugin] = array();
-            if ( $install_plugins->is_plugin_active( $plugin ) ) {
-                $plugin_settings[$plugin]['install_button'] = $active_plugin;
-                $plugin_settings[$plugin]['disabled']       = 'disabled';
-            }else{
-                $plugin_settings[$plugin]['install_button'] = $inactive_plugin;
-                $plugin_settings[$plugin]['disabled']       = '';
-            }
-        }
-
-        require_once TRP_PLUGIN_DIR . 'partials/addons-settings-page.php';
+        require_once ETM_PLUGIN_DIR . 'partials/main-settings-page.php';
     }
 
     /**
@@ -195,13 +167,13 @@ class TRP_Settings{
      * @return array                Sanitized option page.
      */
     public function sanitize_settings( $settings ){
-        if ( ! $this->trp_query ) {
-            $trp = TRP_Translate_Press::get_trp_instance();
-            $this->trp_query = $trp->get_component( 'query' );
+        if ( ! $this->etm_query ) {
+            $etm = ETM_eTranslation_Multilingual::get_etm_instance();
+            $this->etm_query = $etm->get_component( 'query' );
         }
-        if ( ! $this->trp_languages ){
-            $trp = TRP_Translate_Press::get_trp_instance();
-            $this->trp_languages = $trp->get_component( 'languages' );
+        if ( ! $this->etm_languages ){
+            $etm = ETM_eTranslation_Multilingual::get_etm_instance();
+            $this->etm_languages = $etm->get_component( 'languages' );
         }
         if ( !isset ( $settings['default-language'] ) ) {
             $settings['default-language'] = 'en_GB';
@@ -226,7 +198,7 @@ class TRP_Settings{
         // check if submitted language codes are valid. Default language is included here too
         $check_language_codes = array_unique( array_merge($settings['translation-languages'], $settings['publish-languages']) );
         foreach($check_language_codes as $check_language_code ){
-            if ( !trp_is_valid_language_code($check_language_code) ){
+            if ( !etm_is_valid_language_code($check_language_code) ){
                 add_settings_error( 'etm_advanced_settings', 'settings_error', esc_html__('Invalid language code. Please try again.', 'etranslation-multilingual'), 'error' );
                 return get_option( 'etm_settings', 'not_set' );
             }
@@ -248,10 +220,10 @@ class TRP_Settings{
             $settings['force-language-to-custom-links'] = 'no';
 
 
-        if ( !empty( $settings['trp-ls-floater'] ) ){
-            $settings['trp-ls-floater'] = sanitize_text_field( $settings['trp-ls-floater'] );
+        if ( !empty( $settings['etm-ls-floater'] ) ){
+            $settings['etm-ls-floater'] = sanitize_text_field( $settings['etm-ls-floater'] );
         }else{
-            $settings['trp-ls-floater'] = 'no';
+            $settings['etm-ls-floater'] = 'no';
         }
 
         $language_switcher_options = $this->get_language_switcher_options();
@@ -273,14 +245,14 @@ class TRP_Settings{
 		    $settings['floater-color'] = 'default';
 	    }
 
-	    if ( !empty( $settings['trp-ls-show-poweredby'] ) ){
-		    $settings['trp-ls-show-poweredby'] = sanitize_text_field( $settings['trp-ls-show-poweredby'] );
+	    if ( !empty( $settings['etm-ls-show-poweredby'] ) ){
+		    $settings['etm-ls-show-poweredby'] = sanitize_text_field( $settings['etm-ls-show-poweredby'] );
 	    }else{
-		    $settings['trp-ls-show-poweredby'] = 'no';
+		    $settings['etm-ls-show-poweredby'] = 'no';
 	    }
 
         if ( ! isset( $settings['url-slugs'] ) ){
-            $settings['url-slugs'] = $this->trp_languages->get_iso_codes( $settings['translation-languages'] );
+            $settings['url-slugs'] = $this->etm_languages->get_iso_codes( $settings['translation-languages'] );
         }
 
         foreach( $settings['translation-languages'] as $language_code ){
@@ -317,26 +289,26 @@ class TRP_Settings{
 
         $this->create_menu_entries( $settings['publish-languages'] );
 
-        $gettext_table_creation = $this->trp_query->get_query_component('gettext_table_creation');
+        $gettext_table_creation = $this->etm_query->get_query_component('gettext_table_creation');
         require_once( ABSPATH . 'wp-includes/load.php' );
         foreach ( $settings['translation-languages'] as $language_code ){
             if ( $settings['default-language'] != $language_code ) {
-                $this->trp_query->check_table( $settings['default-language'], $language_code );
+                $this->etm_query->check_table( $settings['default-language'], $language_code );
             }
             wp_download_language_pack( $language_code );
             $gettext_table_creation->check_gettext_table( $language_code );
         }
 
         //in version 1.6.6 we normalized the original strings and created new tables
-        $this->trp_query->check_original_table();
-        $this->trp_query->check_original_meta_table();
+        $this->etm_query->check_original_table();
+        $this->etm_query->check_original_meta_table();
         $gettext_table_creation->check_gettext_original_table();
         $gettext_table_creation->check_gettext_original_meta_table();
 
         // regenerate permalinks in case something changed
         flush_rewrite_rules();
 
-        return apply_filters( 'trp_extra_sanitize_settings', $settings );
+        return apply_filters( 'etm_extra_sanitize_settings', $settings );
     }
 
     /**
@@ -367,13 +339,13 @@ class TRP_Settings{
             'native_or_english_name'               => 'english_name',
             'add-subdirectory-to-default-language' => 'no',
             'force-language-to-custom-links'       => 'yes',
-            'trp-ls-floater'                       => 'yes',
+            'etm-ls-floater'                       => 'yes',
             'shortcode-options'                    => 'full-names',
             'menu-options'                         => 'full-names',
             'floater-options'                      => 'full-names',
             'floater-position'                     => 'top-right',
 	        'floater-color'                        => 'default',
-	        'trp-ls-show-poweredby'                => 'no',
+	        'etm-ls-show-poweredby'                => 'no',
             'url-slugs'                            => array( 'en_GB' => 'en', '' ),
         );
 
@@ -381,7 +353,7 @@ class TRP_Settings{
             update_option ( 'etm_settings', $default_settings );
             $settings_option = $default_settings;
         }else{
-            // Add any missing default option for trp_setting
+            // Add any missing default option for etm_setting
             foreach ( $default_settings as $key_default_setting => $value_default_setting ){
                 if ( !isset ( $settings_option[$key_default_setting] ) ) {
                     $settings_option[$key_default_setting] = $value_default_setting;
@@ -392,47 +364,37 @@ class TRP_Settings{
         // Might have saved invalid language codes in the past so this code protects against SQL Injections using invalid language codes which are used in queries
         $check_language_codes = array_unique( array_merge($settings_option['translation-languages'], $settings_option['publish-languages']) );
         foreach($check_language_codes as $check_language_code ) {
-            if ( !trp_is_valid_language_code( $check_language_code ) ) {
+            if ( !etm_is_valid_language_code( $check_language_code ) ) {
                 add_filter('plugins_loaded', array($this, 'show_invalid_language_codes_error_notice'), 999999);
             }
         }
 
 
         /**
-         * These options (trp_advanced_settings,trp_machine_translation_settings) are not part of the actual trp_settings DB option.
+         * These options (etm_advanced_settings,etm_machine_translation_settings) are not part of the actual etm_settings DB option.
          * But they are included in $settings variable across TP
          */
-        $settings_option['trp_advanced_settings'] = get_option('etm_advanced_settings', array() );
+        $settings_option['etm_advanced_settings'] = get_option('etm_advanced_settings', array() );
 
-        // Add any missing default option for trp_machine_translation_settings
-        $default_trp_machine_translation_settings = $this->get_default_trp_machine_translation_settings();
-        $settings_option['trp_machine_translation_settings'] = array_merge( $default_trp_machine_translation_settings, get_option( 'etm_machine_translation_settings', $default_trp_machine_translation_settings ) );
-
-
-        /* @deprecated Setting only used for compatibility with Deepl Add-on 1.0.0 */
-        if ( $settings_option['trp_machine_translation_settings']['translation-engine'] === 'deepl' && defined( 'TRP_DL_PLUGIN_VERSION' ) && TRP_DL_PLUGIN_VERSION === '1.0.0' ) {
-            $trp_languages = new TRP_Languages();
-            $settings_option['machine-translate-codes'] = $trp_languages->get_iso_codes($settings_option['translation-languages']);
-            if ( isset( $settings_option['trp_machine_translation_settings']['deepl-api-key'] ) ) {
-                $settings_option['deepl-api-key'] = $settings_option['trp_machine_translation_settings']['deepl-api-key'];
-            }
-        }
+        // Add any missing default option for etm_machine_translation_settings
+        $default_etm_machine_translation_settings = $this->get_default_etm_machine_translation_settings();
+        $settings_option['etm_machine_translation_settings'] = array_merge( $default_etm_machine_translation_settings, get_option( 'etm_machine_translation_settings', $default_etm_machine_translation_settings ) );
 
         $this->settings = $settings_option;
     }
 
     public function show_invalid_language_codes_error_notice(){
-        $trp = TRP_Translate_Press::get_trp_instance();
-        $error_manager = $trp->get_component( 'error_manager' );
+        $etm = ETM_eTranslation_Multilingual::get_etm_instance();
+        $error_manager = $etm->get_component( 'error_manager' );
 
         $error_manager->record_error(
             array( 'message'         => esc_html__('Language codes can contain only A-Z a-z 0-9 - _ characters. Check your language codes in eTranslation Multilingual General Settings.', 'etranslation-multilingual'),
                    'notification_id' => 'etm_invalid_language_code' ) );
     }
 
-    public function get_default_trp_machine_translation_settings(){
-        return apply_filters( 'trp_get_default_trp_machine_translation_settings', array(
-            // default settings for trp_machine_translation_settings
+    public function get_default_etm_machine_translation_settings(){
+        return apply_filters( 'etm_get_default_etm_machine_translation_settings', array(
+            // default settings for etm_machine_translation_settings
             'machine-translation'               => 'no',
             'translation-engine'                => 'etranslation',
             'block-crawlers'                    => 'no',
@@ -454,59 +416,54 @@ class TRP_Settings{
      * @param string $hook          Admin page.
      */
     public function enqueue_scripts_and_styles( $hook ) {
-        if( in_array( $hook, [ 'settings_page_etranslation-multilingual', 'admin_page_etm_license_key', 'admin_page_etm_addons_page', 'admin_page_etm_advanced_page', 'admin_page_etm_machine_translation', 'admin_page_etm_test_machine_api' ] ) ){
+        if( in_array( $hook, [ 'settings_page_etranslation-multilingual', 'admin_page_etm_advanced_page', 'admin_page_etm_machine_translation', 'admin_page_etm_test_machine_api' ] ) ){
             wp_enqueue_style(
-                'trp-settings-style',
-                TRP_PLUGIN_URL . 'assets/css/trp-back-end-style.css',
+                'etm-settings-style',
+                ETM_PLUGIN_URL . 'assets/css/etm-back-end-style.css',
                 array(),
-                TRP_PLUGIN_VERSION
+                ETM_PLUGIN_VERSION
             );
         }
 
         if( in_array( $hook, array( 'settings_page_etranslation-multilingual', 'admin_page_etm_advanced_page', 'admin_page_etm_machine_translation' ) ) ) {
-            wp_enqueue_script( 'trp-settings-script', TRP_PLUGIN_URL . 'assets/js/trp-back-end-script.js', array( 'jquery', 'jquery-ui-sortable' ), TRP_PLUGIN_VERSION );
+            wp_enqueue_script( 'etm-settings-script', ETM_PLUGIN_URL . 'assets/js/etm-back-end-script.js', array( 'jquery', 'jquery-ui-sortable' ), ETM_PLUGIN_VERSION );
 
-            $trp                 = TRP_Translate_Press::get_trp_instance();
-            if ( ! $this->trp_languages ){
-                $this->trp_languages = $trp->get_component( 'languages' );
+            $etm                 = ETM_eTranslation_Multilingual::get_etm_instance();
+            if ( ! $this->etm_languages ){
+                $this->etm_languages = $etm->get_component( 'languages' );
             }
 
-            $all_language_codes = $this->trp_languages->get_all_language_codes();
-            $iso_codes          = $this->trp_languages->get_iso_codes( $all_language_codes, false );
+            $all_language_codes = $this->etm_languages->get_all_language_codes();
+            $iso_codes          = $this->etm_languages->get_iso_codes( $all_language_codes, false );
             $domains            = array();
-            $machine_translator = $trp->get_component('machine_translator');
-            if ($machine_translator->is_available() && $machine_translator instanceof TRP_eTranslation_Machine_Translator && $machine_translator->credentials_set()) {
+            $machine_translator = $etm->get_component('machine_translator');
+            if ($machine_translator->is_available() && $machine_translator instanceof ETM_eTranslation_Machine_Translator && $machine_translator->credentials_set()) {
                 $domains = $machine_translator->get_all_domains();
             }
 
-            wp_localize_script( 'trp-settings-script', 'trp_url_slugs_info', array( 'iso_codes' => $iso_codes, 'error_message_duplicate_slugs' => __( 'Error! Duplicate URL slug values.', 'etranslation-multilingual' ), 'domains' => $domains ) );
+            wp_localize_script( 'etm-settings-script', 'etm_url_slugs_info', array( 'iso_codes' => $iso_codes, 'error_message_duplicate_slugs' => __( 'Error! Duplicate URL slug values.', 'etranslation-multilingual' ), 'domains' => $domains ) );
 
-            wp_enqueue_script( 'trp-select2-lib-js', TRP_PLUGIN_URL . 'assets/lib/select2-lib/dist/js/select2.min.js', array( 'jquery' ), TRP_PLUGIN_VERSION );
-            wp_enqueue_style( 'trp-select2-lib-css', TRP_PLUGIN_URL . 'assets/lib/select2-lib/dist/css/select2.min.css', array(), TRP_PLUGIN_VERSION );
+            wp_enqueue_script( 'etm-select2-lib-js', ETM_PLUGIN_URL . 'assets/lib/select2-lib/dist/js/select2.min.js', array( 'jquery' ), ETM_PLUGIN_VERSION );
+            wp_enqueue_style( 'etm-select2-lib-css', ETM_PLUGIN_URL . 'assets/lib/select2-lib/dist/css/select2.min.css', array(), ETM_PLUGIN_VERSION );
 
-        }
-
-        if( in_array( $hook, array( 'admin_page_etm_addons_page' ) ) ) {
-            wp_enqueue_script( 'trp-add-ons-script', TRP_PLUGIN_URL . 'assets/js/trp-back-end-add-ons.js', array( ), TRP_PLUGIN_VERSION, true );
-            wp_localize_script( 'trp-add-ons-script', 'trp_addons_localized', array( 'admin_ajax_url' => admin_url( 'admin-ajax.php' ), 'nonce' =>  wp_create_nonce( 'trp_install_plugins' )) );
         }
     }
 
     /**
      * Output HTML for Translation Language option.
      *
-     * Hooked to trp_language_selector.
+     * Hooked to etm_language_selector.
      *
      * @param array $languages          All available languages.
      */
     public function languages_selector( $languages ){
         if ( ! $this->url_converter ) {
-            $trp = TRP_Translate_Press::get_trp_instance();
-            $this->url_converter = $trp->get_component('url_converter');
+            $etm = ETM_eTranslation_Multilingual::get_etm_instance();
+            $this->url_converter = $etm->get_component('url_converter');
         }
         $selected_language_code = '';
 
-        require_once TRP_PLUGIN_DIR . 'partials/main-settings-language-selector.php';
+        require_once ETM_PLUGIN_DIR . 'partials/main-settings-language-selector.php';
     }
 
     /**
@@ -515,11 +472,11 @@ class TRP_Settings{
      * @param array $languages          Array of language codes to create menu items for.
      */
     public function create_menu_entries( $languages ){
-        if ( ! $this->trp_languages ){
-            $trp = TRP_Translate_Press::get_trp_instance();
-            $this->trp_languages = $trp->get_component( 'languages' );
+        if ( ! $this->etm_languages ){
+            $etm = ETM_eTranslation_Multilingual::get_etm_instance();
+            $this->etm_languages = $etm->get_component( 'languages' );
         }
-        $published_languages = $this->trp_languages->get_language_names( $languages, 'english_name' );
+        $published_languages = $this->etm_languages->get_language_names( $languages, 'english_name' );
         $published_languages['current_language'] = __( 'Current Language', 'etranslation-multilingual' );
         $languages[] = 'current_language';
         $posts = get_posts( array( 'post_type' =>'language_switcher',  'posts_per_page'   => -1  ) );
@@ -572,19 +529,19 @@ class TRP_Settings{
             ),
             array(
                 'name'  => __( 'Translate Site', 'etranslation-multilingual' ),
-                'url'   => add_query_arg( 'trp-edit-translation', 'true', home_url() ),
-                'page'  => 'trp_translation_editor'
+                'url'   => add_query_arg( 'etm-edit-translation', 'true', home_url() ),
+                'page'  => 'etm_translation_editor'
             ),
         );
 
-	    $tabs = apply_filters( 'trp_settings_tabs', $tabs );
+	    $tabs = apply_filters( 'etm_settings_tabs', $tabs );
 
         $active_tab = 'etranslation-multilingual';
         if ( isset( $_GET['page'] ) ){
             $active_tab = sanitize_text_field( wp_unslash( $_GET['page'] ) );
         }
 
-        require TRP_PLUGIN_DIR . 'partials/settings-navigation-tabs.php';
+        require ETM_PLUGIN_DIR . 'partials/settings-navigation-tabs.php';
     }
 
     /**
@@ -601,51 +558,6 @@ class TRP_Settings{
             </symbol>
         </svg>
         <?php
-    }
-
-    /**
-     * Plugin action links.
-     *
-     * Adds action links to the plugin list table
-     *
-     * Fired by `plugin_action_links` filter.
-     *
-     * @param array $links An array of plugin action links.
-     *
-     * @return array An array of plugin action links.
-     */
-    public function plugin_action_links( $links ) {
-        $settings_link = sprintf( '<a href="%1$s">%2$s</a>', admin_url( 'options-general.php?page=etranslation-multilingual' ), __( 'Settings', 'etranslation-multilingual' ) );
-
-        array_unshift( $links, $settings_link );
-
-        if( !trp_is_paid_version() ) {
-            $links['go_pro'] = sprintf( '<a href="%1$s" target="_blank" style="color: #e76054; font-weight: bold;">%2$s</a>', esc_url( trp_add_affiliate_id_to_link( 'https://translatepress.com/pricing/?utm_source=wpbackend&utm_medium=clientsite&utm_content=tpeditor&utm_campaign=tpfree' ) ), esc_html__( 'Pro Features', 'etranslation-multilingual' ) );
-        }else {
-            $license_details = get_option( 'etm_license_details' );
-            $is_demosite     = ( strpos( site_url(), 'https://demo.translatepress.com' ) !== false );
-            if ( !empty( $license_details ) && !$is_demosite ) {
-                if ( !empty( $license_details['invalid'] ) ) {
-                    $license_detail = $license_details['invalid'][0];
-                    if ( isset( $license_detail->error ) && $license_detail->error == 'missing' ) {
-                        $links['license'] = sprintf( '<a href="%1$s" target="_blank" style="color: #e76054; font-weight: bold;">%2$s</a>', esc_url(trp_add_affiliate_id_to_link( admin_url( '/admin.php?page=etm_license_key' ) ) ), esc_html__( 'Activate License', 'etranslation-multilingual' ) );
-                    }
-                }
-            }
-        }
-        return $links;
-    }
-
-    public function trp_dismiss_email_course(){
-
-        $user_id = get_current_user_id();
-
-        if( empty( $user_id ) )
-            die();
-
-        update_user_meta( $user_id, 'etm_email_course_dismissed', 1 );
-        die();
-        
     }
 
 }

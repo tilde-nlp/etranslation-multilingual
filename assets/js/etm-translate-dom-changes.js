@@ -2,7 +2,7 @@
 /**
  * Script to replace dynamically added strings with their translation.
  */
-function TRP_Translator(){
+function ETM_Translator(){
 
     this.is_editor = false;
     var _this = this;
@@ -13,14 +13,14 @@ function TRP_Translator(){
         characterData: false,//this could be CDATA so I set it to false in v 1.4.5
         subtree: true
     };
-    var translate_numerals_opt = trp_data.trp_translate_numerals_opt;
-    var custom_ajax_url = trp_data.trp_custom_ajax_url;
-    var wp_ajax_url = trp_data.trp_wp_ajax_url;
+    var translate_numerals_opt = etm_data.etm_translate_numerals_opt;
+    var custom_ajax_url = etm_data.etm_custom_ajax_url;
+    var wp_ajax_url = etm_data.etm_wp_ajax_url;
     var language_to_query;
     this.except_characters = " \t\n\r  �.,/`~!@#$€£%^&*():;-_=+[]{}\\|?/<>1234567890'";
     var trim_characters = " \t\n\r  �\x0A\x0B" + "\302" + "\240";
     var already_detected = [];
-    var duplicate_detections_allowed = parseInt( trp_data.duplicate_detections_allowed )
+    var duplicate_detections_allowed = parseInt( etm_data.duplicate_detections_allowed )
 
     /**
      * Ajax request to get translations for strings
@@ -31,11 +31,11 @@ function TRP_Translator(){
             type: 'post',
             dataType: 'json',
             data: {
-                action                   : 'trp_get_translations_regular',
+                action                   : 'etm_get_translations_regular',
                 all_languages            : 'false',
-                security                 : trp_data['gettranslationsnonceregular'],
+                security                 : etm_data['gettranslationsnonceregular'],
                 language                 : language_to_query,
-                original_language        : original_language, // used for trp custom ajax
+                original_language        : original_language, // used for etm custom ajax
                 originals                : JSON.stringify( string_originals ),
                 skip_machine_translation : JSON.stringify( skip_machine_translation ),
                 dynamic_strings          : 'true',
@@ -44,7 +44,7 @@ function TRP_Translator(){
             success: function( response ) {
                 if ( response === 'error' ) {
                     _this.ajax_get_translation( nodesInfo, string_originals, wp_ajax_url, skip_machine_translation );
-                    console.log( 'Notice: TranslatePress trp-ajax request uses fall back to admin ajax.' );
+                    console.log( 'Notice: eTranslation Multilingual etm-ajax request uses fall back to admin ajax.' );
                 }else{
                     _this.update_strings( response, nodesInfo );
                 }
@@ -52,10 +52,10 @@ function TRP_Translator(){
             error: function( errorThrown ){
                 if ( url == custom_ajax_url && custom_ajax_url != wp_ajax_url ){
                     _this.ajax_get_translation( nodesInfo, string_originals, wp_ajax_url, skip_machine_translation );
-                    console.log( 'Notice: TranslatePress trp-ajax request uses fall back to admin ajax.' );
+                    console.log( 'Notice: eTranslation Multilingual etm-ajax request uses fall back to admin ajax.' );
                 }else{
                     _this.update_strings( null, nodesInfo );
-                    console.log( 'TranslatePress AJAX Request Error' );
+                    console.log( 'eTranslation Multilingual AJAX Request Error' );
                 }
             }
         });
@@ -91,22 +91,22 @@ function TRP_Translator(){
                     if (response[i].original.trim() == nodeInfo.original.trim()) {
                         // The nodeInfo can contain duplicates and response cannot. We need duplicates to refer to different jQuery objects where the same string appears in different places on the page.
                         var entry = response[i]
-                        entry.selector = 'data-trp-translate-id'
+                        entry.selector = 'data-etm-translate-id'
                         entry.attribute = ''
                         newEntries.push( entry )
                         if ( _this.is_editor ) {
                             var jquery_object;
-                            var trp_translate_id = 'data-trp-translate-id'
-                            var trp_node_group = 'data-trp-node-group'
+                            var etm_translate_id = 'data-etm-translate-id'
+                            var etm_node_group = 'data-etm-node-group'
                             if ( nodeInfo.attribute ) {
                                 jquery_object = jQuery(nodeInfo.node)
-                                trp_translate_id = trp_translate_id + '-' + nodeInfo.attribute
-                                trp_node_group = trp_node_group + '-' + nodeInfo.attribute
+                                etm_translate_id = etm_translate_id + '-' + nodeInfo.attribute
+                                etm_node_group = etm_node_group + '-' + nodeInfo.attribute
                             }else{
-                                jquery_object = jQuery(nodeInfo.node).parent('translate-press');
+                                jquery_object = jQuery(nodeInfo.node).parent('etranslation-multilingual');
                             }
-                            jquery_object.attr( trp_translate_id, response[i].dbID );
-                            jquery_object.attr( trp_node_group, response[i].group );
+                            jquery_object.attr( etm_translate_id, response[i].dbID );
+                            jquery_object.attr( etm_node_group, response[i].group );
                         }
 
                         if (response_string.translated != '' && language_to_query == current_language ) {
@@ -140,8 +140,8 @@ function TRP_Translator(){
             }
             // this should always be outside the for loop
             if ( _this.is_editor ) {
-                window.parent.dispatchEvent( new Event( 'trp_iframe_page_updated' ) );
-                window.dispatchEvent( new Event( 'trp_iframe_page_updated' ) );
+                window.parent.dispatchEvent( new Event( 'etm_iframe_page_updated' ) );
+                window.dispatchEvent( new Event( 'etm_iframe_page_updated' ) );
             }
 
         }else{
@@ -180,11 +180,11 @@ function TRP_Translator(){
         mutations.forEach( function (mutation) {
             for (var i = 0; i < mutation.addedNodes.length; i++) {
                 var node = mutation.addedNodes[i]
-                /* if it is an anchor add the trp-edit-translation=preview parameter to it */
+                /* if it is an anchor add the etm-edit-translation=preview parameter to it */
                 if ( _this.is_editor ){
                     var anchor_tags = jQuery(node).find('a')
                     if ( typeof anchor_tags.context !== 'undefined' )
-                        anchor_tags.context.href = _this.update_query_string('trp-edit-translation', 'preview', anchor_tags.context.href);
+                        anchor_tags.context.href = _this.update_query_string('etm-edit-translation', 'preview', anchor_tags.context.href);
                 }
 
                 if ( _this.skip_string(node) ){
@@ -205,7 +205,7 @@ function TRP_Translator(){
             }
 
             if ( mutation.attributeName ){
-                if ( ! _this.in_array( mutation.attributeName, trp_data.trp_attributes_accessors ) ){
+                if ( ! _this.in_array( mutation.attributeName, etm_data.etm_attributes_accessors ) ){
                     return
                 }
                 if ( _this.skip_string_attribute( mutation.target, mutation.attributeName ) || _this.skip_string(mutation.target) ){
@@ -227,7 +227,7 @@ function TRP_Translator(){
 
     this.skip_string = function(node){
         // skip nodes containing these attributes
-        var selectors = trp_data.trp_skip_selectors;
+        var selectors = etm_data.etm_skip_selectors;
         for (var i = 0; i < selectors.length ; i++ ){
             if ( jQuery(node).closest( selectors[ i ] ).length > 0 ){
                 return true;
@@ -238,7 +238,7 @@ function TRP_Translator(){
 
     this.skip_string_from_auto_translation = function(node){
         // nodes containing these attributes will not be automatically translated
-        var selectors = trp_data.trp_no_auto_translation_selectors;
+        var selectors = etm_data.etm_no_auto_translation_selectors;
         for (var i = 0; i < selectors.length ; i++ ){
             if ( jQuery(node).closest( selectors[ i ] ).length > 0 ){
                 return true;
@@ -248,10 +248,10 @@ function TRP_Translator(){
     };
 
     this.contains_substring_that_needs_skipped = function ( string, attribute ){
-        for (var attribute_to_skip in trp_data.skip_strings_from_dynamic_translation_for_substrings ){
-            if (trp_data.skip_strings_from_dynamic_translation_for_substrings.hasOwnProperty(attribute_to_skip) && attribute === attribute_to_skip) {
-                for ( var i = 0 ; i < trp_data.skip_strings_from_dynamic_translation_for_substrings[attribute_to_skip].length; i++ ){
-                    if ( string.indexOf(trp_data.skip_strings_from_dynamic_translation_for_substrings[attribute_to_skip][i]) !== -1  ){
+        for (var attribute_to_skip in etm_data.skip_strings_from_dynamic_translation_for_substrings ){
+            if (etm_data.skip_strings_from_dynamic_translation_for_substrings.hasOwnProperty(attribute_to_skip) && attribute === attribute_to_skip) {
+                for ( var i = 0 ; i < etm_data.skip_strings_from_dynamic_translation_for_substrings[attribute_to_skip].length; i++ ){
+                    if ( string.indexOf(etm_data.skip_strings_from_dynamic_translation_for_substrings[attribute_to_skip][i]) !== -1  ){
                         return true
                     }
                 }
@@ -266,14 +266,14 @@ function TRP_Translator(){
     this.skip_string_original = function ( string, attribute ){
         return (
             ( already_detected[string] > duplicate_detections_allowed ) ||
-            _this.in_array( string, trp_data.skip_strings_from_dynamic_translation ) ||
+            _this.in_array( string, etm_data.skip_strings_from_dynamic_translation ) ||
             _this.contains_substring_that_needs_skipped( string, attribute)
         )
     }
 
     this.skip_string_attribute = function(node, attribute){
         // skip nodes containing these attributes
-        var selectors = trp_data.trp_base_selectors;
+        var selectors = etm_data.etm_base_selectors;
         for (var i = 0; i < selectors.length ; i++ ){
             if ( typeof jQuery(node).attr( selectors[ i ] + '-' + attribute ) !== 'undefined' ){
                 return true;
@@ -313,7 +313,7 @@ function TRP_Translator(){
 
                         direct_string.textContent = '';
                         if (_this.is_editor) {
-                            jQuery(node).wrap('<translate-press></translate-press>');
+                            jQuery(node).wrap('<etranslation-multilingual></etranslation-multilingual>');
                         }
                     }
                 }
@@ -327,7 +327,7 @@ function TRP_Translator(){
                         }
                     }});
                 if ( _this.is_editor ) {
-                    all_strings.wrap('<translate-press></translate-press>');
+                    all_strings.wrap('<etranslation-multilingual></etranslation-multilingual>');
                 }
                 var all_strings_length = all_strings.length;
                 for (var j = 0; j < all_strings_length; j++ ) {
@@ -338,7 +338,7 @@ function TRP_Translator(){
                             if ( _this.skip_string_from_auto_translation(all_strings[j])){
                                 skip_machine_translation.push( all_strings[j].textContent )
                             }
-                            if (trp_data ['showdynamiccontentbeforetranslation'] == false) {
+                            if (etm_data ['showdynamiccontentbeforetranslation'] == false) {
                                 all_strings[j].textContent = '';
                             }
                         }
@@ -354,9 +354,9 @@ function TRP_Translator(){
         var string_originals = []
         var skip_attr_machine_translation = [ 'href', 'src' ]
         var skip_machine_translation = []
-        for (var trp_attribute_key in trp_data.trp_attributes_selectors) {
-            if (trp_data.trp_attributes_selectors.hasOwnProperty(trp_attribute_key)) {
-                var attribute_selector_item = trp_data.trp_attributes_selectors[trp_attribute_key]
+        for (var etm_attribute_key in etm_data.etm_attributes_selectors) {
+            if (etm_data.etm_attributes_selectors.hasOwnProperty(etm_attribute_key)) {
+                var attribute_selector_item = etm_data.etm_attributes_selectors[etm_attribute_key]
                 if ( typeof attribute_selector_item['selector'] !== 'undefined' ){
                     var all_nodes = jQuery( node ).find( attribute_selector_item.selector ).addBack( attribute_selector_item.selector )
 
@@ -373,7 +373,7 @@ function TRP_Translator(){
                         if ( attribute_content && _this.trim( attribute_content.trim(), _this.except_characters ) != '' ) {
                             nodesInfo.push({node: all_nodes[j], original: attribute_content, attribute: attribute_selector_item.accessor });
                             string_originals.push( attribute_content )
-                            if ( trp_data ['showdynamiccontentbeforetranslation'] == false && ( attribute_selector_item.accessor != 'src' ) && ( attribute_selector_item.accessor != 'href' ) ) {
+                            if ( etm_data ['showdynamiccontentbeforetranslation'] == false && ( attribute_selector_item.accessor != 'src' ) && ( attribute_selector_item.accessor != 'href' ) ) {
                                 all_nodes[j].setAttribute( attribute_selector_item.accessor, '' );
                             }
 
@@ -405,7 +405,7 @@ function TRP_Translator(){
 
     // cleans the gettext wrappers
     this.cleanup_gettext_wrapper = function(){
-        jQuery('trp-gettext').contents().unwrap();
+        jQuery('etm-gettext').contents().unwrap();
     };
 
     /**
@@ -451,13 +451,13 @@ function TRP_Translator(){
     this.initialize = function() {
         this.is_editor = (typeof window.parent.tpEditorApp !== 'undefined' )
         if ( this.is_editor ) {
-            trp_data['gettranslationsnonceregular'] = window.parent.trp_dynamic_nonce;
+            etm_data['gettranslationsnonceregular'] = window.parent.etm_dynamic_nonce;
         }
 
-        current_language = trp_data.trp_current_language;
-        original_language = trp_data.trp_original_language;
-        language_to_query = trp_data.trp_language_to_query;
-        translate_numerals_opt = trp_data.trp_translate_numerals_opt;
+        current_language = etm_data.etm_current_language;
+        original_language = etm_data.etm_original_language;
+        language_to_query = etm_data.etm_language_to_query;
+        translate_numerals_opt = etm_data.etm_translate_numerals_opt;
 
         if ( typeof translate_numerals_opt !== "undefined" && translate_numerals_opt !== '' && translate_numerals_opt === "yes") {
             _this.except_characters = " \t\n\r  �.,/`~!@#$€£%^&*():;-_=+[]{}\\|?/<>'";
@@ -469,10 +469,10 @@ function TRP_Translator(){
         _this.resume_observer();
 
         jQuery( document ).ajaxComplete(function( event, request, settings ) {
-            if( typeof window.parent.jQuery !== "undefined" && window.parent.jQuery('#trp-preview-iframe').length != 0 ) {
+            if( typeof window.parent.jQuery !== "undefined" && window.parent.jQuery('#etm-preview-iframe').length != 0 ) {
                 var settingsdata = "" + settings.data;
-                if( typeof settings.data == 'undefined' || jQuery.isEmptyObject( settings.data ) || settingsdata.indexOf('action=trp_') === -1 ) {
-                    window.parent.dispatchEvent( new Event( 'trp_iframe_page_updated' ) );
+                if( typeof settings.data == 'undefined' || jQuery.isEmptyObject( settings.data ) || settingsdata.indexOf('action=etm_') === -1 ) {
+                    window.parent.dispatchEvent( new Event( 'etm_iframe_page_updated' ) );
                 }
             }
         });
@@ -580,11 +580,11 @@ function TRP_Translator(){
     _this.initialize();
 }
 
-var trpTranslator;
+var etmTranslator;
 var current_language;
 var original_language;
 
-function trp_get_IE_version() {
+function etm_get_IE_version() {
     var sAgent = window.navigator.userAgent;
     var Idx = sAgent.indexOf("MSIE");
 
@@ -599,8 +599,8 @@ function trp_get_IE_version() {
         return 0; //It is not IE
 }
 
-function trp_allow_detect_dom_changes_to_run(){
-    var IE_version = trp_get_IE_version();
+function etm_allow_detect_dom_changes_to_run(){
+    var IE_version = etm_get_IE_version();
     if ( IE_version != 0 && IE_version <= 11 ){
         return false;
     }
@@ -608,7 +608,7 @@ function trp_allow_detect_dom_changes_to_run(){
 }
 
 
-// Initialize the Translate Press Editor when the script loads
-if ( trp_allow_detect_dom_changes_to_run() ) {
-    trpTranslator = new TRP_Translator();
+// Initialize the eTranslation Multilingual Editor when the script loads
+if ( etm_allow_detect_dom_changes_to_run() ) {
+    etmTranslator = new ETM_Translator();
 }

@@ -11,9 +11,9 @@
  * @return string           Trimmed string.
  */
 
- /* NB: We don't always have access to WP get_option, for instance while calling trp_full_trim inside trp-ajax */
+ /* NB: We don't always have access to WP get_option, for instance while calling etm_full_trim inside etm-ajax */
  /* So this falls back to the option being transmitted either as a param from another function or obtained directly if get_option is available */
-function trp_full_trim( $string, $args = array()  ) {
+function etm_full_trim( $string, $args = array()  ) {
 
     if((is_array($string)) || (is_object($string))){
         return "";
@@ -70,7 +70,7 @@ function trp_full_trim( $string, $args = array()  ) {
 	return $string;
 }
 
-function trp_sort_dictionary_by_original( $dictionaries, $type, $group, $languageForId ){
+function etm_sort_dictionary_by_original( $dictionaries, $type, $group, $languageForId ){
 	$array = array();
 	foreach( $dictionaries as $language => $dictionary ){
 		if ( isset( $dictionary['default-language'] ) && $dictionary['default-language'] == true ){
@@ -138,7 +138,7 @@ function trp_sort_dictionary_by_original( $dictionaries, $type, $group, $languag
 	return $array;
 }
 
-function trp_is_valid_language_code( $language_code ){
+function etm_is_valid_language_code( $language_code ){
     // allowed characters A-Z a-z 0-9 - _
     if ( empty($language_code) || preg_match('/[^A-Za-z0-9\-_]/i', $language_code ) ) {
         return false;

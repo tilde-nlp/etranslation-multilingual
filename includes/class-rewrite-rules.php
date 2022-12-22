@@ -1,12 +1,12 @@
 <?php
 
 /**
- * Class TRP_Rewrite_Rules
+ * Class ETM_Rewrite_Rules
  *
  * Filters the .htaccess file to prevent language slug in URL
  *
  */
-class TRP_Rewrite_Rules{
+class ETM_Rewrite_Rules{
 
     protected $settings;
 
@@ -23,7 +23,7 @@ class TRP_Rewrite_Rules{
      *
      * @return string
      */
-    public function trp_remove_language_param( $htaccess_string ) {
+    public function etm_remove_language_param( $htaccess_string ) {
 
         $url_slugs = $this->settings['url-slugs'];
 

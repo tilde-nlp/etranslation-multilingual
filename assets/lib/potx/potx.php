@@ -27,95 +27,95 @@
  *
  * This should be the only difference between different branches of potx.inc
  */
-define('TRP_POTX_API_CURRENT', 7);
+define('ETM_POTX_API_CURRENT', 7);
 
 /**
  * Silence status reports.
  */
-define('TRP_POTX_STATUS_SILENT', 0);
+define('ETM_POTX_STATUS_SILENT', 0);
 
 /**
  * Drupal message based status reports.
  */
-define('TRP_POTX_STATUS_MESSAGE', 1);
+define('ETM_POTX_STATUS_MESSAGE', 1);
 
 /**
  * Command line status reporting.
  *
  * Status goes to standard output, errors to standard error.
  */
-define('TRP_POTX_STATUS_CLI', 2);
+define('ETM_POTX_STATUS_CLI', 2);
 
 /**
  * Structured array status logging.
  *
  * Useful for coder review status reporting.
  */
-define('TRP_POTX_STATUS_STRUCTURED', 3);
+define('ETM_POTX_STATUS_STRUCTURED', 3);
 
 /**
  * Core parsing mode:
  *  - .info files folded into general.pot
  *  - separate files generated for modules
  */
-define('TRP_POTX_BUILD_CORE', 0);
+define('ETM_POTX_BUILD_CORE', 0);
 
 /**
  * Multiple files mode:
  *  - .info files folded into their module pot files
  *  - separate files generated for modules
  */
-define('TRP_POTX_BUILD_MULTIPLE', 1);
+define('ETM_POTX_BUILD_MULTIPLE', 1);
 
 /**
  * Single file mode:
  *  - all files folded into one pot file
  */
-define('TRP_POTX_BUILD_SINGLE', 2);
+define('ETM_POTX_BUILD_SINGLE', 2);
 
 /**
  * Save string to both installer and runtime collection.
  */
-define('TRP_POTX_STRING_BOTH', 0);
+define('ETM_POTX_STRING_BOTH', 0);
 
 /**
  * Save string to installer collection only.
  */
-define('TRP_POTX_STRING_INSTALLER', 1);
+define('ETM_POTX_STRING_INSTALLER', 1);
 
 /**
  * Save string to runtime collection only.
  */
-define('TRP_POTX_STRING_RUNTIME', 2);
+define('ETM_POTX_STRING_RUNTIME', 2);
 
 /**
  * Parse source files in Drupal 5.x format.
  */
-define('TRP_POTX_API_5', 5);
+define('ETM_POTX_API_5', 5);
 
 /**
  * Parse source files in Drupal 6.x format.
  *
  * Changes since 5.x documented at http://drupal.org/node/114774
  */
-define('TRP_POTX_API_6', 6);
+define('ETM_POTX_API_6', 6);
 
 /**
  * Parse source files in Drupal 7.x format.
  *
  * Changes since 6.x documented at http://drupal.org/node/224333
  */
-define('TRP_POTX_API_7', 7);
+define('ETM_POTX_API_7', 7);
 
 /**
  * When no context is used. Makes it easy to look these up.
  */
-define('TRP_POTX_CONTEXT_NONE', NULL);
+define('ETM_POTX_CONTEXT_NONE', NULL);
 
 /**
  * When there was a context identification error.
  */
-define('TRP_POTX_CONTEXT_ERROR', FALSE);
+define('ETM_POTX_CONTEXT_ERROR', FALSE);
 
 /**
  * Process a file and put extracted information to the given parameters.
@@ -131,7 +131,7 @@ define('TRP_POTX_CONTEXT_ERROR', FALSE);
  * @param $api_version
  *   Drupal API version to work with.
  */
-function trp_potx_process_file( $file_path, $strip_prefix = 0, $save_callback = 'trp_potx_save_string', $version_callback = 'trp_potx_save_version', $api_version = TRP_POTX_API_CURRENT) {
+function etm_potx_process_file( $file_path, $strip_prefix = 0, $save_callback = 'etm_potx_save_string', $version_callback = 'etm_potx_save_version', $api_version = ETM_POTX_API_CURRENT) {
   global $_potx_tokens, $_potx_lookup;
 
   // Figure out the basename and extension to select extraction method.
@@ -141,16 +141,16 @@ function trp_potx_process_file( $file_path, $strip_prefix = 0, $save_callback = 
   // Always grab the CVS version number from the code
   $code = file_get_contents($file_path);
   $file_name = $strip_prefix > 0 ? substr($file_path, $strip_prefix) : $file_path;
-  trp_potx_find_version_number($code, $file_name, $version_callback);
+  etm_potx_find_version_number($code, $file_name, $version_callback);
 
   // The .info files are not PHP code, no need to tokenize.
   if ($name_parts['extension'] == 'info') {
-    trp_potx_find_info_file_strings($file_path, $file_name, $save_callback, $api_version);
+    etm_potx_find_info_file_strings($file_path, $file_name, $save_callback, $api_version);
     return;
   }
-  elseif ($name_parts['extension'] == 'js' && $api_version > TRP_POTX_API_5) {
+  elseif ($name_parts['extension'] == 'js' && $api_version > ETM_POTX_API_5) {
     // @todo: D7 context support.
-    trp_potx_parse_js_file($code, $file_name, $save_callback);
+    etm_potx_parse_js_file($code, $file_name, $save_callback);
   }
 
   // Extract raw PHP language tokens.
@@ -168,14 +168,14 @@ function trp_potx_process_file( $file_path, $strip_prefix = 0, $save_callback = 
       if (is_array($token)) {
         $token[] = $line_number;
          // Fill array for finding token offsets quickly.
-          /** TranslatePress START modifications */
-          $src_tokens = apply_filters('trp_scan_gettext_translate_functions', array(
+          /** eTranslation Multilingual START modifications */
+          $src_tokens = apply_filters('etm_scan_gettext_translate_functions', array(
               '__', 'esc_attr__', 'esc_html__', '_e', 'esc_attr_e', 'esc_html_e',
               '_x', 'esc_attr_x', 'esc_html_x', '_ex',
               '_n', '_nx'
           ) );
           if ( $token[ 0 ] == T_STRING || ( $token[ 0 ] == T_VARIABLE && in_array ( $token[ 1 ], $src_tokens ) ) ) {
-          /** TranslatePress END modifications */
+          /** eTranslation Multilingual END modifications */
            if (!isset($_potx_lookup[$token[1]])) {
              $_potx_lookup[$token[1]] = array();
            }
@@ -194,13 +194,13 @@ function trp_potx_process_file( $file_path, $strip_prefix = 0, $save_callback = 
     }
   }
   unset($raw_tokens);
-    /** TranslatePress START modifications */
+    /** eTranslation Multilingual START modifications */
     if ( !empty( $src_tokens ) ) {
         foreach ( $src_tokens as $tk ) {
-            trp_potx_find_t_calls_with_context( $file_name, $save_callback, $tk );
+            etm_potx_find_t_calls_with_context( $file_name, $save_callback, $tk );
         }
     }
-    /** TranslatePress END modifications */
+    /** eTranslation Multilingual END modifications */
 }
 
 /**
@@ -226,7 +226,7 @@ function trp_potx_process_file( $file_path, $strip_prefix = 0, $save_callback = 
  * @param $api_version
  *   Drupal API version to work with.
  */
-function trp_potx_build_files( $string_mode = TRP_POTX_STRING_RUNTIME, $build_mode = TRP_POTX_BUILD_SINGLE, $force_name = 'general', $save_callback = 'trp_potx_save_string', $version_callback = 'trp_potx_save_version', $header_callback = '_potx_get_header', $template_export_langcode = NULL, $translation_export_langcode = NULL, $api_version = TRP_POTX_API_CURRENT) {
+function etm_potx_build_files( $string_mode = ETM_POTX_STRING_RUNTIME, $build_mode = ETM_POTX_BUILD_SINGLE, $force_name = 'general', $save_callback = 'etm_potx_save_string', $version_callback = 'etm_potx_save_version', $header_callback = '_potx_get_header', $template_export_langcode = NULL, $translation_export_langcode = NULL, $api_version = ETM_POTX_API_CURRENT) {
   global $_potx_store;
 
   // Get strings and versions by reference.
@@ -264,14 +264,14 @@ function trp_potx_build_files( $string_mode = TRP_POTX_STRING_RUNTIME, $build_mo
       }
       $output = "#: $comment\n";
 
-      if ($build_mode == TRP_POTX_BUILD_SINGLE) {
+      if ($build_mode == ETM_POTX_BUILD_SINGLE) {
         // File name forcing in single mode.
         $file_name = $force_name;
       }
       elseif (strpos($comment, '.info')) {
         // Store .info file strings either in general.pot or the module pot file,
         // depending on the mode used.
-        $file_name = ($build_mode == TRP_POTX_BUILD_CORE ? 'general' : str_replace('.info', '.module', $file_name));
+        $file_name = ($build_mode == ETM_POTX_BUILD_CORE ? 'general' : str_replace('.info', '.module', $file_name));
       }
       elseif ($multiple_locations) {
         // Else if occured more than once, store in general.pot.
@@ -297,7 +297,7 @@ function trp_potx_build_files( $string_mode = TRP_POTX_STRING_RUNTIME, $build_mo
         $output .= "msgid \"$singular\"\n";
         $output .= "msgid_plural \"$plural\"\n";
         if (isset($translation_export_langcode)) {
-          $output .= trp_potx_translation_export($translation_export_langcode, $singular, $plural, $api_version);
+          $output .= etm_potx_translation_export($translation_export_langcode, $singular, $plural, $api_version);
         }
         else {
           $output .= "msgstr[0] \"\"\n";
@@ -311,7 +311,7 @@ function trp_potx_build_files( $string_mode = TRP_POTX_STRING_RUNTIME, $build_mo
         }
         $output .= "msgid \"$string\"\n";
         if (isset($translation_export_langcode)) {
-          $output .= trp_potx_translation_export($translation_export_langcode, $string, NULL, $api_version);
+          $output .= etm_potx_translation_export($translation_export_langcode, $string, NULL, $api_version);
         }
         else {
           $output .= "msgstr \"\"\n";
@@ -350,15 +350,15 @@ function trp_potx_build_files( $string_mode = TRP_POTX_STRING_RUNTIME, $build_mo
  * @param $api_version
  *   Drupal API version to work with.
  */
-function trp_potx_translation_export( $translation_export_langcode, $string, $plural = NULL, $api_version = TRP_POTX_API_CURRENT) {
+function etm_potx_translation_export( $translation_export_langcode, $string, $plural = NULL, $api_version = ETM_POTX_API_CURRENT) {
   include_once 'includes/locale.inc';
 
   // Stip out slash escapes.
   $string = stripcslashes($string);
 
   // Column and table name changed between versions.
-  $language_column = $api_version > TRP_POTX_API_5 ? 'language' : 'locale';
-  $language_table  = $api_version > TRP_POTX_API_5 ? 'languages' : 'locales_meta';
+  $language_column = $api_version > ETM_POTX_API_5 ? 'language' : 'locale';
+  $language_table  = $api_version > ETM_POTX_API_5 ? 'languages' : 'locales_meta';
 
   if (!isset($plural)) {
     // Single string to look translation up for.
@@ -423,11 +423,11 @@ function trp_potx_translation_export( $translation_export_langcode, $string, $pl
  * @param $api_version
  *   Drupal API version to work with.
  */
-function trp_potx_get_header( $file, $template_export_langcode = NULL, $api_version = TRP_POTX_API_CURRENT) {
+function etm_potx_get_header( $file, $template_export_langcode = NULL, $api_version = ETM_POTX_API_CURRENT) {
   // We only have language to use if we should export with that langcode.
   $language = NULL;
   if (isset($template_export_langcode)) {
-    $language = db_query($api_version > TRP_POTX_API_5 ? "SELECT language, name, plurals, formula FROM {languages} WHERE language = :langcode" : "SELECT locale, name, plurals, formula FROM {locales_meta} WHERE locale = :langcode", array( ':langcode' => $template_export_langcode))->fetchObject();
+    $language = db_query($api_version > ETM_POTX_API_5 ? "SELECT language, name, plurals, formula FROM {languages} WHERE language = :langcode" : "SELECT locale, name, plurals, formula FROM {locales_meta} WHERE locale = :langcode", array( ':langcode' => $template_export_langcode))->fetchObject();
   }
 
   $output  = '# $'.'Id'.'$'."\n";
@@ -468,7 +468,7 @@ function trp_potx_get_header( $file, $template_export_langcode = NULL, $api_vers
  * @todo
  *   Look into whether multiple files can be output via HTTP.
  */
-function trp_potx_write_files( $http_filename = NULL, $content_disposition = 'inline') {
+function etm_potx_write_files( $http_filename = NULL, $content_disposition = 'inline') {
   global $_potx_store;
 
   // Generate file lists and output files.
@@ -512,7 +512,7 @@ function trp_potx_write_files( $http_filename = NULL, $content_disposition = 'in
  * @param $str
  *   The strings to escape
  */
-function trp_potx_format_quoted_string( $str) {
+function etm_potx_format_quoted_string( $str) {
   $quo = substr($str, 0, 1);
   $str = substr($str, 1, -1);
   if ($quo == '"') {
@@ -540,7 +540,7 @@ function trp_potx_format_quoted_string( $str) {
  * @param $docs_url
  *   Documentation reference.
  */
-function trp_potx_marker_error( $file, $line, $marker, $ti, $error, $docs_url = NULL) {
+function etm_potx_marker_error( $file, $line, $marker, $ti, $error, $docs_url = NULL) {
   global $_potx_tokens;
 
   $tokens = '';
@@ -562,7 +562,7 @@ function trp_potx_marker_error( $file, $line, $marker, $ti, $error, $docs_url = 
     }
     $ti++;
   }
-  trp_potx_status('error', $error, $file, $line, $marker .'('. $tokens, $docs_url);
+  etm_potx_status('error', $error, $file, $line, $marker .'('. $tokens, $docs_url);
 }
 
 /**
@@ -587,8 +587,8 @@ function trp_potx_marker_error( $file, $line, $marker, $ti, $error, $docs_url = 
  * @param $docs_url
  *   URL to the guidelines to follow to fix the problem.
  */
-function trp_potx_status( $op, $value = NULL, $file = NULL, $line = NULL, $excerpt = NULL, $docs_url = NULL) {
-  static $mode = TRP_POTX_STATUS_CLI;
+function etm_potx_status( $op, $value = NULL, $file = NULL, $line = NULL, $excerpt = NULL, $docs_url = NULL) {
+  static $mode = ETM_POTX_STATUS_CLI;
   static $messages = array();
 
   switch ($op) {
@@ -612,51 +612,51 @@ function trp_potx_status( $op, $value = NULL, $file = NULL, $line = NULL, $excer
       // modes as part of the error message. The structured mode needs the
       // file, line and excerpt info separately, not in the text.
       $location_info = '';
-      if (($mode != TRP_POTX_STATUS_STRUCTURED) && isset($file)) {
+      if (($mode != ETM_POTX_STATUS_STRUCTURED) && isset($file)) {
         if (isset($line)) {
           if (isset($excerpt)) {
-            $location_info = trp_t('At %excerpt in %file on line %line.', array( '%excerpt' => $excerpt, '%file' => $file, '%line' => $line));
+            $location_info = etm_t('At %excerpt in %file on line %line.', array( '%excerpt' => $excerpt, '%file' => $file, '%line' => $line));
           }
           else {
-            $location_info = trp_t('In %file on line %line.', array( '%file' => $file, '%line' => $line));
+            $location_info = etm_t('In %file on line %line.', array( '%file' => $file, '%line' => $line));
           }
         }
         else {
           if (isset($excerpt)) {
-            $location_info = trp_t('At %excerpt in %file.', array( '%excerpt' => $excerpt, '%file' => $file));
+            $location_info = etm_t('At %excerpt in %file.', array( '%excerpt' => $excerpt, '%file' => $file));
           }
           else {
-            $location_info = trp_t('In %file.', array( '%file' => $file));
+            $location_info = etm_t('In %file.', array( '%file' => $file));
           }
         }
       }
 
       // Documentation helpers are provided as readable text in most modes.
       $read_more = '';
-      if (($mode != TRP_POTX_STATUS_STRUCTURED) && isset($docs_url)) {
-        $read_more = ($mode == TRP_POTX_STATUS_CLI) ? trp_t('Read more at @url', array( '@url' => $docs_url)) : trp_t('Read more at <a href="@url">@url</a>', array( '@url' => $docs_url));
+      if (($mode != ETM_POTX_STATUS_STRUCTURED) && isset($docs_url)) {
+        $read_more = ($mode == ETM_POTX_STATUS_CLI) ? etm_t('Read more at @url', array( '@url' => $docs_url)) : etm_t('Read more at <a href="@url">@url</a>', array( '@url' => $docs_url));
       }
 
       // Error message or progress text to display.
       switch ($mode) {
-        case TRP_POTX_STATUS_MESSAGE:
-            /** TranslatePress START modifications */
+        case ETM_POTX_STATUS_MESSAGE:
+            /** eTranslation Multilingual START modifications */
 //          drupal_set_message(join(' ', array($value, $location_info, $read_more)), $op);
-            /** TranslatePress END modifications */
+            /** eTranslation Multilingual END modifications */
           break;
-        case TRP_POTX_STATUS_CLI:
-            /** TranslatePress START modifications */
+        case ETM_POTX_STATUS_CLI:
+            /** eTranslation Multilingual START modifications */
           if ( defined ( 'STDERR' ) && defined ( 'STDOUT' ) ) {
               fwrite( $op == 'error' ? STDERR : STDOUT, join( "\n", array( $value, $location_info, $read_more ) ) . "\n\n" );
           }
-            /** TranslatePress END modifications */
+            /** eTranslation Multilingual END modifications */
           break;
-        case TRP_POTX_STATUS_SILENT:
+        case ETM_POTX_STATUS_SILENT:
           if ($op == 'error') {
             $messages[] = join(' ', array($value, $location_info, $read_more));
           }
           break;
-        case TRP_POTX_STATUS_STRUCTURED:
+        case ETM_POTX_STATUS_STRUCTURED:
           if ($op == 'error') {
             $messages[] = array($value, $file, $line, $excerpt, $docs_url);
           }
@@ -684,7 +684,7 @@ function trp_potx_status( $op, $value = NULL, $file = NULL, $line = NULL, $excer
  *   String mode to use: POTX_STRING_INSTALLER, POTX_STRING_RUNTIME or
  *   POTX_STRING_BOTH.
  */
-function trp_potx_find_t_calls( $file, $save_callback, $function_name = 't', $string_mode = TRP_POTX_STRING_RUNTIME) {
+function etm_potx_find_t_calls( $file, $save_callback, $function_name = 't', $string_mode = ETM_POTX_STRING_RUNTIME) {
   global $_potx_tokens, $_potx_lookup;
 
   // Lookup tokens by function name.
@@ -696,11 +696,11 @@ function trp_potx_find_t_calls( $file, $save_callback, $function_name = 't', $st
         if (in_array($rig, array(")", ","))
           && (is_array($mid) && ($mid[0] == T_CONSTANT_ENCAPSED_STRING))) {
             // This function is only used for context-less call types.
-            $save_callback(trp_potx_format_quoted_string( $mid[1]), TRP_POTX_CONTEXT_NONE, $file, $line, $string_mode);
+            $save_callback(etm_potx_format_quoted_string( $mid[1]), ETM_POTX_CONTEXT_NONE, $file, $line, $string_mode);
         }
         else {
           // $function_name() found, but inside is something which is not a string literal.
-          trp_potx_marker_error($file, $line, $function_name, $ti, trp_t('The first parameter to @function() should be a literal string. There should be no variables, concatenation, constants or other non-literal strings there.', array( '@function' => $function_name)), 'http://drupal.org/node/322732');
+          etm_potx_marker_error($file, $line, $function_name, $ti, etm_t('The first parameter to @function() should be a literal string. There should be no variables, concatenation, constants or other non-literal strings there.', array( '@function' => $function_name)), 'http://drupal.org/node/322732');
         }
       }
     }
@@ -728,7 +728,7 @@ function trp_potx_find_t_calls( $file, $save_callback, $function_name = 't', $st
  *   String mode to use: POTX_STRING_INSTALLER, POTX_STRING_RUNTIME or
  *   POTX_STRING_BOTH.
  */
-function trp_potx_find_t_calls_with_context( $file, $save_callback, $function_name = '__', $string_mode = TRP_POTX_STRING_RUNTIME) {
+function etm_potx_find_t_calls_with_context( $file, $save_callback, $function_name = '__', $string_mode = ETM_POTX_STRING_RUNTIME) {
   global $_potx_tokens, $_potx_lookup;
 
   // Lookup tokens by function name.
@@ -740,8 +740,8 @@ function trp_potx_find_t_calls_with_context( $file, $save_callback, $function_na
         if (in_array($rig, array(")", ","))
           && (is_array($mid) && ($mid[0] == T_CONSTANT_ENCAPSED_STRING))) {
           // By default, there is no context.
-            /** TranslatePress START modifications */
-            $domain = TRP_POTX_CONTEXT_NONE;
+            /** eTranslation Multilingual START modifications */
+            $domain = ETM_POTX_CONTEXT_NONE;
             $context = false;
 			$text_plural = false;
           if ($rig == ',') {
@@ -801,15 +801,15 @@ function trp_potx_find_t_calls_with_context( $file, $save_callback, $function_na
                   $context = false;
               }
           }
-          if ($domain !== TRP_POTX_CONTEXT_ERROR) {
+          if ($domain !== ETM_POTX_CONTEXT_ERROR) {
             // Only save if there was no error in context parsing.
-            $save_callback(trp_potx_format_quoted_string( $mid[1]), $domain, @strval ( $context ), $file, $line, $string_mode, trp_potx_format_quoted_string ( $text_plural ));
+            $save_callback(etm_potx_format_quoted_string( $mid[1]), $domain, @strval ( $context ), $file, $line, $string_mode, etm_potx_format_quoted_string ( $text_plural ));
           }
-          /** TranslatePress END modifications */
+          /** eTranslation Multilingual END modifications */
         }
         else {
           // $function_name() found, but inside is something which is not a string literal.
-          trp_potx_marker_error($file, $line, $function_name, $ti, trp_t('The first parameter to @function() should be a literal string. There should be no variables, concatenation, constants or other non-literal strings there.', array( '@function' => $function_name)), 'http://drupal.org/node/322732');
+          etm_potx_marker_error($file, $line, $function_name, $ti, etm_t('The first parameter to @function() should be a literal string. There should be no variables, concatenation, constants or other non-literal strings there.', array( '@function' => $function_name)), 'http://drupal.org/node/322732');
         }
       }
     }
@@ -828,7 +828,7 @@ function trp_potx_find_t_calls_with_context( $file, $save_callback, $function_na
  * @param $save_callback
  *   Callback function used to save strings.
  */
-function trp_potx_find_watchdog_calls( $file, $save_callback) {
+function etm_potx_find_watchdog_calls( $file, $save_callback) {
   global $_potx_tokens, $_potx_lookup;
 
   // Lookup tokens by function name.
@@ -842,12 +842,12 @@ function trp_potx_find_watchdog_calls( $file, $save_callback) {
           && (is_array($mtype) && ($mtype[0] == T_CONSTANT_ENCAPSED_STRING))
           && (is_array($message) && ($message[0] == T_CONSTANT_ENCAPSED_STRING))) {
             // Context is not supported on watchdog().
-            $save_callback(trp_potx_format_quoted_string( $mtype[1]), TRP_POTX_CONTEXT_NONE, $file, $line);
-            $save_callback(trp_potx_format_quoted_string( $message[1]), TRP_POTX_CONTEXT_NONE, $file, $line);
+            $save_callback(etm_potx_format_quoted_string( $mtype[1]), ETM_POTX_CONTEXT_NONE, $file, $line);
+            $save_callback(etm_potx_format_quoted_string( $message[1]), ETM_POTX_CONTEXT_NONE, $file, $line);
         }
         else {
           // watchdog() found, but inside is something which is not a string literal.
-          trp_potx_marker_error($file, $line, 'watchdog', $ti, trp_t('The first two watchdog() parameters should be literal strings. There should be no variables, concatenation, constants or even a t() call there.'), 'http://drupal.org/node/323101');
+          etm_potx_marker_error($file, $line, 'watchdog', $ti, etm_t('The first two watchdog() parameters should be literal strings. There should be no variables, concatenation, constants or even a t() call there.'), 'http://drupal.org/node/323101');
         }
       }
     }
@@ -870,7 +870,7 @@ function trp_potx_find_watchdog_calls( $file, $save_callback) {
  * @param $api_version
  *   Drupal API version to work with.
  */
-function trp_potx_find_format_plural_calls( $file, $save_callback, $api_version = TRP_POTX_API_CURRENT) {
+function etm_potx_find_format_plural_calls( $file, $save_callback, $api_version = ETM_POTX_API_CURRENT) {
   global $_potx_tokens, $_potx_lookup;
 
   if (isset($_potx_lookup['format_plural'])) {
@@ -892,20 +892,20 @@ function trp_potx_find_format_plural_calls( $file, $save_callback, $api_version 
         }
         // Get further parameters
         list($comma1, $singular, $comma2, $plural, $par2) = array($_potx_tokens[$tn], $_potx_tokens[$tn+1], $_potx_tokens[$tn+2], $_potx_tokens[$tn+3], $_potx_tokens[$tn+4]);
-        if (($comma2 == ',') && ($par2 == ')' || ($par2 == ',' && $api_version > TRP_POTX_API_5)) &&
+        if (($comma2 == ',') && ($par2 == ')' || ($par2 == ',' && $api_version > ETM_POTX_API_5)) &&
           (is_array($singular) && ($singular[0] == T_CONSTANT_ENCAPSED_STRING)) &&
           (is_array($plural) && ($plural[0] == T_CONSTANT_ENCAPSED_STRING))) {
           // By default, there is no context.
-          $context = TRP_POTX_CONTEXT_NONE;
-          if ($par2 == ',' && $api_version > TRP_POTX_API_6) {
+          $context = ETM_POTX_CONTEXT_NONE;
+          if ($par2 == ',' && $api_version > ETM_POTX_API_6) {
             // If there was a comma after the plural, we need to look forward
             // to try and find the context.
-            $context = trp_potx_find_context($ti, $tn + 5, $file, 'format_plural');
+            $context = etm_potx_find_context($ti, $tn + 5, $file, 'format_plural');
           }
-          if ($context !== TRP_POTX_CONTEXT_ERROR) {
+          if ($context !== ETM_POTX_CONTEXT_ERROR) {
             // Only save if there was no error in context parsing.
             $save_callback(
-              trp_potx_format_quoted_string( $singular[1]) ."\0". trp_potx_format_quoted_string( $plural[1]),
+              etm_potx_format_quoted_string( $singular[1]) ."\0". etm_potx_format_quoted_string( $plural[1]),
               $context,
               $file,
               $line
@@ -914,7 +914,7 @@ function trp_potx_find_format_plural_calls( $file, $save_callback, $api_version 
         }
         else {
           // format_plural() found, but the parameters are not correct.
-          trp_potx_marker_error($file, $line, "format_plural", $ti, trp_t('In format_plural(), the singular and plural strings should be literal strings. There should be no variables, concatenation, constants or even a t() call there.'), 'http://drupal.org/node/323072');
+          etm_potx_marker_error($file, $line, "format_plural", $ti, etm_t('In format_plural(), the singular and plural strings should be literal strings. There should be no variables, concatenation, constants or even a t() call there.'), 'http://drupal.org/node/323072');
         }
       }
     }
@@ -933,7 +933,7 @@ function trp_potx_find_format_plural_calls( $file, $save_callback, $api_version 
  * @param $save_callback
  *   Callback function used to save strings.
  */
-function trp_potx_find_perm_hook( $file, $filebase, $save_callback) {
+function etm_potx_find_perm_hook( $file, $filebase, $save_callback) {
   global $_potx_tokens, $_potx_lookup;
 
   if (isset($_potx_lookup[$filebase .'_perm'])) {
@@ -946,7 +946,7 @@ function trp_potx_find_perm_hook( $file, $filebase, $save_callback) {
       foreach ($nodeperms as $item) {
         // hook_perm() is only ever found on a Drupal system which does not
         // support context.
-        $save_callback($item, TRP_POTX_CONTEXT_NONE, $file, $line);
+        $save_callback($item, ETM_POTX_CONTEXT_NONE, $file, $line);
       }
     }
     else {
@@ -957,14 +957,14 @@ function trp_potx_find_perm_hook( $file, $filebase, $save_callback) {
           if (is_array($_potx_tokens[$tn]) && $_potx_tokens[$tn][0] == T_CONSTANT_ENCAPSED_STRING) {
             // hook_perm() is only ever found on a Drupal system which does not
             // support context.
-            $save_callback(trp_potx_format_quoted_string( $_potx_tokens[ $tn][1]), TRP_POTX_CONTEXT_NONE, $file, $_potx_tokens[ $tn][2]);
+            $save_callback(etm_potx_format_quoted_string( $_potx_tokens[ $tn][1]), ETM_POTX_CONTEXT_NONE, $file, $_potx_tokens[ $tn][2]);
             $count++;
           }
           $tn++;
         }
       }
       if (!$count) {
-        trp_potx_status('error', trp_t('%hook should have an array of literal string permission names.', array( '%hook' => $filebase .'_perm()')), $file, NULL, NULL, 'http://drupal.org/node/323101');
+        etm_potx_status('error', etm_t('%hook should have an array of literal string permission names.', array( '%hook' => $filebase .'_perm()')), $file, NULL, NULL, 'http://drupal.org/node/323101');
       }
     }
   }
@@ -976,7 +976,7 @@ function trp_potx_find_perm_hook( $file, $filebase, $save_callback) {
  * @param $here
  *   The token at the function name
  */
-function trp_potx_find_end_of_function( $here) {
+function etm_potx_find_end_of_function( $here) {
   global $_potx_tokens;
 
   // Seek to open brace.
@@ -1004,7 +1004,7 @@ function trp_potx_find_end_of_function( $here) {
  * @param $here
  *   The token before the start of the arguments
  */
-function trp_potx_skip_args( $here) {
+function etm_potx_skip_args( $here) {
   global $_potx_tokens;
 
   $nesting = 0;
@@ -1041,12 +1041,12 @@ function trp_potx_skip_args( $here) {
  *   The name of the function to look for. Either 'format_plural' or 't'
  *   given that Drupal 7 only supports context on these.
  */
-function trp_potx_find_context( $tf, $ti, $file, $function_name) {
+function etm_potx_find_context( $tf, $ti, $file, $function_name) {
   global $_potx_tokens;
 
   // Start from after the comma and skip the possible arguments for the function
   // so we can look for the context.
-  if (($ti = trp_potx_skip_args($ti)) && ( $_potx_tokens[ $ti] == ',')) {
+  if (($ti = etm_potx_skip_args($ti)) && ( $_potx_tokens[ $ti] == ',')) {
     // Now we actually might have some definition for a context. The $options
     // argument is coming up, which might have a key for context.
     list($com, $arr, $par) = array($_potx_tokens[$ti], $_potx_tokens[$ti+1], $_potx_tokens[$ti+2]);
@@ -1071,25 +1071,25 @@ function trp_potx_find_context( $tf, $ti, $file, $function_name) {
         // Found the 'context' key on the top level of the $options array.
         list($arw, $str) = array($_potx_tokens[$ti+1], $_potx_tokens[$ti+2]);
         if (is_array($arw) && $arw[1] == '=>' && is_array($str) && $str[0] == T_CONSTANT_ENCAPSED_STRING) {
-          return trp_potx_format_quoted_string( $str[1]);
+          return etm_potx_format_quoted_string( $str[1]);
         }
         else {
           list($type, $string, $line) = $_potx_tokens[$ti];
           // @todo: fix error reference.
-          trp_potx_marker_error($file, $line, $function_name, $tf, trp_t('The context element in the options array argument to @function() should be a literal string. There should be no variables, concatenation, constants or other non-literal strings there.', array( '@function' => $function_name)), 'http://drupal.org/node/322732');
+          etm_potx_marker_error($file, $line, $function_name, $tf, etm_t('The context element in the options array argument to @function() should be a literal string. There should be no variables, concatenation, constants or other non-literal strings there.', array( '@function' => $function_name)), 'http://drupal.org/node/322732');
           // Return with error.
-          return TRP_POTX_CONTEXT_ERROR;
+          return ETM_POTX_CONTEXT_ERROR;
         }
       }
       else {
         // Did not found 'context' key in $options array.
-        return TRP_POTX_CONTEXT_NONE;
+        return ETM_POTX_CONTEXT_NONE;
       }
     }
   }
 
   // After skipping args, we did not find a comma to look for $options.
-  return TRP_POTX_CONTEXT_NONE;
+  return ETM_POTX_CONTEXT_NONE;
 }
 
 /**
@@ -1102,7 +1102,7 @@ function trp_potx_find_context( $tf, $ti, $file, $function_name) {
  * @param $save_callback
  *   Callback function used to save strings.
  */
-function trp_potx_find_menu_hooks( $file, $filebase, $save_callback) {
+function etm_potx_find_menu_hooks( $file, $filebase, $save_callback) {
   global $_potx_tokens, $_potx_lookup;
 
   $hooks = array('_menu', '_menu_alter');
@@ -1112,7 +1112,7 @@ function trp_potx_find_menu_hooks( $file, $filebase, $save_callback) {
     if (isset($_potx_lookup[$filebase . $hook]) && is_array($_potx_lookup[$filebase . $hook])) {
       // We have this menu hook in this file.
       foreach ($_potx_lookup[$filebase . $hook] as $ti) {
-        $end = trp_potx_find_end_of_function($ti);
+        $end = etm_potx_find_end_of_function($ti);
         $tn = $ti;
         while ($tn < $end) {
 
@@ -1122,15 +1122,15 @@ function trp_potx_find_menu_hooks( $file, $filebase, $save_callback) {
             if ($_potx_tokens[$tn+2][0] == T_CONSTANT_ENCAPSED_STRING) {
               // We cannot export menu item context.
               $save_callback(
-                trp_potx_format_quoted_string( $_potx_tokens[ $tn+2][1]),
-                TRP_POTX_CONTEXT_NONE,
+                etm_potx_format_quoted_string( $_potx_tokens[ $tn+2][1]),
+                ETM_POTX_CONTEXT_NONE,
                 $file,
                 $_potx_tokens[$tn+2][2]
               );
               $tn+=2; // Jump forward by 2.
             }
             else {
-              trp_potx_status('error', trp_t('Invalid menu %element definition found in %hook. Title and description keys of the menu array should be literal strings.', array( '%element' => $_potx_tokens[ $tn][1], '%hook' => $filebase . $hook .'()')), $file, $_potx_tokens[ $tn][2], NULL, 'http://drupal.org/node/323101');
+              etm_potx_status('error', etm_t('Invalid menu %element definition found in %hook. Title and description keys of the menu array should be literal strings.', array( '%element' => $_potx_tokens[ $tn][1], '%hook' => $filebase . $hook .'()')), $file, $_potx_tokens[ $tn][2], NULL, 'http://drupal.org/node/323101');
             }
           }
 
@@ -1140,15 +1140,15 @@ function trp_potx_find_menu_hooks( $file, $filebase, $save_callback) {
             if (is_string($_potx_tokens[$tn+3]) && $_potx_tokens[$tn+3] == '=' && $_potx_tokens[$tn+4][0] == T_CONSTANT_ENCAPSED_STRING) {
               // We cannot export menu item context.
               $save_callback(
-                trp_potx_format_quoted_string( $_potx_tokens[ $tn+4][1]),
-                TRP_POTX_CONTEXT_NONE,
+                etm_potx_format_quoted_string( $_potx_tokens[ $tn+4][1]),
+                ETM_POTX_CONTEXT_NONE,
                 $file,
                 $_potx_tokens[$tn+4][2]
               );
               $tn+=4; // Jump forward by 4.
             }
             else {
-              trp_potx_status('error', trp_t('Invalid menu %element definition found in %hook. Title and description keys of the menu array should be literal strings.', array( '%element' => $_potx_tokens[ $tn+1][1], '%hook' => $filebase . $hook .'()')), $file, $_potx_tokens[ $tn+1][2], NULL, 'http://drupal.org/node/323101');
+              etm_potx_status('error', etm_t('Invalid menu %element definition found in %hook. Title and description keys of the menu array should be literal strings.', array( '%element' => $_potx_tokens[ $tn+1][1], '%hook' => $filebase . $hook .'()')), $file, $_potx_tokens[ $tn+1][2], NULL, 'http://drupal.org/node/323101');
             }
           }
           $tn++;
@@ -1168,17 +1168,17 @@ function trp_potx_find_menu_hooks( $file, $filebase, $save_callback) {
  * @param $api_version
  *   Drupal API version to work with.
  */
-function trp_potx_find_language_names( $file, $save_callback, $api_version = TRP_POTX_API_CURRENT) {
+function etm_potx_find_language_names( $file, $save_callback, $api_version = ETM_POTX_API_CURRENT) {
   global $_potx_tokens, $_potx_lookup;
 
-  foreach ($_potx_lookup[$api_version > TRP_POTX_API_5 ? '_locale_get_predefined_list' : '_locale_get_iso639_list'] as $ti) {
+  foreach ($_potx_lookup[$api_version > ETM_POTX_API_5 ? '_locale_get_predefined_list' : '_locale_get_iso639_list'] as $ti) {
     // Search for the definition of _locale_get_predefined_list(), not where it is called.
     if ($_potx_tokens[$ti-1][0] == T_FUNCTION) {
       break;
     }
   }
 
-  $end = trp_potx_find_end_of_function($ti);
+  $end = etm_potx_find_end_of_function($ti);
   $ti += 7; // function name, (, ), {, return, array, (
   while ($ti < $end) {
     while ($_potx_tokens[$ti][0] != T_ARRAY) {
@@ -1191,7 +1191,7 @@ function trp_potx_find_language_names( $file, $save_callback, $api_version = TRP
     }
     $ti += 2; // array, (
     // Language names are context-less.
-    $save_callback(trp_potx_format_quoted_string( $_potx_tokens[ $ti][1]), TRP_POTX_CONTEXT_NONE, $file, $_potx_tokens[ $ti][2]);
+    $save_callback(etm_potx_format_quoted_string( $_potx_tokens[ $ti][1]), ETM_POTX_CONTEXT_NONE, $file, $_potx_tokens[ $ti][2]);
   }
 }
 
@@ -1206,7 +1206,7 @@ function trp_potx_find_language_names( $file, $save_callback, $api_version = TRP
  * @param $version_callback
  *   Callback used to save the version information.
  */
-function trp_potx_find_version_number( $code, $file, $version_callback) {
+function etm_potx_find_version_number( $code, $file, $version_callback) {
   // Prevent CVS from replacing this pattern with actual info.
   if (preg_match('!\\$I'.'d: ([^\\$]+) Exp \\$!', $code, $version_info)) {
     $version_callback($version_info[1], $file);
@@ -1228,33 +1228,33 @@ function trp_potx_find_version_number( $code, $file, $version_callback) {
  * @param $api_version
  *   Drupal API version to work with.
  */
-function trp_potx_add_date_strings( $file, $save_callback, $api_version = TRP_POTX_API_CURRENT) {
+function etm_potx_add_date_strings( $file, $save_callback, $api_version = ETM_POTX_API_CURRENT) {
   for ($i = 1; $i <= 12; $i++) {
     $stamp = mktime(0, 0, 0, $i, 1, 1971);
-    if ($api_version > TRP_POTX_API_6) {
+    if ($api_version > ETM_POTX_API_6) {
       // From Drupal 7, long month names are saved with this context.
       $save_callback(date("F", $stamp), 'Long month name', $file);
     }
-    elseif ($api_version > TRP_POTX_API_5) {
+    elseif ($api_version > ETM_POTX_API_5) {
       // Drupal 6 uses a little hack. No context.
-      $save_callback('!long-month-name '. date("F", $stamp), TRP_POTX_CONTEXT_NONE, $file);
+      $save_callback('!long-month-name '. date("F", $stamp), ETM_POTX_CONTEXT_NONE, $file);
     }
     else {
       // Older versions just accept the confusion, no context.
-      $save_callback(date("F", $stamp), TRP_POTX_CONTEXT_NONE, $file);
+      $save_callback(date("F", $stamp), ETM_POTX_CONTEXT_NONE, $file);
     }
     // Short month names lack a context anyway.
-    $save_callback(date("M", $stamp), TRP_POTX_CONTEXT_NONE, $file);
+    $save_callback(date("M", $stamp), ETM_POTX_CONTEXT_NONE, $file);
   }
   for ($i = 0; $i <= 7; $i++) {
     $stamp = $i * 86400;
-    $save_callback(date("D", $stamp), TRP_POTX_CONTEXT_NONE, $file);
-    $save_callback(date("l", $stamp), TRP_POTX_CONTEXT_NONE, $file);
+    $save_callback(date("D", $stamp), ETM_POTX_CONTEXT_NONE, $file);
+    $save_callback(date("l", $stamp), ETM_POTX_CONTEXT_NONE, $file);
   }
-  $save_callback('am', TRP_POTX_CONTEXT_NONE, $file);
-  $save_callback('pm', TRP_POTX_CONTEXT_NONE, $file);
-  $save_callback('AM', TRP_POTX_CONTEXT_NONE, $file);
-  $save_callback('PM', TRP_POTX_CONTEXT_NONE, $file);
+  $save_callback('am', ETM_POTX_CONTEXT_NONE, $file);
+  $save_callback('pm', ETM_POTX_CONTEXT_NONE, $file);
+  $save_callback('AM', ETM_POTX_CONTEXT_NONE, $file);
+  $save_callback('PM', ETM_POTX_CONTEXT_NONE, $file);
 }
 
 /**
@@ -1268,7 +1268,7 @@ function trp_potx_add_date_strings( $file, $save_callback, $api_version = TRP_PO
  * @param $api_version
  *   Drupal API version to work with.
  */
-function trp_potx_add_format_interval_strings( $file, $save_callback, $api_version = TRP_POTX_API_CURRENT) {
+function etm_potx_add_format_interval_strings( $file, $save_callback, $api_version = ETM_POTX_API_CURRENT) {
   $components = array(
     '1 year' => '@count years',
     '1 week' => '@count weeks',
@@ -1277,14 +1277,14 @@ function trp_potx_add_format_interval_strings( $file, $save_callback, $api_versi
     '1 min'  => '@count min',
     '1 sec'  => '@count sec'
   );
-  if ($api_version > TRP_POTX_API_6) {
+  if ($api_version > ETM_POTX_API_6) {
     // Month support added in Drupal 7.
     $components['1 month'] = '@count months';
   }
 
   foreach ($components as $singular => $plural) {
     // Intervals support no context.
-    $save_callback($singular ."\0". $plural, TRP_POTX_CONTEXT_NONE, $file);
+    $save_callback($singular ."\0". $plural, ETM_POTX_CONTEXT_NONE, $file);
   }
 }
 
@@ -1299,7 +1299,7 @@ function trp_potx_add_format_interval_strings( $file, $save_callback, $api_versi
  * @param $api_version
  *   Drupal API version to work with.
  */
-function trp_potx_add_default_region_names( $file, $save_callback, $api_version = TRP_POTX_API_CURRENT) {
+function etm_potx_add_default_region_names( $file, $save_callback, $api_version = ETM_POTX_API_CURRENT) {
   $regions = array(
     'left' => 'Left sidebar',
     'right' => 'Right sidebar',
@@ -1307,7 +1307,7 @@ function trp_potx_add_default_region_names( $file, $save_callback, $api_version 
     'header' => 'Header',
     'footer' => 'Footer',
   );
-  if ($api_version > TRP_POTX_API_6) {
+  if ($api_version > ETM_POTX_API_6) {
     // @todo: Update with final region list when D7 stabilizes.
     $regions['highlight'] = 'Highlighted content';
     $regions['help'] = 'Help';
@@ -1315,7 +1315,7 @@ function trp_potx_add_default_region_names( $file, $save_callback, $api_version 
   }
   foreach ($regions as $region) {
     // Regions come with the default context.
-    $save_callback($region, TRP_POTX_CONTEXT_NONE, $file);
+    $save_callback($region, ETM_POTX_CONTEXT_NONE, $file);
   }
 }
 
@@ -1331,11 +1331,11 @@ function trp_potx_add_default_region_names( $file, $save_callback, $api_version 
  * @param $api_version
  *   Drupal API version to work with.
  */
-function trp_potx_find_info_file_strings( $file_path, $file_name, $save_callback, $api_version = TRP_POTX_API_CURRENT) {
+function etm_potx_find_info_file_strings( $file_path, $file_name, $save_callback, $api_version = ETM_POTX_API_CURRENT) {
   $info = array();
 
   if (file_exists($file_path)) {
-    $info = $api_version > TRP_POTX_API_5 ? trp_drupal_parse_info_file($file_path) : parse_ini_file($file_path);
+    $info = $api_version > ETM_POTX_API_5 ? etm_drupal_parse_info_file($file_path) : parse_ini_file($file_path);
   }
 
   // We need the name, description and package values. Others,
@@ -1344,7 +1344,7 @@ function trp_potx_find_info_file_strings( $file_path, $file_name, $save_callback
   foreach (array('name', 'description', 'package') as $key) {
     if (isset($info[$key])) {
       // No context support for .info file strings.
-      $save_callback(addcslashes($info[$key], "\0..\37\\\""), TRP_POTX_CONTEXT_NONE, $file_name);
+      $save_callback(addcslashes($info[$key], "\0..\37\\\""), ETM_POTX_CONTEXT_NONE, $file_name);
     }
   }
 
@@ -1352,7 +1352,7 @@ function trp_potx_find_info_file_strings( $file_path, $file_name, $save_callback
   if (isset($info['regions']) && is_array($info['regions'])) {
     foreach ($info['regions'] as $region => $region_name) {
       // No context support for .info file strings.
-      $save_callback(addcslashes($region_name, "\0..\37\\\""), TRP_POTX_CONTEXT_NONE, $file_name);
+      $save_callback(addcslashes($region_name, "\0..\37\\\""), ETM_POTX_CONTEXT_NONE, $file_name);
     }
   }
 }
@@ -1365,7 +1365,7 @@ function trp_potx_find_info_file_strings( $file_path, $file_name, $save_callback
  *
  * Regex code lifted from _locale_parse_js_file().
  */
-function trp_potx_parse_js_file( $code, $file, $save_callback) {
+function etm_potx_parse_js_file( $code, $file, $save_callback) {
   $js_string_regex = '(?:(?:\'(?:\\\\\'|[^\'])*\'|"(?:\\\\"|[^"])*")(?:\s*\+\s*)?)+';
 
   // Match all calls to Drupal.t() in an array.
@@ -1376,7 +1376,7 @@ function trp_potx_parse_js_file( $code, $file, $save_callback) {
       // Remove match from code to help us identify faulty Drupal.t() calls.
       $code = str_replace($match[0], '', $code);
       // @todo: figure out how to parse out context, once Drupal supports it.
-      $save_callback(trp_potx_parse_js_string( $match[1]), TRP_POTX_CONTEXT_NONE, $file, 0);
+      $save_callback(etm_potx_parse_js_string( $match[1]), ETM_POTX_CONTEXT_NONE, $file, 0);
     }
   }
 
@@ -1389,8 +1389,8 @@ function trp_potx_parse_js_file( $code, $file, $save_callback) {
       $code = str_replace($match[0], '', $code);
       // @todo: figure out how to parse out context, once Drupal supports it.
       $save_callback(
-        trp_potx_parse_js_string( $match[1]) ."\0". trp_potx_parse_js_string( $match[2]),
-        TRP_POTX_CONTEXT_NONE,
+        etm_potx_parse_js_string( $match[1]) ."\0". etm_potx_parse_js_string( $match[2]),
+        ETM_POTX_CONTEXT_NONE,
         $file,
         0
       );
@@ -1403,8 +1403,8 @@ function trp_potx_parse_js_file( $code, $file, $save_callback) {
   preg_match_all('~[^\w]Drupal\s*\.\s*(t|formatPlural)\s*\([^)]+\)~s', $code, $faulty_matches, PREG_SET_ORDER);
   if (isset($faulty_matches) && count($faulty_matches)) {
     foreach ($faulty_matches as $index => $match) {
-      $message = ($match[1] == 't') ? trp_t('Drupal.t() calls should have a single literal string as their first parameter.') : trp_t('The singular and plural string parameters on Drupal.formatPlural() calls should be literal strings, plural containing a @count placeholder.');
-      trp_potx_status('error', $message, $file, NULL, $match[0], 'http://drupal.org/node/323109');
+      $message = ($match[1] == 't') ? etm_t('Drupal.t() calls should have a single literal string as their first parameter.') : etm_t('The singular and plural string parameters on Drupal.formatPlural() calls should be literal strings, plural containing a @count placeholder.');
+      etm_potx_status('error', $message, $file, NULL, $match[0], 'http://drupal.org/node/323109');
     }
   }
 }
@@ -1412,8 +1412,8 @@ function trp_potx_parse_js_file( $code, $file, $save_callback) {
 /**
  * Clean up string found in JavaScript source code. Only from Drupal 6.
  */
-function trp_potx_parse_js_string( $string) {
-  return trp_potx_format_quoted_string(implode('', preg_split('~(?<!\\\\)[\'"]\s*\+\s*[\'"]~s', $string)));
+function etm_potx_parse_js_string( $string) {
+  return etm_potx_format_quoted_string(implode('', preg_split('~(?<!\\\\)[\'"]\s*\+\s*[\'"]~s', $string)));
 }
 
 /**
@@ -1433,11 +1433,11 @@ function trp_potx_parse_js_string( $string) {
  *   is used and the potx files at in the webroot, and their strings should not
  *   end up in the generated template. Set to TRUE if skiping is needed.
  */
-function trp_potx_explore_dir( $path = '', $basename = '*', $api_version = TRP_POTX_API_CURRENT, $skip_self = FALSE) {
+function etm_potx_explore_dir( $path = '', $basename = '*', $api_version = ETM_POTX_API_CURRENT, $skip_self = FALSE) {
   // It would be so nice to just use GLOB_BRACE, but it is not available on all
   // operarting systems, so we are working around the missing functionality.
   $extensions = array('php', 'inc', 'module', 'engine', 'theme', 'install', 'info', 'profile');
-  if ($api_version > TRP_POTX_API_5) {
+  if ($api_version > ETM_POTX_API_5) {
     $extensions[] = 'js';
   }
   $files = array();
@@ -1461,7 +1461,7 @@ function trp_potx_explore_dir( $path = '', $basename = '*', $api_version = TRP_P
   if (is_array($dirs)) {
     foreach ($dirs as $dir) {
       if (!preg_match("!(^|.+/)(CVS|\.svn|\.git|tests)$!", $dir)) {
-        $files = array_merge($files, trp_potx_explore_dir("$dir/", $basename));
+        $files = array_merge($files, etm_potx_explore_dir("$dir/", $basename));
       }
     }
   }
@@ -1487,7 +1487,7 @@ function trp_potx_explore_dir( $path = '', $basename = '*', $api_version = TRP_P
  * @param $file
  *   Name of file where the version information was found.
  */
-function trp_potx_save_version( $value = NULL, $file = NULL) {
+function etm_potx_save_version( $value = NULL, $file = NULL) {
   global $_potx_versions;
 
   if (isset($value)) {
@@ -1517,7 +1517,7 @@ function trp_potx_save_version( $value = NULL, $file = NULL) {
  *   String mode: POTX_STRING_INSTALLER, POTX_STRING_RUNTIME
  *   or POTX_STRING_BOTH.
  */
-function trp_potx_save_string( $value = NULL, $context = NULL, $file = NULL, $line = 0, $string_mode = TRP_POTX_STRING_RUNTIME) {
+function etm_potx_save_string( $value = NULL, $context = NULL, $file = NULL, $line = 0, $string_mode = ETM_POTX_STRING_RUNTIME) {
   global $_potx_strings, $_potx_install;
 
   if (isset($value)) {
@@ -1527,44 +1527,44 @@ function trp_potx_save_string( $value = NULL, $context = NULL, $file = NULL, $li
     // whitespace as it appears in the string otherwise.
     $check_empty = trim($value);
     if (empty($check_empty)) {
-      trp_potx_status('error', trp_t('Empty string attempted to be localized. Please do not leave test code for localization in your source.'), $file, $line);
+      etm_potx_status('error', etm_t('Empty string attempted to be localized. Please do not leave test code for localization in your source.'), $file, $line);
       return;
     }
 
     switch ($string_mode) {
-      case TRP_POTX_STRING_BOTH:
+      case ETM_POTX_STRING_BOTH:
         // Mark installer strings as duplicates of runtime strings if
         // the string was both recorded in the runtime and in the installer.
         $_potx_install[$value][$context][$file][] = $line .' (dup)';
         // Break intentionally missing.
-      case TRP_POTX_STRING_RUNTIME:
+      case ETM_POTX_STRING_RUNTIME:
         // Mark runtime strings as duplicates of installer strings if
         // the string was both recorded in the runtime and in the installer.
-        $_potx_strings[$value][$context][$file][] = $line . ($string_mode == TRP_POTX_STRING_BOTH ? ' (dup)' : '');
+        $_potx_strings[$value][$context][$file][] = $line . ($string_mode == ETM_POTX_STRING_BOTH ? ' (dup)' : '');
         break;
-      case TRP_POTX_STRING_INSTALLER:
+      case ETM_POTX_STRING_INSTALLER:
         $_potx_install[$value][$context][$file][] = $line;
         break;
     }
   }
   else {
-    return ($string_mode == TRP_POTX_STRING_RUNTIME ? $_potx_strings : $_potx_install);
+    return ($string_mode == ETM_POTX_STRING_RUNTIME ? $_potx_strings : $_potx_install);
   }
 }
 
-if (!function_exists('trp_t')) {
+if (!function_exists('etm_t')) {
   // If invoked outside of Drupal, t() will not exist, but
   // used to format the error message, so we provide a replacement.
-  function trp_t( $string, $args = array()) {
+  function etm_t( $string, $args = array()) {
     return strtr($string, $args);
   }
 }
 
-if (!function_exists('trp_drupal_parse_info_file')) {
+if (!function_exists('etm_drupal_parse_info_file')) {
   // If invoked outside of Drupal, drupal_parse_info_file() will not be available,
   // but we need this function to properly parse Drupal 6 .info files.
   // Directly copied from common.inc,v 1.756.2.76 2010/02/01 16:01:41 goba Exp.
-  function trp_drupal_parse_info_file( $filename) {
+  function etm_drupal_parse_info_file( $filename) {
     $info = array();
     $constants = get_defined_constants();
 

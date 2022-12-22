@@ -1,7 +1,7 @@
 <?php
 
 
-class TRP_Install_Plugins {
+class ETM_Install_Plugins {
     public function get_plugin_slugs() {
         $slugs = array(
             'pb'  => array(
@@ -20,13 +20,13 @@ class TRP_Install_Plugins {
             )
         );
 
-        return apply_filters( 'trp_plugin_install_slugs', $slugs );
+        return apply_filters( 'etm_plugin_install_slugs', $slugs );
     }
 
     public function install_plugins_request(){
         if ( defined( 'DOING_AJAX' ) && DOING_AJAX ) {
-            check_ajax_referer( 'trp_install_plugins', 'security' );
-            if ( isset( $_POST['action'] ) && $_POST['action'] === 'trp_install_plugins' && !empty( $_POST['plugin_slug'] ) ) {
+            check_ajax_referer( 'etm_install_plugins', 'security' );
+            if ( isset( $_POST['action'] ) && $_POST['action'] === 'etm_install_plugins' && !empty( $_POST['plugin_slug'] ) ) {
                 $plugin_slug = sanitize_text_field($_POST['plugin_slug']);
                 $short_slugs = $this->get_plugin_slugs();
                 if ( isset( $short_slugs[$plugin_slug]) ){
@@ -35,7 +35,7 @@ class TRP_Install_Plugins {
                     }else{
                         $message = wp_kses( sprintf( __('Could not install. Try again from <a href="%s" >Plugins Dashboard.</a>', 'etranslation-multilingual'), admin_url('plugins.php') ), array('a' => array( 'href' => array() ) ) );
                     }
-                    wp_die( trp_safe_json_encode( $message ));//phpcs:ignore
+                    wp_die( etm_safe_json_encode( $message ));//phpcs:ignore
                 }
             }
         }

@@ -1,5 +1,5 @@
 <?php
-namespace TranslatePress;
+namespace eTranslationMultilingual;
 
 class Uri
 {

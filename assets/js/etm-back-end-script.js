@@ -7,7 +7,7 @@ jQuery( function() {
     /**
      * Change the language selector and slugs
      */
-    function TRP_Settings_Language_Selector() {
+    function ETM_Settings_Language_Selector() {
         var _this = this;
         var duplicate_url_error_message;
         var iso_codes;
@@ -17,7 +17,7 @@ jQuery( function() {
          * Initialize select to become select2
          */
         this.initialize_select2 = function () {
-            jQuery('.trp-select2').each(function () {
+            jQuery('.etm-select2').each(function () {
                 var select_element = jQuery(this);
                 select_element.select2(/*arguments*/);
             });
@@ -34,25 +34,25 @@ jQuery( function() {
         };
 
         this.add_language = function(){
-            var selected_language = jQuery( '#trp-select-language' );
+            var selected_language = jQuery( '#etm-select-language' );
             var new_language = selected_language.val();
             if ( new_language == "" ){
                 return;
             }
 
-/*            if (jQuery( "#trp-languages-table .trp-language" ).length >= 2 ){
-                jQuery(".trp-upsell-multiple-languages").show('fast');
+/*            if (jQuery( "#etm-languages-table .etm-language" ).length >= 2 ){
+                jQuery(".etm-upsell-multiple-languages").show('fast');
                 return;
             }*/
 
             selected_language.val( '' ).trigger( 'change' );
 
-            var new_option = jQuery( '.trp-language' ).first().clone();
+            var new_option = jQuery( '.etm-language' ).first().clone();
             new_option = jQuery( new_option );
 
-            new_option.find( '.trp-hidden-default-language' ).remove();
+            new_option.find( '.etm-hidden-default-language' ).remove();
             new_option.find( '.select2-container' ).remove();
-            var select = new_option.find( 'select.trp-translation-language' );
+            var select = new_option.find( 'select.etm-translation-language' );
             select.removeAttr( 'disabled' );
             select.find( 'option' ).each(function(index, el){
                 el.text = el.text.replace('Default: ', '');
@@ -61,21 +61,21 @@ jQuery( function() {
             select.val( new_language );
             select.select2();
 
-            var checkbox = new_option.find( 'input.trp-translation-published' );
+            var checkbox = new_option.find( 'input.etm-translation-published' );
             checkbox.removeAttr( 'disabled' );
             checkbox.val( new_language );
 
-            var url_slug = new_option.find( 'input.trp-language-slug' );
+            var url_slug = new_option.find( 'input.etm-language-slug' );
             url_slug.val( _this.get_default_url_slug( new_language ) );
             url_slug.attr('name', 'etm_settings[url-slugs][' + new_language + ']' );
 
-            var language_code = new_option.find( 'input.trp-language-code' );
+            var language_code = new_option.find( 'input.etm-language-code' );
             language_code.val( new_language);
 
-            var remove = new_option.find( '.trp-remove-language' ).toggle();
+            var remove = new_option.find( '.etm-remove-language' ).toggle();
 
-            new_option = jQuery( '#trp-sortable-languages' ).append( new_option );
-            new_option.find( '.trp-remove-language' ).last().click( _this.remove_language );
+            new_option = jQuery( '#etm-sortable-languages' ).append( new_option );
+            new_option.find( '.etm-remove-language' ).last().click( _this.remove_language );
             
             update_domains();
         };
@@ -89,10 +89,10 @@ jQuery( function() {
         };
 
         this.update_default_language = function(){
-            var selected_language = jQuery( '#trp-default-language').val();
-            jQuery( '.trp-hidden-default-language' ).val( selected_language );
-            jQuery( '.trp-translation-published[disabled]' ).val( selected_language );
-            jQuery( '.trp-translation-language[disabled]').val( selected_language ).trigger( 'change' );
+            var selected_language = jQuery( '#etm-default-language').val();
+            jQuery( '.etm-hidden-default-language' ).val( selected_language );
+            jQuery( '.etm-translation-published[disabled]' ).val( selected_language );
+            jQuery( '.etm-translation-language[disabled]').val( selected_language ).trigger( 'change' );
             update_domains();
         };
 
@@ -103,12 +103,12 @@ jQuery( function() {
         function update_domains() {
             if (domains) { 
                 var languages = [];
-                var selected_language = jQuery( '#trp-default-language').val();
+                var selected_language = jQuery( '#etm-default-language').val();
                 var source = get_lang_from_code(selected_language);
-                jQuery('input.trp-translation-published').each(function() {
+                jQuery('input.etm-translation-published').each(function() {
                     languages.push(get_lang_from_code(jQuery(this).val()));
                 });            
-                var domainFields = jQuery('select.trp-translation-language-domain');    
+                var domainFields = jQuery('select.etm-translation-language-domain');    
                 for (var i = 0; i < domainFields.length; i++) {
                     var target = languages[i];
                     var supportedDomains = get_supported_domains(source, target, domains);
@@ -156,7 +156,7 @@ jQuery( function() {
 
         this.get_existing_url_slugs = function(){
             var url_slugs = [];
-            jQuery( '.trp-language-slug' ).each( function (){
+            jQuery( '.etm-language-slug' ).each( function (){
                 url_slugs.push( jQuery( this ).val().toLowerCase() );
             } );
             return url_slugs;
@@ -173,30 +173,30 @@ jQuery( function() {
         this.update_url_slug_and_status = function ( event ) {
             var select = jQuery( event.target );
             var new_language = select.val();
-            var row = jQuery( select ).parents( '.trp-language' ) ;
-            row.find( '.trp-language-slug' ).attr( 'name', 'etm_settings[url-slugs][' + new_language + ']').val( '' ).val( _this.get_default_url_slug( new_language ) );
-            row.find( '.trp-language-code' ).val( '' ).val( new_language );
-            row.find( '.trp-translation-published' ).val( new_language );
+            var row = jQuery( select ).parents( '.etm-language' ) ;
+            row.find( '.etm-language-slug' ).attr( 'name', 'etm_settings[url-slugs][' + new_language + ']').val( '' ).val( _this.get_default_url_slug( new_language ) );
+            row.find( '.etm-language-code' ).val( '' ).val( new_language );
+            row.find( '.etm-translation-published' ).val( new_language );
         };
 
         this.initialize = function () {
             this.initialize_select2();
 
-            if ( !jQuery( '.trp-language-selector-limited' ).length ){
+            if ( !jQuery( '.etm-language-selector-limited' ).length ){
                 return;
             }
 
-            duplicate_url_error_message = trp_url_slugs_info['error_message_duplicate_slugs'];
-            iso_codes = trp_url_slugs_info['iso_codes'];
-            domains = trp_url_slugs_info['domains'];
+            duplicate_url_error_message = etm_url_slugs_info['error_message_duplicate_slugs'];
+            iso_codes = etm_url_slugs_info['iso_codes'];
+            domains = etm_url_slugs_info['domains'];
             update_domains();
 
-            jQuery( '#trp-sortable-languages' ).sortable({ handle: '.trp-sortable-handle' });
-            jQuery( '#trp-add-language' ).click( _this.add_language );
-            jQuery( '.trp-remove-language' ).click( _this.remove_language );
-            jQuery( '#trp-default-language' ).on( 'change', _this.update_default_language );
+            jQuery( '#etm-sortable-languages' ).sortable({ handle: '.etm-sortable-handle' });
+            jQuery( '#etm-add-language' ).click( _this.add_language );
+            jQuery( '.etm-remove-language' ).click( _this.remove_language );
+            jQuery( '#etm-default-language' ).on( 'change', _this.update_default_language );
             jQuery( "form[action='options.php']").on ( 'submit', _this.check_unique_url_slugs );
-            jQuery( '#trp-languages-table' ).on( 'change', '.trp-translation-language', _this.update_url_slug_and_status );
+            jQuery( '#etm-languages-table' ).on( 'change', '.etm-translation-language', _this.update_url_slug_and_status );
         };
 
         this.initialize();
@@ -205,17 +205,17 @@ jQuery( function() {
     /*
      * Manage adding and removing items from an option of tpe list from Advanced Settings page
      */
-    function TRP_Advanced_Settings_List( table ){
+    function ETM_Advanced_Settings_List( table ){
 
         var _this = this
 
         this.addEventHandlers = function( table ){
-            var add_list_entry = table.querySelector( '.trp-add-list-entry' );
+            var add_list_entry = table.querySelector( '.etm-add-list-entry' );
 
             // add event listener on ADD button
-            add_list_entry.querySelector('.trp-adst-button-add-new-item').addEventListener("click", _this.add_item );
+            add_list_entry.querySelector('.etm-adst-button-add-new-item').addEventListener("click", _this.add_item );
 
-            var removeButtons = table.querySelectorAll( '.trp-adst-remove-element' );
+            var removeButtons = table.querySelectorAll( '.etm-adst-remove-element' );
             for( var i = 0 ; i < removeButtons.length ; i++ ) {
                 removeButtons[i].addEventListener("click", _this.remove_item)
             }
@@ -223,20 +223,20 @@ jQuery( function() {
 
         this.remove_item = function( event ){
             if ( confirm( event.target.getAttribute( 'data-confirm-message' ) ) ){
-                jQuery( event.target ).closest( '.trp-list-entry' ).remove()
+                jQuery( event.target ).closest( '.etm-list-entry' ).remove()
             }
         }
 
         this.add_item = function () {
-            var add_list_entry = table.querySelector( '.trp-add-list-entry' );
+            var add_list_entry = table.querySelector( '.etm-add-list-entry' );
             var clone = add_list_entry.cloneNode(true)
 
-            // Remove the trp-add-list-entry class from the second element after it was cloned
-            add_list_entry.classList.remove('trp-add-list-entry');
+            // Remove the etm-add-list-entry class from the second element after it was cloned
+            add_list_entry.classList.remove('etm-add-list-entry');
 
             // Show Add button, hide Remove button
-            add_list_entry.querySelector( '.trp-adst-button-add-new-item' ).style.display = 'none'
-            add_list_entry.querySelector( '.trp-adst-remove-element' ).style.display = 'block'
+            add_list_entry.querySelector( '.etm-adst-button-add-new-item' ).style.display = 'none'
+            add_list_entry.querySelector( '.etm-adst-remove-element' ).style.display = 'block'
 
             // Design change to add the cloned element at the bottom of list
             // Done becasue the select box element cannot be cloned with its selected state
@@ -248,7 +248,7 @@ jQuery( function() {
                 dataNames[i].setAttribute( 'name', dataNames[i].getAttribute('data-name') );
             }
 
-            var removeButtons = table.querySelectorAll( '.trp-adst-remove-element' );
+            var removeButtons = table.querySelectorAll( '.etm-adst-remove-element' );
             for( var i = 0 ; i < removeButtons.length ; i++ ) {
                 removeButtons[i].addEventListener("click", _this.remove_item)
             }
@@ -266,69 +266,50 @@ jQuery( function() {
             }
 
             // Add click listener on new row's Add button
-            var addButton = itemInserted.querySelector('.trp-adst-button-add-new-item');
+            var addButton = itemInserted.querySelector('.etm-adst-button-add-new-item');
             addButton.addEventListener("click", _this.add_item );
         }
 
         _this.addEventHandlers( table )
     }
-    var trpSettingsLanguages = new TRP_Settings_Language_Selector();
+    var etmSettingsLanguages = new ETM_Settings_Language_Selector();
 
-    jQuery('#trp-default-language').on("select2:selecting", function(e) {
-        jQuery("#trp-options .warning").show('fast');
+    jQuery('#etm-default-language').on("select2:selecting", function(e) {
+        jQuery("#etm-options .warning").show('fast');
     });
 
-    var trpGoogleTranslateKey = TRP_Field_Toggler();
-        trpGoogleTranslateKey.init('.trp-translation-engine', '#trp-g-translate-key', 'google_translate_v2' );
+    var etranslationCredentials = ETM_Field_Toggler();
+    etranslationCredentials.init('.etm-translation-engine', '.et-credentials', 'etranslation');
 
-    var etranslationCredentials = TRP_Field_Toggler();
-    etranslationCredentials.init('.trp-translation-engine', '.et-credentials', 'etranslation');
-
-    var deeplUpsell = TRP_Field_Toggler();
-        deeplUpsell.init('.trp-translation-engine', '#trp-upsell-deepl', 'deepl_upsell' );
-
-    jQuery(document).trigger( 'trpInitFieldToggler' );
+    jQuery(document).trigger( 'etmInitFieldToggler' );
 
     // Used for the main machine translation toggle to show/hide all options below it
-    function TRP_show_hide_machine_translation_options(){
-        if( jQuery( '#trp-machine-translation-enabled' ).val() != 'yes' )
-            jQuery( '.trp-machine-translation-options tbody tr:not(:first-child)').hide()
+    function ETM_show_hide_machine_translation_options(){
+        if( jQuery( '#etm-machine-translation-enabled' ).val() != 'yes' )
+            jQuery( '.etm-machine-translation-options tbody tr:not(:first-child)').hide()
         else
-            jQuery( '.trp-machine-translation-options tbody tr:not(:first-child)').show()
+            jQuery( '.etm-machine-translation-options tbody tr:not(:first-child)').show()
 
-        if( jQuery( '#trp-machine-translation-enabled' ).val() == 'yes' )
-            jQuery('.trp-translation-engine:checked').trigger('change')
+        if( jQuery( '#etm-machine-translation-enabled' ).val() == 'yes' )
+            jQuery('.etm-translation-engine:checked').trigger('change')
     }
 
-    // Hide this row when DeepL upsell is showing
-    function TRP_hide_test_api_key(){
-        if( jQuery( '.trp-translation-engine:checked' ).val() == 'deepl_upsell' )
-            jQuery( '#trp-test-api-key' ).hide()
-        else {
-            if( jQuery('#trp-machine-translation-enabled').val() != 'no' )
-                jQuery( '#trp-test-api-key' ).show()
-        }
-    }
-
-    TRP_show_hide_machine_translation_options()
-    jQuery('#trp-machine-translation-enabled').on( 'change', function(){
-        TRP_show_hide_machine_translation_options()
+    ETM_show_hide_machine_translation_options()
+    jQuery('#etm-machine-translation-enabled').on( 'change', function(){
+        ETM_show_hide_machine_translation_options()
     })
 
-    TRP_hide_test_api_key()
-    jQuery('.trp-translation-engine').on( 'change', function(){
-        TRP_hide_test_api_key()
-    })
+    jQuery( '#etm-test-api-key' ).show()
 
     // Options of type List adding, from Advanced Settings page
-    var trpListOptions = document.querySelectorAll( '.trp-adst-list-option' );
-    for ( var i = 0 ; i < trpListOptions.length ; i++ ){
-        new TRP_Advanced_Settings_List( trpListOptions[i] );
+    var etmListOptions = document.querySelectorAll( '.etm-adst-list-option' );
+    for ( var i = 0 ; i < etmListOptions.length ; i++ ){
+        new ETM_Advanced_Settings_List( etmListOptions[i] );
     }
 
 });
 
-function TRP_Field_Toggler (){
+function ETM_Field_Toggler (){
     var _$setting_toggled, _$trigger_field, _trigger_field_value_for_show, _trigger_field_value
 
     function show_hide_based_on_value( value ) {
@@ -351,7 +332,7 @@ function TRP_Field_Toggler (){
         _$trigger_field               = jQuery( trigger_select_id )
         _$setting_toggled             = jQuery( setting_id ).parents('tr')
 
-        if( _$trigger_field.hasClass( 'trp-radio') )
+        if( _$trigger_field.hasClass( 'etm-radio') )
             _trigger_field_value = jQuery( trigger_select_id + ':checked' ).val()
         else
             _trigger_field_value = _$trigger_field.val()

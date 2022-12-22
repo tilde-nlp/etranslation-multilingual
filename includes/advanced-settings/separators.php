@@ -1,7 +1,7 @@
 <?php
 
-add_filter( 'trp_register_advanced_settings', 'trp_register_troubleshoot_separator', 5 );
-function trp_register_troubleshoot_separator( $settings_array ){
+add_filter( 'etm_register_advanced_settings', 'etm_register_troubleshoot_separator', 5 );
+function etm_register_troubleshoot_separator( $settings_array ){
     $settings_array[] = array(
         'name'          => 'troubleshoot_options',
         'type'          => 'separator',
@@ -11,8 +11,8 @@ function trp_register_troubleshoot_separator( $settings_array ){
     return $settings_array;
 }
 
-add_filter( 'trp_register_advanced_settings', 'trp_register_exclude_separator', 95 );
-function trp_register_exclude_separator( $settings_array ){
+add_filter( 'etm_register_advanced_settings', 'etm_register_exclude_separator', 95 );
+function etm_register_exclude_separator( $settings_array ){
     $settings_array[] = array(
         'name'          => 'exclude_strings',
         'type'          => 'separator',
@@ -21,8 +21,8 @@ function trp_register_exclude_separator( $settings_array ){
     return $settings_array;
 }
 
-add_filter( 'trp_register_advanced_settings', 'trp_register_debug_separator', 500 );
-function trp_register_debug_separator( $settings_array ){
+add_filter( 'etm_register_advanced_settings', 'etm_register_debug_separator', 500 );
+function etm_register_debug_separator( $settings_array ){
 	$settings_array[] = array(
 	    'name'          => 'debug_options',
 		'type'          => 'separator',
@@ -31,8 +31,8 @@ function trp_register_debug_separator( $settings_array ){
 	return $settings_array;
 }
 
-add_filter( 'trp_register_advanced_settings', 'trp_register_miscellaneous_separator', 1000 );
-function trp_register_miscellaneous_separator( $settings_array ){
+add_filter( 'etm_register_advanced_settings', 'etm_register_miscellaneous_separator', 1000 );
+function etm_register_miscellaneous_separator( $settings_array ){
     $settings_array[] = array(
         'name'          => 'miscellaneous_options',
         'type'          => 'separator',
@@ -41,8 +41,8 @@ function trp_register_miscellaneous_separator( $settings_array ){
     return $settings_array;
 }
 
-add_filter( 'trp_register_advanced_settings', 'trp_register_custom_language_separator', 2000 );
-function trp_register_custom_language_separator( $settings_array ){
+add_filter( 'etm_register_advanced_settings', 'etm_register_custom_language_separator', 2000 );
+function etm_register_custom_language_separator( $settings_array ){
 	$settings_array[] = array(
 		'name'          => 'custom_language',
 		'type'          => 'separator',

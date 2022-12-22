@@ -1,0 +1,242 @@
+#etm-floater-ls {
+    position: fixed;
+    z-index: 9999999;
+    bottom: 0;
+    left: 80%;
+    border-radius: 5px 5px 0 0;
+    display: block;
+    overflow: hidden;
+}
+
+#etm-floater-ls.etm-color-default {
+    background: #003399;
+}
+
+#etm-floater-ls.etm-color-dark{
+    background: rgb(27,27,27);
+    background: linear-gradient(0deg, rgba(27,27,27,1) 0%, rgba(84,84,84,1) 100%);
+}
+
+#etm-floater-ls.etm-color-light{
+    background: rgb(214,214,214);
+    background: linear-gradient(0deg, rgba(214,214,214,1) 0%, rgba(250,250,250,1) 100%);
+}
+
+#etm-floater-ls.etm-bottom-left{
+    left: 10%;
+}
+
+#etm-floater-ls.etm-top-right{
+    bottom:auto;
+    top: 0;
+    border-radius: 0 0 5px 5px;
+}
+
+#etm-floater-ls.etm-top-left{
+    bottom:auto;
+    top: 0;
+    left: 10%;
+    border-radius: 0 0 5px 5px;
+}
+
+body.admin-bar #etm-floater-ls.etm-top-right,
+body.admin-bar #etm-floater-ls.etm-top-left{
+    top: 32px;
+}
+
+@media screen and (max-width: 782px) {
+    body.admin-bar #etm-floater-ls.etm-top-right,
+    body.admin-bar #etm-floater-ls.etm-top-left {
+        top: 46px;
+    }
+}
+
+@media screen and (max-width: 1000px) {
+    #etm-floater-ls {
+        left: 50%;
+    }
+}
+
+@media screen and (max-width: 500px) {
+    #etm-floater-ls {
+        left: 10%;
+    }
+}
+
+#etm-floater-ls.etm-floater-ls-codes  #etm-floater-ls-current-language a,
+#etm-floater-ls.etm-floater-ls-codes #etm-floater-ls-language-list {
+    text-align: center;
+}
+
+#etm-floater-ls.etm-floater-ls-flags #etm-floater-ls-current-language a img,
+#etm-floater-ls.etm-floater-ls-flags #etm-floater-ls-language-list a img {
+    text-align: center;
+    display: block;
+    margin: 0 auto;
+}
+
+#etm-floater-ls-language-list {
+    display: none;
+}
+
+.etm-poweredby #etm-floater-ls-language-list .etm-language-wrap{
+    padding: 25px;
+    width: auto;
+}
+
+#etm-floater-ls.etm-top-right.etm-poweredby.etm-color-dark #etm-floater-ls-language-list #etm-floater-poweredby,
+#etm-floater-ls.etm-top-left.etm-poweredby.etm-color-dark #etm-floater-ls-language-list #etm-floater-poweredby{
+    border-top: none;
+    border-bottom: 1px solid #747474;
+}
+#etm-floater-ls.etm-top-right.etm-poweredby.etm-color-light #etm-floater-ls-language-list #etm-floater-poweredby,
+#etm-floater-ls.etm-top-left.etm-poweredby.etm-color-light #etm-floater-ls-language-list #etm-floater-poweredby{
+    border-top: none;
+    border-bottom: 1px solid #aaaaaa;
+}
+
+.etm-color-dark.etm-poweredby #etm-floater-ls-language-list #etm-floater-poweredby{
+    border-top: 1px solid #747474;
+    color: #b3b3b3;
+}
+.etm-color-light.etm-poweredby #etm-floater-ls-language-list #etm-floater-poweredby{
+    border-top: 1px solid #aaaaaa;
+    color: #808080;
+}
+
+.etm-poweredby #etm-floater-ls-language-list #etm-floater-poweredby{
+    padding: 5px;
+    text-align: center;
+    font-size: 10px;
+}
+
+.etm-poweredby #etm-floater-ls-language-list #etm-floater-poweredby a{
+    display: inline;
+    padding: 0px 3px;
+    border-radius: 30px;
+    background: #b3b3b3;
+    color: #111;
+    line-height: 11px;
+}
+.etm-poweredby #etm-floater-ls-language-list #etm-floater-poweredby a:hover{
+    background: #f64f4f;
+    color: #f1f1f1;
+    opacity: 1;
+}
+
+
+#etm-floater-ls:focus #etm-floater-ls-current-language,
+#etm-floater-ls:hover #etm-floater-ls-current-language {
+    display: none;
+}
+
+#etm-floater-ls:focus #etm-floater-ls-language-list,
+#etm-floater-ls:hover #etm-floater-ls-language-list {
+    display: block;
+}
+
+#etm-floater-ls {
+    box-shadow: 0 0 5px #212121;
+}
+
+#etm-floater-ls-current-language a,
+#etm-floater-ls-language-list a {
+    display: block;
+    padding: 10px 15px 10px 15px;
+    font-size: 90%;
+}
+
+#etm-floater-ls-current-language,
+#etm-floater-ls-language-list {
+    text-align: left;
+}
+
+#etm-floater-ls-current-language.etm-with-flags,
+#etm-floater-ls-language-list.etm-with-flags {
+    text-align: left;
+}
+
+#etm-floater-ls-current-language {
+    display: block;
+    width: 100%;
+    height: 100%;
+}
+
+.etm-color-default #etm-floater-ls-current-language a,
+.etm-color-default #etm-floater-ls-language-list a {
+    color: white;
+}
+
+.etm-color-dark #etm-floater-ls-current-language a,
+.etm-color-dark #etm-floater-ls-language-list a {
+    color: #BDBDBD;
+}
+.etm-color-light #etm-floater-ls-current-language a,
+.etm-color-light #etm-floater-ls-language-list a {
+    color: #404040;
+}
+
+.etm-color-default #etm-floater-ls-current-language a,
+.etm-color-default #etm-floater-ls-language-list a {
+    display: block;
+    width: auto;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+#etm-floater-ls.etm-color-default {
+    box-shadow: 0 0 2px #212121;
+}
+
+.etm-color-default #etm-floater-ls-language-list a:hover {
+    color: black;
+    background-color: #ffcc00;
+}
+
+.etm-color-dark #etm-floater-ls-current-language a,
+.etm-color-dark #etm-floater-ls-language-list a {
+    display: block;
+    width: auto;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+#etm-floater-ls-language-list a:hover {
+    color: #FAFAFA;
+    background-color: #656565;
+}
+
+#etm-floater-ls .etm-floater-ls-disabled-language {
+    pointer-events: none;
+    cursor: default;
+}
+
+#etm-floater-ls.etm-color-default .etm-language-wrap .etm-flag-image {
+    margin-right: 9px;
+}
+
+#etm-floater-ls.etm-color-default .etm-flag-image,
+#etm-floater-ls .etm-with-flags .etm-flag-image {
+    margin-right: 5px;
+    margin-top: -1px;
+    vertical-align: middle;
+    height: auto;
+    max-width: 100%;
+    display: inline;
+    padding: 0;
+}
+
+.etm-flag-image:dir(rtl) {
+    margin-left: 5px;
+}
+
+#etm-floater-ls a {
+    text-decoration: none;
+}
+
+#etm-floater-ls-language-list{
+    max-height: 300px;
+    overflow-y: auto;
+}

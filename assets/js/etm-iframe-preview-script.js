@@ -1,7 +1,7 @@
 /**
  * Script used for window previewed in Translation Editor.
  */
-function TRP_Iframe_Preview(){
+function ETM_Iframe_Preview(){
 
     var _this = this;
 
@@ -9,33 +9,33 @@ function TRP_Iframe_Preview(){
      * Add GET preview parameter for links and forms.
      */
     this.initialize = function() {
-        if( typeof trpTranslator !== 'undefined' ) {
-            trpTranslator.pause_observer();
+        if( typeof etmTranslator !== 'undefined' ) {
+            etmTranslator.pause_observer();
         }
 
         jQuery('a').each(function () {
             // target parent brakes from the iframe so we're changing to self.
             // We cannot remove it because we need it in Translation blocks
-            if ( ! jQuery(this).attr('data-trp-original-target') ){
-                jQuery( this ).attr( 'data-trp-original-target', jQuery( this ).attr( 'target' ) );
+            if ( ! jQuery(this).attr('data-etm-original-target') ){
+                jQuery( this ).attr( 'data-etm-original-target', jQuery( this ).attr( 'target' ) );
             }
-            if ( !jQuery(this).hasClass('trp-button-primary') ){
+            if ( !jQuery(this).hasClass('etm-button-primary') ){
                 jQuery( this ).attr( 'target', '_self' );
             }
 
-            if ( jQuery(this).hasClass('trp-link-primary') ){
+            if ( jQuery(this).hasClass('etm-link-primary') ){
                 jQuery( this ).attr( 'target', '_blank' );
             }
 
             if( typeof this.href != "undefined" && this.href != '' ) {
                 if (this.action != '' && this.href.indexOf('void(0)') === -1) {
                     if (is_link_previewable(this) && !this.getAttribute('href').startsWith('#')) {
-                        this.href = update_query_string('trp-edit-translation', 'preview', this.getAttribute('href'));
-                        /* pass on trp-view-as parameters to all links that also have preview parameter */
-                        if( typeof URL == 'function' && window.location.href.search("trp-view-as=") >= 0 && window.location.href.search("trp-view-as-nonce=") >= 0 ){
+                        this.href = update_query_string('etm-edit-translation', 'preview', this.getAttribute('href'));
+                        /* pass on etm-view-as parameters to all links that also have preview parameter */
+                        if( typeof URL == 'function' && window.location.href.search("etm-view-as=") >= 0 && window.location.href.search("etm-view-as-nonce=") >= 0 ){
                             var currentUrl = new URL(window.location.href);
-                            this.href = update_query_string('trp-view-as', currentUrl.searchParams.get("trp-view-as"), this.href);
-                            this.href = update_query_string('trp-view-as-nonce', currentUrl.searchParams.get("trp-view-as-nonce"), this.href);
+                            this.href = update_query_string('etm-view-as', currentUrl.searchParams.get("etm-view-as"), this.href);
+                            this.href = update_query_string('etm-view-as-nonce', currentUrl.searchParams.get("etm-view-as-nonce"), this.href);
                         }
 
                     } else {
@@ -50,12 +50,12 @@ function TRP_Iframe_Preview(){
         });
 
         jQuery('form').each(function () {
-            jQuery( this ).append( jQuery('<input></input>').attr({ type: 'hidden', value: 'preview', name: 'trp-edit-translation' }) );
+            jQuery( this ).append( jQuery('<input></input>').attr({ type: 'hidden', value: 'preview', name: 'etm-edit-translation' }) );
         });
 
         addKeyboardShortcutsListener();
-        if( typeof trpTranslator !== 'undefined' ) {
-            trpTranslator.resume_observer();
+        if( typeof etmTranslator !== 'undefined' ) {
+            etmTranslator.resume_observer();
         }
     };
 
@@ -64,7 +64,7 @@ function TRP_Iframe_Preview(){
             // CTRL + S
             if ((window.navigator.platform.match("Mac") ? e.metaKey : e.ctrlKey)  && e.keyCode === 83) {
                 e.preventDefault();
-                window.parent.dispatchEvent( new Event( 'trp_trigger_save_translations_event' ) );
+                window.parent.dispatchEvent( new Event( 'etm_trigger_save_translations_event' ) );
             }
 
             if ((window.navigator.platform.match("Mac") ? e.metaKey : e.ctrlKey) && e.altKey ) {
@@ -73,19 +73,19 @@ function TRP_Iframe_Preview(){
                     // CTRL + ALT + right arrow
                     case 39:
                         e.preventDefault();
-                        window.parent.dispatchEvent( new Event( 'trp_trigger_next_string_event' ) );
+                        window.parent.dispatchEvent( new Event( 'etm_trigger_next_string_event' ) );
                         break;
 
                     // CTRL + ALT + left arrow
                     case 37:
                         e.preventDefault();
-                        window.parent.dispatchEvent( new Event( 'trp_trigger_previous_string_event' ) );
+                        window.parent.dispatchEvent( new Event( 'etm_trigger_previous_string_event' ) );
                         break;
 
                     // CTRL + ALT + Z
                     case 90:
                         e.preventDefault();
-                        window.parent.dispatchEvent(new Event('trp_trigger_discard_all_changes_event'));
+                        window.parent.dispatchEvent(new Event('etm_trigger_discard_all_changes_event'));
                         break;
                 }
             }
@@ -130,7 +130,7 @@ function TRP_Iframe_Preview(){
      * Return boolean whether element has unpreviewable attribute.
      */
     function is_link_previewable( element ) {
-        if ( jQuery( element ).attr( 'data-trp-unpreviewable' ) == 'trp-unpreviewable' ){
+        if ( jQuery( element ).attr( 'data-etm-unpreviewable' ) == 'etm-unpreviewable' ){
             return false;
         }
         return true;
@@ -139,11 +139,11 @@ function TRP_Iframe_Preview(){
     _this.initialize();
 }
 
-var trp_preview_iframe;
+var etm_preview_iframe;
 
 jQuery( function(){
-    trp_preview_iframe = new TRP_Iframe_Preview();
-    window.addEventListener( 'trp_iframe_page_updated', trp_preview_iframe.initialize )
+    etm_preview_iframe = new ETM_Iframe_Preview();
+    window.addEventListener( 'etm_iframe_page_updated', etm_preview_iframe.initialize )
 });
 
 /**

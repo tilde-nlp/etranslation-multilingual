@@ -2,21 +2,21 @@
 <html <?php language_attributes(); ?> class="no-js">
 <head>
     <?php
-        do_action( 'trp_head' );
+        do_action( 'etm_head' );
     ?>
 
     <title>eTranslation Multilingual</title>
 </head>
-<body class="trp-editor-body">
+<body class="etm-editor-body">
 
-    <div id="trp-editor-container">
-        <trp-editor
-            ref='trp_editor'
+    <div id="etm-editor-container">
+        <etm-editor
+            ref='etm_editor'
         >
-        </trp-editor>
+        </etm-editor>
     </div>
 
-    <?php do_action( 'trp_translation_manager_footer' ); ?>
+    <?php do_action( 'etm_translation_manager_footer' ); ?>
 </body>
 </html>
 
