@@ -85,18 +85,6 @@ class ETM_Machine_Translator_Logger {
     }
 
     public function quota_exceeded(){
-        // if ( $this->limit  >=  $this->counter )
-        // {
-        //     // quota NOT exceeded
-        //     // for some reason this condition is hard to comprehend by my brain
-        //     // thus the unneeded comment.
-        //     return false;
-        // }
-
-        // // we've exceeded our daily quota
-        // $this->update_options( array( array( 'name' => 'machine_translation_trigger_quota_notification', 'value' => true ) ) );
-
-        // return true;
         return false;
     }
 

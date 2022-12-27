@@ -105,7 +105,7 @@ function etm_return_exclude_include_url($paths, $current_slug, $array_slugs) {
 }
 
 // Prevent eTranslation Multilingual from loading on excluded pages
-add_action( 'etm_allow_tp_to_run', 'etm_exclude_include_paths_to_run_on', 2 );
+add_action( 'etm_allow_etm_to_run', 'etm_exclude_include_paths_to_run_on', 2 );
 function etm_exclude_include_paths_to_run_on(){
 
     if( is_admin() )

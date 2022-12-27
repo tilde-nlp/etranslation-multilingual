@@ -40,11 +40,6 @@ jQuery( function() {
                 return;
             }
 
-/*            if (jQuery( "#etm-languages-table .etm-language" ).length >= 2 ){
-                jQuery(".etm-upsell-multiple-languages").show('fast');
-                return;
-            }*/
-
             selected_language.val( '' ).trigger( 'change' );
 
             var new_option = jQuery( '.etm-language' ).first().clone();

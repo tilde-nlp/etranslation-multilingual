@@ -5,7 +5,7 @@ add_filter('etm_register_advanced_settings', 'etm_register_custom_language', 228
  * To use the 'mixed' type for advanced settings, there needs to be specified the type of the control
  * There are 4 options to choose from:
  * text: simple textbox
- * textarea: classic textarea used in TP advanced options
+ * textarea: classic textarea used in ETM advanced options
  * select: a dropdown select box with the possible options set in a sub-array
  *  like 'option_name'   => array ('label'=> esc_html__( 'Option label', 'etranslation-multilingual' ), 'type' => 'select', 'values' => array ( __('Volvo','etranslation-multilingual') , __('Saab', 'etranslation-multilingual'), __('Scania', 'etranslation-multilingual') ) ),
  *

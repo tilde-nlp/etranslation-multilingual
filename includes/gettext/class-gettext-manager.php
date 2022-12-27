@@ -402,7 +402,6 @@ class ETM_Gettext_Manager {
 	 * @param $_context
 	 *
 	 * @return mixed
-	 * @since 1.3.8
 	 *
 	 */
 	public function etm_strip_gettext_tags_from_esc_url( $good_protocol_url, $original_url, $_context ) {
@@ -425,7 +424,6 @@ class ETM_Gettext_Manager {
 	 * @param string $context
 	 *
 	 * @return string
-	 * @since 1.3.1
 	 *
 	 */
 	public function etm_sanitize_title( $title, $raw_title, $context ) {

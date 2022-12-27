@@ -285,7 +285,6 @@ class ETM_Query{
      *
      * If the table does not exists it is created.
      *
-     * @since   1.6.6
      */
     public function check_original_table(){
 
@@ -307,7 +306,7 @@ class ETM_Query{
     }
 
     /**
-     * Function that takes care of inserting  original strings from dictionary to original_strings table when updating to version 1.6.6
+     * Function that takes care of inserting  original strings from dictionary to original_strings table
      */
     public function original_ids_insert( $language_code, $inferior_limit, $batch_size ){
 
@@ -337,7 +336,7 @@ class ETM_Query{
     }
 
     /**
-     * Function that makes sure we don't have duplicates in original_strings table when updating to version 1.6.6
+     * Function that makes sure we don't have duplicates in original_strings table
      * It is executed after we inserted all the strings
      */
     public function original_ids_cleanup(){
@@ -501,7 +500,6 @@ class ETM_Query{
      *
      * If the table does not exists it is created.
      *
-     * @since   1.6.6
      */
     public function check_original_meta_table(){
 

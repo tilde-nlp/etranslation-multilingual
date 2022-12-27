@@ -54,7 +54,7 @@ class ETM_Process_Gettext {
             return $translation;
 
         $skip_gettext_querying = apply_filters( 'etm_skip_gettext_querying', false, $translation, $text, $domain );
-        /* get_locale() returns WP Settings Language (WPLANG). It might not be a language in TP so it may not have a TP table. */
+        /* get_locale() returns WP Settings Language (WPLANG). It might not be a language in ETM so it may not have a ETM table. */
         $current_locale = get_locale();
         global $etm_translated_gettext_texts_language;
         if ( !$skip_gettext_querying && ( !in_array( $current_locale, $this->settings['translation-languages'] ) || empty( $etm_translated_gettext_texts_language ) || $etm_translated_gettext_texts_language !== $current_locale ) ) {
@@ -64,19 +64,19 @@ class ETM_Process_Gettext {
         $plural_form = $this->plural_forms->get_plural_form( $number_of_items, $current_locale );
 
         //set a global so we remember the last string we processed and if it is the same with the current one return a result immediately for performance reasons ( this could happen in loops )
-        global $tp_last_gettext_processed;
-        if ( isset( $tp_last_gettext_processed[ $context . '::' . $plural_form . '::' . $text . '::' . $domain ] ) )
-            return $tp_last_gettext_processed[ $context . '::' . $plural_form . '::' . $text . '::' . $domain ];
+        global $etm_last_gettext_processed;
+        if ( isset( $etm_last_gettext_processed[ $context . '::' . $plural_form . '::' . $text . '::' . $domain ] ) )
+            return $etm_last_gettext_processed[ $context . '::' . $plural_form . '::' . $text . '::' . $domain ];
 
         if ( apply_filters( 'etm_skip_gettext_processing', false, $translation, $text, $domain ) )
             return $translation;
 
         //use a global for is_ajax_on_frontend() so we don't execute it multiple times
-        global $tp_gettext_is_ajax_on_frontend;
-        if ( !isset( $tp_gettext_is_ajax_on_frontend ) )
-            $tp_gettext_is_ajax_on_frontend = ETM_Gettext_Manager::is_ajax_on_frontend();
+        global $etm_gettext_is_ajax_on_frontend;
+        if ( !isset( $etm_gettext_is_ajax_on_frontend ) )
+            $etm_gettext_is_ajax_on_frontend = ETM_Gettext_Manager::is_ajax_on_frontend();
 
-        if ( !defined( 'DOING_AJAX' ) || $tp_gettext_is_ajax_on_frontend ) {
+        if ( !defined( 'DOING_AJAX' ) || $etm_gettext_is_ajax_on_frontend ) {
             $etm             = ETM_eTranslation_Multilingual::get_etm_instance();
             if ( !$this->gettext_manager ) {
                 $this->gettext_manager = $etm->get_component( 'gettext_manager' );
@@ -226,13 +226,13 @@ class ETM_Process_Gettext {
             if ( !empty( $callstack_functions ) ) {
                 foreach ( $callstack_functions as $callstack_function ) {
                     if ( in_array( $callstack_function['function'], $blacklist_functions ) ) {
-                        $tp_last_gettext_processed = array( $context . '::' . $plural_form . '::' . $text . '::' . $domain => $translation );
+                        $etm_last_gettext_processed = array( $context . '::' . $plural_form . '::' . $text . '::' . $domain => $translation );
                         return $translation;
                     }
 
                     /* make sure we don't touch the woocommerce process_payment function in WC_Gateway_Stripe. It does a wp_remote_post() call to stripe with localized parameters */
                     if ( $callstack_function['function'] == 'process_payment' && $callstack_function['class'] == 'WC_Gateway_Stripe' ) {
-                        $tp_last_gettext_processed = array( $context . '::' . $plural_form . '::' . $text . '::' . $domain => $translation );
+                        $etm_last_gettext_processed = array( $context . '::' . $plural_form . '::' . $text . '::' . $domain => $translation );
                         return $translation;
                     }
 
@@ -257,7 +257,7 @@ class ETM_Process_Gettext {
                 }
             }
         }
-        $tp_last_gettext_processed = array( $context . '::' . $plural_form . '::' . $text . '::' . $domain => $translation );
+        $etm_last_gettext_processed = array( $context . '::' . $plural_form . '::' . $text . '::' . $domain => $translation );
         return $translation;
     }
 

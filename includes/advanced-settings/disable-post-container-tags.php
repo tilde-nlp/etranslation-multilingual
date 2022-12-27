@@ -42,7 +42,7 @@ function etm_remove_hooks_to_disable_post_content_search_wraps( $etm_loader ){
         $etm                = ETM_eTranslation_Multilingual::get_etm_instance();
         $translation_render = $etm->get_component( 'translation_render' );
         $etm_loader->remove_hook( 'the_content', 'wrap_with_post_id', $translation_render );
-	    remove_action( 'do_shortcode_tag', 'tp_oxygen_search_compatibility', 10, 4 );
+	    remove_action( 'do_shortcode_tag', 'etm_oxygen_search_compatibility', 10, 4 );
     }
 }
 

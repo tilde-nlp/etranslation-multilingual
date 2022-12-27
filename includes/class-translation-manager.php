@@ -510,7 +510,7 @@ class ETM_Translation_Manager {
 
         $etm_editor_button[0] =  "<a id='etm-link-id' class='components-button' href='" . esc_url($url_translation_editor) ."'  title='"  . $title ."' ><button class='button-primary' style='height: 33px'>" . esc_html__('Translate Page', 'etranslation-multilingual') ."</button></a>";
 
-        wp_localize_script('custom-link-in-toolbar', 'etm_url_tp_editor', $etm_editor_button);
+        wp_localize_script('custom-link-in-toolbar', 'etm_url_etm_editor', $etm_editor_button);
 
         remove_filter('etm_add_language_to_home_url_check_for_admin', '__return_false');
     }
@@ -575,7 +575,6 @@ class ETM_Translation_Manager {
      * @param string $raw_title
      * @param string $context
      * @return string
-     * @since 1.3.1
      *
      */
     public function etm_sanitize_title( $title, $raw_title, $context ) {

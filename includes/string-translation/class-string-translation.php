@@ -353,21 +353,6 @@ class ETM_String_Translation {
 	    if ( !apply_filters('etm_show_regular_strings_string_translation', false ) ){
 	    	unset($string_types_config['regular']);
 	    }
-	    // $seo_pack_active = class_exists( 'ETM_IN_Seo_Pack');
-		// if( !$seo_pack_active ){
-		// 	$upsale_slugs_string_type = array(
-		// 		'slugs' => array(
-		// 			'type'              => 'upsale-slugs',
-		// 			'name'              => __( 'URL Slugs Translation', 'etranslation-multilingual' ),
-		// 			'tab_name'          => __( 'Slugs', 'etranslation-multilingual' ),
-		// 			'class_name_suffix' => 'Regular',
-		// 			'plugin_path'       => ETM_PLUGIN_DIR,
-		// 			'category_based'    => false,
-		// 			'nonces'                 => $this->get_nonces_for_type( 'regular' ),
-		// 		)
-		// 	);
-		// 	$string_types_config = $upsale_slugs_string_type + $string_types_config;
-		// }
 
         return apply_filters( 'etm_st_string_types_config', $string_types_config, $this );
     }

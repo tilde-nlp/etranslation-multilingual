@@ -239,7 +239,7 @@ class ETM_WPBakery {
 
     /**
      *
-     * Shortcodes with missing 'params' trigger notice, so don't add TP settings to them
+     * Shortcodes with missing 'params' trigger notice, so don't add ETM settings to them
      *
      * Also, shortcodes with 'params' set to empty string instead of array trigger fatal error.
      *

@@ -30,7 +30,6 @@ class ETM_eTranslation_Multilingual{
     protected $string_translation_api_regular;
     protected $notifications;
     protected $search;
-    protected $install_plugins;
     protected $gettext_manager;
     protected $gettext_scan;
     protected $rewrite_rules;
@@ -120,7 +119,6 @@ class ETM_eTranslation_Multilingual{
         require_once ETM_PLUGIN_DIR . 'includes/string-translation/class-string-translation-helper.php';
         require_once ETM_PLUGIN_DIR . 'includes/string-translation/class-gettext-scan.php';
         require_once ETM_PLUGIN_DIR . 'includes/class-search.php';
-        require_once ETM_PLUGIN_DIR . 'includes/class-install-plugins.php';
         require_once ETM_PLUGIN_DIR . 'includes/gettext/class-gettext-manager.php';
         require_once ETM_PLUGIN_DIR . 'includes/gettext/class-process-gettext.php';
         require_once ETM_PLUGIN_DIR . 'includes/gettext/class-plural-forms.php';
@@ -169,7 +167,6 @@ class ETM_eTranslation_Multilingual{
         $this->string_translation         = new ETM_String_Translation( $this->settings->get_settings(), $this->loader );
         $this->gettext_scan               = new ETM_Gettext_Scan( $this->settings->get_settings() );
         $this->search                     = new ETM_Search( $this->settings->get_settings() );
-        $this->install_plugins            = new ETM_Install_Plugins();
         $this->gettext_manager            = new ETM_Gettext_Manager( $this->settings->get_settings() );
         $this->rewrite_rules              = new ETM_Rewrite_Rules( $this->settings->get_settings() );
         $this->check_invalid_text         = new ETM_Check_Invalid_Text( );
@@ -245,8 +242,6 @@ class ETM_eTranslation_Multilingual{
 	    $this->loader->add_action( 'admin_enqueue_scripts', $this->upgrade, 'enqueue_update_script', 10, 1 );
 	    $this->loader->add_action( 'wp_ajax_etm_update_database', $this->upgrade, 'etm_update_database' );
 
-        $this->loader->add_action( 'wp_ajax_etm_install_plugins', $this->install_plugins, 'install_plugins_request' );
-
         // Filter rewrite rules for .htaccess
         $this->loader->add_filter( 'mod_rewrite_rules', $this->rewrite_rules, 'etm_remove_language_param', 100 );
 
@@ -319,7 +314,7 @@ class ETM_eTranslation_Multilingual{
         $this->loader->add_filter( 'language_attributes', $this->url_converter, 'change_lang_attr_in_html_tag', 10, 1 );
         $this->loader->add_filter('etm_is_file', $this->url_converter, 'does_url_contains_array', 10, 2);
         $this->loader->add_filter('etm_hreflang', $this->url_converter, 'replace_iso_2_with_iso_3_for_hreflang', 10, 2);
-        $this->loader->add_filter('wp_footer', $this->url_converter, 'add_tp_language_lang_attribute', 1);
+        $this->loader->add_filter('wp_footer', $this->url_converter, 'add_etm_language_lang_attribute', 1);
 
 
         $this->loader->add_filter( 'widget_text', null, 'do_shortcode', 11 );
@@ -398,10 +393,10 @@ class ETM_eTranslation_Multilingual{
      */
     public function run() {
     	/*
-    	 * Hook that prevents running the hooks. Caution: some TP code like constructors of classes still run!
+    	 * Hook that prevents running the hooks. Caution: some ETM code like constructors of classes still run!
     	 */
-    	$run_tp = apply_filters( 'etm_allow_tp_to_run', true );
-    	if ( $run_tp ) {
+    	$run_etm = apply_filters( 'etm_allow_etm_to_run', true );
+    	if ( $run_etm ) {
 		    $this->loader->run();
 	    }
     }

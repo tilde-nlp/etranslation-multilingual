@@ -10,7 +10,7 @@ class ETM_Advanced_Tab {
     }
 
 	/*
-	 * Add new tab to TP settings
+	 * Add new tab to ETM settings
 	 *
 	 * Hooked to etm_settings_tabs
 	 */

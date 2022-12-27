@@ -204,37 +204,6 @@ class ETM_Machine_Translator {
 
     /**
      * Verifies that the machine translation request is valid
-     * @deprecated  since TP 1.6.0 (only here to support Deepl Add-on version 1.0.0)
-     *
-     * @param  string $to_language language we're looking to translate to
-     * @return bool
-     */
-    public function verify_request( $to_language ){
-
-        if( empty( $this->get_api_key() ) ||
-            empty( $to_language ) || $to_language == $this->settings['default-language'] ||
-            empty( $this->machine_translation_codes[$this->settings['default-language']] )
-          )
-            return false;
-
-        // Method that can be extended in the child class to add extra validation
-        if( !$this->extra_request_validations( $to_language ) )
-            return false;
-
-        // Check if crawlers are blocked
-        if( !empty( $this->settings['etm_machine_translation_settings']['block-crawlers'] ) && $this->settings['etm_machine_translation_settings']['block-crawlers'] == 'yes' && $this->is_crawler() )
-            return false;
-
-        // Check if daily quota is met
-        if( $this->machine_translator_logger->quota_exceeded() )
-            return false;
-
-        return true;
-
-    }
-
-    /**
-     * Verifies that the machine translation request is valid
      *
      * @param  string $target_language_code language we're looking to translate to
      * @param  string $source_language_code language we're looking to translate from

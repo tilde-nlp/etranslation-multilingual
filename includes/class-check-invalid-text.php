@@ -2,7 +2,7 @@
 /**
  * Class ETM_Check_Invalid_Text
  *
- * Used to exclude problematic strings triggering 'WordPress database error: Could not perform query because it contains invalid data.' from TP query functions.
+ * Used to exclude problematic strings triggering 'WordPress database error: Could not perform query because it contains invalid data.' from ETM query functions.
  *
  * Divide et impera method used to minimise number of queries needed to detect needle in haystack. Applied for key functions:
  * get_existing_translations, insert_strings and update_strings.

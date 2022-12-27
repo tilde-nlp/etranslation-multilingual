@@ -2,7 +2,6 @@
 /**
  * Class that adds a misc notice
  *
- * @since v.2.0
  *
  * @return void
  */
@@ -78,7 +77,7 @@ Class ETM_Plugin_Notifications {
     private static $_instance = null;
     private $prefix = 'etm';
     private $menu_slug = 'options-general.php';
-    public $pluginPages = array( 'etranslation-multilingual', 'etm_advanced_page', 'etm_machine_translation', 'etm_test_machine_api' );
+    public $pluginPages = array( 'etranslation-multilingual', 'etm_addons_page', 'etm_advanced_page', 'etm_machine_translation', 'etm_test_machine_api' );
 
     protected function __construct() {
         add_action( 'admin_init', array( $this, 'dismiss_admin_notifications' ), 200 );
@@ -177,7 +176,7 @@ Class ETM_Plugin_Notifications {
         global $current_user;
 
         /**
-         * added a $show_in_all_backend argument in version 1.4.6  that allows some notifications to be displayed on all the pages not just the plugin pages
+         * added a $show_in_all_backend argument that allows some notifications to be displayed on all the pages not just the plugin pages
          * we needed it for license notifications
          */
         $force_show = false;

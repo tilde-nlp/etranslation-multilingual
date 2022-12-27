@@ -1,5 +1,5 @@
 jQuery( function() {
-    function place_tp_button() {
+    function place_etm_button() {
 
         // check if gutenberg's editor root element is present.
         var editorEl = document.getElementById( 'editor' );
@@ -11,11 +11,11 @@ jQuery( function() {
                 if ( !document.getElementById( "etm-link-id" ) ){
                     var toolbalEl = editorEl.querySelector( '.edit-post-header-toolbar__left' );
                     if ( toolbalEl instanceof HTMLElement ){
-                        toolbalEl.insertAdjacentHTML("afterend", etm_url_tp_editor[0] );
+                        toolbalEl.insertAdjacentHTML("afterend", etm_url_etm_editor[0] );
                     }
                 }
         } );
      }
 
-        place_tp_button();
+        place_etm_button();
 });

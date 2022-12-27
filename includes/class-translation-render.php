@@ -98,18 +98,6 @@ class ETM_Translation_Render{
         return false;
     }
 
-	/**
-	 * Trim strings.
-	 * This function is kept for backwards compatibility for earlier versions of SEO Pack Add-on
-	 *
-	 * @deprecated
-	 * @param string $string      Raw string.
-	 * @return string           Trimmed string.
-	 */
-	public function full_trim( $string ) {
-		return etm_full_trim( $string );
-	}
-
     /**
      * Preview mode string category name for give node type.
      *
@@ -910,7 +898,7 @@ class ETM_Translation_Render{
 
 
         // We need to save here in order to access the translated links too.
-        if( apply_filters('tp_handle_custom_links_in_translation_blocks', false) ) {
+        if( apply_filters('etm_handle_custom_links_in_translation_blocks', false) ) {
             $html_string = $html->save();
             $html = eTranslationMultilingual\str_get_html($html_string, true, true, ETM_DEFAULT_TARGET_CHARSET, false, ETM_DEFAULT_BR_TEXT, ETM_DEFAULT_SPAN_TEXT);
             if ( $html === false ){
@@ -1675,7 +1663,6 @@ class ETM_Translation_Render{
      * @param $location
      * @param $status
      * @return string
-     * @since 1.0.8
      */
     public function force_preview_on_url_redirect( $location, $status ){
         if( isset( $_REQUEST['etm-edit-translation'] ) && $_REQUEST['etm-edit-translation'] == 'preview' ){
@@ -1689,7 +1676,6 @@ class ETM_Translation_Render{
      * @param $location
      * @param $status
      * @return string
-     * @since 1.1.2
      */
     public function force_language_on_form_url_redirect( $location, $status ){
         if( isset( $_REQUEST[ 'etm-form-language' ] ) && !empty($_REQUEST[ 'etm-form-language' ]) ){
@@ -1709,7 +1695,6 @@ class ETM_Translation_Render{
      * Filters the output buffer of ajax calls that return json and adds the preview arg to urls
      * @param $output
      * @return string
-     * @since 1.0.8
      */
     public function force_preview_on_url_in_ajax( $output ){
         if ( ETM_Gettext_Manager::is_ajax_on_frontend() && isset( $_REQUEST['etm-edit-translation'] ) && $_REQUEST['etm-edit-translation'] === 'preview' && $output != false ) {
@@ -1730,7 +1715,6 @@ class ETM_Translation_Render{
      * @param $key
      * @return string
      * @internal param $output
-     * @since 1.0.8
      */
     function callback_add_preview_arg(&$item, $key){
         if ( filter_var($item, FILTER_VALIDATE_URL) !== FALSE ) {
@@ -1742,7 +1726,6 @@ class ETM_Translation_Render{
      * Filters the output buffer of ajax calls that return json and adds the preview arg to urls
      * @param $output
      * @return string
-     * @since 1.1.2
      */
     public function force_form_language_on_url_in_ajax( $output ){
         if ( ETM_Gettext_Manager::is_ajax_on_frontend() && isset( $_REQUEST[ 'etm-form-language' ] ) && !empty( $_REQUEST[ 'etm-form-language' ] ) ) {
@@ -1761,7 +1744,6 @@ class ETM_Translation_Render{
      * @param $key
      * @return string
      * @internal param $output
-     * @since 1.1.2
      */
     function callback_add_language_to_url(&$item, $key){
         if ( filter_var($item, FILTER_VALIDATE_URL) !== FALSE ) {

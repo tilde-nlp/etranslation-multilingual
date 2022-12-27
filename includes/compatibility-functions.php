@@ -5,7 +5,7 @@
 /**
  * Remove '?fl_builder' query param from edit translation url (when clicking the admin bar button to enter the translation Editor)
  *
- * Otherwise after publishing out of BB and clicking TP admin bar button, it’s still showing the BB interface
+ * Otherwise after publishing out of BB and clicking ETM admin bar button, it’s still showing the BB interface
  *
  * @param $url
  *
@@ -35,7 +35,7 @@ function etm_missing_mbstrings_library( $allow_to_run ){
     }
     return $allow_to_run;
 }
-add_filter( 'etm_allow_tp_to_run', 'etm_missing_mbstrings_library' );
+add_filter( 'etm_allow_etm_to_run', 'etm_missing_mbstrings_library' );
 
 /**
  * Don't have html inside menu title tags. Some themes just put in the title the content of the link without striping HTML
@@ -51,7 +51,6 @@ function etm_remove_html_from_menu_title( $atts, $item, $args ){
 /**
  * Rework wp_trim_words so we can trim Chinese, Japanese and Thai words since they are based on characters as words.
  *
- * @since 1.3.0
  *
  * @param string $text      Text to trim.
  * @param int    $num_words Number of words. Default 55.
@@ -105,7 +104,6 @@ add_filter('wp_trim_words', 'etm_wp_trim_words', 100, 4);
 /**
  * Use home_url in the https://www.peepso.com/ ajax front-end url so strings come back translated.
  *
- * @since 1.3.1
  *
  * @param array $data   Peepso data
  * @return array
@@ -140,7 +138,6 @@ function etm_remove_peepso_double_slash( $page, $name){
 /**
  * Filter ginger_iframe_banner and ginger_text_banner to use shortcodes so our conditional lang shortcode works.
  *
- * @since 1.3.1
  *
  * @param string $content
  * @return string
@@ -157,7 +154,6 @@ function etm_do_shortcode($content){
  * Compatibility with WooCommerce PDF Invoices & Packing Slips
  * https://wordpress.org/plugins/woocommerce-pdf-invoices-packing-slips/
  *
- * @since 1.4.3
  *
  */
 // fix attachment name in email
@@ -184,7 +180,6 @@ function etm_woo_pdf_invoices_and_packing_slips_compatibility_dont_translate_pdf
  * Compatibility with WooCommerce PDF Invoices (woocommerce-ultimate-pdf-invoices)
  * https://www.welaunch.io/en/product/woocommerce-pdf-invoices/
  *
- * @since 1.4.3
  *
  */
 add_filter( 'woocommerce_pdf_invoices_content', 'etm_woo_ultimate_pdf_invoices_compatibility');
@@ -207,7 +202,6 @@ function etm_woo_ultimate_pdf_invoices_data_compatibility($data_array){
  * Compatibility with WooCommerce PDF Catalog (woocommerce-pdf-catalog)
  * https://www.welaunch.io/en/product/woocommerce-pdf-catalog/
  *
- * @since 2.2.7
  *
  */
 add_filter( 'etm_stop_translating_page', 'etm_woocommerce_pdf_catalog_compatibility_dont_translate_pdf', 10, 2 );
@@ -224,7 +218,6 @@ function etm_woocommerce_pdf_catalog_compatibility_dont_translate_pdf( $bool, $o
  *
  * When a new order is placed in secondary languages, in admin area WooCommerce->Orders->Edit Order, the right sidebar contains Order notes which can contain #etmst tags.
  *
- * @since 1.4.3
  */
 
 // old orders
@@ -815,8 +808,8 @@ function etm_oxygen_remove_gettext_hooks( $etm_loader ) {
  * Basically they use shortcodes to output content so we wrap the shortcode output for certain shortcodes
  */
 if( function_exists('ct_is_show_builder') ) {
-    add_filter('do_shortcode_tag', 'tp_oxygen_search_compatibility', 10, 4);
-    function tp_oxygen_search_compatibility($output, $tag, $attr, $m){
+    add_filter('do_shortcode_tag', 'etm_oxygen_search_compatibility', 10, 4);
+    function etm_oxygen_search_compatibility($output, $tag, $attr, $m){
     	// we're skiping the oxygen $tag as that one represents a dynamic shortcode based on custom fields. At times it contains images, links, numbers. Rarely we see actual content.
     	if( $tag === 'ct_headline' || $tag === 'ct_text_block' ) {
             global $post, $ETM_LANGUAGE;
@@ -1528,7 +1521,7 @@ if( class_exists('WooCommerce_Product_Search_Service') ) {
  *
  * Problem was that Site Kit dashboard kept disconnecting, thinking the url must have changed.
  *
- * To replicate, set TP option "Add language to subdirectory" Yes and use Complianz plugin, wizard step 2,
+ * To replicate, set ETM option "Add language to subdirectory" Yes and use Complianz plugin, wizard step 2,
  * to perform re-scan of cookies. This triggered the disconnect.
  */
 add_filter('googlesitekit_canonical_home_url', 'etm_googlesitekit_compatibility_home_url' );
@@ -1688,7 +1681,7 @@ function etm_page_builders_compatibility_with_subdirectory_for_default_language(
  * Compatibility with Give WP plugin.
  *
  * When automatic translation is active and we are on secondary language, clicking the Donate button will not redirect you to the confirmation page.
- * This happens because "Give WP" expects an admin ajax request to return "success" but TP translates it in another language.
+ * This happens because "Give WP" expects an admin ajax request to return "success" but ETM translates it in another language.
  */
 add_filter( 'etm_stop_translating_page', 'etm_give_wp_compatibility', 10, 2 );
 function etm_give_wp_compatibility( $bool, $output ){
@@ -1701,7 +1694,7 @@ function etm_give_wp_compatibility( $bool, $output ){
 /*
  * Divi is filtering the locale which is in turn accessed on every gettext call by eTranslation Multilingual. Together these two things slow down the site to 20+ seconds
  * The fix is to remove the Divi hook and replace it with another one that caches the result, so it's fast.
- * Ideally this is a fix Divi should do, however, it negatively impacts TP, so we're doing it for them.
+ * Ideally this is a fix Divi should do, however, it negatively impacts ETM, so we're doing it for them.
  */
 add_filter('locale', 'etm_remove_divi_locale_filter', 999999);
 function etm_remove_divi_locale_filter($lang){

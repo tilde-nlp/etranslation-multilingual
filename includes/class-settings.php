@@ -299,7 +299,6 @@ class ETM_Settings{
             $gettext_table_creation->check_gettext_table( $language_code );
         }
 
-        //in version 1.6.6 we normalized the original strings and created new tables
         $this->etm_query->check_original_table();
         $this->etm_query->check_original_meta_table();
         $gettext_table_creation->check_gettext_original_table();
@@ -372,7 +371,7 @@ class ETM_Settings{
 
         /**
          * These options (etm_advanced_settings,etm_machine_translation_settings) are not part of the actual etm_settings DB option.
-         * But they are included in $settings variable across TP
+         * But they are included in $settings variable across ETM
          */
         $settings_option['etm_advanced_settings'] = get_option('etm_advanced_settings', array() );
 

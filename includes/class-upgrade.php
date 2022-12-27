@@ -224,7 +224,7 @@ class ETM_Upgrade {
                     'message_processing'=> __('Updating original string ids for language %s...', 'etranslation-multilingual' )
                 ),
                 'regenerate_original_meta' => array(
-                    'version'           => '0', // independent of tp version, available only on demand
+                    'version'           => '0', // independent of etm version, available only on demand
                     'option_name'       => 'etm_regenerate_original_meta_table',
                     'callback'          => array( $this,'etm_regenerate_original_meta_table'),
                     'batch_size'        => 200,
@@ -232,7 +232,7 @@ class ETM_Upgrade {
                     'message_processing'=> __('Regenerating original meta table for language %s...', 'etranslation-multilingual' )
                 ),
                 'clean_original_meta' => array(
-                    'version'           => '0', // independent of tp version, available only on demand
+                    'version'           => '0', // independent of etm version, available only on demand
                     'option_name'       => 'etm_clean_original_meta_table',
                     'callback'          => array( $this,'etm_clean_original_meta_table'),
                     'batch_size'        => 20000,
@@ -264,7 +264,7 @@ class ETM_Upgrade {
                     'message_processing'=> __('Updating gettext original string ids for language %s...', 'etranslation-multilingual' )
                 ),
                 'show_error_db_message' => array(
-                    'version'           => '0', // independent of tp version, available only on demand
+                    'version'           => '0', // independent of etm version, available only on demand
                     'option_name'       => 'etm_show_error_db_message',
                     'callback'          => array( $this,'etm_successfully_run_database_optimization'),
                     'batch_size'        => 10,
@@ -714,7 +714,6 @@ class ETM_Upgrade {
     /**
      * Moving some settings from etm_settings option to etm_machine_translation_settings
      *
-     * Upgrade settings from TP version 1.5.8 or earlier to 1.6.2
      */
     private function upgrade_machine_translation_settings(){
         $etm = ETM_eTranslation_Multilingual::get_etm_instance();
@@ -724,7 +723,6 @@ class ETM_Upgrade {
         $default_machine_translation_settings = $etm_settings->get_default_etm_machine_translation_settings();
 
         if ( $machine_translation_settings == false ) {
-            // 1.5.8 did not have any machine_settings so port g-translate-key and g-translate settings if exists
             $machine_translation_settings = $default_machine_translation_settings;
             // move the old API key option
             if (!empty($this->settings['g-translate-key'] ) ) {
@@ -737,7 +735,6 @@ class ETM_Upgrade {
             }
             update_option('etm_machine_translation_settings', $machine_translation_settings);
         }else{
-            // targeting 1.5.9 to 1.6.1 where incomplete machine-translation settings may have resulted
             $machine_translation_settings = array_merge( $default_machine_translation_settings, $machine_translation_settings );
             update_option('etm_machine_translation_settings', $machine_translation_settings);
         }

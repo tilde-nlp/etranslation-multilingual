@@ -253,11 +253,11 @@ class ETM_Url_Converter {
      * @param $output
      * @return $output
      *
-     * adds a new attribute in footer, tp_language_lang, for Automatic User Language Detection to rely on for finding the current language
+     * adds a new attribute in footer, etm_language_lang, for Automatic User Language Detection to rely on for finding the current language
      */
-    public function add_tp_language_lang_attribute(){
+    public function add_etm_language_lang_attribute(){
         global $ETM_LANGUAGE;
-        $html ='<template id="tp-language" data-tp-language="'. esc_attr($ETM_LANGUAGE) . '"></template>';
+        $html ='<template id="etm-language" data-etm-language="'. esc_attr($ETM_LANGUAGE) . '"></template>';
         echo $html; /* phpcs:ignore *///ignored because the html is constructed by us
     }
 
@@ -276,7 +276,7 @@ class ETM_Url_Converter {
 	    $debug = false;
 	    // initializations
 	    global $ETM_LANGUAGE;
-        global  $etm_current_url_term_slug, $etm_current_url_taxonomy;//these are globals that we set on the 'request' filter in our SEO addon
+        global  $etm_current_url_term_slug, $etm_current_url_taxonomy;//these are globals that we set on the 'request' filter in SEO addon
 
 	    if ( empty($url) ){
 		    $url = $this->cur_page_url();
@@ -525,27 +525,27 @@ class ETM_Url_Converter {
             $english_woocommerce_slugs = array('product-category', 'product-tag', 'product');
             foreach ($english_woocommerce_slugs as $english_woocommerce_slug){
                 // current woo slugs are based on the localized default language OR the current language
-                $current_slug = etm_get_transient( 'tp_'.$english_woocommerce_slug.'_'. $this->settings['default-language'] );
+                $current_slug = etm_get_transient( 'etm_'.$english_woocommerce_slug.'_'. $this->settings['default-language'] );
                 if( $current_slug === false ){
                     $current_slug = etm_x( $english_woocommerce_slug, 'slug', 'woocommerce', $this->settings['default-language'] );
-                    set_transient( 'tp_'.$english_woocommerce_slug.'_'. $this->settings['default-language'], $current_slug, 12 * HOUR_IN_SECONDS );
+                    set_transient( 'etm_'.$english_woocommerce_slug.'_'. $this->settings['default-language'], $current_slug, 12 * HOUR_IN_SECONDS );
                 }
 
                 //only replace url here if we are in a default Woocommerce case, meaning the slug in Permalinks page is not changed manually by the user
                 if( $this->etm_get_woocommerce_saved_permalink($english_woocommerce_slug) === $current_slug ) {
 
                     if (strpos($new_url, '/' . $current_slug . '/') === false) {
-                        $current_slug = etm_get_transient('tp_' . $english_woocommerce_slug . '_' . $ETM_LANGUAGE);
+                        $current_slug = etm_get_transient('etm_' . $english_woocommerce_slug . '_' . $ETM_LANGUAGE);
                         if ($current_slug === false) {
                             $current_slug = etm_x($english_woocommerce_slug, 'slug', 'woocommerce', $ETM_LANGUAGE);
-                            set_transient('tp_' . $english_woocommerce_slug . '_' . $ETM_LANGUAGE, $current_slug, 12 * HOUR_IN_SECONDS);
+                            set_transient('etm_' . $english_woocommerce_slug . '_' . $ETM_LANGUAGE, $current_slug, 12 * HOUR_IN_SECONDS);
                         }
                     }
 
-                    $translated_slug = etm_get_transient('tp_' . $english_woocommerce_slug . '_' . $language);
+                    $translated_slug = etm_get_transient('etm_' . $english_woocommerce_slug . '_' . $language);
                     if ($translated_slug === false) {
                         $translated_slug = etm_x($english_woocommerce_slug, 'slug', 'woocommerce', $language);
-                        set_transient('tp_' . $english_woocommerce_slug . '_' . $language, $translated_slug, 12 * HOUR_IN_SECONDS);
+                        set_transient('etm_' . $english_woocommerce_slug . '_' . $language, $translated_slug, 12 * HOUR_IN_SECONDS);
                     }
                     $new_url = str_replace('/' . $current_slug . '/', '/' . $translated_slug . '/', $new_url);
                 }
@@ -763,7 +763,7 @@ class ETM_Url_Converter {
 
     /**
      * Return current page url.
-     * Always using $this->get_abs_home(), instead of home_url() since that one is filtered by TP
+     * Always using $this->get_abs_home(), instead of home_url() since that one is filtered by ETM
      * @return string
      */
     public function cur_page_url() {
@@ -810,18 +810,18 @@ class ETM_Url_Converter {
                 global $default_language_wc_permalink_structure; //we use a global because apparently you can't do switch to locale and restore multiple times. I should keep an eye on this
                 /* get rewrite rules from original language */
                 if( empty($default_language_wc_permalink_structure) ) {
-                    $default_language_wc_permalink_structure = etm_get_transient( 'tp_default_language_wc_permalink_structure_'.$this->settings['default-language'] );
+                    $default_language_wc_permalink_structure = etm_get_transient( 'etm_default_language_wc_permalink_structure_'.$this->settings['default-language'] );
                     if( $default_language_wc_permalink_structure === false ) {
                         $default_language_wc_permalink_structure = array();
                         $default_language_wc_permalink_structure['product_rewrite_slug'] = etm_x('product', 'slug', 'woocommerce', $this->settings['default-language']);
                         $default_language_wc_permalink_structure['category_rewrite_slug'] = etm_x('product-category', 'slug', 'woocommerce', $this->settings['default-language']);
                         $default_language_wc_permalink_structure['tag_rewrite_slug'] = etm_x('product-tag', 'slug', 'woocommerce', $this->settings['default-language']);
 
-                        set_transient('tp_default_language_wc_permalink_structure_' . $this->settings['default-language'], $default_language_wc_permalink_structure, 12 * HOUR_IN_SECONDS);
+                        set_transient('etm_default_language_wc_permalink_structure_' . $this->settings['default-language'], $default_language_wc_permalink_structure, 12 * HOUR_IN_SECONDS);
                     }
                 }
 
-                $current_language_permalink_structure = etm_get_transient( 'tp_current_language_wc_permalink_structure_'.$ETM_LANGUAGE );
+                $current_language_permalink_structure = etm_get_transient( 'etm_current_language_wc_permalink_structure_'.$ETM_LANGUAGE );
                 if( $current_language_permalink_structure === false ) {
                     //always generate the slugs for defaults on the current language
                     $current_language_permalink_structure = array();
@@ -829,7 +829,7 @@ class ETM_Url_Converter {
                     $current_language_permalink_structure['category_rewrite_slug'] = etm_x('product-category', 'slug', 'woocommerce', $ETM_LANGUAGE);
                     $current_language_permalink_structure['tag_rewrite_slug'] = etm_x('product-tag', 'slug', 'woocommerce', $ETM_LANGUAGE);
 
-                    set_transient( 'tp_current_language_wc_permalink_structure_'.$ETM_LANGUAGE, $current_language_permalink_structure, 12 * HOUR_IN_SECONDS );
+                    set_transient( 'etm_current_language_wc_permalink_structure_'.$ETM_LANGUAGE, $current_language_permalink_structure, 12 * HOUR_IN_SECONDS );
                 }
 
 
@@ -919,9 +919,9 @@ class ETM_Url_Converter {
             $english_woocommerce_slugs = array( 'product-category', 'product-tag', 'product', 'default_language_wc_permalink_structure', 'current_language_wc_permalink_structure' );
 
             foreach ( $english_woocommerce_slugs as $english_woocommerce_slug ) {
-                delete_transient( 'tp_' . $english_woocommerce_slug . '_' . $this->settings['default-language'] );
+                delete_transient( 'etm_' . $english_woocommerce_slug . '_' . $this->settings['default-language'] );
                 foreach ( $this->settings['translation-languages'] as $language ) {
-                    delete_transient( 'tp_' . $english_woocommerce_slug . '_' . $language );
+                    delete_transient( 'etm_' . $english_woocommerce_slug . '_' . $language );
                 }
             }
         }
@@ -967,10 +967,10 @@ class ETM_Url_Converter {
         if( !empty( $wc_options ) && !empty( $wc_options[$option_index] ) )
             return $wc_options[$option_index];
         elseif( empty( $wc_options[$option_index] ) ){//if it's the default from _x() it won't save in the db
-            $current_slug = etm_get_transient( 'tp_'.$english_woocommerce_slug.'_'. $this->settings['default-language'] );
+            $current_slug = etm_get_transient( 'etm_'.$english_woocommerce_slug.'_'. $this->settings['default-language'] );
             if( $current_slug === false ){
                 $current_slug = etm_x( $english_woocommerce_slug, 'slug', 'woocommerce', $this->settings['default-language'] );
-                set_transient( 'tp_'.$english_woocommerce_slug.'_'. $this->settings['default-language'], $current_slug, 12 * HOUR_IN_SECONDS );
+                set_transient( 'etm_'.$english_woocommerce_slug.'_'. $this->settings['default-language'], $current_slug, 12 * HOUR_IN_SECONDS );
             }
             return $current_slug;
         }

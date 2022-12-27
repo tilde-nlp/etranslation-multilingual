@@ -471,7 +471,6 @@ function etm_output_svg( $icon = '' ) {
 /**
  * Debuger function. Mainly designed for the get_url_for_language() function
  *
- * @since 1.3.6
  *
  * @param bool $enabled
  * @param array $logger
@@ -534,7 +533,7 @@ function etm_do_these_shortcodes( $content, $tags_allowed ){
 }
 
 /**
- * Obtains a list of TP languages. Can be without the default one
+ * Obtains a list of ETM languages. Can be without the default one
  * in which case use the parameter nodefault set to 'nodefault'
  *
  * @param string $nodefault param used to return published languages without default one
