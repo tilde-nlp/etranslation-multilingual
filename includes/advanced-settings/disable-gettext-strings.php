@@ -33,8 +33,8 @@ function etm_skip_gettext_querying( $skip, $translation, $text, $domain ){
 
 
 
-add_action( 'etm_editor_notices', 'display_message_for_disable_gettext_in_editor', 10, 1 );
-function display_message_for_disable_gettext_in_editor( $etm_editor_notices ) {
+add_action( 'etm_editor_notices', 'etm_display_message_for_disable_gettext_in_editor', 10, 1 );
+function etm_display_message_for_disable_gettext_in_editor( $etm_editor_notices ) {
     $option = get_option( 'etm_advanced_settings', true );
     if ( isset( $option['disable_translation_for_gettext_strings'] ) && $option['disable_translation_for_gettext_strings'] === 'yes' ) {
 
