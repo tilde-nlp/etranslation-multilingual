@@ -9,7 +9,7 @@ msgstr ""
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"POT-Creation-Date: 2022-12-27T12:46:34+01:00\n"
+"POT-Creation-Date: 2022-12-28T13:47:09+01:00\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "X-Generator: WP-CLI 2.6.0\n"
 "X-Domain: etranslation-multilingual\n"
@@ -1788,9 +1788,13 @@ msgstr ""
 msgid "String Translation Editor"
 msgstr ""
 
-#: index.php:109
+#: index.php:116
 #: languages/etranslation-multilingual.catalog.php:5
 msgid "<strong>eTranslation Multilingual</strong> requires at least PHP version 5.6.20+ to run. It is the <a href=\"%s\">minimum requirement of the latest WordPress version</a>. Please contact your server administrator to update your PHP version."
+msgstr ""
+
+#: index.php:120
+msgid "<strong>eTranslation Multilingual</strong> may not work correctly with TranslatePress enabled."
 msgstr ""
 
 #: languages/etranslation-multilingual.catalog.php:2

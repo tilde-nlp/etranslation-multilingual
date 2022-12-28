@@ -84,11 +84,18 @@ function etm_enable_etranslation_multilingual(){
 	$enable_etranslation_multilingual = true;
 	$current_php_version = apply_filters( 'etm_php_version', phpversion() );
 
+    if (!function_exists( 'is_plugin_active')) {
+        require_once( ABSPATH . '/wp-admin/includes/plugin.php' );
+    }
+
 	// 5.6.20 is the minimum version supported by WordPress
 	if ( $current_php_version !== false && version_compare( $current_php_version, '5.6.20', '<' ) ){
 		$enable_etranslation_multilingual = false;
 		add_action( 'admin_menu', 'etm_etranslation_multilingual_disabled_notice' );
 	}
+    if (is_plugin_active('translatepress-multilingual/index.php') && !(isset($_REQUEST['action']) && $_REQUEST['action'] == 'deactivate')) {
+		add_action( 'admin_init', 'etm_tp_detected_notice' );
+    }
 
 	return apply_filters( 'etm_enable_etranslation_multilingual', $enable_etranslation_multilingual );
 }
@@ -107,6 +114,10 @@ function etm_run_etranslation_multilingual_hooks(){
 
 function etm_etranslation_multilingual_disabled_notice(){
 	echo '<div class="notice notice-error"><p>' . wp_kses( sprintf( __( '<strong>eTranslation Multilingual</strong> requires at least PHP version 5.6.20+ to run. It is the <a href="%s">minimum requirement of the latest WordPress version</a>. Please contact your server administrator to update your PHP version.','etranslation-multilingual' ), 'https://wordpress.org/about/requirements/' ), array( 'a' => array( 'href' => array() ), 'strong' => array() ) ) . '</p></div>';
+}
+
+function etm_tp_detected_notice() {
+    echo '<div class="notice notice-warning"><p>' . wp_kses(__( '<strong>eTranslation Multilingual</strong> may not work correctly with TranslatePress enabled.','etranslation-multilingual' ), array('strong' => array())) . '</p></div>';
 }
 
 /**
