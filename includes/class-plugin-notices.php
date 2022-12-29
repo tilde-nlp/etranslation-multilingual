@@ -341,7 +341,8 @@ class ETM_Trigger_Plugin_Notifications{
         if ( ! $this->machine_translator_logger )
             $this->machine_translator_logger = $etm->get_component( 'machine_translator_logger' );
 
-        if( 'yes' === $this->settings['etm_machine_translation_settings']['machine-translation'] && $this->machine_translator_logger->quota_exceeded() ) {
+        if( isset($this->settings['etm_machine_translation_settings']['machine-translation']) &&
+            'yes' === $this->settings['etm_machine_translation_settings']['machine-translation'] && $this->machine_translator_logger->quota_exceeded() ) {
             /* this must be unique */
             $notification_id = 'etm_machine_translation_quota_exceeded_'. date('Ymd');
 
@@ -364,6 +365,7 @@ class ETM_Trigger_Plugin_Notifications{
 
         if ($machine_translator != null ) {
             if ( apply_filters( 'etm_mt_available_supported_languages_show_notice', true, $this->settings['translation-languages'], $this->settings ) &&
+                isset($this->settings['etm_machine_translation_settings']['machine-translation']) &&
                 'yes' === $this->settings['etm_machine_translation_settings']['machine-translation'] &&
                 !$machine_translator->check_languages_availability( $this->settings['translation-languages'] )
             ) {

@@ -278,9 +278,13 @@ jQuery( function() {
 
     jQuery(document).trigger( 'etmInitFieldToggler' );
 
+    jQuery(document).on("click","#show-login-alert", function() {
+        alert(etm_url_slugs_info['message_please_login_first']);
+    });
+
     // Used for the main machine translation toggle to show/hide all options below it
     function ETM_show_hide_machine_translation_options(){
-        if( jQuery( '#etm-machine-translation-enabled' ).val() != 'yes' )
+        if( jQuery( '#etm-machine-translation-enabled' ).val() == 'no' )
             jQuery( '.etm-machine-translation-options tbody tr:not(:first-child)').hide()
         else
             jQuery( '.etm-machine-translation-options tbody tr:not(:first-child)').show()

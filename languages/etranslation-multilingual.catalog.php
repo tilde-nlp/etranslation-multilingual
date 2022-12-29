@@ -529,3 +529,4 @@
 <?php __("WooCommerce Slugs", "etranslation-multilingual"); ?>
 <?php __("WooCommerce Slug", "etranslation-multilingual"); ?>
 <?php __("Search WooCommerce Slugs", "etranslation-multilingual"); ?>
+<?php __("Please enable automatic translation and enter valid eTranslation credentials first!", "etranslation-multilingual"); ?>

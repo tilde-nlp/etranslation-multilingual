@@ -10,8 +10,8 @@
                 <th scope="row"><?php esc_html_e( 'Enable Automatic Translation', 'etranslation-multilingual' ); ?> </th>
                 <td>
                     <select id="etm-machine-translation-enabled" name="etm_machine_translation_settings[machine-translation]" class="etm-select">
-                        <option value="no" <?php selected( $this->settings['etm_machine_translation_settings']['machine-translation'], 'no' ); ?>><?php esc_html_e( 'No', 'etranslation-multilingual') ?></option>
-                        <option value="yes" <?php selected( $this->settings['etm_machine_translation_settings']['machine-translation'], 'yes' ); ?>><?php esc_html_e( 'Yes', 'etranslation-multilingual') ?></option>
+                        <option value="yes" <?php selected( isset($this->settings['etm_machine_translation_settings']['machine-translation']) && $this->settings['etm_machine_translation_settings']['machine-translation'] == 'yes', true ); ?>><?php esc_html_e( 'Yes', 'etranslation-multilingual') ?></option>
+                        <option value="no" <?php selected( isset($this->settings['etm_machine_translation_settings']['machine-translation']) && $this->settings['etm_machine_translation_settings']['machine-translation'] == 'no', true ); ?>><?php esc_html_e( 'No', 'etranslation-multilingual') ?></option>
                     </select>
 
                     <p class="description">

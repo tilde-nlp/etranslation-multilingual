@@ -215,7 +215,8 @@ class ETM_eTranslation_Machine_Translator extends ETM_Machine_Translator {
         $is_error       = false;
         $return_message = '';
 
-        if ( 'etranslation' === $translation_engine && $this->settings['etm_machine_translation_settings']['machine-translation'] === 'yes') {
+        if ( 'etranslation' === $translation_engine && isset($this->settings['etm_machine_translation_settings']['machine-translation']) &&
+                $this->settings['etm_machine_translation_settings']['machine-translation'] === 'yes') {
 
             if ( isset( $this->correct_api_key ) && $this->correct_api_key != null ) {
                 return $this->correct_api_key;

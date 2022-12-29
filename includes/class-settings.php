@@ -394,7 +394,7 @@ class ETM_Settings{
     public function get_default_etm_machine_translation_settings(){
         return apply_filters( 'etm_get_default_etm_machine_translation_settings', array(
             // default settings for etm_machine_translation_settings
-            'machine-translation'               => 'no',
+            // 'machine-translation'               => 'no',
             'translation-engine'                => 'etranslation',
             'block-crawlers'                    => 'no',
             'machine_translation_counter_date'  => date ("Y-m-d" ),
@@ -440,7 +440,12 @@ class ETM_Settings{
                 $domains = $machine_translator->get_all_domains();
             }
 
-            wp_localize_script( 'etm-settings-script', 'etm_url_slugs_info', array( 'iso_codes' => $iso_codes, 'error_message_duplicate_slugs' => __( 'Error! Duplicate URL slug values.', 'etranslation-multilingual' ), 'domains' => $domains ) );
+            wp_localize_script( 'etm-settings-script', 'etm_url_slugs_info', array( 
+                'iso_codes' => $iso_codes, 
+                'error_message_duplicate_slugs' => __( 'Error! Duplicate URL slug values.', 'etranslation-multilingual' ), 
+                'message_please_login_first' => __( 'Please enable automatic translation and enter valid eTranslation credentials first!', 'etranslation-multilingual' ), 
+                'domains' => $domains 
+            ));
 
             wp_enqueue_script( 'etm-select2-lib-js', ETM_PLUGIN_URL . 'assets/lib/select2-lib/dist/js/select2.min.js', array( 'jquery' ), ETM_PLUGIN_VERSION );
             wp_enqueue_style( 'etm-select2-lib-css', ETM_PLUGIN_URL . 'assets/lib/select2-lib/dist/css/select2.min.css', array(), ETM_PLUGIN_VERSION );
@@ -575,4 +580,20 @@ class ETM_Settings{
         array_unshift( $links, $settings_link );
         return $links;
     }
+    public function mt_setup_done() {
+        $etm = ETM_eTranslation_Multilingual::get_etm_instance();
+        $machine_translator = $etm->get_component('machine_translator');
+        
+        return count($this->settings['translation-languages']) > 1 || 
+            ($machine_translator->is_available() && $machine_translator instanceof ETM_eTranslation_Machine_Translator 
+            && $machine_translator->credentials_set() && !$machine_translator->check_api_key_validity()['error']);
+    }
+
+    public function login_redirect() {
+        if ( isset($_GET['page']) && $_GET['page'] == 'etranslation-multilingual' && !$this->mt_setup_done()) {
+            wp_redirect(admin_url('admin.php?page=etm_machine_translation'));
+            die;
+        }
+    }
+
 }

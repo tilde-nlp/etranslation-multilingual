@@ -9,7 +9,7 @@ msgstr ""
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"POT-Creation-Date: 2022-12-28T13:47:09+01:00\n"
+"POT-Creation-Date: 2022-12-29T09:35:19+01:00\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "X-Generator: WP-CLI 2.6.0\n"
 "X-Domain: etranslation-multilingual\n"
@@ -434,7 +434,7 @@ msgstr ""
 #: includes/class-advanced-tab.php:321
 #: includes/class-error-manager.php:180
 #: languages/etranslation-multilingual.catalog.php:8
-#: partials/machine-translation-settings-page.php:14
+#: partials/machine-translation-settings-page.php:13
 #: partials/machine-translation-settings-page.php:62
 #: partials/machine-translation-settings-page.php:75
 #: partials/machine-translation-settings-page.php:87
@@ -570,8 +570,8 @@ msgid "Automatic translation has been disabled."
 msgstr ""
 
 #: includes/class-error-manager.php:154
-#: includes/class-plugin-notices.php:353
-#: includes/class-plugin-notices.php:377
+#: includes/class-plugin-notices.php:354
+#: includes/class-plugin-notices.php:379
 #: languages/etranslation-multilingual.catalog.php:35
 msgid "Dismiss this notice."
 msgstr ""
@@ -670,36 +670,36 @@ msgstr ""
 msgid "Automatic Translation"
 msgstr ""
 
-#: includes/class-machine-translation-tab.php:153
+#: includes/class-machine-translation-tab.php:154
 #: languages/etranslation-multilingual.catalog.php:56
 msgid "Unsupported languages"
 msgstr ""
 
-#: includes/class-machine-translation-tab.php:165
+#: includes/class-machine-translation-tab.php:166
 #: languages/etranslation-multilingual.catalog.php:57
 msgid "The selected automatic translation engine does not provide support for these languages.<br>You can still manually translate pages in these languages using the Translation Editor."
 msgstr ""
 
-#: includes/class-machine-translation-tab.php:179
+#: includes/class-machine-translation-tab.php:181
 #: languages/etranslation-multilingual.catalog.php:59
 msgid "Recheck supported languages"
 msgstr ""
 
-#: includes/class-machine-translation-tab.php:180
+#: includes/class-machine-translation-tab.php:182
 #: languages/etranslation-multilingual.catalog.php:60
 msgid "(last checked on %s)"
 msgstr ""
 
 #: includes/class-machine-translator.php:140
-#: includes/etranslation/class-etranslation-machine-translator.php:226
+#: includes/etranslation/class-etranslation-machine-translator.php:227
 msgid "Please enter your eTranslation credentials."
 msgstr ""
 
-#: includes/class-plugin-notices.php:350
+#: includes/class-plugin-notices.php:351
 msgid "The daily quota for machine translation characters exceeded. Please check the <strong>eTranslation Multilingual -> <a href=\"%s\">Automatic Translation</a></strong> page for more information."
 msgstr ""
 
-#: includes/class-plugin-notices.php:374
+#: includes/class-plugin-notices.php:376
 #: languages/etranslation-multilingual.catalog.php:63
 msgid "One or more languages are unsupported by the automatic translation provider. Please check the <strong>eTranslation Multilingual -> <a href=\"%s\">Automatic Translation</a></strong> page for more information."
 msgstr ""
@@ -804,33 +804,38 @@ msgstr ""
 msgid "Language codes can contain only A-Z a-z 0-9 - _ characters. Check your language codes in eTranslation Multilingual General Settings."
 msgstr ""
 
-#: includes/class-settings.php:443
+#: includes/class-settings.php:445
 #: languages/etranslation-multilingual.catalog.php:87
 msgid "Error! Duplicate URL slug values."
 msgstr ""
 
-#: includes/class-settings.php:479
+#: includes/class-settings.php:446
+#: languages/etranslation-multilingual.catalog.php:532
+msgid "Please enable automatic translation and enter valid eTranslation credentials first!"
+msgstr ""
+
+#: includes/class-settings.php:484
 #: languages/etranslation-multilingual.catalog.php:88
 msgid "Current Language"
 msgstr ""
 
-#: includes/class-settings.php:485
+#: includes/class-settings.php:490
 #: languages/etranslation-multilingual.catalog.php:89
 msgid "Opposite Language"
 msgstr ""
 
-#: includes/class-settings.php:525
+#: includes/class-settings.php:530
 #: languages/etranslation-multilingual.catalog.php:90
 msgid "General"
 msgstr ""
 
-#: includes/class-settings.php:530
+#: includes/class-settings.php:535
 #: includes/class-translation-manager.php:436
 #: languages/etranslation-multilingual.catalog.php:91
 msgid "Translate Site"
 msgstr ""
 
-#: includes/class-settings.php:574
+#: includes/class-settings.php:579
 #: includes/class-translation-manager.php:468
 #: languages/etranslation-multilingual.catalog.php:92
 msgid "Settings"
@@ -1788,12 +1793,12 @@ msgstr ""
 msgid "String Translation Editor"
 msgstr ""
 
-#: index.php:116
+#: index.php:122
 #: languages/etranslation-multilingual.catalog.php:5
 msgid "<strong>eTranslation Multilingual</strong> requires at least PHP version 5.6.20+ to run. It is the <a href=\"%s\">minimum requirement of the latest WordPress version</a>. Please contact your server administrator to update your PHP version."
 msgstr ""
 
-#: index.php:120
+#: index.php:126
 msgid "<strong>eTranslation Multilingual</strong> may not work correctly with TranslatePress enabled."
 msgstr ""
 
@@ -2031,7 +2036,7 @@ msgid "Enable Automatic Translation"
 msgstr ""
 
 #: languages/etranslation-multilingual.catalog.php:250
-#: partials/machine-translation-settings-page.php:13
+#: partials/machine-translation-settings-page.php:14
 #: partials/machine-translation-settings-page.php:88
 #: partials/main-settings-page.php:41
 #: partials/main-settings-page.php:54
