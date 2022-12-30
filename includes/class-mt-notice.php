@@ -30,7 +30,7 @@ class ETM_MT_Notice {
                     $img_url = ETM_PLUGIN_URL . "assets/images/x.svg";
 
                     wp_enqueue_style( 'mt-notice-style', ETM_PLUGIN_URL . 'assets/css/mt-notice.css', array(), ETM_PLUGIN_VERSION );
-                    wp_enqueue_script( 'mt-notice-script', ETM_PLUGIN_URL . 'assets/js/mt-notice.js', array(), ETM_PLUGIN_VERSION );
+                    wp_enqueue_script( 'mt-notice-script', ETM_PLUGIN_URL . 'assets/js/mt-notice.js', array('jquery'), ETM_PLUGIN_VERSION );
                     wp_localize_script( 'mt-notice-script', 'mt_notice_params', array('original_url' => $original_url, 'img_url' => $img_url) );
                 }
             }
