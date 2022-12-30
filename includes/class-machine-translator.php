@@ -56,7 +56,7 @@ class ETM_Machine_Translator {
     }
 
     public function check_languages_availability( $languages, $force_recheck = false ){
-        if ( !method_exists( $this, 'get_supported_languages' ) || !method_exists( $this, 'get_engine_specific_language_codes' ) || !$this->credentials_set() || !$this->is_correct_api_key() ){
+        if ( !method_exists( $this, 'get_supported_languages' ) || !method_exists( $this, 'get_engine_specific_language_codes' ) || !$this->credentials_set() ){
             return true;
         }
         $force_recheck = ( current_user_can('manage_options') &&

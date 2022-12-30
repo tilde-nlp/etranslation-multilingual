@@ -3,6 +3,9 @@
 class eTranslation_Service {
   private $username;
   private $password;
+  // request timeout in seconds
+  static $timeout = 30;
+  static $api_url = 'https://webgate.ec.europa.eu/etranslation/si/';
   static $error_map = array(
     -20000 => 'Source language not specified',
     -20001 => 'Invalid source language',
@@ -66,7 +69,7 @@ class eTranslation_Service {
     -90014 => 'Cannot store file at specified FTP address',
     -90015 => 'Cannot retrieve file content on SFTP',
     -90016 => 'Cannot retrieve file at specified SFTP address'
-);
+  );
 
   public function __construct($username, $password) {
     $this->username = $username;
@@ -86,59 +89,108 @@ class eTranslation_Service {
         ),
         'destinations' => array(
             'httpDestinations' => array(
-                get_rest_url() . 'etranslation/v1/document/destination/' . $id,
-                //"https://66cd01b2c21614b277a6b30ddb179e99.m.pipedream.net/"
+                get_rest_url() . 'etranslation/v1/document/destination/' . $id
             )
         ),
         'domain' => $domain
     );
 
     $post = json_encode($translationRequest);
-    $client = $this->get_client('translate');
-    curl_setopt($client, CURLOPT_POST, 1);
-    curl_setopt($client, CURLOPT_POSTFIELDS, $post);
-    curl_setopt($client, CURLOPT_HTTPHEADER, array(
-        'Content-Type: application/json',
-        'Content-Length: ' . strlen($post)
+    $response = $this->send_etranslation_request(self::$api_url . 'translate', "POST", $post, array(
+      'Content-Type' => 'application/json',
+      'Content-Length' => strlen($post)
     ));
 
-    $response = curl_exec($client);
-    $http_status = curl_getinfo($client, CURLINFO_RESPONSE_CODE);
-    curl_close($client);
-    $body = json_decode($response);
+    $http_status = wp_remote_retrieve_response_code($response);
+    $body = wp_remote_retrieve_body($response);
     $request_id = is_numeric($body) ?  (int) $body : null;
 
     if ($http_status != 200 || $request_id < 0) {
         $message = self::$error_map[$request_id] ?? $body;        
-        $err = curl_error($client);
-        error_log("Invalid response from eTranslation: $response [status: $http_status, message: $message, error: $err]");
+        $err = is_wp_error($response) ? $response->get_error_message() : $body;
+        error_log("Invalid response from eTranslation: $err [status: $http_status, message: $message]");
     }
 
     return array('response' => $http_status, 'body' => $body);
   }
 
   public function get_available_domain_language_pairs() {
-    $client = $this->get_client('get-domains');
-    $response = curl_exec($client);
-    $http_status = curl_getinfo($client, CURLINFO_RESPONSE_CODE);
-    curl_close($client);
+    $response = $this->send_etranslation_request(self::$api_url . 'get-domains', "GET");
+    $http_status = wp_remote_retrieve_response_code($response);
+    $body = wp_remote_retrieve_body($response);
 
     if ($http_status != 200) {
-        error_log("Error retrieving domains from eTranslation: $response [status: $http_status]");
+        error_log("Error retrieving domains from eTranslation: $body [status: $http_status]");
     }
 
-    return array('response' => $http_status, 'body' => json_decode($response));
+    return array('response' => $http_status, 'body' => json_decode($body));
   }
 
-  private function get_client($url_part) {
-    $client=curl_init('https://webgate.ec.europa.eu/etranslation/si/' . $url_part);
-    curl_setopt($client, CURLOPT_RETURNTRANSFER, 1);
-    curl_setopt($client, CURLOPT_HTTPAUTH, CURLAUTH_DIGEST);
-    curl_setopt($client, CURLOPT_USERPWD, $this->username . ":" . $this->password);
-    curl_setopt($client, CURLOPT_SSL_VERIFYPEER, false);
-    curl_setopt($client, CURLOPT_FOLLOWLOCATION, true);
-    curl_setopt($client, CURLOPT_TIMEOUT, 30);
-    return $client;
+  private function send_etranslation_request($url, $method, $body = null, $headers = array()) {
+    $headers['Authorization'] = $this->get_digest_auth_header_value($url, $method);
+    $args = array(
+      'method' => $method,
+      'headers' => $headers,
+      'timeout' => self::$timeout
+    );
+    if ($body) {
+      $args['body'] = $body;
+    }
+    return wp_remote_request($url, $args);
+  }
+
+  private function get_digest_auth_header_value($request_url, $method) {
+    $response = wp_remote_request($request_url, array(
+      'timeout' => self::$timeout,
+      'method' => $method)
+    );
+    $header = wp_remote_retrieve_header( $response, 'WWW-Authenticate' );
+    if ( empty( $header ) ) {
+      return false;
+    }
+
+    /*
+    * Parses the 'www-authenticate' header for nonce, realm and other values.
+    */
+    preg_match_all( '#(([\w]+)=["]?([^\s"]+))#', $header, $matches );
+    $server_bits = array();
+    foreach( $matches[2] as $i => $key ) {
+      $server_bits[ $key ] = $matches[3][ $i ];
+    }
+
+    $server_bits['realm'] = $server_bits['realm'] . " Realm via Digest Authentication";
+    $nc = '00000001';
+    $path = parse_url( $request_url, PHP_URL_PATH );
+    $client_nonce = uniqid();
+    $ha1 = md5( $this->username . ':' . $server_bits['realm'] . ':' . $this->password );
+    $ha2 = md5( $method . ':' . $path );
+    // The order of this array matters, because it affects resulting hashed val
+    $response_bits = array(
+      $ha1,
+      $server_bits['nonce'],
+      $nc,
+      $client_nonce,
+      $server_bits['qop'],
+      $ha2
+    );
+
+    $digest_header_values = array(
+      'username'       => '"' . $this->username . '"',
+      'realm'          => '"' . $server_bits['realm'] . '"',
+      'nonce'          => '"' . $server_bits['nonce'] . '"',
+      'uri'            => '"' . $path . '"',
+      'algorithm'      => '"MD5"',
+      'qop'            => $server_bits['qop'],
+      'nc'             => $nc,
+      'cnonce'         => '"' . $client_nonce . '"',
+      'response'       => '"' . md5( implode( ':', $response_bits ) ) . '"'
+      );
+    $digest_header = 'Digest ';
+    foreach( $digest_header_values as $key => $value ) {
+      $digest_header .= $key . '=' . $value . ', ';
+    }
+    $digest_header = rtrim( $digest_header, ', ' );
+    return $digest_header;
   }
  
 }
