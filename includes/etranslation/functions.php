@@ -103,3 +103,25 @@ add_filter( 'pre_update_option_etm_machine_translation_settings', function( $new
     }
     return $new_value; 
  }, 10, 2);
+ 
+add_filter( 'http_request_timeout', 'wp9838c_timeout_extend' );
+function wp9838c_timeout_extend( $time ) {
+	return ETM_HTTP_REQUEST_TIMEOUT;
+}
+
+// Setting custom option values for cURL. Using a high value for priority to ensure the function runs after any other added to the same action hook.
+add_action( 'http_api_curl', 'etm_custom_curl_opts', 9999, 1 );
+function etm_custom_curl_opts( $handle ) {
+	curl_setopt( $handle, CURLOPT_CONNECTTIMEOUT, ETM_HTTP_REQUEST_TIMEOUT );
+	curl_setopt( $handle, CURLOPT_TIMEOUT, ETM_HTTP_REQUEST_TIMEOUT );
+
+	curl_setopt( $handle, CURLOPT_SSL_VERIFYPEER, false );
+	curl_setopt( $handle, CURLOPT_FOLLOWLOCATION, true );
+}
+
+// Setting custom timeout in HTTP request args
+add_filter( 'http_request_args', 'etm_custom_http_request_args', 9999, 1 );
+function etm_custom_http_request_args( $r ) {
+	$r['timeout'] = ETM_HTTP_REQUEST_TIMEOUT;
+	return $r;
+}

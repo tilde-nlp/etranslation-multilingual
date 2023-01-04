@@ -12,7 +12,7 @@ class ETM_Gettext_Scan {
 			if ( isset( $_POST['action'] ) && $_POST['action'] === 'etm_scan_gettext' ) {
 				check_ajax_referer( 'scangettextnonce', 'security' );
 				$status = $this->scan();
-				echo etm_safe_json_encode( $status ); //phpcs:ignore
+				emt_safe_json_send( $status );
 
 			}
 		}
@@ -22,10 +22,16 @@ class ETM_Gettext_Scan {
 	public function scan() {
 		global $etm_gettext_strings_discovered;
 		require_once ETM_PLUGIN_DIR . 'assets/lib/potx/potx.php';
-		$start_time      = microtime( true );
-		$scan_paths_completed = get_option( 'etm_gettext_scan_paths_completed', array( 'paths_completed' => 0, 'current_filename' => null ) );
-		$paths_to_scan   = apply_filters( 'etm_paths_to_scan_for_gettext', array_merge( $this->get_active_plugins_paths(), $this->get_active_theme_paths() ) );
-		$filename = '';
+		$start_time           = microtime( true );
+		$scan_paths_completed = get_option(
+			'etm_gettext_scan_paths_completed',
+			array(
+				'paths_completed'  => 0,
+				'current_filename' => null,
+			)
+		);
+		$paths_to_scan        = apply_filters( 'etm_paths_to_scan_for_gettext', array_merge( $this->get_active_plugins_paths(), $this->get_active_theme_paths() ) );
+		$filename             = '';
 
 		$etm_gettext_strings_discovered = array();
 		$path_key                       = 0;
@@ -43,8 +49,8 @@ class ETM_Gettext_Scan {
 				// loop through directory and get _e(), __() etc. function calls
 				foreach ( new RecursiveIteratorIterator( $iterator ) as $filename => $current_file ) {
 
-					if( $scan_paths_completed['current_filename'] ){
-						if( $filename == $scan_paths_completed['current_filename'] ) {
+					if ( $scan_paths_completed['current_filename'] ) {
+						if ( $filename == $scan_paths_completed['current_filename'] ) {
 							$scan_paths_completed['current_filename'] = null;
 						}
 						continue;
@@ -54,7 +60,7 @@ class ETM_Gettext_Scan {
 
 						$current_file_pathinfo = pathinfo( $current_file );
 
-						if ( ! empty( $current_file_pathinfo['extension'] ) && $current_file_pathinfo['extension'] == "php" ) {
+						if ( ! empty( $current_file_pathinfo['extension'] ) && $current_file_pathinfo['extension'] == 'php' ) {
 
 							if ( file_exists( $current_file ) ) {
 								etm_potx_process_file( realpath( $current_file ), 0, 'etm_save_gettext_string' );
@@ -70,7 +76,7 @@ class ETM_Gettext_Scan {
 				}
 			}
 			if ( ( microtime( true ) - $start_time ) > 2 ) {
-				$filename = ($interrupted_in_the_recursive_scan) ? $filename : '';
+				$filename = ( $interrupted_in_the_recursive_scan ) ? $filename : '';
 				break;
 			}
 		}
@@ -79,14 +85,21 @@ class ETM_Gettext_Scan {
 
 		$paths_completed     = $path_key + 1;
 		$total_paths_to_scan = count( $paths_to_scan );
-		$return_array        = array( 'completed'        => false,
-		                              'progress_message' => sprintf( esc_html__( 'Scanning item %1$d of %2$d...', 'etranslation-multilingual' ), $paths_completed, $total_paths_to_scan )
+		$return_array        = array(
+			'completed'        => false,
+			'progress_message' => sprintf( esc_html__( 'Scanning item %1$d of %2$d...', 'etranslation-multilingual' ), $paths_completed, $total_paths_to_scan ),
 		);
 		if ( $paths_completed >= $total_paths_to_scan ) {
 			delete_option( 'etm_gettext_scan_paths_completed' );
 			$return_array['completed'] = true;
 		} else {
-			update_option( 'etm_gettext_scan_paths_completed', array( 'paths_completed' => $paths_completed, 'current_filename' => $filename ) )  ;
+			update_option(
+				'etm_gettext_scan_paths_completed',
+				array(
+					'paths_completed'  => $paths_completed,
+					'current_filename' => $filename,
+				)
+			);
 		}
 
 		return $return_array;
@@ -128,24 +141,27 @@ class ETM_Gettext_Scan {
 
 		$inserted_original_ids = $gettext_insert_update->gettext_original_strings_sync( $etm_gettext_strings_discovered );
 
-		$email_paths       = apply_filters( 'etm_email_paths_', array(
-			'templates/emails/',
-			'includes/emails/',
-			'woocommerce/emails/'
-		) );
+		$email_paths = apply_filters(
+			'etm_email_paths_',
+			array(
+				'templates/emails/',
+				'includes/emails/',
+				'woocommerce/emails/',
+			)
+		);
 
 		// Windows servers have paths with \ instead of /
 		$reverse_paths = array();
-		foreach($email_paths as $path ){
-			$reverse_paths[] = str_replace('/','\\', $path );
+		foreach ( $email_paths as $path ) {
+			$reverse_paths[] = str_replace( '/', '\\', $path );
 		}
-		$email_paths = array_merge($email_paths, $reverse_paths );
+		$email_paths = array_merge( $email_paths, $reverse_paths );
 
 		$strings_in_emails = array();
 		foreach ( $etm_gettext_strings_discovered as $key => $string ) {
 			foreach ( $email_paths as $email_path ) {
 				if ( strpos( $string['file'], $email_path ) !== false ) {
-					$strings_in_emails[] = $inserted_original_ids[$key];
+					$strings_in_emails[] = $inserted_original_ids[ $key ];
 					break;
 				}
 			}
@@ -157,7 +173,7 @@ class ETM_Gettext_Scan {
 
 function etm_save_gettext_string( $original, $domain, $context, $file, $line, $string_mode, $text_plural = false ) {
 	global $etm_gettext_strings_discovered;
-	if ( !empty( $original ) ) {
+	if ( ! empty( $original ) ) {
 		$domain      = ( empty( $domain ) ) ? 'default' : $domain;
 		$context     = ( empty( $context ) ) ? 'etm_context' : $context;
 		$text_plural = ( empty( $text_plural ) ) ? '' : $text_plural;
@@ -168,7 +184,7 @@ function etm_save_gettext_string( $original, $domain, $context, $file, $line, $s
 				'domain'          => $domain,
 				'context'         => $context,
 				'original_plural' => $text_plural,
-				'file'            => $file
+				'file'            => $file,
 			);
 		}
 	}

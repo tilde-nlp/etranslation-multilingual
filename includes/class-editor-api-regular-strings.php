@@ -51,7 +51,7 @@ class ETM_Editor_Api_Regular_Strings {
 					}
 					$dictionary_by_original = etm_sort_dictionary_by_original( $dictionaries, 'regular', $string_group, sanitize_text_field( $_POST['language'] ) );
 
-					echo etm_safe_json_encode( $dictionary_by_original );//phpcs:ignore
+					emt_safe_json_send( $dictionary_by_original );
 				}
 			}
 		}
@@ -186,8 +186,7 @@ class ETM_Editor_Api_Regular_Strings {
 				$update_strings = $this->save_translations_of_strings( $strings );
 			}
 		}
-		echo etm_safe_json_encode( $update_strings ); // phpcs:ignore
-		die();
+		emt_safe_json_send( $update_strings );
 	}
 
 	/**
@@ -332,7 +331,7 @@ class ETM_Editor_Api_Regular_Strings {
 							}
 						}
 
-						echo etm_safe_json_encode( $dictionaries );//phpcs:ignore
+						emt_safe_json_send( $dictionaries );
 					}
 				}
 

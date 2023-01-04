@@ -165,7 +165,7 @@ class ETM_Ajax{
             }
 
 	        $dictionary_by_original = etm_sort_dictionary_by_original( $dictionaries, 'regular', 'dynamicstrings', null, null );
-            echo json_encode($dictionary_by_original);
+            emt_safe_json_send($dictionary_by_original);
         }
 
     }

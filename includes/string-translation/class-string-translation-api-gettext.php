@@ -1,23 +1,23 @@
 <?php
 
 class ETM_String_Translation_API_Gettext {
-    protected $type = 'gettext';
-    protected $helper;
+	protected $type = 'gettext';
+	protected $helper;
 
-    /* @var ETM_Query */
+	/* @var ETM_Query */
 
-    public function __construct( $settings ) {
-        $this->helper = new ETM_String_Translation_Helper();
-    }
+	public function __construct( $settings ) {
+		$this->helper = new ETM_String_Translation_Helper();
+	}
 
 	/**
 	 * Returns only original string ids
 	 *
 	 * @return void
 	 */
-	public function get_strings(){
-		$etm                = ETM_eTranslation_Multilingual::get_etm_instance();
-		$etm_query          = $etm->get_component( 'query' );
+	public function get_strings() {
+		$etm       = ETM_eTranslation_Multilingual::get_etm_instance();
+		$etm_query = $etm->get_component( 'query' );
 
 		$originals_results = $this->helper->get_originals_results(
 			$this->type,
@@ -27,13 +27,12 @@ class ETM_String_Translation_API_Gettext {
 			array( 'status' => 'status' )
 		);
 
-
-		echo etm_safe_json_encode( array( //phpcs:ignore
-			'originalIds' => $originals_results['original_ids'],
-			'totalItems' => $originals_results['total_item_count']
-		) );
-		wp_die();
-
+		emt_safe_json_send(
+			array(
+				'originalIds' => $originals_results['original_ids'],
+				'totalItems'  => $originals_results['total_item_count'],
+			)
+		);
 	}
 
 	/**
@@ -60,7 +59,6 @@ class ETM_String_Translation_API_Gettext {
 				$etm_query    = $etm->get_component( 'query' );
 				$settings     = $etm_settings->get_settings();
 
-
 				if ( in_array( $etm_ajax_language, $settings['translation-languages'] ) ) {
 					$language = $etm_ajax_language;
 				} else {
@@ -69,12 +67,11 @@ class ETM_String_Translation_API_Gettext {
 
 				$dictionary      = $etm_query->get_gettext_string_rows_by_original_id( $original_ids, $language );
 				$gettext_manager = $etm->get_component( 'gettext_manager' );
-				$gettext_manager->add_missing_language_file_translations($dictionary, $language);
+				$gettext_manager->add_missing_language_file_translations( $dictionary, $language );
 
 			}
 		}
-		echo etm_safe_json_encode(array()); //phpcs:ignore
-		wp_die();
+		emt_safe_json_send( array() );
 	}
 
 	/**
@@ -82,7 +79,7 @@ class ETM_String_Translation_API_Gettext {
 	 *
 	 * @return void
 	 */
-	public function get_strings_by_original_ids(){
+	public function get_strings_by_original_ids() {
 		if ( defined( 'DOING_AJAX' ) && DOING_AJAX ) {
 			check_ajax_referer( 'string_translation_get_strings_by_original_ids_gettext', 'security' );
 
@@ -98,7 +95,6 @@ class ETM_String_Translation_API_Gettext {
 				$etm_settings = $etm->get_component( 'settings' );
 				$settings     = $etm_settings->get_settings();
 
-
 				// query each language table to retrieve translations
 				$dictionaries = array();
 				foreach ( $settings['translation-languages'] as $language ) {
@@ -106,19 +102,19 @@ class ETM_String_Translation_API_Gettext {
 				}
 
 				/* html entity decode the strings so we display them properly in the textareas  */
-				foreach( $dictionaries as $lang => $dictionary ){
-					foreach( $dictionary as $key => $string ){
-						$string = array_map('html_entity_decode', $string );
-						$dictionaries[$lang][$key] = (object)$string;
+				foreach ( $dictionaries as $lang => $dictionary ) {
+					foreach ( $dictionary as $key => $string ) {
+						$string                        = array_map( 'html_entity_decode', $string );
+						$dictionaries[ $lang ][ $key ] = (object) $string;
 					}
 				}
 
-				$translation_manager = $etm->get_component('translation_manager');
-				$localized_text = $translation_manager->string_groups();
-				$post_language = ( isset( $_POST['language'] ) ) ? sanitize_text_field( $_POST['language'] ) : null;
+				$translation_manager    = $etm->get_component( 'translation_manager' );
+				$localized_text         = $translation_manager->string_groups();
+				$post_language          = ( isset( $_POST['language'] ) ) ? sanitize_text_field( $_POST['language'] ) : null;
 				$dictionary_by_original = etm_sort_dictionary_by_original( $dictionaries, 'gettext', $localized_text['gettextstrings'], $post_language );
 
-				echo etm_safe_json_encode( array('dictionary' => $dictionary_by_original ) ); //phpcs:ignore
+				emt_safe_json_send( array( 'dictionary' => $dictionary_by_original ) );
 
 			}
 			wp_die();
@@ -127,11 +123,11 @@ class ETM_String_Translation_API_Gettext {
 	}
 
 
-    /** Using editor api function hooked for saving.
-     * Implementing save_strings function is not necessary
-     * Leave this function empty, removing it will cause a thrown notice
-     */
-    public function save_strings() {
+	/** Using editor api function hooked for saving.
+	 * Implementing save_strings function is not necessary
+	 * Leave this function empty, removing it will cause a thrown notice
+	 */
+	public function save_strings() {
 
-    }
+	}
 }

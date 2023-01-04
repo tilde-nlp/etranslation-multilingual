@@ -324,3 +324,21 @@ Setting Menu Responsive
         padding-right: 0;
     }
 }
+
+.d-none {
+    display: none;
+}
+
+.advanced-setting-separator {
+    border-bottom: 1px solid #ccc;
+}
+
+.advanced-setting-input-array {
+    width: 10rem;
+    margin-left: -2rem;
+    margin-top: -1rem
+}
+
+.advanced-setting-select {
+    width: 200px;
+}

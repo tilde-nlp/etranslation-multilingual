@@ -16,7 +16,7 @@ class ETM_Editor_Api_Gettext_Strings {
 	 *
 	 * @param array $settings       Settings option.
 	 */
-	public function __construct( $settings ){
+	public function __construct( $settings ) {
 		$this->settings = $settings;
 	}
 
@@ -29,8 +29,7 @@ class ETM_Editor_Api_Gettext_Strings {
 				check_ajax_referer( 'gettext_get_translations', 'security' );
 				if ( ! empty( $_POST['string_ids'] ) ) {
 					$gettext_string_ids = json_decode( stripslashes( $_POST['string_ids'] ) ); /* phpcs:ignore */ /* sanitized when inserting in db */
-				}
-				else {
+				} else {
 					$gettext_string_ids = array();
 				}
 
@@ -47,20 +46,21 @@ class ETM_Editor_Api_Gettext_Strings {
 						$this->translation_manager = $etm->get_component( 'translation_manager' );
 					}
 
-
 					$dictionaries[ $current_language ] = $this->etm_query->get_gettext_string_rows_by_ids( $gettext_string_ids, $current_language );
 
 					/* build the original id array */
-					$original_ids            = array();
+					$original_ids = array();
 					if ( ! empty( $dictionaries[ $current_language ] ) ) {
 						foreach ( $dictionaries[ $current_language ] as $current_language_string ) {
 							/* searching by original id */
-							$original_ids[] = (int)$current_language_string['ot_id'];
+							$original_ids[] = (int) $current_language_string['ot_id'];
 						}
 					}
-					echo etm_safe_json_encode( array( // phpcs:ignore
-						'originalIds' => $original_ids,
-					) );
+					emt_safe_json_send(
+						array(
+							'originalIds' => $original_ids,
+						)
+					);
 
 				}
 			}
@@ -72,46 +72,48 @@ class ETM_Editor_Api_Gettext_Strings {
 	/*
 	 * Save gettext translations
 	 */
-	public function gettext_save_translations(){
+	public function gettext_save_translations() {
 		if ( defined( 'DOING_AJAX' ) && DOING_AJAX && current_user_can( apply_filters( 'etm_translating_capability', 'manage_options' ) ) ) {
-			if (isset($_POST['action']) && $_POST['action'] === 'etm_save_translations_gettext' && !empty($_POST['strings'])) {
+			if ( isset( $_POST['action'] ) && $_POST['action'] === 'etm_save_translations_gettext' && ! empty( $_POST['strings'] ) ) {
 				check_ajax_referer( 'gettext_save_translations', 'security' );
 				$strings = json_decode(stripslashes($_POST['strings']));/* phpcs:ignore */ /* properly sanitized bellow */
 				$update_strings = array();
 				foreach ( $strings as $language => $language_strings ) {
 					if ( in_array( $language, $this->settings['translation-languages'] ) ) {
 						$update_strings[ $language ] = array();
-						foreach( $language_strings as $string ) {
+						foreach ( $language_strings as $string ) {
 							if ( isset( $string->id ) && is_numeric( $string->id ) ) {
-								array_push($update_strings[ $language ], array(
-									'id' => (int)$string->id,
-                                    'original' => etm_sanitize_string( $string->original, false ),
-									'translated' => etm_sanitize_string( $string->translated ),
-									'domain' => sanitize_text_field( $string->domain ),
-									'status' => (int)$string->status,
-									'plural_form' => (int)$string->plural_form,
-									'context' => $string->context
-								));
+								array_push(
+									$update_strings[ $language ],
+									array(
+										'id'          => (int) $string->id,
+										'original'    => etm_sanitize_string( $string->original, false ),
+										'translated'  => etm_sanitize_string( $string->translated ),
+										'domain'      => sanitize_text_field( $string->domain ),
+										'status'      => (int) $string->status,
+										'plural_form' => (int) $string->plural_form,
+										'context'     => $string->context,
+									)
+								);
 							}
 						}
 					}
 				}
 
 				if ( ! $this->etm_query ) {
-					$etm = ETM_eTranslation_Multilingual::get_etm_instance();
+					$etm             = ETM_eTranslation_Multilingual::get_etm_instance();
 					$this->etm_query = $etm->get_component( 'query' );
 				}
 
-				foreach( $update_strings as $language => $update_string_array ) {
-                    $gettext_insert_update = $this->etm_query->get_query_component('gettext_insert_update');
-                    $gettext_insert_update->update_gettext_strings( $update_string_array, $language, array('id','translated', 'status') );
-                    $this->etm_query->remove_possible_duplicates($update_string_array, $language, 'gettext');
+				foreach ( $update_strings as $language => $update_string_array ) {
+					$gettext_insert_update = $this->etm_query->get_query_component( 'gettext_insert_update' );
+					$gettext_insert_update->update_gettext_strings( $update_string_array, $language, array( 'id', 'translated', 'status' ) );
+					$this->etm_query->remove_possible_duplicates( $update_string_array, $language, 'gettext' );
 				}
 
-                do_action('etm_save_editor_translations_gettext_strings', $update_strings, $this->settings);
+				do_action( 'etm_save_editor_translations_gettext_strings', $update_strings, $this->settings );
 			}
 		}
-		echo etm_safe_json_encode( $update_strings );//phpcs:ignore
-		wp_die();
+		emt_safe_json_send( $update_strings );
 	}
 }

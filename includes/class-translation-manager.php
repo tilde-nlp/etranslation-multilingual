@@ -6,522 +6,537 @@
  * Handles Front-end Translation Editor, including Ajax requests.
  */
 class ETM_Translation_Manager {
-    protected $settings;
-    protected $url_converter;
+	protected $settings;
+	protected $url_converter;
 
-    /**
-     * ETM_Translation_Manager constructor.
-     *
-     * @param array $settings Settings option.
-     */
-    public function __construct( $settings ) {
-        $this->settings = $settings;
-    }
+	/**
+	 * ETM_Translation_Manager constructor.
+	 *
+	 * @param array $settings Settings option.
+	 */
+	public function __construct( $settings ) {
+		$this->settings = $settings;
+	}
 
-    /**
-     * Function that determines if an ajax request came from the frontend
-     *
-     * Moved to ETM_Gettext_Manager. Keeping it in case there is third pary code that uses this
-     * @return bool
-     */
-    static function is_ajax_on_frontend() {
-        return ETM_Gettext_Manager::is_ajax_on_frontend();
-    }
+	/**
+	 * Function that determines if an ajax request came from the frontend
+	 *
+	 * Moved to ETM_Gettext_Manager. Keeping it in case there is third pary code that uses this
+	 *
+	 * @return bool
+	 */
+	static function is_ajax_on_frontend() {
+		return ETM_Gettext_Manager::is_ajax_on_frontend();
+	}
 
-    /**
-     * function that strips the gettext tags from a string
-     *
-     * Moved to ETM_Gettext_Manager. Keeping it in case third party uses it.
-     * @param $string
-     * @return mixed
-     */
-    static function strip_gettext_tags( $string ) {
-        return ETM_Gettext_Manager::strip_gettext_tags($string);
-    }
+	/**
+	 * function that strips the gettext tags from a string
+	 *
+	 * Moved to ETM_Gettext_Manager. Keeping it in case third party uses it.
+	 *
+	 * @param $string
+	 * @return mixed
+	 */
+	static function strip_gettext_tags( $string ) {
+		return ETM_Gettext_Manager::strip_gettext_tags( $string );
+	}
 
-    /**
-     * Returns boolean whether current page is part of the Translation Editor.
-     *
-     * @param string $mode 'true' | 'preview'
-     * @return bool                 Whether current page is part of the Translation Editor.
-     */
-    protected function conditions_met( $mode = 'true' ) {
-        if ( isset( $_REQUEST['etm-edit-translation'] ) && sanitize_text_field( $_REQUEST['etm-edit-translation'] ) == $mode ) {
-            if ( current_user_can( apply_filters( 'etm_translating_capability', 'manage_options' ) ) && !is_admin() ) {
-                return true;
-            } elseif ( sanitize_text_field( $_REQUEST['etm-edit-translation'] ) == "preview" ) {
-                return true;
-            } else {
-                wp_die(
-                    '<h1>' . esc_html__( 'Cheatin&#8217; uh?' ) . '</h1>' . //phpcs:ignore  WordPress.WP.I18n.MissingArgDomain
-                    '<p>' . esc_html__( 'Sorry, you are not allowed to access this page.' ) . '</p>', //phpcs:ignore  WordPress.WP.I18n.MissingArgDomain
-                    403
-                );
-            }
-        }
-        return false;
-    }
+	/**
+	 * Returns boolean whether current page is part of the Translation Editor.
+	 *
+	 * @param string $mode 'true' | 'preview'
+	 * @return bool                 Whether current page is part of the Translation Editor.
+	 */
+	protected function conditions_met( $mode = 'true' ) {
+		if ( isset( $_REQUEST['etm-edit-translation'] ) && sanitize_text_field( $_REQUEST['etm-edit-translation'] ) == $mode ) {
+			if ( current_user_can( apply_filters( 'etm_translating_capability', 'manage_options' ) ) && ! is_admin() ) {
+				return true;
+			} elseif ( sanitize_text_field( $_REQUEST['etm-edit-translation'] ) == 'preview' ) {
+				return true;
+			} else {
+				wp_die(
+					'<h1>' . esc_html__( 'Cheatin&#8217; uh?' ) . '</h1>' . //phpcs:ignore  WordPress.WP.I18n.MissingArgDomain
+					'<p>' . esc_html__( 'Sorry, you are not allowed to access this page.' ) . '</p>', //phpcs:ignore  WordPress.WP.I18n.MissingArgDomain
+					403
+				);
+			}
+		}
+		return false;
+	}
 
-    /**
-     * Start Translation Editor.
-     *
-     * Hooked to template_include.
-     *
-     * @param string $page_template Current page template.
-     * @return string                       Template for translation Editor.
-     */
-    public function translation_editor( $page_template ) {
-        if ( !$this->conditions_met() ) {
-            return $page_template;
-        }
+	/**
+	 * Start Translation Editor.
+	 *
+	 * Hooked to template_include.
+	 *
+	 * @param string $page_template Current page template.
+	 * @return string                       Template for translation Editor.
+	 */
+	public function translation_editor( $page_template ) {
+		if ( ! $this->conditions_met() ) {
+			return $page_template;
+		}
 
-        return ETM_PLUGIN_DIR . 'partials/translation-manager.php';
-    }
+		return ETM_PLUGIN_DIR . 'partials/translation-manager.php';
+	}
 
-    public function get_merge_rules() {
-        $localized_text = $this->string_groups();
+	public function get_merge_rules() {
+		$localized_text = $this->string_groups();
 
-        $merge_rules = array(
-            'top_parents'           => array( 'p', 'div', 'li', 'ol', 'ul', 'h1', 'h2', 'h3', 'h4', 'h5', 'h6', 'h7', 'body', 'footer', 'article', 'main', 'iframe', 'section', 'figure', 'figcaption', 'blockquote', 'cite', 'tr', 'td', 'th', 'table', 'tbody', 'thead', 'tfoot', 'form' ),
-            'self_object_type'      => array( 'etranslation-multilingual' ),
-            'incompatible_siblings' => array( '[data-etmgettextoriginal]', '[data-etm-node-group="' . $localized_text['dynamicstrings'] . '"]' )
-        );
+		$merge_rules = array(
+			'top_parents'           => array( 'p', 'div', 'li', 'ol', 'ul', 'h1', 'h2', 'h3', 'h4', 'h5', 'h6', 'h7', 'body', 'footer', 'article', 'main', 'iframe', 'section', 'figure', 'figcaption', 'blockquote', 'cite', 'tr', 'td', 'th', 'table', 'tbody', 'thead', 'tfoot', 'form' ),
+			'self_object_type'      => array( 'etranslation-multilingual' ),
+			'incompatible_siblings' => array( '[data-etmgettextoriginal]', '[data-etm-node-group="' . $localized_text['dynamicstrings'] . '"]' ),
+		);
 
-        return apply_filters( 'etm_merge_rules', $merge_rules );
-    }
+		return apply_filters( 'etm_merge_rules', $merge_rules );
+	}
 
-    public function localized_text() {
-        $update_seo_add_on = ( class_exists( 'ETM_Seo_Pack' ) && !defined( 'ETM_SP_PLUGIN_VERSION' ) );
+	public function localized_text() {
+		$update_seo_add_on = ( class_exists( 'ETM_Seo_Pack' ) && ! defined( 'ETM_SP_PLUGIN_VERSION' ) );
 
-        return $this->string_groups() + array(
-                // attribute names
-                'src'         => esc_html__( 'Image source', 'etranslation-multilingual' ),
-                'alt'         => esc_html__( 'Alt attribute', 'etranslation-multilingual' ),
-                'title'       => esc_html__( 'Title attribute', 'etranslation-multilingual' ),
-                'href'        => esc_html__( 'Anchor link', 'etranslation-multilingual' ),
-                'placeholder' => esc_html__( 'Placeholder attribute', 'etranslation-multilingual' ),
-                'submit'      => esc_html__( 'Submit attribute', 'etranslation-multilingual' ),
-                'text'        => esc_html__( 'Text', 'etranslation-multilingual' ),
+		return $this->string_groups() + array(
+			// attribute names
+			'src'                                        => esc_html__( 'Image source', 'etranslation-multilingual' ),
+			'alt'                                        => esc_html__( 'Alt attribute', 'etranslation-multilingual' ),
+			'title'                                      => esc_html__( 'Title attribute', 'etranslation-multilingual' ),
+			'href'                                       => esc_html__( 'Anchor link', 'etranslation-multilingual' ),
+			'placeholder'                                => esc_html__( 'Placeholder attribute', 'etranslation-multilingual' ),
+			'submit'                                     => esc_html__( 'Submit attribute', 'etranslation-multilingual' ),
+			'text'                                       => esc_html__( 'Text', 'etranslation-multilingual' ),
 
-                // plural form name variants
-                'plural_form_text'           => esc_html__( 'plural form', 'etranslation-multilingual' ),
-                'plural_form_one'            => esc_html__( 'one', 'etranslation-multilingual' ),
-                'plural_form_few'            => esc_html__( 'few', 'etranslation-multilingual' ),
-                'plural_form_many'           => esc_html__( 'many', 'etranslation-multilingual' ),
-                'plural_form_other'          => esc_html__( 'other', 'etranslation-multilingual' ),
+			// plural form name variants
+			'plural_form_text'                           => esc_html__( 'plural form', 'etranslation-multilingual' ),
+			'plural_form_one'                            => esc_html__( 'one', 'etranslation-multilingual' ),
+			'plural_form_few'                            => esc_html__( 'few', 'etranslation-multilingual' ),
+			'plural_form_many'                           => esc_html__( 'many', 'etranslation-multilingual' ),
+			'plural_form_other'                          => esc_html__( 'other', 'etranslation-multilingual' ),
 
-                'saved'                                      => esc_html__( 'Saved', 'etranslation-multilingual' ),
-                'save_translation'                           => esc_html__( 'Save translation', 'etranslation-multilingual' ),
-                'saving_translation'                         => esc_html__( 'Saving translation...', 'etranslation-multilingual' ),
-                'unsaved_changes'                            => esc_html__( 'You have unsaved changes!', 'etranslation-multilingual' ),
-                'discard'                                    => esc_html__( 'Discard changes', 'etranslation-multilingual' ),
-                'discard_all'                                => esc_html__( 'Discard All', 'etranslation-multilingual' ),
-                'strings_loading'                            => esc_attr__( 'Loading Strings...', 'etranslation-multilingual' ),
-                'select_string'                              => esc_attr__( 'Select string to translate...', 'etranslation-multilingual' ),
-                'close'                                      => esc_attr__( 'Close Editor', 'etranslation-multilingual' ),
-                'from'                                       => esc_html__( 'From', 'etranslation-multilingual' ),
-                'to'                                         => esc_html__( 'To', 'etranslation-multilingual' ),
-                'next'                                       => esc_html__( 'Next', 'etranslation-multilingual' ),
-                'previous'                                   => esc_html__( 'Previous', 'etranslation-multilingual' ),
-                'add_media'                                  => esc_html__( 'Add Media', 'etranslation-multilingual' ),
-                'other_lang'                                 => esc_html__( 'Other languages', 'etranslation-multilingual' ),
-                'context'                                    => esc_html__( 'Context', 'etranslation-multilingual' ),
-                'view_as'                                    => esc_html__( 'View As', 'etranslation-multilingual' ),
-                'view_as_pro'                                => esc_html__( 'Available in our Pro Versions', 'etranslation-multilingual' ),
+			'saved'                                      => esc_html__( 'Saved', 'etranslation-multilingual' ),
+			'save_translation'                           => esc_html__( 'Save translation', 'etranslation-multilingual' ),
+			'saving_translation'                         => esc_html__( 'Saving translation...', 'etranslation-multilingual' ),
+			'unsaved_changes'                            => esc_html__( 'You have unsaved changes!', 'etranslation-multilingual' ),
+			'discard'                                    => esc_html__( 'Discard changes', 'etranslation-multilingual' ),
+			'discard_all'                                => esc_html__( 'Discard All', 'etranslation-multilingual' ),
+			'strings_loading'                            => esc_attr__( 'Loading Strings...', 'etranslation-multilingual' ),
+			'select_string'                              => esc_attr__( 'Select string to translate...', 'etranslation-multilingual' ),
+			'close'                                      => esc_attr__( 'Close Editor', 'etranslation-multilingual' ),
+			'from'                                       => esc_html__( 'From', 'etranslation-multilingual' ),
+			'to'                                         => esc_html__( 'To', 'etranslation-multilingual' ),
+			'next'                                       => esc_html__( 'Next', 'etranslation-multilingual' ),
+			'previous'                                   => esc_html__( 'Previous', 'etranslation-multilingual' ),
+			'add_media'                                  => esc_html__( 'Add Media', 'etranslation-multilingual' ),
+			'other_lang'                                 => esc_html__( 'Other languages', 'etranslation-multilingual' ),
+			'context'                                    => esc_html__( 'Context', 'etranslation-multilingual' ),
+			'view_as'                                    => esc_html__( 'View As', 'etranslation-multilingual' ),
+			'view_as_pro'                                => esc_html__( 'Available in our Pro Versions', 'etranslation-multilingual' ),
 
-                //wp media upload
-                'select_or_upload'                           => esc_html__( 'Select or Upload Media', 'etranslation-multilingual' ),
-                'use_this_media'                             => esc_html__( 'Use this media', 'etranslation-multilingual' ),
+			// wp media upload
+			'select_or_upload'                           => esc_html__( 'Select or Upload Media', 'etranslation-multilingual' ),
+			'use_this_media'                             => esc_html__( 'Use this media', 'etranslation-multilingual' ),
 
-                // title attributes
-                'edit'                                       => esc_attr__( 'Translate', 'etranslation-multilingual' ),
-                'merge'                                      => esc_attr__( 'Translate entire block element', 'etranslation-multilingual' ),
-                'split'                                      => esc_attr__( 'Split block to translate strings individually', 'etranslation-multilingual' ),
-                'save_title_attr'                            => esc_attr__( 'Save changes to translation. Shortcut: CTRL(⌘) + S', 'etranslation-multilingual' ),
-                'next_title_attr'                            => esc_attr__( 'Navigate to next string in dropdown list. Shortcut: CTRL(⌘) + ALT + Right Arrow', 'etranslation-multilingual' ),
-                'previous_title_attr'                        => esc_attr__( 'Navigate to previous string in dropdown list. Shortcut: CTRL(⌘) + ALT + Left Arrow', 'etranslation-multilingual' ),
-                'discard_all_title_attr'                     => esc_attr__( 'Discard all changes. Shortcut: CTRL(⌘) + ALT + Z', 'etranslation-multilingual' ),
-                'discard_individual_changes_title_attribute' => esc_attr__( 'Discard changes to this text box. To discard changes to all text boxes use shortcut: CTRL(⌘) + ALT + Z', 'etranslation-multilingual' ),
-                'dismiss_tooltip_title_attribute'            => esc_attr__( 'Dismiss tooltip', 'etranslation-multilingual' ),
-                'quick_intro_title_attribute'                => esc_attr__( 'Quick Intro', 'etranslation-multilingual' ),
+			// title attributes
+			'edit'                                       => esc_attr__( 'Translate', 'etranslation-multilingual' ),
+			'merge'                                      => esc_attr__( 'Translate entire block element', 'etranslation-multilingual' ),
+			'split'                                      => esc_attr__( 'Split block to translate strings individually', 'etranslation-multilingual' ),
+			'save_title_attr'                            => esc_attr__( 'Save changes to translation. Shortcut: CTRL(⌘) + S', 'etranslation-multilingual' ),
+			'next_title_attr'                            => esc_attr__( 'Navigate to next string in dropdown list. Shortcut: CTRL(⌘) + ALT + Right Arrow', 'etranslation-multilingual' ),
+			'previous_title_attr'                        => esc_attr__( 'Navigate to previous string in dropdown list. Shortcut: CTRL(⌘) + ALT + Left Arrow', 'etranslation-multilingual' ),
+			'discard_all_title_attr'                     => esc_attr__( 'Discard all changes. Shortcut: CTRL(⌘) + ALT + Z', 'etranslation-multilingual' ),
+			'discard_individual_changes_title_attribute' => esc_attr__( 'Discard changes to this text box. To discard changes to all text boxes use shortcut: CTRL(⌘) + ALT + Z', 'etranslation-multilingual' ),
+			'dismiss_tooltip_title_attribute'            => esc_attr__( 'Dismiss tooltip', 'etranslation-multilingual' ),
+			'quick_intro_title_attribute'                => esc_attr__( 'Quick Intro', 'etranslation-multilingual' ),
 
-                'split_confirmation'         => esc_js( __( 'Are you sure you want to split this phrase into smaller parts?', 'etranslation-multilingual' ) ),
-                'translation_not_loaded_yet' => wp_kses( __( 'This string is not ready for translation yet. <br>Try again in a moment...', 'etranslation-multilingual' ), array( 'br' => array() ) ),
+			'split_confirmation'                         => esc_js( __( 'Are you sure you want to split this phrase into smaller parts?', 'etranslation-multilingual' ) ),
+			'translation_not_loaded_yet'                 => wp_kses( __( 'This string is not ready for translation yet. <br>Try again in a moment...', 'etranslation-multilingual' ), array( 'br' => array() ) ),
 
-                'bor_update_notice'                 => esc_js( __( 'For this option to work, please update the Browse as other role add-on to the latest version.', 'etranslation-multilingual' ) ),
-                'seo_update_notice'                 => ( $update_seo_add_on ) ? esc_js( __( 'To translate slugs, please update the SEO Pack add-on to the latest version.', 'etranslation-multilingual' ) ) : 'seo_pack_update_not_needed',
+			'bor_update_notice'                          => esc_js( __( 'For this option to work, please update the Browse as other role add-on to the latest version.', 'etranslation-multilingual' ) ),
+			'seo_update_notice'                          => ( $update_seo_add_on ) ? esc_js( __( 'To translate slugs, please update the SEO Pack add-on to the latest version.', 'etranslation-multilingual' ) ) : 'seo_pack_update_not_needed',
 
-                //Notice when the user has not defined a secondary language
-                'extra_lang_row1'                   => wp_kses( sprintf( __( 'You can add a new language from <a href="%s">Settings->eTranslation Multilingual</a>', 'etranslation-multilingual' ), esc_url( admin_url( 'options-general.php?page=etranslation-multilingual' ) ) ), array( 'a' => [ 'href' => [] ] ) ),
-                'extra_lang_row2'                   => wp_kses( __( 'However, you can still use eTranslation Multilingual to <strong style="background: #f5fb9d;">modify gettext strings</strong> available in your page.', 'etranslation-multilingual' ), array( 'strong' => [ 'style' => [] ] ) ),
-                'extra_lang_row3'                   => esc_html__( 'Strings that are user-created cannot be modified, only those from themes and plugins.', 'etranslation-multilingual' ),
+			// Notice when the user has not defined a secondary language
+			'extra_lang_row1'                            => wp_kses( sprintf( __( 'You can add a new language from <a href="%s">Settings->eTranslation Multilingual</a>', 'etranslation-multilingual' ), esc_url( admin_url( 'options-general.php?page=etranslation-multilingual' ) ) ), array( 'a' => array( 'href' => array() ) ) ),
+			'extra_lang_row2'                            => wp_kses( __( 'However, you can still use eTranslation Multilingual to <strong style="background: #f5fb9d;">modify gettext strings</strong> available in your page.', 'etranslation-multilingual' ), array( 'strong' => array( 'style' => array() ) ) ),
+			'extra_lang_row3'                            => esc_html__( 'Strings that are user-created cannot be modified, only those from themes and plugins.', 'etranslation-multilingual' ),
 
-                // Translation Memory
-                'translation_memory_no_suggestions' => esc_html__( 'No available suggestions', 'etranslation-multilingual' ),
-                'translation_memory_suggestions'    => esc_html__( 'Suggestions from translation memory', 'etranslation-multilingual' ),
-                'translation_memory_click_to_copy'  => esc_html__( 'Click to Copy', 'etranslation-multilingual' )
-            );
-    }
+			// Translation Memory
+			'translation_memory_no_suggestions'          => esc_html__( 'No available suggestions', 'etranslation-multilingual' ),
+			'translation_memory_suggestions'             => esc_html__( 'Suggestions from translation memory', 'etranslation-multilingual' ),
+			'translation_memory_click_to_copy'           => esc_html__( 'Click to Copy', 'etranslation-multilingual' ),
+		);
+	}
 
-    public function get_help_panel_content() {
-        $edit_icon = ETM_PLUGIN_URL . 'assets/images/edit-icon.png';
-        return apply_filters('etm_help_panel_content', array(
-            array(
-                'title' => esc_html__('Quick Intro', 'etranslation-multilingual'),
-                'content' => wp_kses(sprintf(__('Hover any text on the page, click <img src="%s" class="etm-edit-icon-inline">, then modify the translation in the sidebar.', 'etranslation-multilingual'), $edit_icon),
-                    array('img' => array('src' => array(), 'class' => array()))),
-                'event' => 'etm_hover_text_help_panel'
-            ),
-            array(
-                'title' => esc_html__('Quick Intro', 'etranslation-multilingual'),
-                'content' => wp_kses(__('Don\'t forget to Save Translation. Use keyboard shortcut CTRL(⌘) + S', 'etranslation-multilingual'), array()),
-                'event' => 'etm_save_translation_help_panel'
-            ),
-            array(
-                'title' => esc_html__('Quick Intro', 'etranslation-multilingual'),
-                'content' => wp_kses(__('Switch language to see the translation changes directly on the page.', 'etranslation-multilingual'), array()),
-                'event' => 'etm_switch_language_help_panel'
-            ),
-            array(
-                'title' => esc_html__('Quick Intro', 'etranslation-multilingual'),
-                'content' => wp_kses(__('Search for any text in this page in the dropdown.', 'etranslation-multilingual'), array()),
-                'event' => 'etm_search_string_help_panel'
-            )
-        ));
-    }
+	public function get_help_panel_content() {
+		$edit_icon = ETM_PLUGIN_URL . 'assets/images/edit-icon.png';
+		return apply_filters(
+			'etm_help_panel_content',
+			array(
+				array(
+					'title'   => esc_html__( 'Quick Intro', 'etranslation-multilingual' ),
+					'content' => wp_kses(
+						sprintf( __( 'Hover any text on the page, click <img src="%s" class="etm-edit-icon-inline">, then modify the translation in the sidebar.', 'etranslation-multilingual' ), $edit_icon ),
+						array(
+							'img' => array(
+								'src'   => array(),
+								'class' => array(),
+							),
+						)
+					),
+					'event'   => 'etm_hover_text_help_panel',
+				),
+				array(
+					'title'   => esc_html__( 'Quick Intro', 'etranslation-multilingual' ),
+					'content' => wp_kses( __( 'Don\'t forget to Save Translation. Use keyboard shortcut CTRL(⌘) + S', 'etranslation-multilingual' ), array() ),
+					'event'   => 'etm_save_translation_help_panel',
+				),
+				array(
+					'title'   => esc_html__( 'Quick Intro', 'etranslation-multilingual' ),
+					'content' => wp_kses( __( 'Switch language to see the translation changes directly on the page.', 'etranslation-multilingual' ), array() ),
+					'event'   => 'etm_switch_language_help_panel',
+				),
+				array(
+					'title'   => esc_html__( 'Quick Intro', 'etranslation-multilingual' ),
+					'content' => wp_kses( __( 'Search for any text in this page in the dropdown.', 'etranslation-multilingual' ), array() ),
+					'event'   => 'etm_search_string_help_panel',
+				),
+			)
+		);
+	}
 
-    public function get_default_editor_user_meta()
-    {
-        return apply_filters('etm_default_editor_user_meta', array(
-            'helpPanelOpened' => false,
-            'dismissTooltipSave' => false,
-            'dismissTooltipNext' => false,
-            'dismissTooltipPrevious' => false,
-            'dismissTooltipDismissAll' => false,
-        ) );
-    }
+	public function get_default_editor_user_meta() {
+		return apply_filters(
+			'etm_default_editor_user_meta',
+			array(
+				'helpPanelOpened'          => false,
+				'dismissTooltipSave'       => false,
+				'dismissTooltipNext'       => false,
+				'dismissTooltipPrevious'   => false,
+				'dismissTooltipDismissAll' => false,
+			)
+		);
+	}
 
-    public function get_editor_user_meta() {
-        $user_meta = get_user_meta( get_current_user_id(), 'etm_editor_user_meta', true );
-        $user_meta = wp_parse_args( $user_meta, $this->get_default_editor_user_meta() );
-        return apply_filters( 'etm_editor_user_meta', $user_meta );
-    }
+	public function get_editor_user_meta() {
+		$user_meta = get_user_meta( get_current_user_id(), 'etm_editor_user_meta', true );
+		$user_meta = wp_parse_args( $user_meta, $this->get_default_editor_user_meta() );
+		return apply_filters( 'etm_editor_user_meta', $user_meta );
+	}
 
-    public function save_editor_user_meta() {
-        if ( defined( 'DOING_AJAX' ) && DOING_AJAX && current_user_can( apply_filters( 'etm_translating_capability', 'manage_options' ) ) ) {
-            check_ajax_referer( 'etm_editor_user_meta', 'security' );
-            if ( isset( $_POST['action'] ) && $_POST['action'] === 'etm_save_editor_user_meta' && !empty( $_POST['user_meta'] ) ) {
+	public function save_editor_user_meta() {
+		if ( defined( 'DOING_AJAX' ) && DOING_AJAX && current_user_can( apply_filters( 'etm_translating_capability', 'manage_options' ) ) ) {
+			check_ajax_referer( 'etm_editor_user_meta', 'security' );
+			if ( isset( $_POST['action'] ) && $_POST['action'] === 'etm_save_editor_user_meta' && ! empty( $_POST['user_meta'] ) ) {
                 $submitted_user_meta = json_decode( stripslashes( $_POST['user_meta'] ), true ); /* phpcs:ignore */ /* sanitized bellow */
-                $existing_user_meta = $this->get_editor_user_meta();
-                foreach ( $existing_user_meta as $key => $existing ) {
-                    if ( isset( $submitted_user_meta[ $key ] ) ) {
-                        $existing_user_meta[ $key ] = (bool)$submitted_user_meta[ $key ];
-                    }
-                }
-                update_user_meta( get_current_user_id(), 'etm_editor_user_meta', $existing_user_meta );
-            }
-        }
-        echo etm_safe_json_encode( array() );//phpcs:ignore
-        die();
-    }
+				$existing_user_meta  = $this->get_editor_user_meta();
+				foreach ( $existing_user_meta as $key => $existing ) {
+					if ( isset( $submitted_user_meta[ $key ] ) ) {
+						$existing_user_meta[ $key ] = (bool) $submitted_user_meta[ $key ];
+					}
+				}
+				update_user_meta( get_current_user_id(), 'etm_editor_user_meta', $existing_user_meta );
+			}
+		}
+		emt_safe_json_send( array() );
+	}
 
-    public function string_groups() {
-        $string_groups = array(
-            'slugs' => esc_html__('Slugs', 'etranslation-multilingual'),
-            'metainformation' => esc_html__('Meta Information', 'etranslation-multilingual'),
-            'stringlist' => esc_html__('String List', 'etranslation-multilingual'),
-            'gettextstrings' => esc_html__('Gettext Strings', 'etranslation-multilingual'),
-            'images' => esc_html__('Images', 'etranslation-multilingual'),
-            'dynamicstrings' => esc_html__('Dynamically Added Strings', 'etranslation-multilingual'),
-        );
-        return apply_filters( 'etm_string_groups', $string_groups );
-    }
+	public function string_groups() {
+		$string_groups = array(
+			'slugs'           => esc_html__( 'Slugs', 'etranslation-multilingual' ),
+			'metainformation' => esc_html__( 'Meta Information', 'etranslation-multilingual' ),
+			'stringlist'      => esc_html__( 'String List', 'etranslation-multilingual' ),
+			'gettextstrings'  => esc_html__( 'Gettext Strings', 'etranslation-multilingual' ),
+			'images'          => esc_html__( 'Images', 'etranslation-multilingual' ),
+			'dynamicstrings'  => esc_html__( 'Dynamically Added Strings', 'etranslation-multilingual' ),
+		);
+		return apply_filters( 'etm_string_groups', $string_groups );
+	}
 
-    public function editor_nonces() {
-        $nonces = array(
-            'gettranslationsnonceregular'   => wp_create_nonce( 'get_translations' ),
-            'savetranslationsnonceregular'  => wp_create_nonce( 'save_translations' ),
-            'gettranslationsnoncegettext'   => wp_create_nonce( 'gettext_get_translations' ),
-            'savetranslationsnoncegettext'  => wp_create_nonce( 'gettext_save_translations' ),
-            'gettranslationsnoncepostslug'  => wp_create_nonce( 'postslug_get_translations' ),
-            'savetranslationsnoncepostslug' => wp_create_nonce( 'postslug_save_translations' ),
-            'splittbnonce'                  => wp_create_nonce( 'split_translation_block' ),
-            'mergetbnonce'                  => wp_create_nonce( 'merge_translation_block' ),
-            'logged_out'                    => wp_create_nonce( 'etm_view_aslogged_out' . get_current_user_id() ),
-            'getsimilarstring'              => wp_create_nonce( 'getsimilarstring' ),
-            'etm_editor_user_meta'          => wp_create_nonce( 'etm_editor_user_meta' ),
-            'scangettextnonce'              => wp_create_nonce( 'scangettextnonce' ),
-            'get_missing_strings'           => wp_create_nonce( 'string_translation_get_missing_strings_gettext' ),
-            'get_strings_by_original_id'    => wp_create_nonce( 'string_translation_get_strings_by_original_ids_gettext' )
-        );
+	public function editor_nonces() {
+		$nonces = array(
+			'gettranslationsnonceregular'   => wp_create_nonce( 'get_translations' ),
+			'savetranslationsnonceregular'  => wp_create_nonce( 'save_translations' ),
+			'gettranslationsnoncegettext'   => wp_create_nonce( 'gettext_get_translations' ),
+			'savetranslationsnoncegettext'  => wp_create_nonce( 'gettext_save_translations' ),
+			'gettranslationsnoncepostslug'  => wp_create_nonce( 'postslug_get_translations' ),
+			'savetranslationsnoncepostslug' => wp_create_nonce( 'postslug_save_translations' ),
+			'splittbnonce'                  => wp_create_nonce( 'split_translation_block' ),
+			'mergetbnonce'                  => wp_create_nonce( 'merge_translation_block' ),
+			'logged_out'                    => wp_create_nonce( 'etm_view_aslogged_out' . get_current_user_id() ),
+			'getsimilarstring'              => wp_create_nonce( 'getsimilarstring' ),
+			'etm_editor_user_meta'          => wp_create_nonce( 'etm_editor_user_meta' ),
+			'scangettextnonce'              => wp_create_nonce( 'scangettextnonce' ),
+			'get_missing_strings'           => wp_create_nonce( 'string_translation_get_missing_strings_gettext' ),
+			'get_strings_by_original_id'    => wp_create_nonce( 'string_translation_get_strings_by_original_ids_gettext' ),
+		);
 
-        return apply_filters( 'etm_editor_nonces', $nonces );
-    }
+		return apply_filters( 'etm_editor_nonces', $nonces );
+	}
 
-    /**
-     * Navigation tabs for Website editing, Url Slugs, String Translation
-     *
-     * @return array
-     */
-    public function get_editors_navigation() {
-        return apply_filters( 'etm_editors_navigation', array(
-            'show' => true,
-            'tabs' => array(
-                array(
-                    'handle'  => 'visualeditor',
-                    'label'   => __( 'Visual Editor', 'etranslation-multilingual' ),
-                    'path'    => add_query_arg( 'etm-edit-translation', 'true', home_url() ),
-                    'tooltip' => esc_html__('Edit translations by visually selecting them on each site page', 'etranslation-multilingual')
-                ),
-                array(
-                    'handle'  => 'stringtranslation',
-                    'label'   => __( 'String Translation', 'etranslation-multilingual' ),
-                    'path'    => add_query_arg( 'etm-string-translation', 'true', home_url() ) . '#/slugs/',
-                    'tooltip' => esc_html__('Edit url slug translations, plugins and theme translation (emails, forms etc.)', 'etranslation-multilingual')
-                )
-            )
-        ) );
-    }
+	/**
+	 * Navigation tabs for Website editing, Url Slugs, String Translation
+	 *
+	 * @return array
+	 */
+	public function get_editors_navigation() {
+		return apply_filters(
+			'etm_editors_navigation',
+			array(
+				'show' => true,
+				'tabs' => array(
+					array(
+						'handle'  => 'visualeditor',
+						'label'   => __( 'Visual Editor', 'etranslation-multilingual' ),
+						'path'    => add_query_arg( 'etm-edit-translation', 'true', home_url() ),
+						'tooltip' => esc_html__( 'Edit translations by visually selecting them on each site page', 'etranslation-multilingual' ),
+					),
+					array(
+						'handle'  => 'stringtranslation',
+						'label'   => __( 'String Translation', 'etranslation-multilingual' ),
+						'path'    => add_query_arg( 'etm-string-translation', 'true', home_url() ) . '#/slugs/',
+						'tooltip' => esc_html__( 'Edit url slug translations, plugins and theme translation (emails, forms etc.)', 'etranslation-multilingual' ),
+					),
+				),
+			)
+		);
+	}
 
-    /**
-     * Enqueue scripts and styles for translation Editor parent window.
-     *
-     * hooked to etm_translation_manager_footer
-     */
-    public function enqueue_scripts_and_styles() {
-        wp_enqueue_style( 'etm-editor-style', ETM_PLUGIN_URL . 'assets/css/etm-editor.css', array( 'dashicons', 'buttons' ), ETM_PLUGIN_VERSION );
-        wp_enqueue_script( 'etm-editor', ETM_PLUGIN_URL . 'assets/js/etm-editor.js', array(), ETM_PLUGIN_VERSION );
+	/**
+	 * Enqueue scripts and styles for translation Editor parent window.
+	 *
+	 * hooked to etm_translation_manager_footer
+	 */
+	public function enqueue_scripts_and_styles() {
+		wp_enqueue_style( 'etm-editor-style', ETM_PLUGIN_URL . 'assets/css/etm-editor.css', array( 'dashicons', 'buttons' ), ETM_PLUGIN_VERSION );
+		wp_enqueue_script( 'etm-editor', ETM_PLUGIN_URL . 'assets/js/etm-editor.js', array(), ETM_PLUGIN_VERSION );
 
-        wp_localize_script( 'etm-editor', 'etm_editor_data', $this->get_etm_editor_data() );
+		wp_localize_script( 'etm-editor', 'etm_editor_data', $this->get_etm_editor_data() );
 
+		// Show upload media dialog in default language
+		switch_to_locale( $this->settings['default-language'] );
+		// Necessary for add media button
+		wp_enqueue_media();
 
-        // Show upload media dialog in default language
-        switch_to_locale( $this->settings['default-language'] );
-        // Necessary for add media button
-        wp_enqueue_media();
+		// Necessary for add media button
+		wp_print_media_templates();
+		restore_current_locale();
 
-        // Necessary for add media button
-        wp_print_media_templates();
-        restore_current_locale();
+		// Necessary for translate-dom-changes to have a nonce as the same user as the Editor.
+		// The Preview iframe (which loads translate-dom-changes script) can load as logged out which sets an different nonce
+		$nonces = $this->editor_nonces();
+		wp_add_inline_script( 'etm-editor', 'var etm_dynamic_nonce = "' . $nonces['gettranslationsnonceregular'] . '";' );
 
-        // Necessary for translate-dom-changes to have a nonce as the same user as the Editor.
-        // The Preview iframe (which loads translate-dom-changes script) can load as logged out which sets an different nonce
-        $nonces = $this->editor_nonces();
-        wp_add_inline_script( 'etm-editor', 'var etm_dynamic_nonce = "' . $nonces['gettranslationsnonceregular'] . '";' );
+		$scripts_to_print = apply_filters( 'etm-scripts-for-editor', array( 'jquery', 'jquery-ui-core', 'jquery-effects-core', 'jquery-ui-resizable', 'etm-editor' ) );
+		$styles_to_print  = apply_filters( 'etm-styles-for-editor', array( 'dashicons', 'etm-editor-style', 'media-views', 'imgareaselect', 'buttons' /*'wp-admin', 'common', 'site-icon', 'buttons'*/ ) );
+		wp_print_scripts( $scripts_to_print );
+		wp_print_styles( $styles_to_print );
 
-        $scripts_to_print = apply_filters( 'etm-scripts-for-editor', array( 'jquery', 'jquery-ui-core', 'jquery-effects-core', 'jquery-ui-resizable', 'etm-editor' ) );
-        $styles_to_print  = apply_filters( 'etm-styles-for-editor', array( 'dashicons', 'etm-editor-style', 'media-views', 'imgareaselect', 'buttons' /*'wp-admin', 'common', 'site-icon', 'buttons'*/ ) );
-        wp_print_scripts( $scripts_to_print );
-        wp_print_styles( $styles_to_print );
+		// Necessary for add media button
+		print_footer_scripts();
 
-        // Necessary for add media button
-        print_footer_scripts();
+	}
 
-    }
+	/**
+	 * Localize all the data needed by the translation editor
+	 *
+	 * @return array
+	 */
+	public function get_etm_editor_data() {
+		global $ETM_LANGUAGE;
+		$etm                = ETM_eTranslation_Multilingual::get_etm_instance();
+		$etm_languages      = $etm->get_component( 'languages' );
+		$translation_render = $etm->get_component( 'translation_render' );
+		$url_converter      = $etm->get_component( 'url_converter' );
 
-    /**
-     * Localize all the data needed by the translation editor
-     *
-     * @return array
-     */
-    public function get_etm_editor_data() {
-        global $ETM_LANGUAGE;
-        $etm                = ETM_eTranslation_Multilingual::get_etm_instance();
-        $etm_languages      = $etm->get_component( 'languages' );
-        $translation_render = $etm->get_component( 'translation_render' );
-        $url_converter      = $etm->get_component( 'url_converter' );
+		$language_names = $etm_languages->get_language_names( $this->settings['translation-languages'] );
 
-        $language_names = $etm_languages->get_language_names( $this->settings['translation-languages'] );
+		// move the current language to the beginning of the array
+		$translation_languages = $this->settings['translation-languages'];
+		if ( $ETM_LANGUAGE != $this->settings['default-language'] ) {
+			$current_language_key = array_search( $ETM_LANGUAGE, $this->settings['translation-languages'] );
+			unset( $translation_languages[ $current_language_key ] );
+			$translation_languages = array_merge( array( $ETM_LANGUAGE ), array_values( $translation_languages ) );
+		}
+		$default_language_key = array_search( $this->settings['default-language'], $translation_languages );
+		unset( $translation_languages[ $default_language_key ] );
+		$ordered_secondary_languages = array_values( $translation_languages );
 
-        // move the current language to the beginning of the array
-        $translation_languages = $this->settings['translation-languages'];
-        if ( $ETM_LANGUAGE != $this->settings['default-language'] ) {
-            $current_language_key = array_search( $ETM_LANGUAGE, $this->settings['translation-languages'] );
-            unset( $translation_languages[ $current_language_key ] );
-            $translation_languages = array_merge( array( $ETM_LANGUAGE ), array_values( $translation_languages ) );
-        }
-        $default_language_key = array_search( $this->settings['default-language'], $translation_languages );
-        unset( $translation_languages[ $default_language_key ] );
-        $ordered_secondary_languages = array_values( $translation_languages );
+		$current_language_published = ( in_array( $ETM_LANGUAGE, $this->settings['publish-languages'] ) );
+		$current_url                = $url_converter->cur_page_url();
 
-        $current_language_published = ( in_array( $ETM_LANGUAGE, $this->settings['publish-languages'] ) );
-        $current_url                = $url_converter->cur_page_url();
+		$selectors       = $translation_render->get_accessors_array( '-' ); // suffix selectors such as array( '-alt', '-src', '-title', '-content', '-value', '-placeholder', '-href', '-outertext', '-innertext' )
+		$selectors[]     = '';                                              // empty string suffix added for using just the base attribute data-etm-translate-id  (instead of data-etm-translate-id-alt)
+		$data_attributes = $translation_render->get_base_attribute_selectors();
 
-        $selectors       = $translation_render->get_accessors_array( '-' ); // suffix selectors such as array( '-alt', '-src', '-title', '-content', '-value', '-placeholder', '-href', '-outertext', '-innertext' )
-        $selectors[]     = '';                                              // empty string suffix added for using just the base attribute data-etm-translate-id  (instead of data-etm-translate-id-alt)
-        $data_attributes = $translation_render->get_base_attribute_selectors();
+		// setup view_as roles
+		$view_as_roles = array(
+			__( 'Current User', 'etranslation-multilingual' ) => 'current_user',
+			__( 'Logged Out', 'etranslation-multilingual' )   => 'logged_out',
+		);
+		$all_roles     = wp_roles()->roles;
 
-        //setup view_as roles
-        $view_as_roles = array(
-            __( 'Current User', 'etranslation-multilingual' ) => 'current_user',
-            __( 'Logged Out', 'etranslation-multilingual' )   => 'logged_out'
-        );
-        $all_roles     = wp_roles()->roles;
+		if ( ! empty( $all_roles ) ) {
+			foreach ( $all_roles as $role ) {
+				$view_as_roles[ $role['name'] ] = '';
+			}
+		}
 
-        if ( !empty( $all_roles ) ) {
-            foreach ( $all_roles as $role )
-                $view_as_roles[ $role['name'] ] = '';
-        }
+		$view_as_roles = apply_filters( 'etm_view_as_values', $view_as_roles );
+		$string_groups = apply_filters( 'etm_string_group_order', array_values( $this->string_groups() ) );
 
-        $view_as_roles = apply_filters( 'etm_view_as_values', $view_as_roles );
-        $string_groups = apply_filters( 'etm_string_group_order', array_values( $this->string_groups() ) );
+		$flags_path      = array();
+		$flags_file_name = array();
+		foreach ( $this->settings['translation-languages'] as $language_code ) {
+			$default_path                      = ETM_PLUGIN_URL . 'assets/images/flags/';
+			$flags_path[ $language_code ]      = apply_filters( 'etm_flags_path', $default_path, $language_code );
+			$default_flag_file_name            = $language_code . '.png';
+			$flags_file_name[ $language_code ] = apply_filters( 'etm_flag_file_name', $default_flag_file_name, $language_code );
+		}
 
-        $flags_path      = array();
-        $flags_file_name = array();
-        foreach ( $this->settings['translation-languages'] as $language_code ) {
-            $default_path                      = ETM_PLUGIN_URL . 'assets/images/flags/';
-            $flags_path[ $language_code ]      = apply_filters( 'etm_flags_path', $default_path, $language_code );
-            $default_flag_file_name            = $language_code . '.png';
-            $flags_file_name[ $language_code ] = apply_filters( 'etm_flag_file_name', $default_flag_file_name, $language_code );
-        }
+		$editors_navigation = $this->get_editors_navigation();
+		$string_types       = array( 'regular', 'gettext', 'postslug' );
 
-        $editors_navigation = $this->get_editors_navigation();
-        $string_types       = array( 'regular', 'gettext', 'postslug' );
+		$etm_editor_data = array(
+			'etm_localized_strings'       => $this->localized_text(),
+			'etm_settings'                => $this->settings,
+			'language_names'              => $language_names,
+			'ordered_secondary_languages' => $ordered_secondary_languages,
+			'current_language'            => $ETM_LANGUAGE,
+			'on_screen_language'          => ( isset( $ordered_secondary_languages[0] ) ) ? $ordered_secondary_languages[0] : '',
+			'view_as_roles'               => $view_as_roles,
+			'url_to_load'                 => add_query_arg( 'etm-edit-translation', 'preview', $current_url ),
+			'string_selectors'            => $selectors,
+			'data_attributes'             => $data_attributes,
+			'editor_nonces'               => $this->editor_nonces(),
+			'ajax_url'                    => apply_filters( 'etm_wp_ajax_url', admin_url( 'admin-ajax.php' ) ),
+			'string_types'                => apply_filters( 'etm_string_types', $string_types ),
+			'string_group_order'          => $string_groups,
+			'merge_rules'                 => $this->get_merge_rules(),
+			'paid_version'                => etm_is_paid_version() ? 'true' : 'false',
+			'flags_path'                  => $flags_path,
+			'flags_file_name'             => $flags_file_name,
+			'editors_navigation'          => $editors_navigation,
+			'help_panel_content'          => $this->get_help_panel_content(),
+			'user_meta'                   => $this->get_editor_user_meta(),
+			'upgraded_gettext'            => ! ( ( get_option( 'etm_updated_database_gettext_original_id_update', 'yes' ) == 'no' ) ),
+			'notice_upgrade_gettext'      => $this->display_notice_to_upgrade_gettext_in_editor( '' ),
+		);
 
+		return apply_filters( 'etm_editor_data', $etm_editor_data );
+	}
 
-        $etm_editor_data = array(
-            'etm_localized_strings'       => $this->localized_text(),
-            'etm_settings'                => $this->settings,
-            'language_names'              => $language_names,
-            'ordered_secondary_languages' => $ordered_secondary_languages,
-            'current_language'            => $ETM_LANGUAGE,
-            'on_screen_language'          => ( isset( $ordered_secondary_languages[0] ) ) ? $ordered_secondary_languages[0] : '',
-            'view_as_roles'               => $view_as_roles,
-            'url_to_load'                 => add_query_arg( 'etm-edit-translation', 'preview', $current_url ),
-            'string_selectors'            => $selectors,
-            'data_attributes'             => $data_attributes,
-            'editor_nonces'               => $this->editor_nonces(),
-            'ajax_url'                    => apply_filters( 'etm_wp_ajax_url', admin_url( 'admin-ajax.php' ) ),
-            'string_types'                => apply_filters( 'etm_string_types', $string_types ),
-            'string_group_order'          => $string_groups,
-            'merge_rules'                 => $this->get_merge_rules(),
-            'paid_version'                => etm_is_paid_version() ? 'true' : 'false',
-            'flags_path'                  => $flags_path,
-            'flags_file_name'             => $flags_file_name,
-            'editors_navigation'          => $editors_navigation,
-            'help_panel_content'          => $this->get_help_panel_content(),
-            'user_meta'                   => $this->get_editor_user_meta(),
-            'upgraded_gettext'            => ! ( ( get_option( 'etm_updated_database_gettext_original_id_update', 'yes' ) == 'no' ) ),
-            'notice_upgrade_gettext'      => $this->display_notice_to_upgrade_gettext_in_editor('')
-        );
+	/**
+	 * Enqueue scripts and styles for translation Editor preview window.
+	 */
+	public function enqueue_preview_scripts_and_styles() {
+		if ( $this->conditions_met( 'preview' ) ) {
+			wp_enqueue_script( 'etm-translation-manager-preview-script', ETM_PLUGIN_URL . 'assets/js/etm-iframe-preview-script.js', array( 'jquery' ), ETM_PLUGIN_VERSION );
+			wp_enqueue_style( 'etm-preview-iframe-style', ETM_PLUGIN_URL . 'assets/css/etm-preview-iframe-style.css', array( 'dashicons' ), ETM_PLUGIN_VERSION );
+		}
+	}
 
-        return apply_filters( 'etm_editor_data', $etm_editor_data );
-    }
+	/**
+	 * Display button to enter translation Editor in admin bar
+	 *
+	 * Hooked to admin_bar_menu.
+	 *
+	 * @param $wp_admin_bar
+	 */
+	public function add_shortcut_to_translation_editor( $wp_admin_bar ) {
+		if ( ! current_user_can( apply_filters( 'etm_translating_capability', 'manage_options' ) ) ) {
+			return;
+		}
 
-    /**
-     * Enqueue scripts and styles for translation Editor preview window.
-     */
-    public function enqueue_preview_scripts_and_styles() {
-        if ( $this->conditions_met( 'preview' ) ) {
-            wp_enqueue_script( 'etm-translation-manager-preview-script', ETM_PLUGIN_URL . 'assets/js/etm-iframe-preview-script.js', array( 'jquery' ), ETM_PLUGIN_VERSION );
-            wp_enqueue_style( 'etm-preview-iframe-style', ETM_PLUGIN_URL . 'assets/css/etm-preview-iframe-style.css', array( 'dashicons' ), ETM_PLUGIN_VERSION );
-        }
-    }
+		if ( is_admin() ) {
+			$url = add_query_arg( 'etm-edit-translation', 'true', trailingslashit( home_url() ) );
 
-    /**
-     * Display button to enter translation Editor in admin bar
-     *
-     * Hooked to admin_bar_menu.
-     *
-     * @param $wp_admin_bar
-     */
-    public function add_shortcut_to_translation_editor( $wp_admin_bar ) {
-        if ( !current_user_can( apply_filters( 'etm_translating_capability', 'manage_options' ) ) ) {
-            return;
-        }
+			$title      = __( 'Translate Site', 'etranslation-multilingual' );
+			$url_target = '_blank';
+		} else {
 
-        if ( is_admin() ) {
-            $url = add_query_arg( 'etm-edit-translation', 'true', trailingslashit( home_url() ) );
+			if ( ! $this->url_converter ) {
+				$etm                 = ETM_eTranslation_Multilingual::get_etm_instance();
+				$this->url_converter = $etm->get_component( 'url_converter' );
+			}
 
-            $title      = __( 'Translate Site', 'etranslation-multilingual' );
-            $url_target = '_blank';
-        } else {
+			$url = $this->url_converter->cur_page_url();
 
-            if ( !$this->url_converter ) {
-                $etm                 = ETM_eTranslation_Multilingual::get_etm_instance();
-                $this->url_converter = $etm->get_component( 'url_converter' );
-            }
+			$url = apply_filters( 'etm_edit_translation_url', add_query_arg( 'etm-edit-translation', 'true', $url ) );
 
-            $url = $this->url_converter->cur_page_url();
+			$title      = __( 'Translate Page', 'etranslation-multilingual' );
+			$url_target = '';
+		}
 
-            $url = apply_filters( 'etm_edit_translation_url', add_query_arg( 'etm-edit-translation', 'true', $url ) );
+		$wp_admin_bar->add_node(
+			array(
+				'id'    => 'etm_edit_translation',
+				'title' => '<span class="ab-icon"></span><span class="ab-label">' . $title . '</span>',
+				'href'  => $url,
+				'meta'  => array(
+					'class'  => 'etm-edit-translation',
+					'target' => $url_target,
+				),
+			)
+		);
 
-            $title      = __( 'Translate Page', 'etranslation-multilingual' );
-            $url_target = '';
-        }
+		$wp_admin_bar->add_node(
+			array(
+				'id'     => 'etm_settings_page',
+				'title'  => __( 'Settings', 'etranslation-multilingual' ),
+				'href'   => admin_url( 'options-general.php?page=etranslation-multilingual' ),
+				'parent' => 'etm_edit_translation',
+				'meta'   => array(
+					'class' => 'etm-settings-page',
+				),
+			)
+		);
 
-        $wp_admin_bar->add_node(
-            array(
-                'id'    => 'etm_edit_translation',
-                'title' => '<span class="ab-icon"></span><span class="ab-label">' . $title . '</span>',
-                'href'  => $url,
-                'meta'  => array(
-                    'class'  => 'etm-edit-translation',
-                    'target' => $url_target
-                )
-            )
-        );
+	}
 
-        $wp_admin_bar->add_node(
-            array(
-                'id'     => 'etm_settings_page',
-                'title'  => __( 'Settings', 'etranslation-multilingual' ),
-                'href'   => admin_url( 'options-general.php?page=etranslation-multilingual' ),
-                'parent' => 'etm_edit_translation',
-                'meta'   => array(
-                    'class' => 'etm-settings-page'
-                )
-            )
-        );
+	/**
+	 * adds shortcut to etm editor in gutenberg editor
+	 */
 
-    }
+	function etm_add_shortcut_to_etm_editor_gutenberg() {
+		wp_enqueue_script( 'custom-link-in-toolbar', ETM_PLUGIN_URL . '/assets/js/etm-gutenberg-editor-shortcut.js', array( 'jquery' ), ETM_PLUGIN_VERSION, true );
 
-    /**
-     * adds shortcut to etm editor in gutenberg editor
-     */
+		$etm           = ETM_eTranslation_Multilingual::get_etm_instance();
+		$url_converter = $etm->get_component( 'url_converter' );
 
-    function etm_add_shortcut_to_etm_editor_gutenberg(){
-        wp_enqueue_script( 'custom-link-in-toolbar', ETM_PLUGIN_URL. '/assets/js/etm-gutenberg-editor-shortcut.js', array("jquery"), ETM_PLUGIN_VERSION, true );
+		// $settings = $etm->get_component('settings');
 
-        $etm           = ETM_eTranslation_Multilingual::get_etm_instance();
-        $url_converter = $etm->get_component('url_converter');
+		global $post;
+		global $ETM_LANGUAGE;
 
-        //$settings = $etm->get_component('settings');
+		$url_translation_editor = array();
 
-        global $post;
-        global $ETM_LANGUAGE;
+		add_filter( 'etm_add_language_to_home_url_check_for_admin', '__return_false' );
 
-        $url_translation_editor = array();
+		if ( $post ) {
+			$etm_permalink_post = $url_converter->get_url_for_language( $ETM_LANGUAGE, get_permalink( $post->ID ) );
+			if ( $post->post_status !== 'publish' ) {
+				$etm_permalink_post = $url_converter->get_url_for_language( $ETM_LANGUAGE, get_preview_post_link( $post->ID ) );
+			}
+		} else {
+			$etm_permalink_post = $url_converter->get_url_for_language( $ETM_LANGUAGE, home_url() );
+		}
 
-        add_filter('etm_add_language_to_home_url_check_for_admin', '__return_false');
+		$url_translation_editor = apply_filters( 'etm_edit_translation_url', add_query_arg( 'etm-edit-translation', 'true', $etm_permalink_post ) );
 
-        if ($post) {
-            $etm_permalink_post = $url_converter->get_url_for_language( $ETM_LANGUAGE, get_permalink( $post->ID ) );
-            if ( $post->post_status !== "publish" ) {
-                $etm_permalink_post = $url_converter->get_url_for_language( $ETM_LANGUAGE, get_preview_post_link( $post->ID ) );
-            }
-        }else{
-            $etm_permalink_post = $url_converter->get_url_for_language( $ETM_LANGUAGE, home_url() );
-        }
+		$title = esc_attr__( 'Opens post in the translation editor. Post must be saved as draft or published beforehand.', 'etranslation-multilingual' );
 
-        $url_translation_editor = apply_filters('etm_edit_translation_url', add_query_arg('etm-edit-translation', 'true', $etm_permalink_post));
+		$etm_editor_button[0] = "<a id='etm-link-id' class='components-button' href='" . esc_url( $url_translation_editor ) . "'  title='" . $title . "' ><button class='button-primary' style='height: 33px'>" . esc_html__( 'Translate Page', 'etranslation-multilingual' ) . '</button></a>';
 
-        $title = esc_attr__('Opens post in the translation editor. Post must be saved as draft or published beforehand.', 'etranslation-multilingual');
+		wp_localize_script( 'custom-link-in-toolbar', 'etm_url_etm_editor', $etm_editor_button );
 
-        $etm_editor_button[0] =  "<a id='etm-link-id' class='components-button' href='" . esc_url($url_translation_editor) ."'  title='"  . $title ."' ><button class='button-primary' style='height: 33px'>" . esc_html__('Translate Page', 'etranslation-multilingual') ."</button></a>";
+		remove_filter( 'etm_add_language_to_home_url_check_for_admin', '__return_false' );
+	}
 
-        wp_localize_script('custom-link-in-toolbar', 'etm_url_etm_editor', $etm_editor_button);
-
-        remove_filter('etm_add_language_to_home_url_check_for_admin', '__return_false');
-    }
-
-    /**
-     * Add the glyph icon for Translate Site button in admin bar
-     *
-     * hooked to admin_head action
-     */
-    public function add_styling_to_admin_bar_button() {
-        echo "<style type='text/css'> #wpadminbar #wp-admin-bar-etm_edit_translation .ab-icon:before {    content: '\\f326';    top: 3px;}
+	/**
+	 * Add the glyph icon for Translate Site button in admin bar
+	 *
+	 * hooked to admin_head action
+	 */
+	public function add_styling_to_admin_bar_button() {
+		echo "<style type='text/css'> #wpadminbar #wp-admin-bar-etm_edit_translation .ab-icon:before {    content: '\\f326';    top: 3px;}
 		#wpadminbar #wp-admin-bar-etm_edit_translation > .ab-item {
 			text-indent: 0;
 		}
@@ -529,29 +544,30 @@ class ETM_Translation_Manager {
 		#wpadminbar li#wp-admin-bar-etm_edit_translation {
 			display: block;
 		}</style>";
-    }
+	}
 
 
-    /**
-     * Function to hide admin bar when in editor preview mode.
-     *
-     * Hooked to show_admin_bar.
-     *
-     * @param bool $show_admin_bar TRUE | FALSE
-     * @return bool
-     */
-    public function hide_admin_bar_when_in_editor( $show_admin_bar ) {
+	/**
+	 * Function to hide admin bar when in editor preview mode.
+	 *
+	 * Hooked to show_admin_bar.
+	 *
+	 * @param bool $show_admin_bar TRUE | FALSE
+	 * @return bool
+	 */
+	public function hide_admin_bar_when_in_editor( $show_admin_bar ) {
 
-        if ( $this->conditions_met( 'preview' ) ) {
-            return false;
-        }
+		if ( $this->conditions_met( 'preview' ) ) {
+			return false;
+		}
 
-        return $show_admin_bar;
+		return $show_admin_bar;
 
-    }
+	}
 
 	/**
 	 * Function that determines if a request is a rest api request based on the URL.
+	 *
 	 * @return bool
 	 */
 	static function is_rest_api_request() {
@@ -561,93 +577,94 @@ class ETM_Translation_Manager {
 		}
 
 		$rest_prefix         = trailingslashit( rest_get_url_prefix() );
-		$is_rest_api_request = strpos( $_SERVER['REQUEST_URI'], $rest_prefix ) !== false; /* phpcs:ignore */
+		$is_rest_api_request = strpos( $_SERVER['REQUEST_URI'], $rest_prefix ) !== false;
 
 		return apply_filters( 'etm_is_rest_api_request', $is_rest_api_request );
 	}
 
-    /**
-     * Filter sanitize_title() to use our own remove_accents() function so it's based on the default language, not current locale.
-     *
-     * Also removes etm gettext tags before running the filter because it strip # and ! and / making it impossible to strip the #etmst later
-     *
-     * @param string $title
-     * @param string $raw_title
-     * @param string $context
-     * @return string
-     *
-     */
-    public function etm_sanitize_title( $title, $raw_title, $context ) {
-        // remove etm_tags before sanitization, because otherwise some characters (#,!,/, spaces ) are stripped later, and it becomes impossible to strip etm-gettext later
-        $raw_title = ETM_Gettext_Manager::strip_gettext_tags( $raw_title );
+	/**
+	 * Filter sanitize_title() to use our own remove_accents() function so it's based on the default language, not current locale.
+	 *
+	 * Also removes etm gettext tags before running the filter because it strip # and ! and / making it impossible to strip the #etmst later
+	 *
+	 * @param string $title
+	 * @param string $raw_title
+	 * @param string $context
+	 * @return string
+	 */
+	public function etm_sanitize_title( $title, $raw_title, $context ) {
+		// remove etm_tags before sanitization, because otherwise some characters (#,!,/, spaces ) are stripped later, and it becomes impossible to strip etm-gettext later
+		$raw_title = ETM_Gettext_Manager::strip_gettext_tags( $raw_title );
 
-        if ( 'save' == $context )
-            $title = etm_remove_accents( $raw_title );
+		if ( 'save' == $context ) {
+			$title = etm_remove_accents( $raw_title );
+		}
 
-        remove_filter( 'sanitize_title', array( $this, 'etm_sanitize_title' ), 1 );
-        $title = apply_filters( 'sanitize_title', $title, $raw_title, $context );
-        add_filter( 'sanitize_title', array( $this, 'etm_sanitize_title' ), 1, 3 );
+		remove_filter( 'sanitize_title', array( $this, 'etm_sanitize_title' ), 1 );
+		$title = apply_filters( 'sanitize_title', $title, $raw_title, $context );
+		add_filter( 'sanitize_title', array( $this, 'etm_sanitize_title' ), 1, 3 );
 
-        return $title;
-    }
+		return $title;
+	}
 
-    /**
-     * Add the current language as a class to the body
-     * @param $classes
-     * @return array
-     */
-    public function add_language_to_body_class( $classes ) {
-        global $ETM_LANGUAGE;
-        if ( !empty( $ETM_LANGUAGE ) ) {
-            $classes[] = 'etranslation-multilingual-' . $ETM_LANGUAGE;
-        }
-        return $classes;
-    }
+	/**
+	 * Add the current language as a class to the body
+	 *
+	 * @param $classes
+	 * @return array
+	 */
+	public function add_language_to_body_class( $classes ) {
+		global $ETM_LANGUAGE;
+		if ( ! empty( $ETM_LANGUAGE ) ) {
+			$classes[] = 'etranslation-multilingual-' . $ETM_LANGUAGE;
+		}
+		return $classes;
+	}
 
-    /**
-     * Function that switches the view of the user to other roles
-     */
-    public function etm_view_as_user() {
-        if ( !is_admin() || ETM_Gettext_Manager::is_ajax_on_frontend() ) {
-            if ( isset( $_REQUEST['etm-edit-translation'] ) && $_REQUEST['etm-edit-translation'] === 'preview' && isset( $_REQUEST['etm-view-as'] ) && isset( $_REQUEST['etm-view-as-nonce'] ) ) {
+	/**
+	 * Function that switches the view of the user to other roles
+	 */
+	public function etm_view_as_user() {
+		if ( ! is_admin() || ETM_Gettext_Manager::is_ajax_on_frontend() ) {
+			if ( isset( $_REQUEST['etm-edit-translation'] ) && $_REQUEST['etm-edit-translation'] === 'preview' && isset( $_REQUEST['etm-view-as'] ) && isset( $_REQUEST['etm-view-as-nonce'] ) ) {
 
-                if ( apply_filters( 'etm_allow_translator_role_to_view_page_as_other_roles', true ) ) {
-                    $current_user_can_change_roles = current_user_can( apply_filters( 'etm_translating_capability', 'manage_options' ) ) || current_user_can( 'manage_options' );
-                } else {
-                    $current_user_can_change_roles = current_user_can( 'manage_options' );
-                }
+				if ( apply_filters( 'etm_allow_translator_role_to_view_page_as_other_roles', true ) ) {
+					$current_user_can_change_roles = current_user_can( apply_filters( 'etm_translating_capability', 'manage_options' ) ) || current_user_can( 'manage_options' );
+				} else {
+					$current_user_can_change_roles = current_user_can( 'manage_options' );
+				}
 
-                if ($current_user_can_change_roles) {
-                    if (!wp_verify_nonce( sanitize_text_field($_REQUEST['etm-view-as-nonce'] ), 'etm_view_as' . sanitize_text_field($_REQUEST['etm-view-as']) . get_current_user_id())) {
-                        wp_die(esc_html__('Security check', 'etranslation-multilingual'));
-                    } else {
-                        global $current_user;
-                        $view_as = sanitize_text_field( $_REQUEST['etm-view-as'] );
-                        if ( $view_as === 'current_user' ) {
-                            return;
-                        } elseif ( $view_as === 'logged_out' ) {
-                            $current_user = new WP_User( 0, 'etm_logged_out' );
-                        } else {
-                            $current_user = apply_filters( 'etm_temporary_change_current_user_role', $current_user, $view_as );
-                        }
-                    }
-                }
-            }
-        }
-    }
+				if ( $current_user_can_change_roles ) {
+					if ( ! wp_verify_nonce( sanitize_text_field( $_REQUEST['etm-view-as-nonce'] ), 'etm_view_as' . sanitize_text_field( $_REQUEST['etm-view-as'] ) . get_current_user_id() ) ) {
+						wp_die( esc_html__( 'Security check', 'etranslation-multilingual' ) );
+					} else {
+						global $current_user;
+						$view_as = sanitize_text_field( $_REQUEST['etm-view-as'] );
+						if ( $view_as === 'current_user' ) {
+							return;
+						} elseif ( $view_as === 'logged_out' ) {
+							$current_user = new WP_User( 0, 'etm_logged_out' );
+						} else {
+							$current_user = apply_filters( 'etm_temporary_change_current_user_role', $current_user, $view_as );
+						}
+					}
+				}
+			}
+		}
+	}
 
-    /**
-     * Return true if the string contains characters which are not allowed in the query
-     *
-     * Only valid for utf8.
-     * Function is an extract of strip_invalid_text() function from wp-includes/wp-db.php
-     *
-     * @param $string
-     *
-     * @return bool
-     */
-    public function has_bad_characters( $string ) {
-        $regex = '/
+	/**
+	 * Return true if the string contains characters which are not allowed in the query
+	 *
+	 * Only valid for utf8.
+	 * Function is an extract of strip_invalid_text() function from wp-includes/wp-db.php
+	 *
+	 * @param $string
+	 *
+	 * @return bool
+	 */
+	public function has_bad_characters( $string ) {
+		$regex = '/
 					(
 						(?: [\x00-\x7F]                  # single-byte sequences   0xxxxxxx
 						|   [\xC2-\xDF][\x80-\xBF]       # double-byte sequences   110xxxxx 10xxxxxx
@@ -656,66 +673,68 @@ class ETM_Translation_Manager {
 						|   \xED[\x80-\x9F][\x80-\xBF]
 						|   [\xEE-\xEF][\x80-\xBF]{2}';
 
-        $regex .= '
+		$regex .= '
 						|    \xF0[\x90-\xBF][\x80-\xBF]{2} # four-byte sequences   11110xxx 10xxxxxx * 3
 						|    [\xF1-\xF3][\x80-\xBF]{3}
 						|    \xF4[\x80-\x8F][\x80-\xBF]{2}
 					';
 
-
-        $regex           .= '){1,40}                          # ...one or more times
+		$regex          .= '){1,40}                          # ...one or more times
 					)
 					| .                                  # anything else
 					/x';
-        $stripped_string = preg_replace( $regex, '$1', $string );
+		$stripped_string = preg_replace( $regex, '$1', $string );
 
-        if ( $stripped_string === $string ) {
-            return false;
-        } else {
-            return true;
-        }
-    }
+		if ( $stripped_string === $string ) {
+			return false;
+		} else {
+			return true;
+		}
+	}
 
-    /**
-     * Records a series of strings which may have encoding issues
-     *
-     * Does not alter dictionary.
-     *
-     * @param $dictionary
-     * @param $prepared_query
-     * @param $strings_array
-     *
-     * @return mixed
-     */
-    public function display_possible_db_errors( $dictionary, $prepared_query, $strings_array ) {
-        global $etm_editor_notices;
-        if ( etm_is_translation_editor( 'preview' ) && is_array( $dictionary ) && count( $dictionary ) === 0 ) {
-            if ( $this->has_bad_characters( $prepared_query ) ) {
-                $html = "<div class='etm-notice etm-notice-warning'><p class='etm-bad-encoded-strings'>" . __('<strong>Warning:</strong> Some strings have possibly incorrectly encoded characters. This may result in breaking the queries, rendering the page untranslated in live mode. Consider revising the following strings or their method of outputting.', 'etranslation-multilingual') . "</p>";
-                $html .= "<ul class='etm-bad-encoded-strings-list'>";
-                foreach ( $strings_array as $string ) {
-                    if ( $this->has_bad_characters( $string ) ) {
-                        $html .= "<li>" . $string . "</li>";
-                    }
-                }
-                $html .= "</ul></div>";
+	/**
+	 * Records a series of strings which may have encoding issues
+	 *
+	 * Does not alter dictionary.
+	 *
+	 * @param $dictionary
+	 * @param $prepared_query
+	 * @param $strings_array
+	 *
+	 * @return mixed
+	 */
+	public function display_possible_db_errors( $dictionary, $prepared_query, $strings_array ) {
+		global $etm_editor_notices;
+		if ( etm_is_translation_editor( 'preview' ) && is_array( $dictionary ) && count( $dictionary ) === 0 ) {
+			if ( $this->has_bad_characters( $prepared_query ) ) {
+				$html  = "<div class='etm-notice etm-notice-warning'><p class='etm-bad-encoded-strings'>" . __( '<strong>Warning:</strong> Some strings have possibly incorrectly encoded characters. This may result in breaking the queries, rendering the page untranslated in live mode. Consider revising the following strings or their method of outputting.', 'etranslation-multilingual' ) . '</p>';
+				$html .= "<ul class='etm-bad-encoded-strings-list'>";
+				foreach ( $strings_array as $string ) {
+					if ( $this->has_bad_characters( $string ) ) {
+						$html .= '<li>' . $string . '</li>';
+					}
+				}
+				$html .= '</ul></div>';
 
-                $etm_editor_notices .= $html;
-            }
-        }
+				$etm_editor_notices .= $html;
+			}
+		}
 
-        // no modifications to the dictionary
-        return $dictionary;
-    }
+		// no modifications to the dictionary
+		return $dictionary;
+	}
 
 	public function display_notice_to_upgrade_gettext_in_editor( $etm_editor_notices ) {
-		if (  ( get_option( 'etm_updated_database_gettext_original_id_update', 'yes' ) == 'no' ) ){
-			$url = add_query_arg( array(
-				'page'                      => 'etm_update_database',
-			), site_url('wp-admin/admin.php') );
+		if ( ( get_option( 'etm_updated_database_gettext_original_id_update', 'yes' ) == 'no' ) ) {
+			$url = add_query_arg(
+				array(
+					'page' => 'etm_update_database',
+				),
+				site_url( 'wp-admin/admin.php' )
+			);
 
 			// maybe change notice color to blue #28B1FF
-			$html = "<div class='etm-notice etm-notice-warning'>";
+			$html  = "<div class='etm-notice etm-notice-warning'>";
 			$html .= '<p><strong>' . esc_html__( 'eTranslation Multilingual data update', 'etranslation-multilingual' ) . '</strong> &#8211; ' . esc_html__( 'We need to update your translations database to the latest version.', 'etranslation-multilingual' ) . '</p>';
 			$html .= '<p>' . esc_html__( 'Updating will allow editing translations of localized text from plugins and theme. Existing translation will still work as expected.', 'etranslation-multilingual' ) . '</p>';
 
@@ -728,39 +747,37 @@ class ETM_Translation_Manager {
 		return $etm_editor_notices;
 	}
 
-    /**
-     * Receives and returns the date format in which a date (eg publish date) is presented on the frontend
-     * The format is saved in the advanced settings tab for each language except the default one
-     *
-     * @param $date_format
-     *
-     * @return mixed
-     */
-    public function filter_the_date( $date_format ) {
-        global $ETM_LANGUAGE;
+	/**
+	 * Receives and returns the date format in which a date (eg publish date) is presented on the frontend
+	 * The format is saved in the advanced settings tab for each language except the default one
+	 *
+	 * @param $date_format
+	 *
+	 * @return mixed
+	 */
+	public function filter_the_date( $date_format ) {
+		global $ETM_LANGUAGE;
 
-        if ( !empty( $ETM_LANGUAGE ) && $this->settings["default-language"] === $ETM_LANGUAGE ) {
-            return $date_format;
-        } else {
-            if ( isset ( $this->settings["etm_advanced_settings"]["language_date_format"][ $ETM_LANGUAGE ] ) && !empty ( $this->settings["etm_advanced_settings"]["language_date_format"][ $ETM_LANGUAGE ] ) ) {
-                return $this->settings["etm_advanced_settings"]["language_date_format"][ $ETM_LANGUAGE ];
-            } else {
-                return $date_format;
-            }
-        }
-    }
+		if ( ! empty( $ETM_LANGUAGE ) && $this->settings['default-language'] === $ETM_LANGUAGE ) {
+			return $date_format;
+		} else {
+			if ( isset( $this->settings['etm_advanced_settings']['language_date_format'][ $ETM_LANGUAGE ] ) && ! empty( $this->settings['etm_advanced_settings']['language_date_format'][ $ETM_LANGUAGE ] ) ) {
+				return $this->settings['etm_advanced_settings']['language_date_format'][ $ETM_LANGUAGE ];
+			} else {
+				return $date_format;
+			}
+		}
+	}
 
-    /**
-     * Prevent indexing edit translation preview pages.
-     *
-     * Hooked to etm_head, wp_head
-     *
-     */
-    public function output_noindex_tag()
-    {
-        if( $this->conditions_met( 'true' ) || $this->conditions_met( 'preview' ) ){
-            echo '<meta name="robots" content="noindex, nofollow">';
-        }
-    }
+	/**
+	 * Prevent indexing edit translation preview pages.
+	 *
+	 * Hooked to etm_head, wp_head
+	 */
+	public function output_noindex_tag() {
+		if ( $this->conditions_met( 'true' ) || $this->conditions_met( 'preview' ) ) {
+			echo '<meta name="robots" content="noindex, nofollow">';
+		}
+	}
 
 }

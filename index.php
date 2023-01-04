@@ -85,6 +85,7 @@ function etranslation_query_action($action, $arg) {
 }
 
 defined('DEFAULT_ETRANSLATION_TIMEOUT') or define('DEFAULT_ETRANSLATION_TIMEOUT', 7);
+defined('ETM_HTTP_REQUEST_TIMEOUT') or define('ETM_HTTP_REQUEST_TIMEOUT', 30);
 
 function etm_enable_etranslation_multilingual(){
 	$enable_etranslation_multilingual = true;
