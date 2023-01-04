@@ -384,13 +384,12 @@ class ETM_Upgrade {
 			if ( empty( $_REQUEST['etm_updb_action'] ) ) {
 				$back_to_settings_button = '<p><a href="' . site_url( 'wp-admin/options-general.php?page=etranslation-multilingual' ) . '"> <input type="button" value="' . esc_html__( 'Back to eTranslation Multilingual Settings', 'etranslation-multilingual' ) . '" class="button-primary"></a></p>';
 				// finished successfully
-				echo wp_json_encode(
+				emt_safe_json_send(
 					array(
 						'etm_update_completed' => 'yes',
 						'progress_message'     => '<p><strong>' . __( 'Successfully updated database!', 'etranslation-multilingual' ) . '</strong></p>' . $back_to_settings_button,
 					)
 				);
-				wp_die();
 			} else {
 				$_REQUEST['etm_updb_lang']  = $this->settings['translation-languages'][0];
 				$_REQUEST['etm_updb_batch'] = 0;

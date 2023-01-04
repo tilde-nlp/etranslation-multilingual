@@ -85,11 +85,9 @@ class ETM_Translation_Memory {
 				} else {
 					$dictionary = $this->get_similar_string_translation( $string, $number, $table_name );
 				}
-				echo wp_json_encode( $dictionary );
-				wp_die();
+				emt_safe_json_send( $dictionary );
 			}
 		}
-		echo wp_json_encode( array() );
-		wp_die();
+		emt_safe_json_send( array() );
 	}
 }
