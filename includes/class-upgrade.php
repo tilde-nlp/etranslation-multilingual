@@ -362,7 +362,7 @@ class ETM_Upgrade {
 			$this->stop_and_print_error( __( 'Update aborted! Your user account doesn\'t have the capability to perform database updates.', 'etranslation-multilingual' ) );
 		}
 
-		$nonce = isset( $_REQUEST['etm_updb_nonce'] ) ? wp_verify_nonce( sanitize_text_field( $_REQUEST['etm_updb_nonce'] ), 'tpupdatedatabase' ) : false;
+		$nonce = isset( $_REQUEST['etm_updb_nonce'] ) ? wp_verify_nonce( sanitize_text_field( $_REQUEST['etm_updb_nonce'] ), 'etmupdatedatabase' ) : false;
 		if ( $nonce === false ) {
 			$this->stop_and_print_error( __( 'Update aborted! Invalid nonce.', 'etranslation-multilingual' ) );
 		}
@@ -486,7 +486,7 @@ class ETM_Upgrade {
 			'etm_updb_action'      => $request['etm_updb_action'],
 			'etm_updb_lang'        => $request['etm_updb_lang'],
 			'etm_updb_batch'       => $request['etm_updb_batch'],
-			'etm_updb_nonce'       => wp_create_nonce( 'tpupdatedatabase' ),
+			'etm_updb_nonce'       => wp_create_nonce( 'etmupdatedatabase' ),
 			'etm_update_completed' => 'no',
 			'progress_message'     => $request['progress_message'],
 		);
@@ -698,7 +698,7 @@ class ETM_Upgrade {
 			'etm_updb_localized ',
 			array(
 				'admin_ajax_url' => admin_url( 'admin-ajax.php' ),
-				'nonce'          => wp_create_nonce( 'tpupdatedatabase' ),
+				'nonce'          => wp_create_nonce( 'etmupdatedatabase' ),
 			)
 		);
 	}

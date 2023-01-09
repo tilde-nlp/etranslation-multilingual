@@ -48,6 +48,10 @@ class ETM_String_Translation_API_Gettext {
 			$action = 'etm_string_translation_get_missing_gettext_strings';
 			if ( isset( $_POST['action'] ) && $_POST['action'] === $action && isset( $_POST['original_ids'] ) && isset( $_POST['etm_ajax_language'] ) ) {
 				$original_ids = json_decode( wp_kses_post( wp_unslash( $_POST['original_ids'] ) ) );
+				// validate input.
+				if ( ! is_array( $original_ids ) ) {
+					wp_die();
+				}
 				foreach ( $original_ids as $key => $id ) {
 					$original_ids[ $key ] = (int) $id;
 				}
@@ -86,6 +90,10 @@ class ETM_String_Translation_API_Gettext {
 			$action = 'etm_string_translation_get_strings_by_original_ids_gettext';
 			if ( isset( $_POST['action'] ) && $_POST['action'] === $action && isset( $_POST['original_ids'] ) ) {
 				$original_ids = json_decode( sanitize_text_field( wp_unslash( $_POST['original_ids'] ) ) );
+				// validate input.
+				if ( ! is_array( $original_ids ) ) {
+					wp_die();
+				}
 				foreach ( $original_ids as $key => $id ) {
 					$original_ids[ $key ] = (int) $id;
 				}
@@ -112,6 +120,9 @@ class ETM_String_Translation_API_Gettext {
 				$translation_manager    = $etm->get_component( 'translation_manager' );
 				$localized_text         = $translation_manager->string_groups();
 				$post_language          = ( isset( $_POST['language'] ) ) ? sanitize_text_field( $_POST['language'] ) : null;
+				if ( $post_language && ! etm_is_valid_language_code( $post_language ) ) {
+					wp_die();
+				}
 				$dictionary_by_original = etm_sort_dictionary_by_original( $dictionaries, 'gettext', $localized_text['gettextstrings'], $post_language );
 
 				emt_safe_json_send( array( 'dictionary' => $dictionary_by_original ) );

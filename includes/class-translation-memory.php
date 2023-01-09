@@ -63,6 +63,11 @@ class ETM_Translation_Memory {
 				$type          = ( isset( $_POST['type'] ) ) ? sanitize_text_field( wp_unslash( $_POST['type'] ) ) : '';
 				$number        = ( isset( $_POST['number'] ) ) ? (int) $_POST['number'] : 3;
 
+				// validate language code.
+				if ( ! etm_is_valid_language_code( $language_code ) ) {
+					emt_safe_json_send( array() );
+				}
+
 				$etm = ETM_eTranslation_Multilingual::get_etm_instance();
 				if ( ! $this->etm_query ) {
 					$this->etm_query = $etm->get_component( 'query' );

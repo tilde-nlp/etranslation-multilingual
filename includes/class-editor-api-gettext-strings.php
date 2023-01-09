@@ -36,7 +36,7 @@ class ETM_Editor_Api_Gettext_Strings {
 				$current_language = sanitize_text_field( wp_unslash( $_POST['language'] ) );
 				$dictionaries     = array();
 
-				if ( is_array( $gettext_string_ids ) ) {
+				if ( is_array( $gettext_string_ids ) && etm_is_valid_language_code( $current_language ) ) {
 
 					$etm = ETM_eTranslation_Multilingual::get_etm_instance();
 					if ( ! $this->etm_query ) {
@@ -77,6 +77,12 @@ class ETM_Editor_Api_Gettext_Strings {
 			if ( isset( $_POST['action'] ) && $_POST['action'] === 'etm_save_translations_gettext' && ! empty( $_POST['strings'] ) ) {
 				check_ajax_referer( 'gettext_save_translations', 'security' );
 				$strings        = sanitize_decode_json_html_recursively( 'strings' );
+				// validate input.
+				$string_keys = array_keys( get_object_vars( $strings ) );
+				if ( array_intersect( $string_keys, $this->settings['translation-languages'] ) !== $string_keys ) {
+					// $strings contain some key not present in selected language codes
+					wp_die();
+				}
 				$update_strings = array();
 				foreach ( $strings as $language => $language_strings ) {
 					if ( in_array( $language, $this->settings['translation-languages'] ) ) {

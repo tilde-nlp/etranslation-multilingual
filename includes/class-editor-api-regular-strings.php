@@ -105,6 +105,10 @@ class ETM_Editor_Api_Regular_Strings {
 
 		$current_language = isset( $_POST['language'] ) ? sanitize_text_field( $_POST['language'] ) : '';
 
+		if ( ! etm_is_valid_language_code( $current_language ) ) {
+			wp_die();
+		}
+
 		// necessary in order to obtain all the original strings
 		if ( $this->settings['default-language'] != $current_language ) {
 			if ( ! empty( $original_array ) && current_user_can( apply_filters( 'etm_translating_capability', 'manage_options' ) ) ) {
@@ -181,7 +185,13 @@ class ETM_Editor_Api_Regular_Strings {
 		if ( defined( 'DOING_AJAX' ) && DOING_AJAX && current_user_can( apply_filters( 'etm_translating_capability', 'manage_options' ) ) ) {
 			check_ajax_referer( 'save_translations', 'security' );
 			if ( isset( $_POST['action'] ) && $_POST['action'] === 'etm_save_translations_regular' && ! empty( $_POST['strings'] ) ) {
-				$strings        = sanitize_decode_json_html_recursively( 'strings' );
+				$strings = sanitize_decode_json_html_recursively( 'strings' );
+				// validate input.
+				$string_keys = array_keys( get_object_vars( $strings ) );
+				if ( array_intersect( $string_keys, $this->settings['translation-languages'] ) !== $string_keys ) {
+					// $strings contain some key not present in selected language codes
+					wp_die();
+				}
 				$update_strings = $this->save_translations_of_strings( $strings );
 			}
 		}
@@ -253,6 +263,13 @@ class ETM_Editor_Api_Regular_Strings {
 			check_ajax_referer( 'merge_translation_block', 'security' );
 			if ( isset( $_POST['action'] ) && $_POST['action'] === 'etm_create_translation_block' && ! empty( $_POST['strings'] ) && ! empty( $_POST['language'] ) && in_array( $_POST['language'], $this->settings['translation-languages'] ) && ! empty( $_POST['original'] ) ) {
 				$strings = sanitize_decode_json_html_recursively( 'strings' );
+
+				// validate input.
+				$string_keys = array_keys( get_object_vars( $strings ) );
+				if ( array_intersect( $string_keys, $this->settings['translation-languages'] ) !== $string_keys ) {
+					// $strings contain some key not present in selected language codes
+					wp_die();
+				}
 
 				if ( isset( $this->settings['translation-languages'] ) ) {
 					$etm = ETM_eTranslation_Multilingual::get_etm_instance();
@@ -354,7 +371,11 @@ class ETM_Editor_Api_Regular_Strings {
 
 			if ( isset( $_POST['action'] ) && $_POST['action'] === 'etm_split_translation_block' && ! empty( $_POST['strings'] ) ) {
 				$raw_original_array = sanitize_decode_json_html_recursively( 'strings' );
-				$etm                = ETM_eTranslation_Multilingual::get_etm_instance();
+				// validate input.
+				if ( ! is_array( $raw_original_array ) ) {
+					wp_die();
+				}
+				$etm = ETM_eTranslation_Multilingual::get_etm_instance();
 				if ( ! $this->etm_query ) {
 					$this->etm_query = $etm->get_component( 'query' );
 				}
@@ -383,6 +404,6 @@ class ETM_Editor_Api_Regular_Strings {
 	 * Replaces all line breaks with \n
 	 */
 	private function normalize_linebreaks( $string ) {
-		return preg_replace( '~\R~u', "\r\n", $string );
+		return preg_replace( '~\R~u', "\n", $string );
 	}
 }
