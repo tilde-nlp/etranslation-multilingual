@@ -58,9 +58,9 @@ class ETM_Translation_Memory {
 			if ( isset( $_POST['action'] ) && $_POST['action'] === 'etm_get_similar_string_translation' && ! empty( $_POST['original_string'] ) && ! empty( $_POST['language'] ) && ! empty( $_POST['type'] ) && in_array( $_POST['language'], $this->settings['translation-languages'] ) ) {
 				global $ETM_LANGUAGE;
 				check_ajax_referer( 'getsimilarstring', 'security' );
-                $string = ( isset($_POST['original_string']) ) ? $_POST['original_string'] : '';//phpcs:ignore
-				$language_code = ( isset( $_POST['language'] ) ) ? sanitize_text_field( $_POST['language'] ) : $ETM_LANGUAGE;
-				$type          = ( isset( $_POST['type'] ) ) ? sanitize_text_field( $_POST['type'] ) : '';
+				$string        = ( isset( $_POST['original_string'] ) ) ? wp_kses_post( wp_unslash( $_POST['original_string'] ) ) : '';
+				$language_code = ( isset( $_POST['language'] ) ) ? sanitize_text_field( wp_unslash( $_POST['language'] ) ) : $ETM_LANGUAGE;
+				$type          = ( isset( $_POST['type'] ) ) ? sanitize_text_field( wp_unslash( $_POST['type'] ) ) : '';
 				$number        = ( isset( $_POST['number'] ) ) ? (int) $_POST['number'] : 3;
 
 				$etm = ETM_eTranslation_Multilingual::get_etm_instance();

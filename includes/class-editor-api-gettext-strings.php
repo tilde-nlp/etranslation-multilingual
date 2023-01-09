@@ -27,13 +27,13 @@ class ETM_Editor_Api_Gettext_Strings {
 		if ( defined( 'DOING_AJAX' ) && DOING_AJAX ) {
 			if ( isset( $_POST['action'] ) && $_POST['action'] === 'etm_get_translations_gettext' && ! empty( $_POST['string_ids'] ) && ! empty( $_POST['language'] ) && in_array( $_POST['language'], $this->settings['translation-languages'] ) ) {
 				check_ajax_referer( 'gettext_get_translations', 'security' );
+
+				$gettext_string_ids = array();
 				if ( ! empty( $_POST['string_ids'] ) ) {
-					$gettext_string_ids = json_decode( stripslashes( $_POST['string_ids'] ) ); /* phpcs:ignore */ /* sanitized when inserting in db */
-				} else {
-					$gettext_string_ids = array();
+					$gettext_string_ids = json_decode( wp_kses_post( wp_unslash( $_POST['string_ids'] ) ) );
 				}
 
-				$current_language = sanitize_text_field( $_POST['language'] );
+				$current_language = sanitize_text_field( wp_unslash( $_POST['language'] ) );
 				$dictionaries     = array();
 
 				if ( is_array( $gettext_string_ids ) ) {
@@ -76,7 +76,7 @@ class ETM_Editor_Api_Gettext_Strings {
 		if ( defined( 'DOING_AJAX' ) && DOING_AJAX && current_user_can( apply_filters( 'etm_translating_capability', 'manage_options' ) ) ) {
 			if ( isset( $_POST['action'] ) && $_POST['action'] === 'etm_save_translations_gettext' && ! empty( $_POST['strings'] ) ) {
 				check_ajax_referer( 'gettext_save_translations', 'security' );
-				$strings = json_decode(stripslashes($_POST['strings']));/* phpcs:ignore */ /* properly sanitized bellow */
+				$strings        = sanitize_decode_json_html_recursively( 'strings' );
 				$update_strings = array();
 				foreach ( $strings as $language => $language_strings ) {
 					if ( in_array( $language, $this->settings['translation-languages'] ) ) {

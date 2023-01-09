@@ -892,6 +892,12 @@ class ETM_Query{
         return $dictionary;
     }
 
+    public function get_all_gettext_untranslated_strings(  $language_code ) {
+        $dictionary = $this->db->get_results("SELECT id, original, translated, domain, original_id, plural_form FROM `" . sanitize_text_field( $this->get_gettext_table_name( $language_code ) ) . "` WHERE translated = ''", ARRAY_A );
+        $this->maybe_record_automatic_translation_error(array( 'details' => 'Error running get_all_gettext_untranslated_strings()' ) );
+        return $dictionary;
+    }
+
     public function get_gettext_table_name( $language_code ){
         if ( !etm_is_valid_language_code($language_code) ){
             /* there's are other checks that display an admin notice for this kind of errors */

@@ -1454,8 +1454,8 @@ if( class_exists('WooCommerce_Product_Search_Service') ) {
             $attributes = isset($_REQUEST[WooCommerce_Product_Search_Service::ATTRIBUTES]) ? intval($_REQUEST[WooCommerce_Product_Search_Service::ATTRIBUTES]) > 0 : WooCommerce_Product_Search_Service::DEFAULT_ATTRIBUTES;
             $variations = isset($_REQUEST[WooCommerce_Product_Search_Service::VARIATIONS]) ? intval($_REQUEST[WooCommerce_Product_Search_Service::VARIATIONS]) > 0 : WooCommerce_Product_Search_Service::DEFAULT_VARIATIONS;
 
-            $min_price = isset($_REQUEST[WooCommerce_Product_Search_Service::MIN_PRICE]) ? WooCommerce_Product_Search_Service::to_float($_REQUEST[WooCommerce_Product_Search_Service::MIN_PRICE]) : null;//phpcs:ignore
-            $max_price = isset($_REQUEST[WooCommerce_Product_Search_Service::MAX_PRICE]) ? WooCommerce_Product_Search_Service::to_float($_REQUEST[WooCommerce_Product_Search_Service::MAX_PRICE]) : null;//phpcs:ignore
+            $min_price = isset($_REQUEST[WooCommerce_Product_Search_Service::MIN_PRICE]) ? WooCommerce_Product_Search_Service::to_float( sanitize_text_field( wp_unslash( $_REQUEST[WooCommerce_Product_Search_Service::MIN_PRICE] ) ) ) : null;
+            $max_price = isset($_REQUEST[WooCommerce_Product_Search_Service::MAX_PRICE]) ?  WooCommerce_Product_Search_Service::to_float( sanitize_text_field( wp_unslash( $_REQUEST[WooCommerce_Product_Search_Service::MAX_PRICE] ) ) ) : null;
             if ($min_price !== null && $min_price <= 0) {
                 $min_price = null;
             }

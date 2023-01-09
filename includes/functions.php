@@ -215,12 +215,12 @@ function etm_wp_kses( $string ) {
 function escape_and_echo_html( $html ) {
 	$allowed_tags              = wp_kses_allowed_html( 'post' );
 	$allowed_tags['input']     = array(
-		'class'   => array(),
-		'id'      => array(),
-		'name'    => array(),
-		'value'   => array(),
-		'type'    => array(),
-		'checked' => array(),
+		'class'       => array(),
+		'id'          => array(),
+		'name'        => array(),
+		'value'       => array(),
+		'type'        => array(),
+		'checked'     => array(),
 		'placeholder' => array(),
 	);
 	$allowed_tags['select']    = array(
@@ -246,6 +246,31 @@ function escape_and_echo_html( $html ) {
 	$allowed_tags['textarea'] += $data_attributes;
 
 	echo wp_kses( $html, $allowed_tags );
+}
+
+function sanitize_decode_json_html_recursively( $request_arg ) {
+	if ( isset( $_REQUEST[ $request_arg ] ) ) {
+		// Cannot sanitize before decoding json, as some values can contain escaped HTML.
+        $unsanitized_json = stripslashes( $_REQUEST[$request_arg] ); //phpcs:ignore
+		$result           = json_decode( $unsanitized_json );
+
+		if ( JSON_ERROR_NONE !== json_last_error() ) {
+			return null;
+		}
+
+		// Sanitize each string of decoded json.
+		$result = map_deep(
+			$result,
+			function( $item ) {
+				if ( is_string( $item ) ) {
+					return wp_kses_post( $item );
+				}
+				return $item;
+			}
+		);
+		return $result;
+	}
+	return null;
 }
 
 /**

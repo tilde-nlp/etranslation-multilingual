@@ -310,7 +310,7 @@ class ETM_Gettext_Manager {
 				}
 
 				if ( apply_filters( 'etm_gettext_allow_machine_translation', true, $source_language, $ETM_LANGUAGE, $new_strings, $etm_gettext_strings_for_machine_translation ) ) {
-					$machine_strings = $this->machine_translator->translate( $new_strings, $ETM_LANGUAGE, $source_language );
+					$machine_strings = $this->machine_translator->translate( $new_strings, $ETM_LANGUAGE, $source_language, true );
 				} else {
 					$machine_strings = apply_filters( 'etm_gettext_machine_translate_strings', array(), $new_strings, $ETM_LANGUAGE, $etm_gettext_strings_for_machine_translation );
 				}

@@ -405,7 +405,7 @@ class ETM_Upgrade {
 				if ( $updates_needed[ sanitize_text_field( $_REQUEST['etm_updb_action'] ) ]['version'] != 0 ) {
 					$request['progress_message'] .= '<p>' . sprintf( $update_message_initial, $updates_needed[ sanitize_text_field( $_REQUEST['etm_updb_action'] ) ]['version'] ) . '</p>';
 				}
-                $request['progress_message'] .= '<br>' . sprintf( $update_message_processing, sanitize_text_field( $_REQUEST['etm_updb_lang'] ) );//phpcs:ignore
+				$request['progress_message'] .= '<br>' . sprintf( $update_message_processing, sanitize_text_field( wp_unslash( $_REQUEST['etm_updb_lang'] ) ) );
 			}
 		} else {
 			if ( ! isset( $updates_needed[ $_REQUEST['etm_updb_action'] ] ) ) {

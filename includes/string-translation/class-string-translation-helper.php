@@ -34,7 +34,7 @@ class ETM_String_Translation_Helper {
 			$this->settings = $etm_settings->get_settings();
 		}
 		$query_args   = array();
-		$posted_query = ( empty( $_POST['query'] ) ) ? array() : json_decode( stripslashes( $_POST['query'] ), true ); /* phpcs:ignore */ /* sanitized below */
+		$posted_query = ( empty( $_POST['query'] ) ) ? array() : json_decode( wp_kses_post( wp_unslash( $_POST['query'] ) ), true );
 
 		// translation status
 		$translation_status_filters = $this->string_translation->get_translation_status_filters();

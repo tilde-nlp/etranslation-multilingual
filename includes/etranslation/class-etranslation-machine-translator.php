@@ -40,9 +40,10 @@ class ETM_eTranslation_Machine_Translator extends ETM_Machine_Translator {
 		$this->etranslation_query->update_translation_status( $id, 'TIMEOUT' );
 	}
 
-	public function translate_document( $source_language_code, $target_language_code, $strings_array, $original_strings, $start_timestamp ): array {
+	public function translate_document( $source_language_code, $target_language_code, $strings_array, $original_strings, $start_timestamp, $is_gettext ): array {
 		$delimiter = "\n";
-		$id        = uniqid();
+		$id_prefix = $is_gettext ? 'g-' : 'r-';
+		$id        = $id_prefix . uniqid();
 
 		$source_language = $this->machine_translation_codes[ $source_language_code ];
 		$target_language = $this->machine_translation_codes[ $target_language_code ];
@@ -93,7 +94,7 @@ class ETM_eTranslation_Machine_Translator extends ETM_Machine_Translator {
 	 * @param string $source_language_code          language code of the language that we will be translating from. Not equal to the google language code
 	 * @return array                                array with the translation strings and the preserved keys or an empty array if something went wrong
 	 */
-	public function translate_array( $new_strings, $original_strings, $target_language_code, $source_language_code = null ) {
+	public function translate_array( $new_strings, $original_strings, $target_language_code, $source_language_code = null, $is_gettext = false ) {
 		if ( $source_language_code == null ) {
 			$source_language_code = $this->settings['default-language'];
 		}
@@ -113,7 +114,7 @@ class ETM_eTranslation_Machine_Translator extends ETM_Machine_Translator {
 		/* if there are more than 20MB we make multiple requests */
 		foreach ( $new_strings_chunks as $new_strings_chunk ) {
 			$i        = 0;
-			$response = $this->translate_document( $source_language_code, $target_language_code, $new_strings_chunk, $original_strings, $start_time );
+			$response = $this->translate_document( $source_language_code, $target_language_code, $new_strings_chunk, $original_strings, $start_time, $is_gettext );
 
 			// this is run only if "Log machine translation queries." is set to Yes.
 			$this->machine_translator_logger->log(

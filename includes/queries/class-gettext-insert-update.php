@@ -171,7 +171,8 @@ class ETM_Gettext_Insert_Update extends ETM_Query {
 			'translated'  => '%s',
 			'domain'      => '%s',
 			'status'      => '%d',
-			'plural_form' => '%d'
+			'original_id' => '%d',
+			'plural_form' => '%d',
 		);
 		$columns_query_part        = '';
 		foreach ( $columns_to_update as $column ) {
@@ -216,9 +217,11 @@ class ETM_Gettext_Insert_Update extends ETM_Query {
 		$on_duplicate = rtrim( $on_duplicate, ',' );
 		$query        .= $on_duplicate;
 
-		$this->db->query( $this->db->prepare( $query . ' ', $values ) );
+		$updated_rows = $this->db->query( $this->db->prepare( $query . ' ', $values ) );
 
 		$this->maybe_record_automatic_translation_error( array( 'details' => 'Error running update_gettext_strings()' ) );
+
+		return $updated_rows;
 	}
 
 	/**

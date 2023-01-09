@@ -225,7 +225,7 @@ class ETM_Translation_Manager {
 		if ( defined( 'DOING_AJAX' ) && DOING_AJAX && current_user_can( apply_filters( 'etm_translating_capability', 'manage_options' ) ) ) {
 			check_ajax_referer( 'etm_editor_user_meta', 'security' );
 			if ( isset( $_POST['action'] ) && $_POST['action'] === 'etm_save_editor_user_meta' && ! empty( $_POST['user_meta'] ) ) {
-                $submitted_user_meta = json_decode( stripslashes( $_POST['user_meta'] ), true ); /* phpcs:ignore */ /* sanitized bellow */
+				$submitted_user_meta = json_decode( wp_kses_post( wp_unslash( $_POST['user_meta'] ) ), true );
 				$existing_user_meta  = $this->get_editor_user_meta();
 				foreach ( $existing_user_meta as $key => $existing ) {
 					if ( isset( $submitted_user_meta[ $key ] ) ) {
@@ -577,7 +577,7 @@ class ETM_Translation_Manager {
 		}
 
 		$rest_prefix         = trailingslashit( rest_get_url_prefix() );
-		$is_rest_api_request = strpos( $_SERVER['REQUEST_URI'], $rest_prefix ) !== false;
+		$is_rest_api_request = strpos( esc_url_raw( wp_unslash( $_SERVER['REQUEST_URI'] ) ), $rest_prefix ) !== false;
 
 		return apply_filters( 'etm_is_rest_api_request', $is_rest_api_request );
 	}

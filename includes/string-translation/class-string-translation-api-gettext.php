@@ -47,12 +47,12 @@ class ETM_String_Translation_API_Gettext {
 
 			$action = 'etm_string_translation_get_missing_gettext_strings';
 			if ( isset( $_POST['action'] ) && $_POST['action'] === $action && isset( $_POST['original_ids'] ) && isset( $_POST['etm_ajax_language'] ) ) {
-				$original_ids = json_decode( $_POST['original_ids'] ); /* phpcs:ignore */ /* sanitized downstream */
+				$original_ids = json_decode( wp_kses_post( wp_unslash( $_POST['original_ids'] ) ) );
 				foreach ( $original_ids as $key => $id ) {
 					$original_ids[ $key ] = (int) $id;
 				}
 
-				$etm_ajax_language = sanitize_text_field( $_POST['etm_ajax_language'] );
+				$etm_ajax_language = sanitize_text_field( wp_unslash( $_POST['etm_ajax_language'] ) );
 
 				$etm          = ETM_eTranslation_Multilingual::get_etm_instance();
 				$etm_settings = $etm->get_component( 'settings' );
@@ -85,7 +85,7 @@ class ETM_String_Translation_API_Gettext {
 
 			$action = 'etm_string_translation_get_strings_by_original_ids_gettext';
 			if ( isset( $_POST['action'] ) && $_POST['action'] === $action && isset( $_POST['original_ids'] ) ) {
-				$original_ids = json_decode( $_POST['original_ids'] ); /* phpcs:ignore */ /* sanitized downstream */
+				$original_ids = json_decode( sanitize_text_field( wp_unslash( $_POST['original_ids'] ) ) );
 				foreach ( $original_ids as $key => $id ) {
 					$original_ids[ $key ] = (int) $id;
 				}
