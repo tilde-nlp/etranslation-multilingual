@@ -1391,7 +1391,7 @@ class ETM_Translation_Render{
         $update_strings = array();
 
         // machine translate new strings
-        if ( $machine_translation_available ) {
+        if ( $machine_translation_available && ! isset($_REQUEST['skip-mt']) ) {
             $machine_strings = $this->machine_translator->translate( $machine_translatable_strings, $language_code, $this->settings['default-language'] );
             $unique_original_strings_with_machine_translations = array_keys($machine_strings);
             $original_inserts = $this->etm_query->original_strings_sync( $language_code, $unique_original_strings_with_machine_translations );

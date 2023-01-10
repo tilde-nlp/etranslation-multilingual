@@ -113,6 +113,9 @@ class ETM_Editor_Api_Regular_Strings {
 		if ( $this->settings['default-language'] != $current_language ) {
 			if ( ! empty( $original_array ) && current_user_can( apply_filters( 'etm_translating_capability', 'manage_options' ) ) ) {
 				$this->translation_render->process_strings( $original_array, $current_language, $block_type, $skip_machine_translation );
+				if ( isset( $_REQUEST['skip-mt'] ) ) {
+					unset( $_REQUEST['skip-mt'] );
+				}
 			}
 			$dictionaries[ $current_language ] = $this->etm_query->get_string_rows( $id_array, $original_array, $current_language );
 		} else {
@@ -283,7 +286,9 @@ class ETM_Editor_Api_Regular_Strings {
 					$active_block_type = $this->etm_query->get_constant_block_type_active();
 					foreach ( $this->settings['translation-languages'] as $language ) {
 						if ( $language != $this->settings['default-language'] ) {
-							$dictionaries = $this->get_translation_for_strings( array(), array( wp_kses_post( wp_unslash( $_POST['original'] ) ) ), $active_block_type, array() );
+							// prevents async etranslation engine from overwriting edited translation.
+							$_REQUEST['skip-mt'] = true;
+							$dictionaries        = $this->get_translation_for_strings( array(), array( wp_kses_post( wp_unslash( $_POST['original'] ) ) ), $active_block_type, array() );
 							break;
 						}
 					}
