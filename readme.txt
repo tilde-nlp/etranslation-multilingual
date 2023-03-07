@@ -1,8 +1,8 @@
 ﻿=== eTranslation Multilingual ===
-Contributors: tildesia, cozmoslabs
+Contributors: tildesia, cozmoslabs, razvan.mo, madalin.ungureanu, sareiodata, cristophor
 Tags: translate, translation, etranslation, EU, europe, multilingual, automatic translation, bilingual, front-end translation, language
 Requires at least: 3.1.0
-Tested up to: 6.0.1
+Tested up to: 6.1.1
 Requires PHP: 5.6.20
 Stable tag: 1.0.0
 License: GPLv2 or later
@@ -12,14 +12,16 @@ Make your site multilingual in few steps with eTranslation Multilingual Wordpres
 
 == Description ==
 
-The eTranslation Multilingual WordPress plugin allows full website content translation in any language supported by the eTranslation automated translation service provided by the EC. The automated translations are performed by an eTranslation service API.
-
+Creating multilingual websites has never been easier: the eTranslation Multilingual WordPress plug-in can automatically translate your web content into 30+ languages – free, easy and secure as always.
+eTranslation Multilingual allows full website content translation in any language supported by the eTranslation automated translation service provided by the EC. The automated translations are performed by an eTranslation service API.
 
 == Features ==
 
+* Translates your web content automatically
+* Easy to use
+* East to integrate
 * Visual translation editor
-* Automatic translation in 30 languages via eTranslation integration
-* Easy setup
+* Automatic translation in 30+ languages via eTranslation integration
 * Image translation support
 * Translation caching for quick page load times
 * Dynamic content translation
@@ -43,6 +45,9 @@ The eTranslation Multilingual WordPress plugin allows full website content trans
 5. Translated page, machine-translated content notice
 6. Visual translation editor
 
+== Credits ==
+
+eTranslation Multilingual is a fork of [TranslatePress](https://translatepress.com) by [Cozmoslabs](https://www.cozmoslabs.com). We thank TranslatePress developers (Cozmoslabs, Razvan Mocanu, Madalin Ungureanu, Cristophor Hurduban) for their work on the original plugin.
 
 == Changelog ==
 

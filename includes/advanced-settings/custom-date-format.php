@@ -5,12 +5,12 @@
  * Saves as a key-value pair
  *
  */
-add_filter( 'trp_register_advanced_settings', 'trp_register_language_date_format', 1205 );
-function trp_register_language_date_format( $settings_array ){
+add_filter( 'etm_register_advanced_settings', 'etm_register_language_date_format', 1205 );
+function etm_register_language_date_format( $settings_array ){
 
 	$settings_array[] = array(
 		'name'          => 'language_date_format',
-		'rows'          => trp_get_languages("nodefault"),
+		'rows'          => etm_get_languages("nodefault"),
 		'default'       => '',
 		'type'          => 'input_array',
 		'label'         => esc_html__( 'Date format', 'etranslation-multilingual' ),

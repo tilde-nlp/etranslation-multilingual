@@ -1,6 +1,6 @@
 <?php
 
-class TRP_Machine_Translator_Logger {
+class ETM_Machine_Translator_Logger {
     protected $settings;
     protected $query;
     protected $url_converter;
@@ -9,7 +9,7 @@ class TRP_Machine_Translator_Logger {
     protected $limit;
 
     /**
-     * TRP_Machine_Translator_Logger constructor.
+     * ETM_Machine_Translator_Logger constructor.
      *
      * @param array $settings       Settings option.
      */
@@ -24,13 +24,13 @@ class TRP_Machine_Translator_Logger {
 
     public function log( $args = array() ){
 
-        $trp = TRP_Translate_Press::get_trp_instance();
+        $etm = ETM_eTranslation_Multilingual::get_etm_instance();
 
         if ( ! $this->query )
-            $this->query = $trp->get_component('query');
+            $this->query = $etm->get_component('query');
 
         if ( ! $this->url_converter )
-            $this->url_converter = $trp->get_component('url_converter');
+            $this->url_converter = $etm->get_component('url_converter');
 
         if( empty($args) )
             return false;
@@ -85,18 +85,6 @@ class TRP_Machine_Translator_Logger {
     }
 
     public function quota_exceeded(){
-        // if ( $this->limit  >=  $this->counter )
-        // {
-        //     // quota NOT exceeded
-        //     // for some reason this condition is hard to comprehend by my brain
-        //     // thus the unneeded comment.
-        //     return false;
-        // }
-
-        // // we've exceeded our daily quota
-        // $this->update_options( array( array( 'name' => 'machine_translation_trigger_quota_notification', 'value' => true ) ) );
-
-        // return true;
         return false;
     }
 
@@ -132,16 +120,16 @@ class TRP_Machine_Translator_Logger {
 
     private function get_mt_option($option_name, $default){
 
-        return isset( $this->settings['trp_machine_translation_settings'][$option_name] ) ? $this->settings['trp_machine_translation_settings'][$option_name] : $default;
+        return isset( $this->settings['etm_machine_translation_settings'][$option_name] ) ? $this->settings['etm_machine_translation_settings'][$option_name] : $default;
 
     }
 
     private function update_options( $options ){
 
-        $machine_translation_settings = $this->settings['trp_machine_translation_settings'];
+        $machine_translation_settings = $this->settings['etm_machine_translation_settings'];
 
         foreach( $options as $option ){
-            $this->settings['trp_machine_translation_settings'][$option['name']] = $option['value'];
+            $this->settings['etm_machine_translation_settings'][$option['name']] = $option['value'];
             $machine_translation_settings[$option['name']] = $option['value'];
         }
 
@@ -149,7 +137,7 @@ class TRP_Machine_Translator_Logger {
     }
 
     public function sanitize_settings($mt_settings ){
-        $machine_translation_settings = $this->settings['trp_machine_translation_settings'];
+        $machine_translation_settings = $this->settings['etm_machine_translation_settings'];
 
         if( isset( $machine_translation_settings['machine_translation_counter'] ) )
             $mt_settings['machine_translation_counter'] = $machine_translation_settings['machine_translation_counter'];

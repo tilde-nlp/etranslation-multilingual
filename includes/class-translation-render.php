@@ -1,55 +1,55 @@
 <?php
 
 /**
- * Class TRP_Translation_Render
+ * Class ETM_Translation_Render
  *
  * Translates pages.
  */
-class TRP_Translation_Render{
+class ETM_Translation_Render{
     protected $settings;
     protected $machine_translator;
-    /* @var TRP_Query */
-    protected $trp_query;
-	/* @var TRP_Url_Converter */
+    /* @var ETM_Query */
+    protected $etm_query;
+	/* @var ETM_Url_Converter */
     protected $url_converter;
-    /* @var TRP_Translation_Manager */
+    /* @var ETM_Translation_Manager */
 	protected $translation_manager;
     protected $common_html_tags;
 
     /**
-     * TRP_Translation_Render constructor.
+     * ETM_Translation_Render constructor.
      *
      * @param array $settings       Settings options.
      */
     public function __construct( $settings ){
         $this->settings = $settings;
         // apply_filters only once instead of everytime is_html() is used
-        $this->common_html_tags = implode( '|', apply_filters('trp_common_html_tags', array( 'html', 'body', 'table', 'tbody', 'thead', 'th', 'td', 'tr', 'div', 'p', 'span', 'b', 'a', 'strong', 'center', 'br', 'h1', 'h2', 'h3', 'h4', 'h5', 'h6', 'hr', 'img' ) ) );
+        $this->common_html_tags = implode( '|', apply_filters('etm_common_html_tags', array( 'html', 'body', 'table', 'tbody', 'thead', 'th', 'td', 'tr', 'div', 'p', 'span', 'b', 'a', 'strong', 'center', 'br', 'h1', 'h2', 'h3', 'h4', 'h5', 'h6', 'hr', 'img' ) ) );
     }
 
     /**
      * Start Output buffer to translate page.
      */
     public function start_output_buffer(){
-        global $TRP_LANGUAGE;
+        global $ETM_LANGUAGE;
 
         //when we check if is an ajax request in frontend we also set proper REQUEST variables and language global so we need to run this for every buffer
-        $ajax_on_frontend = TRP_Translation_Manager::is_ajax_on_frontend();//TODO refactor this function si it just checks and does not set variables
+        $ajax_on_frontend = ETM_Gettext_Manager::is_ajax_on_frontend();//TODO refactor this function si it just checks and does not set variables
 
-        if( ( is_admin() && !$ajax_on_frontend ) || trp_is_translation_editor( 'true' ) ){
+        if( ( is_admin() && !$ajax_on_frontend ) || etm_is_translation_editor( 'true' ) ){
             return;//we have two cases where we don't do anything: we are on the admin side and we are not in an ajax call or we are in the left side of the translation editor
         }
         else {
-            global $trp_output_buffer_started;//use this global so we know that we started the output buffer. we can check it for instance when wrapping gettext
+            global $etm_output_buffer_started;//use this global so we know that we started the output buffer. we can check it for instance when wrapping gettext
             mb_http_output("UTF-8");
-            if ( $TRP_LANGUAGE == $this->settings['default-language'] && !trp_is_translation_editor() ) {
-                // on default language when we are not in editor we just need to clear any trp tags that could still be present and handle links for special situation
+            if ( $ETM_LANGUAGE == $this->settings['default-language'] && !etm_is_translation_editor() ) {
+                // on default language when we are not in editor we just need to clear any etm tags that could still be present and handle links for special situation
                 $chunk_size = ($this->handle_custom_links_for_default_language() ) ? null : 4096;
                 ob_start(array( $this, 'render_default_language' ), $chunk_size);
-                $trp_output_buffer_started = true;
+                $etm_output_buffer_started = true;
             } else {
                 ob_start(array($this, 'translate_page'));//everywhere else translate the page
-                $trp_output_buffer_started = true;
+                $etm_output_buffer_started = true;
             }
         }
     }
@@ -57,7 +57,7 @@ class TRP_Translation_Render{
     /**
      * Function to hide php errors and notice and instead log them in debug.log so we don't store the notice strings inside the db if WP_DEBUG is on
      */
-    public function trp_debug_mode_off(){
+    public function etm_debug_mode_off(){
         if ( WP_DEBUG ) {
             ini_set('display_errors', 0);
             ini_set('log_errors', 1);
@@ -68,47 +68,35 @@ class TRP_Translation_Render{
     /**
      * Forces the language to be the first non default one in the preview translation editor.
      * We're doing this because we need the ID's.
-     * Otherwise we're just returning the global $TRP_LANGUAGE
+     * Otherwise we're just returning the global $ETM_LANGUAGE
      *
      * @return string       Language code.
      */
     protected function force_language_in_preview(){
-        global $TRP_LANGUAGE;
-        if ( in_array( $TRP_LANGUAGE, $this->settings['translation-languages'] ) ) {
-            if ( $TRP_LANGUAGE == $this->settings['default-language']  ){
+        global $ETM_LANGUAGE;
+        if ( in_array( $ETM_LANGUAGE, $this->settings['translation-languages'] ) ) {
+            if ( $ETM_LANGUAGE == $this->settings['default-language']  ){
                 // in the translation editor we need a different language then the default because we need string ID's.
                 // so we're forcing it to the first translation language because if it's the default, we're just returning the $output
-                if ( isset( $_REQUEST['trp-edit-translation'] ) && $_REQUEST['trp-edit-translation'] == 'preview' )  {
+                if ( isset( $_REQUEST['etm-edit-translation'] ) && $_REQUEST['etm-edit-translation'] == 'preview' )  {
                     if( count( $this->settings['translation-languages'] ) > 1 ){
                         foreach ($this->settings['translation-languages'] as $language) {
-                            if ($language != $TRP_LANGUAGE) {
+                            if ($language != $ETM_LANGUAGE) {
                                 // return the first language not default. only used for preview mode
                                 return $language;
                             }
                         }
                     }
                     else{
-                        return $TRP_LANGUAGE;
+                        return $ETM_LANGUAGE;
                     }
                 }
             }else {
-                return $TRP_LANGUAGE;
+                return $ETM_LANGUAGE;
             }
         }
         return false;
     }
-
-	/**
-	 * Trim strings.
-	 * This function is kept for backwards compatibility for earlier versions of SEO Pack Add-on
-	 *
-	 * @deprecated
-	 * @param string $string      Raw string.
-	 * @return string           Trimmed string.
-	 */
-	public function full_trim( $string ) {
-		return trp_full_trim( $string );
-	}
 
     /**
      * Preview mode string category name for give node type.
@@ -117,13 +105,13 @@ class TRP_Translation_Render{
      * @return string                           Category name.
      */
     protected function get_node_type_category( $current_node_type ){
-	    $trp = TRP_Translate_Press::get_trp_instance();
+	    $etm = ETM_eTranslation_Multilingual::get_etm_instance();
 	    if ( ! $this->translation_manager ) {
-		    $this->translation_manager = $trp->get_component( 'translation_manager' );
+		    $this->translation_manager = $etm->get_component( 'translation_manager' );
 	    }
 	    $string_groups = $this->translation_manager->string_groups();
 
-        $node_type_categories = apply_filters( 'trp_node_type_categories', array(
+        $node_type_categories = apply_filters( 'etm_node_type_categories', array(
             $string_groups['metainformation'] => array( 'meta_desc', 'page_title', 'meta_desc_img' ),
             $string_groups['images']          => array( 'image_src' )
         ));
@@ -144,7 +132,7 @@ class TRP_Translation_Render{
      * @return string                       Node description.
      */
     protected function get_node_description( $current_node ){
-        $node_type_descriptions = apply_filters( 'trp_node_type_descriptions',
+        $node_type_descriptions = apply_filters( 'etm_node_type_descriptions',
             array(
                 array(
                     'type'          => 'meta_desc',
@@ -264,7 +252,7 @@ class TRP_Translation_Render{
 	 * @return string
 	 */
     public function trim_translation_block( $string ){
-	    return preg_replace('/\s+/', ' ',   html_entity_decode( htmlspecialchars_decode( wp_strip_all_tags(trp_full_trim( $string )), ENT_QUOTES ) ) ) ;
+	    return preg_replace('/\s+/', ' ',   html_entity_decode( htmlspecialchars_decode( wp_strip_all_tags(etm_full_trim( $string )), ENT_QUOTES ) ) ) ;
     }
 
     /**
@@ -324,7 +312,7 @@ class TRP_Translation_Render{
      */
     public function oembed_response_data($data, $post, $width, $height ){
         if ( !empty( $data )) {
-            $translatable_items = apply_filters( 'trp_oembed_response_data_translatable_items', array('title', 'html', 'provider_name') );
+            $translatable_items = apply_filters( 'etm_oembed_response_data_translatable_items', array('title', 'html', 'provider_name') );
             foreach( $translatable_items as $item ){
                 if ( isset( $data[$item] ) ) {
                     $data[$item] = $this->translate_page( $data[$item] );
@@ -333,7 +321,7 @@ class TRP_Translation_Render{
         }
 
         // Otherwise we incorrectly unescape the sequence to end CDATA from ']]&gt;' to ']]>' breaking the xml. It needs to stay escaped in oembed response data.
-        remove_filter( 'trp_before_translate_content', array( $this, 'handle_cdata'), 1000);
+        remove_filter( 'etm_before_translate_content', array( $this, 'handle_cdata'), 1000);
 
         return $data;
     }
@@ -377,28 +365,28 @@ class TRP_Translation_Render{
      * @return string               Translated HTML page.
      */
     public function translate_page( $output ){
-    	if ( apply_filters( 'trp_stop_translating_page', false, $output ) ){
+    	if ( apply_filters( 'etm_stop_translating_page', false, $output ) ){
     		return $output;
 	    }
 
-        global $TRP_HDOM_QUOTE_DEFAULT;
-        $TRP_HDOM_QUOTE_DEFAULT = apply_filters('trp_hdom_quote_default_double_quotes', '"');
+        global $ETM_HDOM_QUOTE_DEFAULT;
+        $ETM_HDOM_QUOTE_DEFAULT = apply_filters('etm_hdom_quote_default_double_quotes', '"');
 
-    	global $trp_editor_notices;
+    	global $etm_editor_notices;
 
         /* replace our special tags so we have valid html */
-        $output = str_ireplace('#!trpst#', '<', $output);
-        $output = str_ireplace('#!trpen#', '>', $output);
+        $output = str_ireplace('#!etmst#', '<', $output);
+        $output = str_ireplace('#!etmen#', '>', $output);
 
-        $output = apply_filters('trp_before_translate_content', $output);
+        $output = apply_filters('etm_before_translate_content', $output);
 
         if ( strlen( $output ) < 1 || $output == false ){
             return $output;
         }
 
         if ( ! $this->url_converter ) {
-            $trp = TRP_Translate_Press::get_trp_instance();
-            $this->url_converter = $trp->get_component('url_converter');
+            $etm = ETM_eTranslation_Multilingual::get_etm_instance();
+            $this->url_converter = $etm->get_component('url_converter');
         }
 
 
@@ -410,18 +398,18 @@ class TRP_Translation_Render{
         global $wp_rewrite;
         if( is_object($wp_rewrite) ) {
             if( strpos( $this->url_converter->cur_page_url(), get_rest_url() ) !== false && strpos( current_filter(), 'rest_prepare_' ) !== 0 && current_filter() !== 'oembed_response_data' ){
-                $trpremoved = $this->remove_trp_html_tags( $output );
-                return $trpremoved;
+                $etmremoved = $this->remove_etm_html_tags( $output );
+                return $etmremoved;
             }
         }
 
         /* don't do anything on xmlrpc.php  */
         if( strpos( $this->url_converter->cur_page_url(), 'xmlrpc.php' ) !== false ){
-            $trpremoved = $this->remove_trp_html_tags( $output );
-            return $trpremoved;
+            $etmremoved = $this->remove_etm_html_tags( $output );
+            return $etmremoved;
         }
 
-        global $TRP_LANGUAGE;
+        global $ETM_LANGUAGE;
         $language_code = $this->force_language_in_preview();
         if ($language_code === false) {
             return $output;
@@ -433,7 +421,7 @@ class TRP_Translation_Render{
 	        $translate_normal_strings = true;
         }
 
-	    $preview_mode = isset( $_REQUEST['trp-edit-translation'] ) && $_REQUEST['trp-edit-translation'] == 'preview';
+	    $preview_mode = isset( $_REQUEST['etm-edit-translation'] ) && $_REQUEST['etm-edit-translation'] == 'preview';
 
         $json_array = json_decode( $output, true );
 	    /* If we have a json response we need to parse it and only translate the nodes that contain html
@@ -444,7 +432,7 @@ class TRP_Translation_Render{
 	     */
 	    if( $json_array && $json_array != $output ) {
 		    /* if it's one of our own ajax calls don't do nothing */
-            if ( ! empty( $_REQUEST['action'] ) && strpos( sanitize_text_field( $_REQUEST['action'] ), 'trp_' ) === 0 && $_REQUEST['action'] != 'trp_split_translation_block' )
+            if ( ! empty( $_REQUEST['action'] ) && strpos( sanitize_text_field( $_REQUEST['action'] ), 'etm_' ) === 0 && $_REQUEST['action'] != 'etm_split_translation_block' )
 		        return $output;
 
 	        //check if we have a json response
@@ -456,14 +444,14 @@ class TRP_Translation_Render{
                 }
 	        }
 
-	        return trp_safe_json_encode( $json_array );
+	        return etm_safe_json_encode( $json_array );
         }
 
         /**
          * Tries to fix the HTML document. It is off by default. Use at own risk.
          * Solves the problem where a duplicate attribute inside a tag causes the plugin to remove the duplicated attribute and all the other attributes to the right of the it.
          */
-        if( apply_filters( 'trp_try_fixing_invalid_html', false ) ) {
+        if( apply_filters( 'etm_try_fixing_invalid_html', false ) ) {
             if( class_exists('DOMDocument') ) {
                 $dom = new DOMDocument();
                 $dom->encoding = 'utf-8';
@@ -481,23 +469,23 @@ class TRP_Translation_Render{
 	    $skip_machine_translating_strings = array();
         $nodes = array();
 
-	    $trp = TRP_Translate_Press::get_trp_instance();
-	    if ( ! $this->trp_query ) {
-		    $this->trp_query = $trp->get_component( 'query' );
+	    $etm = ETM_eTranslation_Multilingual::get_etm_instance();
+	    if ( ! $this->etm_query ) {
+		    $this->etm_query = $etm->get_component( 'query' );
 	    }
 	    if ( ! $this->translation_manager ) {
-		    $this->translation_manager = $trp->get_component( 'translation_manager' );
+		    $this->translation_manager = $etm->get_component( 'translation_manager' );
 	    }
 
-	    $html = TranslatePress\str_get_html($output, true, true, TRP_DEFAULT_TARGET_CHARSET, false, TRP_DEFAULT_BR_TEXT, TRP_DEFAULT_SPAN_TEXT);
+	    $html = eTranslationMultilingual\str_get_html($output, true, true, ETM_DEFAULT_TARGET_CHARSET, false, ETM_DEFAULT_BR_TEXT, ETM_DEFAULT_SPAN_TEXT);
 	    if ( $html === false ){
-            $trpremoved = $this->remove_trp_html_tags( $output );
-		    return $trpremoved;
+            $etmremoved = $this->remove_etm_html_tags( $output );
+		    return $etmremoved;
 	    }
 
 	    $count_translation_blocks = 0;
 	    if ( $translate_normal_strings ) {
-		    $all_existing_translation_blocks = $this->trp_query->get_all_translation_blocks( $language_code );
+		    $all_existing_translation_blocks = $this->etm_query->get_all_translation_blocks( $language_code );
 		    // trim every translation block original now, to avoid over-calling trim function later
 		    foreach ( $all_existing_translation_blocks as $key => $existing_tb ) {
 			    $all_existing_translation_blocks[ $key ]->trimmed_original = $this->trim_translation_block( $all_existing_translation_blocks[ $key ]->original );
@@ -523,25 +511,25 @@ class TRP_Translation_Render{
 	    }
 
         /**
-         * When we are in the translation editor: Intercept the trp-gettext that was wrapped around all the gettext texts, grab the attribute data-trpgettextoriginal
-         * which contains the original translation id and move it to the parent node if the parent node only contains that string then remove the  wrap trp-gettext, otherwise replace it with another tag.
+         * When we are in the translation editor: Intercept the etm-gettext that was wrapped around all the gettext texts, grab the attribute data-etmgettextoriginal
+         * which contains the original translation id and move it to the parent node if the parent node only contains that string then remove the  wrap etm-gettext, otherwise replace it with another tag.
          * Also set a no-translation attribute.
-         * When we are in a live translation case: Intercept the trp-gettext that was wrapped around all the gettext texts, set a no-translation attribute to the parent node if the parent node only contains that string
-         * then remove the  wrap trp-gettext, otherwise replace the wrap with another tag and do the same to it
-         * We identified two cases: the wrapper trp-gettext can be as a node in the dome or ot can be inside a html attribute ( for example value )
+         * When we are in a live translation case: Intercept the etm-gettext that was wrapped around all the gettext texts, set a no-translation attribute to the parent node if the parent node only contains that string
+         * then remove the  wrap etm-gettext, otherwise replace the wrap with another tag and do the same to it
+         * We identified two cases: the wrapper etm-gettext can be as a node in the dome or ot can be inside a html attribute ( for example value )
          * and we need to treat them differently
          */
 
-        /* store the nodes in arrays so we can sort the $trp_rows which contain trp-gettext nodes from the DOM according to the number of children and we process the simplest first */
-        $trp_rows = array();
-        $trp_attr_rows = array();
+        /* store the nodes in arrays so we can sort the $etm_rows which contain etm-gettext nodes from the DOM according to the number of children and we process the simplest first */
+        $etm_rows = array();
+        $etm_attr_rows = array();
         foreach ( $html->find("*[!nuartrebuisaexiteatributulasta]") as $k => $row ){
-            if( $row->hasAttribute('data-trpgettextoriginal') ){
-                $trp_rows[count( $row->children )][] = $row;
+            if( $row->hasAttribute('data-etmgettextoriginal') ){
+                $etm_rows[count( $row->children )][] = $row;
             }
             else{
                 if( $row->nodetype !== 5 && $row->nodetype !== 3 )//add all tags that are not root or text, text nodes can't have attributes
-                    $trp_attr_rows[] = $row;
+                    $etm_attr_rows[] = $row;
 
 	            if ( $translate_normal_strings && $count_translation_blocks > 0 ) {
 		            $translation_block = $this->find_translation_block( $row, $all_existing_translation_blocks, $merge_rules );
@@ -562,9 +550,9 @@ class TRP_Translation_Render{
 				            }
 			            } else if ( $preview_mode && $translation_block->block_type == 2 && $translation_block->status != 0 ) {
 				            // refactor to not do this for each
-				            $row->setAttribute( 'data-trp-translate-id', $translation_block->id );
-				            $row->setAttribute( 'data-trp-translate-id-deprecated', $translation_block->id );
-				            $row->setAttribute( 'class', $existing_classes . 'trp-deprecated-tb' );
+				            $row->setAttribute( 'data-etm-translate-id', $translation_block->id );
+				            $row->setAttribute( 'data-etm-translate-id-deprecated', $translation_block->id );
+				            $row->setAttribute( 'class', $existing_classes . 'etm-deprecated-tb' );
 			            }
 		            }
 	            }
@@ -574,19 +562,19 @@ class TRP_Translation_Render{
 
         /* sort them here ascending by key where the key is the number of children */
         /* here we add support for gettext inside gettext */
-        ksort($trp_rows);
-        foreach( $trp_rows as $level ){
+        ksort($etm_rows);
+        foreach( $etm_rows as $level ){
             foreach( $level as $row ){
-                $original_gettext_translation_id = $row->getAttribute('data-trpgettextoriginal');
+                $original_gettext_translation_id = $row->getAttribute('data-etmgettextoriginal');
                 /* Parent node has no other children and no other innertext besides the current node */
                 if( count( $row->parent()->children ) == 1 && $row->parent()->innertext == $row->outertext ){
                     $row->outertext = $row->innertext();
                     $row->parent()->setAttribute($no_translate_attribute, '');
-	                $row->parent()->setAttribute('data-trp-gettext', '');
+	                $row->parent()->setAttribute('data-etm-gettext', '');
                     // we are in the editor
-                    if (isset($_REQUEST['trp-edit-translation']) && $_REQUEST['trp-edit-translation'] == 'preview') {
-                        //move up the data-trpgettextoriginal attribute
-                        $row->parent()->setAttribute('data-trpgettextoriginal', $original_gettext_translation_id);
+                    if (isset($_REQUEST['etm-edit-translation']) && $_REQUEST['etm-edit-translation'] == 'preview') {
+                        //move up the data-etmgettextoriginal attribute
+                        $row->parent()->setAttribute('data-etmgettextoriginal', $original_gettext_translation_id);
                     }
                 }
                 else{
@@ -595,31 +583,31 @@ class TRP_Translation_Render{
                     $row->setAttribute($no_translate_attribute, '');
 
                     /* Changes made to outertext take place only after saving the html object to a string */
-                    $row->outertext = '<trp-wrap class="trp-wrap" data-no-translation';
-                    if (isset($_REQUEST['trp-edit-translation']) && $_REQUEST['trp-edit-translation'] == 'preview') {
-                        $row->outertext .= ' data-trpgettextoriginal="'. $original_gettext_translation_id .'"';
+                    $row->outertext = '<etm-wrap class="etm-wrap" data-no-translation';
+                    if (isset($_REQUEST['etm-edit-translation']) && $_REQUEST['etm-edit-translation'] == 'preview') {
+                        $row->outertext .= ' data-etmgettextoriginal="'. $original_gettext_translation_id .'"';
                     }
-                    $row->outertext .= '>'.$row->innertext().'</trp-wrap>';
+                    $row->outertext .= '>'.$row->innertext().'</etm-wrap>';
                 }
             }
         }
 
-        foreach( $trp_attr_rows as $row ){
+        foreach( $etm_attr_rows as $row ){
             $all_attributes = $row->getAllAttributes();
             if( !empty( $all_attributes ) ) {
                 foreach ($all_attributes as $attr_name => $attr_value) {
-                    if (strpos($attr_value, 'trp-gettext ') !== false) {
-                        //if we have json content in the value of the attribute, we don't do anything. The trp-wrap will be removed later in the code
+                    if (strpos($attr_value, 'etm-gettext ') !== false) {
+                        //if we have json content in the value of the attribute, we don't do anything. The etm-wrap will be removed later in the code
                         if (is_array($json_array = json_decode( html_entity_decode( $attr_value, ENT_QUOTES ), true ) ) ) {
                             continue;
                         }
 
                         // convert to a node
-                        $node_from_value = TranslatePress\str_get_html(html_entity_decode(htmlspecialchars_decode($attr_value, ENT_QUOTES)), true, true, TRP_DEFAULT_TARGET_CHARSET, false, TRP_DEFAULT_BR_TEXT, TRP_DEFAULT_SPAN_TEXT);
+                        $node_from_value = eTranslationMultilingual\str_get_html(html_entity_decode(htmlspecialchars_decode($attr_value, ENT_QUOTES)), true, true, ETM_DEFAULT_TARGET_CHARSET, false, ETM_DEFAULT_BR_TEXT, ETM_DEFAULT_SPAN_TEXT);
 	                    if ( $node_from_value === false ){
 		                    continue;
 	                    }
-                        foreach ($node_from_value->find('trp-gettext') as $nfv_row) {
+                        foreach ($node_from_value->find('etm-gettext') as $nfv_row) {
                             $nfv_row->outertext = $nfv_row->innertext();
 	                        $saved_node_from_value = $node_from_value->save();
 
@@ -631,9 +619,9 @@ class TRP_Translation_Render{
 	                        $row->setAttribute($attr_name, $saved_node_from_value );
                             $row->setAttribute($no_translate_attribute . '-' . $attr_name, '');
                             // we are in the editor
-                            if (isset($_REQUEST['trp-edit-translation']) && $_REQUEST['trp-edit-translation'] == 'preview') {
-                                $original_gettext_translation_id = $nfv_row->getAttribute('data-trpgettextoriginal');
-                                $row->setAttribute('data-trpgettextoriginal-' . $attr_name, $original_gettext_translation_id);
+                            if (isset($_REQUEST['etm-edit-translation']) && $_REQUEST['etm-edit-translation'] == 'preview') {
+                                $original_gettext_translation_id = $nfv_row->getAttribute('data-etmgettextoriginal');
+                                $row->setAttribute('data-etmgettextoriginal-' . $attr_name, $original_gettext_translation_id);
                             }
 
                         }
@@ -645,18 +633,18 @@ class TRP_Translation_Render{
 
 	    if ( ! $translate_normal_strings ) {
             /* save it as a string */
-            $trpremoved = $html->save();
-            /* perform preg replace on the remaining trp-gettext tags */
-            $trpremoved = $this->remove_trp_html_tags($trpremoved );
-		    return $trpremoved;
+            $etmremoved = $html->save();
+            /* perform preg replace on the remaining etm-gettext tags */
+            $etmremoved = $this->remove_etm_html_tags($etmremoved );
+		    return $etmremoved;
 	    }
 
-        $no_translate_selectors = apply_filters( 'trp_no_translate_selectors', array( '#wpadminbar' ), $TRP_LANGUAGE );
-        $ignore_cdata = apply_filters('trp_ignore_cdata', true );
-        $translate_encoded_html_as_string = apply_filters('trp_translate_encoded_html_as_string', false );
-        $translate_encoded_html_as_html = apply_filters('trp_translate_encoded_html_as_html', true );
+        $no_translate_selectors = apply_filters( 'etm_no_translate_selectors', array( '#wpadminbar' ), $ETM_LANGUAGE );
+        $ignore_cdata = apply_filters('etm_ignore_cdata', true );
+        $translate_encoded_html_as_string = apply_filters('etm_translate_encoded_html_as_string', false );
+        $translate_encoded_html_as_html = apply_filters('etm_translate_encoded_html_as_html', true );
         // used for skipping minified scripts but can be used for anything
-        $skip_strings_containing_key_terms = apply_filters('trp_skip_strings_containing_key_terms',
+        $skip_strings_containing_key_terms = apply_filters('etm_skip_strings_containing_key_terms',
             array(
                 array(
                     'terms'=> array( 'function', 'return', 'if', '==' ),
@@ -675,7 +663,7 @@ class TRP_Translation_Render{
             }
         }
 
-        $no_auto_translate_selectors = apply_filters( 'trp_no_auto_translate_selectors', array( ), $TRP_LANGUAGE );
+        $no_auto_translate_selectors = apply_filters( 'etm_no_auto_translate_selectors', array( ), $ETM_LANGUAGE );
         foreach ( $no_auto_translate_selectors as $no_auto_translate_selector ){
             foreach ( $html->find( $no_auto_translate_selector ) as $k => $row ){
                 $row->setAttribute( $no_auto_translate_attribute, '' );
@@ -684,36 +672,36 @@ class TRP_Translation_Render{
 
 
         foreach ( $html->find('.translation-block') as $row ){
-            $trimmed_string = trp_full_trim( $row->innertext );
+            $trimmed_string = etm_full_trim( $row->innertext );
             $parent = $row->parent();
             if( $trimmed_string!=""
                 && $parent->tag!="script"
                 && $parent->tag!="style"
                 && $parent->tag != 'title'
                 && strpos($row->outertext,'[vc_') === false
-                && !$this->trp_is_numeric($trimmed_string)
+                && !$this->etm_is_numeric($trimmed_string)
                 && !preg_match('/^\d+%$/',$trimmed_string)
                 && !$this->has_ancestor_attribute( $row, $no_translate_attribute ) )
             {
                 $string_count = array_push( $translateable_strings, $trimmed_string );
                 array_push( $nodes, array('node' => $row, 'type' => 'block'));
 
-                //add data-trp-post-id attribute if needed
+                //add data-etm-post-id attribute if needed
                 $nodes = $this->maybe_add_post_id_in_node( $nodes, $row, $string_count );
             }
         }
 
-        foreach ( $html->find('trptext') as $row ){
+        foreach ( $html->find('etmtext') as $row ){
             $outertext = $row->outertext;
             $parent = $row->parent();
-            $trimmed_string = trp_full_trim( $outertext );
+            $trimmed_string = etm_full_trim( $outertext );
             if( $trimmed_string!=""
                 && $parent->tag!="script"
                 && $parent->tag!="style"
                 && $parent->tag != 'title'
                 && $parent->tag != 'textarea' //explicitly exclude textarea strings
                 && strpos($outertext,'[vc_') === false
-                && !$this->trp_is_numeric($trimmed_string)
+                && !$this->etm_is_numeric($trimmed_string)
                 && !preg_match('/^\d+%$/',$trimmed_string)
                 && !$this->has_ancestor_attribute( $row, $no_translate_attribute )
                 && !$this->has_ancestor_class( $row, 'translation-block')
@@ -726,19 +714,19 @@ class TRP_Translation_Render{
                     if ( $translate_encoded_html_as_html ){
                         if ( $this->is_html($trimmed_string) ){
                             // prevent potential infinite loops. Only call translate_page once recursively
-                            add_filter( 'trp_translate_encoded_html_as_html', '__return_false' );
+                            add_filter( 'etm_translate_encoded_html_as_html', '__return_false' );
 
                             $row->outertext = str_replace( $trimmed_string, $this->translate_page( $trimmed_string ), $row->outertext );
-                            remove_filter( 'trp_translate_encoded_html_as_html', '__return_false' );
+                            remove_filter( 'etm_translate_encoded_html_as_html', '__return_false' );
                             $is_html = true;
                         }else {
                             $entity_decoded_trimmed_string = html_entity_decode( $trimmed_string );
                             if ( $this->is_html( $entity_decoded_trimmed_string ) ) {
                                 // prevent potential infinite loops. Only call translate_page once recursively
-                                add_filter( 'trp_translate_encoded_html_as_html', '__return_false' );
+                                add_filter( 'etm_translate_encoded_html_as_html', '__return_false' );
 
                                 $row->outertext = str_replace( $trimmed_string, htmlentities( $this->translate_page( $entity_decoded_trimmed_string ) ), $row->outertext );
-                                remove_filter( 'trp_translate_encoded_html_as_html', '__return_false' );
+                                remove_filter( 'etm_translate_encoded_html_as_html', '__return_false' );
                                 $is_html = true;
                             }
                         }
@@ -753,15 +741,15 @@ class TRP_Translation_Render{
                 $node_type_to_push = ( in_array( $parent->tag, array( 'button', 'option' ) ) ) ? $parent->tag : 'text';
                 array_push($nodes, array('node' => $row, 'type' => $node_type_to_push ));
 
-                if ( ! apply_filters( 'trp_allow_machine_translation_for_string', true, $trimmed_string, null, null, $row ) ){
+                if ( ! apply_filters( 'etm_allow_machine_translation_for_string', true, $trimmed_string, null, null, $row ) ){
                     array_push( $skip_machine_translating_strings, $trimmed_string );
                 }
 
-                //add data-trp-post-id attribute if needed
+                //add data-etm-post-id attribute if needed
                 $nodes = $this->maybe_add_post_id_in_node( $nodes, $row, $string_count );
             }
 
-            $row = apply_filters( 'trp_process_other_text_nodes', $row );
+            $row = apply_filters( 'etm_process_other_text_nodes', $row );
 
         }
 	    //set up general links variables
@@ -772,15 +760,15 @@ class TRP_Translation_Render{
 	    	if ( isset( $node_accessor['selector'] ) ){
 			    foreach ( $html->find( $node_accessor['selector'] ) as $k => $row ){
 			    	$current_node_accessor_selector = $node_accessor['accessor'];
-				    $trimmed_string = trp_full_trim( $row->$current_node_accessor_selector );
+				    $trimmed_string = etm_full_trim( $row->$current_node_accessor_selector );
 			    	if ( $current_node_accessor_selector === 'href' ) {
 					    $translate_href = ( $this->is_external_link( $trimmed_string, $home_url ) || $this->url_converter->url_is_file( $trimmed_string ) || $this->url_converter->url_is_extra($trimmed_string) );
-					    $translate_href = apply_filters( 'trp_translate_this_href', $translate_href, $row, $TRP_LANGUAGE );
+					    $translate_href = apply_filters( 'etm_translate_this_href', $translate_href, $row, $ETM_LANGUAGE );
 					    $trimmed_string = ( $translate_href ) ? $trimmed_string : '';
 				    }
 
 				    if( $trimmed_string!=""
-				        && !$this->trp_is_numeric($trimmed_string)
+				        && !$this->etm_is_numeric($trimmed_string)
 				        && !preg_match('/^\d+%$/',$trimmed_string)
 				        && !$this->has_ancestor_attribute( $row, $no_translate_attribute )
 				        && !$this->has_ancestor_attribute( $row, $no_translate_attribute . '-' . $current_node_accessor_selector )
@@ -795,10 +783,10 @@ class TRP_Translation_Render{
                             if ( $translate_encoded_html_as_html ){
                                 if ( $this->is_html($entity_decoded_trimmed_string) ){
                                     // prevent potential infinite loops. Only call translate_page once recursively
-                                    add_filter( 'trp_translate_encoded_html_as_html', '__return_false' );
+                                    add_filter( 'etm_translate_encoded_html_as_html', '__return_false' );
 
                                     $row->setAttribute( $current_node_accessor_selector, str_replace( $trimmed_string, esc_attr( htmlentities($this->translate_page( $entity_decoded_trimmed_string )) ), $row->$current_node_accessor_selector ) );
-                                    remove_filter( 'trp_translate_encoded_html_as_html', '__return_false' );
+                                    remove_filter( 'etm_translate_encoded_html_as_html', '__return_false' );
                                     continue;
                                 }
                             }
@@ -806,7 +794,7 @@ class TRP_Translation_Render{
 
 					    array_push( $translateable_strings, $entity_decoded_trimmed_string );
 					    array_push( $nodes, array( 'node'=>$row, 'type' => $node_accessor_key ) );
-					    if ( ! apply_filters( 'trp_allow_machine_translation_for_string', true, $entity_decoded_trimmed_string, $current_node_accessor_selector, $node_accessor, $row ) ){
+					    if ( ! apply_filters( 'etm_allow_machine_translation_for_string', true, $entity_decoded_trimmed_string, $current_node_accessor_selector, $node_accessor, $row ) ){
 					    	array_push( $skip_machine_translating_strings, $entity_decoded_trimmed_string );
 					    }
 				    }
@@ -815,13 +803,13 @@ class TRP_Translation_Render{
 	    }
 
         $translateable_information = array( 'translateable_strings' => $translateable_strings, 'nodes' => $nodes );
-        $translateable_information = apply_filters( 'trp_translateable_strings', $translateable_information, $html, $no_translate_attribute, $TRP_LANGUAGE, $language_code, $this );
+        $translateable_information = apply_filters( 'etm_translateable_strings', $translateable_information, $html, $no_translate_attribute, $ETM_LANGUAGE, $language_code, $this );
         $translateable_strings = $translateable_information['translateable_strings'];
         $nodes = $translateable_information['nodes'];
 
         $translated_strings = $this->process_strings( $translateable_strings, $language_code, null, $skip_machine_translating_strings );
 
-        do_action('trp_translateable_information', $translateable_information, $translated_strings, $language_code);
+        do_action('etm_translateable_information', $translateable_information, $translated_strings, $language_code);
 
         //check for post_id meta on original strings, and insert for non existing
         /*
@@ -846,11 +834,11 @@ class TRP_Translation_Render{
                 $set_meta_for_this_url = get_transient('processed_original_string_meta_post_id_for_' . hash('md4', $current_permalink));
                 if( $set_meta_for_this_url === false ){
 
-                    $original_string_ids = $this->trp_query->get_original_string_ids($strings_in_post_content['strings']);
+                    $original_string_ids = $this->etm_query->get_original_string_ids($strings_in_post_content['strings']);
 
                     if( !empty( $original_string_ids ) ){
                         //there is a correlation between the two arrays
-                        $this->trp_query->set_original_string_meta_post_id( $original_string_ids, $strings_in_post_content['post_ids'] );
+                        $this->etm_query->set_original_string_meta_post_id( $original_string_ids, $strings_in_post_content['post_ids'] );
                     }
 
                     set_transient('processed_original_string_meta_post_id_for_' . hash('md4', $current_permalink), 'done', 60*60*24 );
@@ -859,7 +847,7 @@ class TRP_Translation_Render{
         }
 
         if ( $preview_mode ) {
-            $translated_string_ids = $this->trp_query->get_string_ids($translateable_strings, $language_code);
+            $translated_string_ids = $this->etm_query->get_string_ids($translateable_strings, $language_code);
         }
 
         foreach ( $nodes as $i => $node ) {
@@ -869,38 +857,38 @@ class TRP_Translation_Render{
             }
             $current_node_accessor = $node_accessors[ $nodes[$i]['type'] ];
             $accessor = $current_node_accessor[ 'accessor' ];
-            if ( $translation_available && isset( $current_node_accessor ) && ! ( $preview_mode && ( $this->settings['default-language'] == $TRP_LANGUAGE ) ) ) {
+            if ( $translation_available && isset( $current_node_accessor ) && ! ( $preview_mode && ( $this->settings['default-language'] == $ETM_LANGUAGE ) ) ) {
 
                 $translateable_string = $translateable_strings[$i];
 
                 if ( $current_node_accessor[ 'attribute' ] ){
 	                $translateable_string = $this->maybe_correct_translatable_string( $translateable_string, $nodes[$i]['node']->getAttribute( $accessor ) );
                     $nodes[$i]['node']->setAttribute( $accessor, str_replace( $translateable_string, esc_attr( $translated_strings[$i] ), $nodes[$i]['node']->getAttribute( $accessor ) ) );
-                    do_action( 'trp_set_translation_for_attribute', $nodes[$i]['node'], $accessor, $translated_strings[$i] );
+                    do_action( 'etm_set_translation_for_attribute', $nodes[$i]['node'], $accessor, $translated_strings[$i] );
                 }else{
 	                $translateable_string = $this->maybe_correct_translatable_string( $translateable_string, $nodes[$i]['node']->$accessor );
-                    $nodes[$i]['node']->$accessor = str_replace( $translateable_string, trp_sanitize_string($translated_strings[$i]), $nodes[$i]['node']->$accessor );
+                    $nodes[$i]['node']->$accessor = str_replace( $translateable_string, etm_sanitize_string($translated_strings[$i]), $nodes[$i]['node']->$accessor );
                 }
 
             }
 
             if ( $preview_mode ) {
                 if ( $accessor == 'outertext' && $nodes[$i]['type'] != 'button' ) {
-                    $outertext_details = '<translate-press data-trp-translate-id="' . $translated_string_ids[$translateable_strings[$i]]->id . '" data-trp-node-group="' . $this->get_node_type_category( $nodes[$i]['type'] ) . '"';
+                    $outertext_details = '<etranslation-multilingual data-etm-translate-id="' . $translated_string_ids[$translateable_strings[$i]]->id . '" data-etm-node-group="' . $this->get_node_type_category( $nodes[$i]['type'] ) . '"';
                     if ( $this->get_node_description( $nodes[$i] ) ) {
-                        $outertext_details .= ' data-trp-node-description="' . $this->get_node_description($nodes[$i] ) . '"';
+                        $outertext_details .= ' data-etm-node-description="' . $this->get_node_description($nodes[$i] ) . '"';
                     }
-                    $outertext_details .= '>' . $nodes[$i]['node']->outertext . '</translate-press>';
+                    $outertext_details .= '>' . $nodes[$i]['node']->outertext . '</etranslation-multilingual>';
                     $nodes[$i]['node']->outertext = $outertext_details;
                 } else {
                     if( $nodes[$i]['type'] == 'button' || $nodes[$i]['type'] == 'option' ){
                         $nodes[$i]['node'] = $nodes[$i]['node']->parent();
                     }
-	                $nodes[$i]['node']->setAttribute('data-trp-translate-id-' . $accessor, $translated_string_ids[ $translateable_strings[$i] ]->id );
-                    $nodes[$i]['node']->setAttribute('data-trp-node-group-' . $accessor, $this->get_node_type_category( $nodes[$i]['type'] ) );
+	                $nodes[$i]['node']->setAttribute('data-etm-translate-id-' . $accessor, $translated_string_ids[ $translateable_strings[$i] ]->id );
+                    $nodes[$i]['node']->setAttribute('data-etm-node-group-' . $accessor, $this->get_node_type_category( $nodes[$i]['type'] ) );
 
                     if ( $this->get_node_description( $nodes[$i] ) ) {
-                        $nodes[$i]['node']->setAttribute('data-trp-node-description-' . $accessor, $this->get_node_description($nodes[$i]));
+                        $nodes[$i]['node']->setAttribute('data-etm-node-description-' . $accessor, $this->get_node_description($nodes[$i]));
                     }
 
                 }
@@ -910,9 +898,9 @@ class TRP_Translation_Render{
 
 
         // We need to save here in order to access the translated links too.
-        if( apply_filters('tp_handle_custom_links_in_translation_blocks', false) ) {
+        if( apply_filters('etm_handle_custom_links_in_translation_blocks', false) ) {
             $html_string = $html->save();
-            $html = TranslatePress\str_get_html($html_string, true, true, TRP_DEFAULT_TARGET_CHARSET, false, TRP_DEFAULT_BR_TEXT, TRP_DEFAULT_SPAN_TEXT);
+            $html = eTranslationMultilingual\str_get_html($html_string, true, true, ETM_DEFAULT_TARGET_CHARSET, false, ETM_DEFAULT_BR_TEXT, ETM_DEFAULT_SPAN_TEXT);
             if ( $html === false ){
                 return $html_string;
             }
@@ -921,34 +909,37 @@ class TRP_Translation_Render{
         $html = $this->handle_custom_links_and_forms( $html );
 
 	    // Append an html table containing the errors
-	    $trp_editor_notices = apply_filters( 'trp_editor_notices', $trp_editor_notices );
-	    if ( trp_is_translation_editor('preview') && $trp_editor_notices != '' ){
+	    $etm_editor_notices = apply_filters( 'etm_editor_notices', $etm_editor_notices );
+	    if ( etm_is_translation_editor('preview') && $etm_editor_notices != '' ){
 		    $body = $html->find('body', 0 );
-		    $body->innertext = '<div data-no-translation class="trp-editor-notices">' . $trp_editor_notices . "</div>" . $body->innertext;
+            if ( $body ) {
+                $body->innertext = '<div data-no-translation class="etm-editor-notices">' . $etm_editor_notices . "</div>" . $body->innertext;
+            }
 	    }
 	    $final_html = $html->save();
 
-        /* perform preg replace on the remaining trp-gettext tags */
-        $final_html = $this->remove_trp_html_tags( $final_html );
+       /* perform preg replace on the remaining etm-gettext tags */
+        $final_html = $this->remove_etm_html_tags( $final_html );
 
-	    return apply_filters( 'trp_translated_html', $final_html, $TRP_LANGUAGE, $language_code, $preview_mode );
+	    return apply_filters( 'etm_translated_html', $final_html, $ETM_LANGUAGE, $language_code, $preview_mode );
     }
 
+
     public function handle_custom_links_and_forms( $html ){
-        global $TRP_LANGUAGE;
-        $preview_mode = isset( $_REQUEST['trp-edit-translation'] ) && $_REQUEST['trp-edit-translation'] == 'preview';
+        global $ETM_LANGUAGE;
+        $preview_mode = isset( $_REQUEST['etm-edit-translation'] ) && $_REQUEST['etm-edit-translation'] == 'preview';
         $home_url = home_url();
         $admin_url = admin_url();
         $wp_login_url = wp_login_url();
 	    $no_translate_attribute = 'data-no-translation';
         if ( ! $this->url_converter ) {
-            $trp = TRP_Translate_Press::get_trp_instance();
-            $this->url_converter = $trp->get_component('url_converter');
+            $etm = ETM_eTranslation_Multilingual::get_etm_instance();
+            $this->url_converter = $etm->get_component('url_converter');
         }
 
         // force custom links to have the correct language
         foreach( $html->find('a[href!="#"]') as $a_href)  {
-            $a_href->href = apply_filters( 'trp_href_from_translated_page', $a_href->href, $this->settings['default-language'] );
+            $a_href->href = apply_filters( 'etm_href_from_translated_page', $a_href->href, $this->settings['default-language'] );
 
             $url = trim($a_href->href);
 
@@ -958,28 +949,28 @@ class TRP_Translation_Render{
             $is_admin_link = $this->is_admin_link($url, $admin_url, $wp_login_url);
 
             if( $preview_mode && ! $is_external_link ){
-                $a_href->setAttribute( 'data-trp-original-href', $url );
+                $a_href->setAttribute( 'data-etm-original-href', $url );
             }
 
             if (
-            	( $TRP_LANGUAGE != $this->settings['default-language'] || $this->settings['add-subdirectory-to-default-language'] == 'yes' ) &&
+            	( $ETM_LANGUAGE != $this->settings['default-language'] || $this->settings['add-subdirectory-to-default-language'] == 'yes' ) &&
                 $this->settings['force-language-to-custom-links'] == 'yes' &&
 	            !$is_external_link &&
                 !$this->url_converter->url_is_file( $url ) &&
                 ( $this->url_converter->get_lang_from_url_string( $url ) == null || ( isset ($this->settings['add-subdirectory-to-default-language']) && $this->settings['add-subdirectory-to-default-language'] === 'yes' && $this->url_converter->get_lang_from_url_string( $url ) === $this->settings['default-language'] ) ) &&
 	            !$is_admin_link &&
-                strpos($url, '#TRPLINKPROCESSED') === false &&
-	            ( !$this->has_ancestor_attribute( $a_href, $no_translate_attribute ) || $this->has_ancestor_attribute($a_href, 'data-trp-gettext') ) // add language param to link if it's inside a gettext
+                strpos($url, '#ETMLINKPROCESSED') === false &&
+	            ( !$this->has_ancestor_attribute( $a_href, $no_translate_attribute ) || $this->has_ancestor_attribute($a_href, 'data-etm-gettext') ) // add language param to link if it's inside a gettext
             ){
-                $a_href->href = apply_filters( 'trp_force_custom_links', $this->url_converter->get_url_for_language( $TRP_LANGUAGE, $url ), $url, $TRP_LANGUAGE, $a_href );
+                $a_href->href = apply_filters( 'etm_force_custom_links', $this->url_converter->get_url_for_language( $ETM_LANGUAGE, $url ), $url, $ETM_LANGUAGE, $a_href );
                 $url = $a_href->href;
             }
 
             if( $preview_mode && ( $is_external_link || $this->is_different_language( $url ) || $is_admin_link ) ) {
-                $a_href->setAttribute( 'data-trp-unpreviewable', 'trp-unpreviewable' );
+                $a_href->setAttribute( 'data-etm-unpreviewable', 'etm-unpreviewable' );
             }
 
-            $a_href->href = str_replace('#TRPLINKPROCESSED', '', $a_href->href);
+            $a_href->href = str_replace('#ETMLINKPROCESSED', '', $a_href->href);
         }
 
         // pass the current language in forms where the action does not contain the language
@@ -988,23 +979,23 @@ class TRP_Translation_Render{
             $form_action    = $row->action;
             $is_admin_link    = $this->is_admin_link( $form_action, $admin_url, $wp_login_url );
             if(!$is_admin_link) {
-                $row->setAttribute( 'data-trp-original-action', $row->action );
-                $row->innertext .= apply_filters( 'trp_form_inputs', '<input type="hidden" name="trp-form-language" value="' . $this->settings['url-slugs'][ $TRP_LANGUAGE ] . '"/>', $TRP_LANGUAGE, $this->settings['url-slugs'][ $TRP_LANGUAGE ], $row );
+                $row->setAttribute( 'data-etm-original-action', $row->action );
+                $row->innertext .= apply_filters( 'etm_form_inputs', '<input type="hidden" name="etm-form-language" value="' . $this->settings['url-slugs'][ $ETM_LANGUAGE ] . '"/>', $ETM_LANGUAGE, $this->settings['url-slugs'][ $ETM_LANGUAGE ], $row );
 
                 $is_external_link = $this->is_external_link( $form_action, $home_url );
 
                 if ( !empty( $form_action )
                     && $this->settings['force-language-to-custom-links'] == 'yes'
                     && !$is_external_link
-                    && strpos( $form_action, '#TRPLINKPROCESSED' ) === false ) {
-                    $row->action = $this->url_converter->get_url_for_language( $TRP_LANGUAGE, $form_action );
+                    && strpos( $form_action, '#ETMLINKPROCESSED' ) === false ) {
+                    $row->action = $this->url_converter->get_url_for_language( $ETM_LANGUAGE, $form_action );
                 }
-                $row->action = str_replace( '#TRPLINKPROCESSED', '', $row->action );
+                $row->action = str_replace( '#ETMLINKPROCESSED', '', $row->action );
             }
         }
 
         foreach ( $html->find('link') as $link ){
-            $link->href = str_replace('#TRPLINKPROCESSED', '', $link->href);
+            $link->href = str_replace('#ETMLINKPROCESSED', '', $link->href);
         }
         return $html;
     }
@@ -1035,9 +1026,9 @@ class TRP_Translation_Render{
     }
 
     public function maybe_add_post_id_in_node( $nodes, $row, $string_count ){
-        $post_container_node = $this->has_ancestor_attribute( $row, 'data-trp-post-id' );
-        if( $post_container_node && $post_container_node->attr['data-trp-post-id'] ) {
-            $nodes[$string_count - 1]['post_id'] = $post_container_node->attr['data-trp-post-id'];
+        $post_container_node = $this->has_ancestor_attribute( $row, 'data-etm-post-id' );
+        if( $post_container_node && $post_container_node->attr['data-etm-post-id'] ) {
+            $nodes[$string_count - 1]['post_id'] = $post_container_node->attr['data-etm-post-id'];
         }
         return $nodes;
     }
@@ -1045,7 +1036,7 @@ class TRP_Translation_Render{
     /*
      * Update other image attributes (srcset) with the translated image
      *
-     * Hooked to trp_set_translation_for_attribute
+     * Hooked to etm_set_translation_for_attribute
      */
     public function translate_image_srcset_attributes( $node, $accessor, $translated_string){
 	    if( $accessor === 'src' ) {
@@ -1082,10 +1073,10 @@ class TRP_Translation_Render{
     /*
      * Do not automatically translate src and href attributes
      *
-     * Hooked to trp_allow_machine_translation_for_string
+     * Hooked to etm_allow_machine_translation_for_string
      */
     public function allow_machine_translation_for_string( $allow, $entity_decoded_trimmed_string, $current_node_accessor_selector, $node_accessor ){
-    	$skip_attributes = apply_filters( 'trp_skip_machine_translation_for_attr', array( 'href', 'src' ) );
+    	$skip_attributes = apply_filters( 'etm_skip_machine_translation_for_attr', array( 'href', 'src' ) );
 	    if ( in_array( $current_node_accessor_selector, $skip_attributes ) ){
 	    	// do not machine translate href and src
 	    	return false;
@@ -1096,7 +1087,7 @@ class TRP_Translation_Render{
     /*
      * Do not automatically translate html nodes with data-no-auto-translation attribute
      *
-     * Hooked to trp_allow_machine_translation_for_string
+     * Hooked to etm_allow_machine_translation_for_string
      */
     function skip_automatic_translation_for_no_auto_translation_selector($allow, $entity_decoded_trimmed_string, $current_node_accessor_selector, $node_accessor, $row){
         $no_auto_translate_attribute = 'data-no-auto-translation';
@@ -1109,26 +1100,26 @@ class TRP_Translation_Render{
 
 
     /**
-     * function that removes any unwanted leftover <trp-gettext> tags
+     * function that removes any unwanted leftover <etm-gettext> tags
      * @param $string
      * @return string|string[]|null
      */
-    function remove_trp_html_tags( $string ){
-        $string = preg_replace( '/(<|&lt;)trp-gettext (.*?)(>|&gt;)/i', '', $string );
-        $string = preg_replace( '/(<|&lt;)(\\\\)*\/trp-gettext(>|&gt;)/i', '', $string );
+    function remove_etm_html_tags( $string ){
+        $string = preg_replace( '/(<|&lt;)etm-gettext (.*?)(>|&gt;)/i', '', $string );
+        $string = preg_replace( '/(<|&lt;)(\\\\)*\/etm-gettext(>|&gt;)/i', '', $string );
 
         // In case we have a gettext string which was run through rawurlencode(). See more details on iss6563
-        $string = preg_replace( '/%23%21trpst%23trp-gettext(.*?)%23%21trpen%23/i', '', $string );
-        $string = preg_replace( '/%23%21trpst%23%2Ftrp-gettext%23%21trpen%23/i', '', $string );
+        $string = preg_replace( '/%23%21etmst%23etm-gettext(.*?)%23%21etmen%23/i', '', $string );
+        $string = preg_replace( '/%23%21etmst%23%2Fetm-gettext%23%21etmen%23/i', '', $string );
 
-        if (!isset($_REQUEST['trp-edit-translation']) || $_REQUEST['trp-edit-translation'] != 'preview') {
-            $string = preg_replace('/(<|&lt;)trp-wrap (.*?)(>|&gt;)/i', '', $string);
-            $string = preg_replace('/(<|&lt;)(\\\\)*\/trp-wrap(>|&gt;)/i', '', $string);
+        if (!isset($_REQUEST['etm-edit-translation']) || $_REQUEST['etm-edit-translation'] != 'preview') {
+            $string = preg_replace('/(<|&lt;)etm-wrap (.*?)(>|&gt;)/i', '', $string);
+            $string = preg_replace('/(<|&lt;)(\\\\)*\/etm-wrap(>|&gt;)/i', '', $string);
         }
 
         //remove post containers before outputting
-        $string = preg_replace( '/(<|&lt;)trp-post-container (.*?)(>|&gt;)/i', '', $string );
-        $string = preg_replace( '/(<|&lt;)(\\\\)*\/trp-post-container(>|&gt;)/i', '', $string );
+        $string = preg_replace( '/(<|&lt;)etm-post-container (.*?)(>|&gt;)/i', '', $string );
+        $string = preg_replace( '/(<|&lt;)(\\\\)*\/etm-post-container(>|&gt;)/i', '', $string );
 
         return $string;
     }
@@ -1143,10 +1134,10 @@ class TRP_Translation_Render{
         if ( $html_decoded_value != strip_tags( $html_decoded_value ) ) {
 
             $value = $this->translate_page( $value );
-            /*the translate-press tag can appear on a gettext string without html and should not be left in the json
+            /*the etranslation-multilingual tag can appear on a gettext string without html and should not be left in the json
             as we don't know how it will be inserted into the page by js */
-            $value = preg_replace( '/(<|&lt;)translate-press (.*?)(>|&gt;)/', '', $value );
-            $value = preg_replace( '/(<|&lt;)(\\\\)*\/translate-press(>|&gt;)/', '', $value );
+            $value = preg_replace( '/(<|&lt;)etranslation-multilingual (.*?)(>|&gt;)/', '', $value );
+            $value = preg_replace( '/(<|&lt;)(\\\\)*\/etranslation-multilingual(>|&gt;)/', '', $value );
         }
     }
 
@@ -1158,7 +1149,7 @@ class TRP_Translation_Render{
 		//check if it a html text and translate
 		$html_decoded_value = html_entity_decode( (string) $value );
 		if ( $html_decoded_value != strip_tags( $html_decoded_value ) ) {
-			$html = TranslatePress\str_get_html( $value, true, true, TRP_DEFAULT_TARGET_CHARSET, false, TRP_DEFAULT_BR_TEXT, TRP_DEFAULT_SPAN_TEXT );
+			$html = eTranslationMultilingual\str_get_html( $value, true, true, ETM_DEFAULT_TARGET_CHARSET, false, ETM_DEFAULT_BR_TEXT, ETM_DEFAULT_SPAN_TEXT );
 			if( $html ) {
                 $html = $this->handle_custom_links_and_forms($html);
                 $value = $html->save();
@@ -1169,17 +1160,17 @@ class TRP_Translation_Render{
     public function handle_custom_links_for_default_language(){
         return ( $this->settings['force-language-to-custom-links'] == 'yes' &&
             $this->is_first_language_not_default_language() &&
-            apply_filters('trp_handle_custom_links_and_forms_in_default_language', true ) );
+            apply_filters('etm_handle_custom_links_and_forms_in_default_language', true ) );
     }
 
     /**
      * Function that should be called only on the default language and when we are not in the editor mode and it is designed as a fallback to clear
-     * any trp gettext tags that we added and for some reason show up  although they should not
+     * any etm gettext tags that we added and for some reason show up  although they should not
      * @param $output
      * @return mixed
      */
     public function render_default_language( $output ){
-        if ( $this->handle_custom_links_for_default_language() && !apply_filters( 'trp_stop_translating_page', false, $output ) ) {
+        if ( $this->handle_custom_links_for_default_language() && !apply_filters( 'etm_stop_translating_page', false, $output ) ) {
 
 	        $json_array = json_decode( $output, true );
 	        /* If we have a json response we need to parse it and only translate the nodes that contain html
@@ -1190,7 +1181,7 @@ class TRP_Translation_Render{
 			 */
 	        if( $json_array && $json_array != $output ) {
 		        /* if it's one of our own ajax calls don't do nothing */
-		        if ( ! empty( $_REQUEST['action'] ) && strpos( sanitize_text_field( $_REQUEST['action'] ), 'trp_' ) === 0 && $_REQUEST['action'] != 'trp_split_translation_block' ) {
+		        if ( ! empty( $_REQUEST['action'] ) && strpos( sanitize_text_field( $_REQUEST['action'] ), 'etm_' ) === 0 && $_REQUEST['action'] != 'etm_split_translation_block' ) {
 			        return $output;
 		        }
 
@@ -1200,7 +1191,7 @@ class TRP_Translation_Render{
 				        array_walk_recursive($json_array, array($this, 'custom_links_and_forms_json'));
 			        } else {
 
-				        $html = TranslatePress\str_get_html( $json_array, true, true, TRP_DEFAULT_TARGET_CHARSET, false, TRP_DEFAULT_BR_TEXT, TRP_DEFAULT_SPAN_TEXT );
+				        $html = eTranslationMultilingual\str_get_html( $json_array, true, true, ETM_DEFAULT_TARGET_CHARSET, false, ETM_DEFAULT_BR_TEXT, ETM_DEFAULT_SPAN_TEXT );
 				        if( $html ) {
                             $html = $this->handle_custom_links_and_forms($html);
                             $json_array = $html->save();
@@ -1208,17 +1199,17 @@ class TRP_Translation_Render{
 			        }
 		        }
 
-		        return trp_safe_json_encode( $json_array );
+		        return etm_safe_json_encode( $json_array );
 	        }
 
-            $html = TranslatePress\str_get_html( $output, true, true, TRP_DEFAULT_TARGET_CHARSET, false, TRP_DEFAULT_BR_TEXT, TRP_DEFAULT_SPAN_TEXT );
+            $html = eTranslationMultilingual\str_get_html( $output, true, true, ETM_DEFAULT_TARGET_CHARSET, false, ETM_DEFAULT_BR_TEXT, ETM_DEFAULT_SPAN_TEXT );
             if( $html ) {
                 $html = $this->handle_custom_links_and_forms($html);
                 $output = $html->save();
             }
         }
 
-        return TRP_Translation_Manager::strip_gettext_tags($output);
+        return ETM_Translation_Manager::strip_gettext_tags($output);
     }
 
     /**
@@ -1308,16 +1299,16 @@ class TRP_Translation_Render{
      * @return bool                 Whether given url links to a different language than the current one.
      */
     protected function is_different_language( $url ){
-        global $TRP_LANGUAGE;
+        global $ETM_LANGUAGE;
         if ( ! $this->url_converter ) {
-            $trp = TRP_Translate_Press::get_trp_instance();
-            $this->url_converter = $trp->get_component('url_converter');
+            $etm = ETM_eTranslation_Multilingual::get_etm_instance();
+            $this->url_converter = $etm->get_component('url_converter');
         }
         $lang = $this->url_converter->get_lang_from_url_string( $url );
         if ( $lang == null ){
             $lang = $this->settings['default-language'];
         }
-        if ( $lang == $TRP_LANGUAGE ){
+        if ( $lang == $ETM_LANGUAGE ){
             return false;
         }else{
             return true;
@@ -1344,7 +1335,7 @@ class TRP_Translation_Render{
 		    $is_admin_link = false;
 	    }
 
-	    return apply_filters('trp_is_admin_link', $is_admin_link, $url, $admin_url, $wp_login_url);
+	    return apply_filters('etm_is_admin_link', $is_admin_link, $url, $admin_url, $wp_login_url);
 
     }
 
@@ -1359,20 +1350,20 @@ class TRP_Translation_Render{
      */
     public function process_strings( $translateable_strings, $language_code, $block_type = null, $skip_machine_translating_strings = array() ){
 	    if ( ! $this->machine_translator ) {
-		    $trp = TRP_Translate_Press::get_trp_instance();
-		    $this->machine_translator = $trp->get_component('machine_translator');
+		    $etm = ETM_eTranslation_Multilingual::get_etm_instance();
+		    $this->machine_translator = $etm->get_component('machine_translator');
 	    }
 
         $translated_strings = array();
 	    $machine_translation_available = $this->machine_translator ? $this->machine_translator->is_available( array( $this->settings['default-language'], $language_code )) : false;
 
-        if ( ! $this->trp_query ) {
-            $trp = TRP_Translate_Press::get_trp_instance();
-            $this->trp_query = $trp->get_component( 'query' );
+        if ( ! $this->etm_query ) {
+            $etm = ETM_eTranslation_Multilingual::get_etm_instance();
+            $this->etm_query = $etm->get_component( 'query' );
         }
 
         // get existing translations
-        $dictionary = $this->trp_query->get_existing_translations( array_values($translateable_strings), $language_code );
+        $dictionary = $this->etm_query->get_existing_translations( array_values($translateable_strings), $language_code );
         if ( $dictionary === false ){
         	return array();
         }
@@ -1381,7 +1372,7 @@ class TRP_Translation_Render{
         foreach( $translateable_strings as $i => $string ){
         	// prevent accidentally machine translated strings from db such as for src to be displayed
 	        $skip_string = in_array( $string, $skip_machine_translating_strings );
-	        if ( isset( $dictionary[$string]->translated ) && $dictionary[$string]->status == $this->trp_query->get_constant_machine_translated() && $skip_string ){
+	        if ( isset( $dictionary[$string]->translated ) && $dictionary[$string]->status == $this->etm_query->get_constant_machine_translated() && $skip_string ){
 	        	continue;
 	        }
 	        //strings existing in database,
@@ -1396,14 +1387,14 @@ class TRP_Translation_Render{
             }
         }
 
-        $untranslated_list = $this->trp_query->get_untranslated_strings( $new_strings, $language_code );
+        $untranslated_list = $this->etm_query->get_untranslated_strings( $new_strings, $language_code );
         $update_strings = array();
 
         // machine translate new strings
-        if ( $machine_translation_available ) {
+        if ( $machine_translation_available && ! isset($_REQUEST['skip-mt']) ) {
             $machine_strings = $this->machine_translator->translate( $machine_translatable_strings, $language_code, $this->settings['default-language'] );
             $unique_original_strings_with_machine_translations = array_keys($machine_strings);
-            $original_inserts = $this->trp_query->original_strings_sync( $language_code, $unique_original_strings_with_machine_translations );
+            $original_inserts = $this->etm_query->original_strings_sync( $language_code, $unique_original_strings_with_machine_translations );
 
             // insert unique machine translations into db. Only for strings newly discovered
             foreach ( $unique_original_strings_with_machine_translations as $string ) {
@@ -1411,9 +1402,9 @@ class TRP_Translation_Render{
                 array_push( $update_strings, array(
                     'id'          => $id,
                     'original_id' => $original_inserts[ $string ]->id,
-                    'original'    => trp_sanitize_string( $string, false ),
-                    'translated'  => trp_sanitize_string( $machine_strings[ $string ] ),
-                    'status'      => $this->trp_query->get_constant_machine_translated() ) );
+                    'original'    => etm_sanitize_string( $string, false ),
+                    'translated'  => etm_sanitize_string( $machine_strings[ $string ] ),
+                    'status'      => $this->etm_query->get_constant_machine_translated() ) );
             }
         }else{
             $machine_strings = false;
@@ -1431,8 +1422,8 @@ class TRP_Translation_Render{
             }
         }
 
-        $this->trp_query->insert_strings( $new_strings, $language_code, $block_type );
-        $this->trp_query->update_strings( $update_strings, $language_code, array( 'id','original', 'translated', 'status', 'original_id' ) );
+        $this->etm_query->insert_strings( $new_strings, $language_code, $block_type );
+        $this->etm_query->update_strings( $update_strings, $language_code, array( 'id','original', 'translated', 'status', 'original_id' ) );
 
         return $translated_strings;
     }
@@ -1486,7 +1477,7 @@ class TRP_Translation_Render{
 	 * @return array
 	 */
     public function get_node_accessors(){
-	    return apply_filters( 'trp_node_accessors', array(
+	    return apply_filters( 'etm_node_accessors', array(
 		    'text' => array(
 			    'accessor' => 'outertext',
 			    'attribute' => false
@@ -1555,22 +1546,22 @@ class TRP_Translation_Render{
 
 		// so far only when woocommerce is active we need to enqueue this script on all pages
 		if ( class_exists( 'WooCommerce' ) ){
-			wp_enqueue_script('trp-frontend-compatibility', TRP_PLUGIN_URL . 'assets/js/trp-frontend-compatibility.js', array(), TRP_PLUGIN_VERSION );
+			wp_enqueue_script('etm-frontend-compatibility', ETM_PLUGIN_URL . 'assets/js/etm-frontend-compatibility.js', array(), ETM_PLUGIN_VERSION );
 		}
 
 	}
 
-	public function get_trp_data(){
-		global $TRP_LANGUAGE;
+	public function get_etm_data(){
+		global $ETM_LANGUAGE;
 
-		$trp = TRP_Translate_Press::get_trp_instance();
+		$etm = ETM_eTranslation_Multilingual::get_etm_instance();
 		if ( ! $this->translation_manager ) {
-			$this->translation_manager = $trp->get_component( 'translation_manager' );
+			$this->translation_manager = $etm->get_component( 'translation_manager' );
 		}
 		$nonces = $this->translation_manager->editor_nonces();
 
-		$language_to_query = $TRP_LANGUAGE;
-		if ( $TRP_LANGUAGE == $this->settings['default-language']  ) {
+		$language_to_query = $ETM_LANGUAGE;
+		if ( $ETM_LANGUAGE == $this->settings['default-language']  ) {
 			foreach ($this->settings['translation-languages'] as $language) {
 				if ( $language != $this->settings['default-language'] ) {
 					$language_to_query = $language;
@@ -1581,22 +1572,22 @@ class TRP_Translation_Render{
 		$language_to_query = ( count ( $this->settings['translation-languages'] ) < 2 ) ? '' : $language_to_query;
 
 		return array(
-            'trp_custom_ajax_url'                                  => apply_filters( 'trp_custom_ajax_url', TRP_PLUGIN_URL . 'includes/trp-ajax.php' ),
-            'trp_wp_ajax_url'                                      => apply_filters( 'trp_wp_ajax_url', admin_url( 'admin-ajax.php' ) ),
-            'trp_language_to_query'                                => $language_to_query,
-            'trp_original_language'                                => $this->settings['default-language'],
-            'trp_current_language'                                 => $TRP_LANGUAGE,
-            'trp_skip_selectors'                                   => apply_filters( 'trp_skip_selectors_from_dynamic_translation', array( '[data-no-translation]', '[data-no-dynamic-translation]', '[data-trp-translate-id-innertext]', 'script', 'style', 'head', 'trp-span', 'translate-press' ), $TRP_LANGUAGE, $this->settings ), // data-trp-translate-id-innertext refers to translation block and it shouldn't be detected
-            'trp_base_selectors'                                   => $this->get_base_attribute_selectors(),
-            'trp_attributes_selectors'                             => $this->get_node_accessors(),
-            'trp_attributes_accessors'                             => $this->get_accessors_array(),
+            'etm_custom_ajax_url'                                  => apply_filters( 'etm_custom_ajax_url', ETM_PLUGIN_URL . 'includes/etm-ajax.php' ),
+            'etm_wp_ajax_url'                                      => apply_filters( 'etm_wp_ajax_url', admin_url( 'admin-ajax.php' ) ),
+            'etm_language_to_query'                                => $language_to_query,
+            'etm_original_language'                                => $this->settings['default-language'],
+            'etm_current_language'                                 => $ETM_LANGUAGE,
+            'etm_skip_selectors'                                   => apply_filters( 'etm_skip_selectors_from_dynamic_translation', array( '[data-no-translation]', '[data-no-dynamic-translation]', '[data-etm-translate-id-innertext]', 'script', 'style', 'head', 'etm-span', 'etranslation-multilingual' ), $ETM_LANGUAGE, $this->settings ), // data-etm-translate-id-innertext refers to translation block and it shouldn't be detected
+            'etm_base_selectors'                                   => $this->get_base_attribute_selectors(),
+            'etm_attributes_selectors'                             => $this->get_node_accessors(),
+            'etm_attributes_accessors'                             => $this->get_accessors_array(),
             'gettranslationsnonceregular'                          => $nonces['gettranslationsnonceregular'],
-            'showdynamiccontentbeforetranslation'                  => apply_filters( 'trp_show_dynamic_content_before_translation', false ),
-            'skip_strings_from_dynamic_translation'                => apply_filters( 'trp_skip_strings_from_dynamic_translation', array() ),
-            'skip_strings_from_dynamic_translation_for_substrings' => apply_filters( 'trp_skip_strings_from_dynamic_translation_for_substrings', array( 'href' => array('amazon-adsystem', 'googleads', 'g.doubleclick') ) ),
-            'duplicate_detections_allowed'                         => apply_filters( 'trp_duplicate_detections_allowed', 100 ),
-            'trp_translate_numerals_opt'                           => isset ($this->settings["trp_advanced_settings"]["enable_numerals_translation"]) ? $this->settings["trp_advanced_settings"]["enable_numerals_translation"] : 'no',
-            'trp_no_auto_translation_selectors'                    => apply_filters( 'trp_no_auto_translate_selectors', array( '[data-no-auto-translation]' ), $TRP_LANGUAGE )
+            'showdynamiccontentbeforetranslation'                  => apply_filters( 'etm_show_dynamic_content_before_translation', false ),
+            'skip_strings_from_dynamic_translation'                => apply_filters( 'etm_skip_strings_from_dynamic_translation', array() ),
+            'skip_strings_from_dynamic_translation_for_substrings' => apply_filters( 'etm_skip_strings_from_dynamic_translation_for_substrings', array( 'href' => array('amazon-adsystem', 'googleads', 'g.doubleclick') ) ),
+            'duplicate_detections_allowed'                         => apply_filters( 'etm_duplicate_detections_allowed', 100 ),
+            'etm_translate_numerals_opt'                           => isset ($this->settings["etm_advanced_settings"]["enable_numerals_translation"]) ? $this->settings["etm_advanced_settings"]["enable_numerals_translation"] : 'no',
+            'etm_no_auto_translation_selectors'                    => apply_filters( 'etm_no_auto_translate_selectors', array( '[data-no-auto-translation]' ), $ETM_LANGUAGE )
 		);
 	}
 
@@ -1604,26 +1595,26 @@ class TRP_Translation_Render{
      * Enqueue dynamic translation script.
      */
     public function enqueue_dynamic_translation(){
-        $enable_dynamic_translation = apply_filters( 'trp_enable_dynamic_translation', true );
+        $enable_dynamic_translation = apply_filters( 'etm_enable_dynamic_translation', true );
         if ( ! $enable_dynamic_translation ){
             return;
         }
 
-        global $TRP_LANGUAGE;
+        global $ETM_LANGUAGE;
 
-        if ( $TRP_LANGUAGE != $this->settings['default-language'] || ( isset( $_REQUEST['trp-edit-translation'] ) && $_REQUEST['trp-edit-translation'] == 'preview' ) ) {
+        if ( $ETM_LANGUAGE != $this->settings['default-language'] || ( isset( $_REQUEST['etm-edit-translation'] ) && $_REQUEST['etm-edit-translation'] == 'preview' ) ) {
 
-            wp_enqueue_script('trp-dynamic-translator', TRP_PLUGIN_URL . 'assets/js/trp-translate-dom-changes.js', array('jquery'), TRP_PLUGIN_VERSION, true );
-            wp_localize_script('trp-dynamic-translator', 'trp_data', $this->get_trp_data() );
+            wp_enqueue_script('etm-dynamic-translator', ETM_PLUGIN_URL . 'assets/js/etm-translate-dom-changes.js', array('jquery'), ETM_PLUGIN_VERSION, true );
+            wp_localize_script('etm-dynamic-translator', 'etm_data', $this->get_etm_data() );
         }
     }
 
 	/**
-	 * Skip base selectors (data-trp-translate-id, data-trpgettextoriginal etc.)
+	 * Skip base selectors (data-etm-translate-id, data-etmgettextoriginal etc.)
 	 *
 	 * The base selectors (without any suffixes) are placed only if their children do not contain any nodes that are translatable
 	 *
- 	 * hooked to trp_skip_selectors_from_dynamic_translation
+ 	 * hooked to etm_skip_selectors_from_dynamic_translation
 	 *
 	 * @param $skip_selectors
 	 *
@@ -1642,7 +1633,7 @@ class TRP_Translation_Render{
 	 * Get base attribute selectors
 	 */
 	public function get_base_attribute_selectors(){
-		return apply_filters( 'trp_base_attribute_selectors', array( 'data-trp-translate-id', 'data-trpgettextoriginal', 'data-trp-post-slug' ) );
+		return apply_filters( 'etm_base_attribute_selectors', array( 'data-etm-translate-id', 'data-etmgettextoriginal', 'data-etm-post-slug' ) );
 	}
 
 
@@ -1672,29 +1663,27 @@ class TRP_Translation_Render{
      * @param $location
      * @param $status
      * @return string
-     * @since 1.0.8
      */
     public function force_preview_on_url_redirect( $location, $status ){
-        if( isset( $_REQUEST['trp-edit-translation'] ) && $_REQUEST['trp-edit-translation'] == 'preview' ){
-            $location = add_query_arg( 'trp-edit-translation', 'preview', $location );
+        if( isset( $_REQUEST['etm-edit-translation'] ) && $_REQUEST['etm-edit-translation'] == 'preview' ){
+            $location = add_query_arg( 'etm-edit-translation', 'preview', $location );
         }
         return $location;
     }
 
     /**
-     * Filters the location redirect to add the current language based on the trp-form-language parameter
+     * Filters the location redirect to add the current language based on the etm-form-language parameter
      * @param $location
      * @param $status
      * @return string
-     * @since 1.1.2
      */
     public function force_language_on_form_url_redirect( $location, $status ){
-        if( isset( $_REQUEST[ 'trp-form-language' ] ) && !empty($_REQUEST[ 'trp-form-language' ]) ){
-            $form_language_slug = sanitize_text_field($_REQUEST[ 'trp-form-language' ]);
+        if( isset( $_REQUEST[ 'etm-form-language' ] ) && !empty($_REQUEST[ 'etm-form-language' ]) ){
+            $form_language_slug = sanitize_text_field($_REQUEST[ 'etm-form-language' ]);
             $form_language = array_search($form_language_slug, $this->settings['url-slugs']);
             if ( ! $this->url_converter ) {
-                $trp = TRP_Translate_Press::get_trp_instance();
-                $this->url_converter = $trp->get_component('url_converter');
+                $etm = ETM_eTranslation_Multilingual::get_etm_instance();
+                $this->url_converter = $etm->get_component('url_converter');
             }
 
             $location = $this->url_converter->get_url_for_language( $form_language, $location );
@@ -1706,16 +1695,15 @@ class TRP_Translation_Render{
      * Filters the output buffer of ajax calls that return json and adds the preview arg to urls
      * @param $output
      * @return string
-     * @since 1.0.8
      */
     public function force_preview_on_url_in_ajax( $output ){
-        if ( TRP_Translation_Manager::is_ajax_on_frontend() && isset( $_REQUEST['trp-edit-translation'] ) && $_REQUEST['trp-edit-translation'] === 'preview' && $output != false ) {
+        if ( ETM_Gettext_Manager::is_ajax_on_frontend() && isset( $_REQUEST['etm-edit-translation'] ) && $_REQUEST['etm-edit-translation'] === 'preview' && $output != false ) {
             $result = json_decode($output, TRUE);
             if ( json_last_error() === JSON_ERROR_NONE) {
                 if( !is_array( $result ) )//make sure we send an array as json_decode even with true parameter might not return one
                     $result = array($result);
                 array_walk_recursive($result, array($this, 'callback_add_preview_arg'));
-                $output = trp_safe_json_encode($result);
+                $output = etm_safe_json_encode($result);
             } //endif
         } //endif
         return $output;
@@ -1727,11 +1715,10 @@ class TRP_Translation_Render{
      * @param $key
      * @return string
      * @internal param $output
-     * @since 1.0.8
      */
     function callback_add_preview_arg(&$item, $key){
         if ( filter_var($item, FILTER_VALIDATE_URL) !== FALSE ) {
-            $item = add_query_arg( 'trp-edit-translation', 'preview', $item );
+            $item = add_query_arg( 'etm-edit-translation', 'preview', $item );
         }
     }
 
@@ -1739,14 +1726,13 @@ class TRP_Translation_Render{
      * Filters the output buffer of ajax calls that return json and adds the preview arg to urls
      * @param $output
      * @return string
-     * @since 1.1.2
      */
     public function force_form_language_on_url_in_ajax( $output ){
-        if ( TRP_Translation_Manager::is_ajax_on_frontend() && isset( $_REQUEST[ 'trp-form-language' ] ) && !empty( $_REQUEST[ 'trp-form-language' ] ) ) {
+        if ( ETM_Gettext_Manager::is_ajax_on_frontend() && isset( $_REQUEST[ 'etm-form-language' ] ) && !empty( $_REQUEST[ 'etm-form-language' ] ) ) {
             $result = json_decode($output, TRUE);
             if ( json_last_error() === JSON_ERROR_NONE) {
                 array_walk_recursive($result, array($this, 'callback_add_language_to_url'));
-                $output = trp_safe_json_encode($result);
+                $output = etm_safe_json_encode($result);
             } //endif
         } //endif
         return $output;
@@ -1758,19 +1744,18 @@ class TRP_Translation_Render{
      * @param $key
      * @return string
      * @internal param $output
-     * @since 1.1.2
      */
     function callback_add_language_to_url(&$item, $key){
         if ( filter_var($item, FILTER_VALIDATE_URL) !== FALSE ) {
-            $form_language_slug = isset( $_REQUEST[ 'trp-form-language' ] ) ? sanitize_text_field($_REQUEST[ 'trp-form-language' ]) : '';
+            $form_language_slug = isset( $_REQUEST[ 'etm-form-language' ] ) ? sanitize_text_field($_REQUEST[ 'etm-form-language' ]) : '';
             $form_language = array_search($form_language_slug, $this->settings['url-slugs']);
             if ( ! $this->url_converter ) {
-                $trp = TRP_Translate_Press::get_trp_instance();
-                $this->url_converter = $trp->get_component('url_converter');
+                $etm = ETM_eTranslation_Multilingual::get_etm_instance();
+                $this->url_converter = $etm->get_component('url_converter');
             }
 
             $item = $this->url_converter->get_url_for_language( $form_language, $item );
-	        $item  = str_replace('#TRPLINKPROCESSED', '', $item);
+	        $item  = str_replace('#ETMLINKPROCESSED', '', $item);
         }
     }
 
@@ -1793,10 +1778,10 @@ class TRP_Translation_Render{
      * @return string
      */
     function fix_wptexturize_characters( $translated, $text, $context, $domain ){
-        global $TRP_LANGUAGE;
-        $trp = TRP_Translate_Press::get_trp_instance();
-        $trp_settings = $trp->get_component( 'settings' );
-        $settings = $trp_settings->get_settings();
+        global $ETM_LANGUAGE;
+        $etm = ETM_eTranslation_Multilingual::get_etm_instance();
+        $etm_settings = $etm->get_component( 'settings' );
+        $settings = $etm_settings->get_settings();
 
         $default_language= $settings["default-language"];
 
@@ -1815,28 +1800,28 @@ class TRP_Translation_Render{
             'Comma-separated list of replacement words in your language' => '&#8217;tain&#8217;t,&#8217;twere,&#8217;twas,&#8217;tis,&#8217;twill,&#8217;til,&#8217;bout,&#8217;nuff,&#8217;round,&#8217;cause,&#8217;em'
         );
 
-        if( $default_language != $TRP_LANGUAGE && array_key_exists($context, $list_of_context_text) && in_array($text, $list_of_context_text) ){
-            return trp_x( $text, $context, '', $default_language );
+        if( $default_language != $ETM_LANGUAGE && array_key_exists($context, $list_of_context_text) && in_array($text, $list_of_context_text) ){
+            return etm_x( $text, $context, '', $default_language );
         }
 
         return $translated;
     }
 
     /**
-     * Function that wraps the post title and the post content in a custom trp wrap trp-post-container so we can know in
+     * Function that wraps the post title and the post content in a custom etm wrap etm-post-container so we can know in
      * the function translate_page() if a string is part of the content of a post so we can store a meta that gives the string context
      * @param $content
      * @param null $id
      * @return string
      */
     function wrap_with_post_id( $content, $id = null ){
-        global $post, $TRP_LANGUAGE, $wp_query;
+        global $post, $ETM_LANGUAGE, $wp_query;
 
         if( empty($post->ID) )
             return $content;
 
         //we try to wrap only the actual content of the post and not when the filters are executed in SEO plugins for example
-        if( ( !$wp_query->in_the_loop || !is_main_query() ) && apply_filters('trp_wrap_with_post_id_overrule', true ) )
+        if( ( !$wp_query->in_the_loop || !is_main_query() ) && apply_filters('etm_wrap_with_post_id_overrule', true ) )
             return $content;
 
         //for the_tile filter we have an $id and we can compare it with the post we are on ..to avoid wrapping titles in menus for example
@@ -1844,9 +1829,9 @@ class TRP_Translation_Render{
             return $content;
         }
 
-        if ( $TRP_LANGUAGE !== $this->settings['default-language'] ) {
+        if ( $ETM_LANGUAGE !== $this->settings['default-language'] ) {
             if ( is_singular() && !empty($post->ID)) {
-                $content = "<trp-post-container data-trp-post-id='" . $post->ID . "'>" . $content . "</trp-post-container>";//changed " to ' to not break cases when the filter is applied inside an html attribute (title for example)
+                $content = "<etm-post-container data-etm-post-id='" . $post->ID . "'>" . $content . "</etm-post-container>";//changed " to ' to not break cases when the filter is applied inside an html attribute (title for example)
             }
         }
 
@@ -1859,9 +1844,9 @@ class TRP_Translation_Render{
 	 * @param $str
 	 * @return bool
 	 */
-    function trp_is_numeric($str){
+    function etm_is_numeric($str){
     	if (is_numeric($str)){
-    		if (isset($this->settings["trp_advanced_settings"]["enable_numerals_translation"]) && $this->settings["trp_advanced_settings"]["enable_numerals_translation"] === 'yes') {
+    		if (isset($this->settings["etm_advanced_settings"]["enable_numerals_translation"]) && $this->settings["etm_advanced_settings"]["enable_numerals_translation"] === 'yes') {
 	            return false;
 		        } else {
 			    return true;

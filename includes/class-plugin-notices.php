@@ -2,11 +2,10 @@
 /**
  * Class that adds a misc notice
  *
- * @since v.2.0
  *
  * @return void
  */
-class TRP_Add_General_Notices{
+class ETM_Add_General_Notices{
     public $notificationId = '';
     public $notificationMessage = '';
     public $notificationClass = '';
@@ -43,7 +42,7 @@ class TRP_Add_General_Notices{
             // Check that the user hasn't already clicked to ignore the message
             if ( ! get_user_meta($user_id, $this->notificationId.'_dismiss_notification' ) || $this->force_show  ) {//ignore the dismissal if we have force_show
                 add_filter('safe_style_css', array( $this, 'allow_z_index_in_wp_kses'));
-                echo wp_kses( apply_filters($this->notificationId.'_notification_message','<div class="'. $this->notificationClass .'" style="position:relative;'  . ((strpos($this->notificationClass, 'trp-narrow')!==false ) ? 'max-width: 825px;' : '') . '" >'.$this->notificationMessage.'</div>', $this->notificationMessage), [ 'div' => [ 'class' => [],'style' => [] ], 'p' => ['style' => [], 'class' => []], 'a' => ['href' => [], 'type'=> [], 'class'=> [], 'style'=>[], 'title'=>[],'target'=>[]], 'span' => ['class'=> []], 'strong' => [] ] );
+                echo wp_kses( apply_filters($this->notificationId.'_notification_message','<div class="'. $this->notificationClass .'" style="position:relative;'  . ((strpos($this->notificationClass, 'etm-narrow')!==false ) ? 'max-width: 825px;' : '') . '" >'.$this->notificationMessage.'</div>', $this->notificationMessage), [ 'div' => [ 'class' => [],'style' => [] ], 'p' => ['style' => [], 'class' => []], 'a' => ['href' => [], 'type'=> [], 'class'=> [], 'style'=>[], 'title'=>[],'target'=>[]], 'span' => ['class'=> []], 'strong' => [] ] );
                 remove_filter('safe_style_css', array( $this, 'allow_z_index_in_wp_kses'));
             }
             do_action( $this->notificationId.'_notification_displayed', $current_user, $pagenow );
@@ -72,13 +71,13 @@ class TRP_Add_General_Notices{
     }
 }
 
-Class TRP_Plugin_Notifications {
+Class ETM_Plugin_Notifications {
 
     public $notifications = array();
     private static $_instance = null;
-    private $prefix = 'trp';
+    private $prefix = 'etm';
     private $menu_slug = 'options-general.php';
-    public $pluginPages = array( 'etranslation-multilingual', 'etm_addons_page', 'etm_license_key', 'etm_advanced_page', 'etm_machine_translation', 'etm_test_machine_api' );
+    public $pluginPages = array( 'etranslation-multilingual', 'etm_addons_page', 'etm_advanced_page', 'etm_machine_translation', 'etm_test_machine_api' );
 
     protected function __construct() {
         add_action( 'admin_init', array( $this, 'dismiss_admin_notifications' ), 200 );
@@ -99,7 +98,7 @@ Class TRP_Plugin_Notifications {
 
         global $menu, $submenu;
 
-        $notifications = TRP_Plugin_Notifications::get_instance();
+        $notifications = ETM_Plugin_Notifications::get_instance();
 
         if( ! empty( $menu ) ) {
             foreach( $menu as $menu_position => $menu_data ) {
@@ -132,12 +131,12 @@ Class TRP_Plugin_Notifications {
                             foreach ($callbacks_level as $key => $callback) {
                                 if( is_array( $callback['function'] ) ){
                                     if( is_object($callback['function'][0])) {//object here
-                                        if (strpos(get_class($callback['function'][0]), 'PMS_') !== 0 && strpos(get_class($callback['function'][0]), 'WPPB_') !== 0 && strpos(get_class($callback['function'][0]), 'TRP_') !== 0 && strpos(get_class($callback['function'][0]), 'WCK_') !== 0) {
+                                        if (strpos(get_class($callback['function'][0]), 'PMS_') !== 0 && strpos(get_class($callback['function'][0]), 'WPPB_') !== 0 && strpos(get_class($callback['function'][0]), 'ETM_') !== 0 && strpos(get_class($callback['function'][0]), 'WCK_') !== 0) {
                                             unset($wp_filter['admin_notices']->callbacks[$priority][$key]);//unset everything that doesn't come from our plugins
                                         }
                                     }
                                 } else if( is_string( $callback['function'] ) ){//it should be a function name
-                                    if (strpos($callback['function'], 'pms_') !== 0 && strpos($callback['function'], 'wppb_') !== 0 && strpos($callback['function'], 'trp_') !== 0 && strpos($callback['function'], 'wck_') !== 0) {
+                                    if (strpos($callback['function'], 'pms_') !== 0 && strpos($callback['function'], 'wppb_') !== 0 && strpos($callback['function'], 'etm_') !== 0 && strpos($callback['function'], 'wck_') !== 0) {
                                         unset($wp_filter['admin_notices']->callbacks[$priority][$key]);//unset everything that doesn't come from our plugins
                                     }
                                 }
@@ -156,7 +155,7 @@ Class TRP_Plugin_Notifications {
      */
     public static function get_instance() {
         if( is_null( self::$_instance ) )
-            self::$_instance = new TRP_Plugin_Notifications();
+            self::$_instance = new ETM_Plugin_Notifications();
 
         return self::$_instance;
     }
@@ -166,7 +165,7 @@ Class TRP_Plugin_Notifications {
      *
      *
      */
-    public function add_notification( $notification_id = '', $notification_message = '', $notification_class = 'update-nag', $count_in_menu = true, $count_in_submenu = array(), $show_in_all_backend = false ) {
+    public function add_notification( $notification_id = '', $notification_message = '', $notification_class = 'update-nag', $count_in_menu = true, $count_in_submenu = array(), $show_in_all_backend = false, $non_dismissable = false ) {
 
         if( empty( $notification_id ) )
             return;
@@ -177,12 +176,12 @@ Class TRP_Plugin_Notifications {
         global $current_user;
 
         /**
-         * added a $show_in_all_backend argument in version 1.4.6  that allows some notifications to be displayed on all the pages not just the plugin pages
+         * added a $show_in_all_backend argument that allows some notifications to be displayed on all the pages not just the plugin pages
          * we needed it for license notifications
          */
         $force_show = false;
         if( get_user_meta( $current_user->ID, $notification_id . '_dismiss_notification' ) ) {
-            if( !($this->is_plugin_page() && $show_in_all_backend) ){
+            if( !$non_dismissable && !($this->is_plugin_page() && $show_in_all_backend) ){
                 return;
             }
             else{
@@ -199,8 +198,8 @@ Class TRP_Plugin_Notifications {
         );
 
 
-        if( $this->is_plugin_page() || $show_in_all_backend ) {
-            new TRP_Add_General_Notices( $notification_id, $notification_message, $notification_class, '', '', $force_show );
+        if( $this->is_plugin_page() || ($show_in_all_backend && isset( $GLOBALS['PHP_SELF']) && $GLOBALS['PHP_SELF'] === '/wp-admin/index.php' ) ) {
+            new ETM_Add_General_Notices( $notification_id, $notification_message, $notification_class, '', '', $force_show );
         }
 
     }
@@ -241,7 +240,7 @@ Class TRP_Plugin_Notifications {
     public function dismiss_notification( $notification_id = '' ) {
         global $current_user;
         add_user_meta( $current_user->ID, $notification_id . '_dismiss_notification', 'true', true );
-        do_action('trp_dismiss_notification', $notification_id, $current_user);
+        do_action('etm_dismiss_notification', $notification_id, $current_user);
     }
 
 
@@ -314,7 +313,7 @@ Class TRP_Plugin_Notifications {
 }
 
 
-class TRP_Trigger_Plugin_Notifications{
+class ETM_Trigger_Plugin_Notifications{
 
     private $settings;
     private $settings_obj;
@@ -328,69 +327,58 @@ class TRP_Trigger_Plugin_Notifications{
 
     function add_plugin_notifications() {
 
-        $notifications = TRP_Plugin_Notifications::get_instance();
-
-        /* only show this notice if there isn't a pretty permalink structure enabled */
-        if( !get_option('permalink_structure') ) {
-            /* this must be unique */
-            $notification_id = 'trp_new_add_on_invoices';
-
-            $message = '<img style="float: left; margin: 10px 12px 10px 0; max-width: 80px;" src="' . TRP_PLUGIN_URL . 'assets/images/get_param_addon.jpg" />';
-            $message .= '<p style="margin-top: 16px;padding-right:30px;">' . sprintf( __('You are not using a permalink structure! Please <a href="%s">enable</a> one or install our <a href="%s">"Language by GET parameter"</a> addon, so that eTranslation Multilingual can function properly.', 'etranslation-multilingual' ), admin_url('options-permalink.php'),admin_url('admin.php?page=etm_addons_page#language-by-get-parameter') ) . '</p>';
-            //make sure to use the trp_dismiss_admin_notification arg
-            $message .= '<a href="' . add_query_arg(array('trp_dismiss_admin_notification' => $notification_id)) . '" type="button" class="notice-dismiss"><span class="screen-reader-text">' . __('Dismiss this notice.', 'etranslation-multilingual') . '</span></a>';
-
-            $notifications->add_notification($notification_id, $message, 'trp-notice trp-narrow notice notice-info', true, array('translate-press'));
-        }
+        $notifications = ETM_Plugin_Notifications::get_instance();
 
         /*
          *
          *  Machine translation enabled and  quota is met.
          *
          */
-        $trp = TRP_Translate_Press::get_trp_instance();
+        $etm = ETM_eTranslation_Multilingual::get_etm_instance();
         if ( ! $this->settings_obj )
-            $this->settings_obj = $trp->get_component( 'settings' );
+            $this->settings_obj = $etm->get_component( 'settings' );
 
         if ( ! $this->machine_translator_logger )
-            $this->machine_translator_logger = $trp->get_component( 'machine_translator_logger' );
+            $this->machine_translator_logger = $etm->get_component( 'machine_translator_logger' );
 
-        if( 'yes' === $this->settings['trp_machine_translation_settings']['machine-translation'] && $this->machine_translator_logger->quota_exceeded() ) {
+        if( isset($this->settings['etm_machine_translation_settings']['machine-translation']) &&
+            'yes' === $this->settings['etm_machine_translation_settings']['machine-translation'] && $this->machine_translator_logger->quota_exceeded() ) {
             /* this must be unique */
-            $notification_id = 'trp_machine_translation_quota_exceeded_'. date('Ymd');
+            $notification_id = 'etm_machine_translation_quota_exceeded_'. date('Ymd');
 
-            $message = '<img style="float: left; margin: 10px 12px 10px 0; max-width: 80px;" src="' . TRP_PLUGIN_URL . 'assets/images/get_param_addon.jpg" />';
+            $message = '<img style="float: left; margin: 10px 12px 10px 0; max-width: 80px;" src="' . ETM_PLUGIN_URL . 'assets/images/get_param_addon.jpg" />';
             $message .= '<p style="margin-top: 16px;padding-right:30px;">';
                 $message .= sprintf( __( 'The daily quota for machine translation characters exceeded. Please check the <strong>eTranslation Multilingual -> <a href="%s">Automatic Translation</a></strong> page for more information.', 'etranslation-multilingual' ), admin_url( 'admin.php?page=etm_machine_translation' ) );
             $message .= '</p>';
-            //make sure to use the trp_dismiss_admin_notification arg
-            $message .= '<a href="' . add_query_arg(array('trp_dismiss_admin_notification' => $notification_id)) . '" type="button" class="notice-dismiss"><span class="screen-reader-text">' . __('Dismiss this notice.', 'etranslation-multilingual') . '</span></a>';
+            //make sure to use the etm_dismiss_admin_notification arg
+            $message .= '<a href="' . add_query_arg(array('etm_dismiss_admin_notification' => $notification_id)) . '" type="button" class="notice-dismiss"><span class="screen-reader-text">' . __('Dismiss this notice.', 'etranslation-multilingual') . '</span></a>';
 
-            $notifications->add_notification($notification_id, $message, 'trp-notice trp-narrow notice notice-info', true, array('translate-press'));
+            $notifications->add_notification($notification_id, $message, 'etm-notice etm-narrow notice notice-info', true, array('etranslation-multilingual'));
         }
 
 
         /*
          * One or more languages are unsupported by automatic translation.
          */
-        $trp = TRP_Translate_Press::get_trp_instance();
-        $machine_translator = $trp->get_component( 'machine_translator' );
+        $etm = ETM_eTranslation_Multilingual::get_etm_instance();
+        $machine_translator = $etm->get_component( 'machine_translator' );
 
         if ($machine_translator != null ) {
-            if ( apply_filters( 'trp_mt_available_supported_languages_show_notice', true, $this->settings['translation-languages'], $this->settings ) &&
-                'yes' === $this->settings['trp_machine_translation_settings']['machine-translation'] &&
+            if ( apply_filters( 'etm_mt_available_supported_languages_show_notice', true, $this->settings['translation-languages'], $this->settings ) &&
+                isset($this->settings['etm_machine_translation_settings']['machine-translation']) &&
+                'yes' === $this->settings['etm_machine_translation_settings']['machine-translation'] &&
                 !$machine_translator->check_languages_availability( $this->settings['translation-languages'] )
             ) {
                 /* this must be unique */
                 $notification_id = 'etm_mt_unsupported_languages';
 
                 $message = '<p style="margin-top: 16px;padding-right:30px;">';
-                $message .= sprintf( __( 'One or more languages are unsupported by the automatic translation provider. Please check the <strong>eTranslation Multilingual -> <a href="%s">Automatic Translation</a></strong> page for more information.', 'etranslation-multilingual' ), admin_url( 'admin.php?page=etm_machine_translation#trp_unsupported_languages' ) );
+                $message .= sprintf( __( 'One or more languages are unsupported by the automatic translation provider. Please check the <strong>eTranslation Multilingual -> <a href="%s">Automatic Translation</a></strong> page for more information.', 'etranslation-multilingual' ), admin_url( 'admin.php?page=etm_machine_translation#etm_unsupported_languages' ) );
                 $message .= '</p>';
-                //make sure to use the trp_dismiss_admin_notification arg
-                $message .= '<a href="' . add_query_arg( array( 'trp_dismiss_admin_notification' => $notification_id ) ) . '" type="button" class="notice-dismiss"><span class="screen-reader-text">' . __( 'Dismiss this notice.', 'etranslation-multilingual' ) . '</span></a>';
+                //make sure to use the etm_dismiss_admin_notification arg
+                $message .= '<a href="' . add_query_arg( array( 'etm_dismiss_admin_notification' => $notification_id ) ) . '" type="button" class="notice-dismiss"><span class="screen-reader-text">' . __( 'Dismiss this notice.', 'etranslation-multilingual' ) . '</span></a>';
 
-                $notifications->add_notification( $notification_id, $message, 'trp-notice trp-narrow notice notice-info', true, array( 'translate-press' ) );
+                $notifications->add_notification( $notification_id, $message, 'etm-notice etm-narrow notice notice-info', true, array( 'etranslation-multilingual' ) );
             }
         }
 

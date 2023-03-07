@@ -1,20 +1,20 @@
 <?php
 
 /**
- * Class TRP_Hooks_Loader
+ * Class ETM_Hooks_Loader
  *
  * Buffer class for action and filters
  *
  * Collects all the actions and filters then registers them all at once in WP system.
  */
-class TRP_Hooks_Loader{
+class ETM_Hooks_Loader{
 
     protected $actions;
     protected $filters;
 
 
     /**
-     * TRP_Hooks_Loader constructor.
+     * ETM_Hooks_Loader constructor.
      */
     public function __construct() {
         $this->actions = array();
@@ -110,7 +110,7 @@ class TRP_Hooks_Loader{
      * Hooked on plugins_loaded filter, priority 15
      */
     public function run() {
-		do_action( 'trp_before_running_hooks', $this );
+		do_action( 'etm_before_running_hooks', $this );
         foreach ( $this->filters as $hook ) {
             if ( $hook['component'] == null ){
                 add_filter( $hook['hook'], $hook['callback'], $hook['priority'], $hook['accepted_args'] );

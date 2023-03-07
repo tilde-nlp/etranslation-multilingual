@@ -1,11 +1,11 @@
 <?php
 
 /**
- * Class TRP_Languages
+ * Class ETM_Languages
  *
  * Provides available languages, with name and code.
  */
-class TRP_Languages{
+class ETM_Languages{
 
   	protected $languages = array();
 	protected $wp_languages;
@@ -28,30 +28,67 @@ class TRP_Languages{
 			}
 		}
 
-        return apply_filters( 'trp_languages', $this->languages[$english_or_native_name], $english_or_native_name );
+        return apply_filters( 'etm_languages', $this->languages[$english_or_native_name], $english_or_native_name );
     }
 
-	/** Set proper locale when changing languages with translatepress
-	 *
-	 * @param $locale
-	 * @return mixed
-	 */
-	public function change_locale( $locale ){
-        if ( !$this->is_admin_request ){
-            $trp = TRP_Translate_Press::get_trp_instance();
-            $trp_is_admin_request = $trp->get_component( 'url_converter' );
-            $this->is_admin_request= $trp_is_admin_request->is_admin_request();
+    /**Function that clear cache from the key etm_locale because it was retained over page reloads.
+     * @param $locale
+     * @return void
+     */
+    public function clear_cache_locale( $locale ){
+
+        wp_cache_delete( 'etm_locale' );
+
+        remove_filter('locale', array($this, 'clear_cache_locale'), 99998);
+        remove_filter('plugin_locale', array($this, 'clear_cache_locale'), 99998);
+
+        return $locale;
+    }
+
+    /** Set proper locale when changing languages with eTranslation Multilingual
+     *
+     * @param $locale
+     * @return mixed
+     */
+    public function change_locale( $locale ){
+
+        if ( $this->is_string_translation_request_for_different_language() ){
+            $etm_ajax_language = (isset($_POST['etm_ajax_language']) ) ? sanitize_text_field( $_POST['etm_ajax_language'] ) : '';
+            if ( !$this->settings ){
+                $etm = ETM_eTranslation_Multilingual::get_etm_instance();
+                $etm_settings = $etm->get_component( 'settings' );
+                $this->settings = $etm_settings->get_settings();
+            }
+            if ( $etm_ajax_language && in_array( $etm_ajax_language, $this->settings['translation-languages'] ) ){
+                return $etm_ajax_language;
+            }
         }
 
-		if ( $this->is_admin_request )
-		    return $locale;
+        if ( $this->is_admin_request === null ){
+            $etm = ETM_eTranslation_Multilingual::get_etm_instance();
+            $etm_is_admin_request = $etm->get_component( 'url_converter' );
+            $this->is_admin_request= $etm_is_admin_request->is_admin_request();
+        }
 
+        if ( $this->is_admin_request ){
+            return $locale;
+        }
 
-	    global $TRP_LANGUAGE;
-		if( !empty($TRP_LANGUAGE) ){
-			$locale = $TRP_LANGUAGE;
+        global $ETM_LANGUAGE;
+        if( !empty($ETM_LANGUAGE) ){
+            $locale = $ETM_LANGUAGE;
+        }
+        return $locale;
+    }
+
+	public function is_string_translation_request_for_different_language(){
+		if ( defined( 'DOING_AJAX' ) && DOING_AJAX ) {
+			$action = 'etm_string_translation_get_missing_gettext_strings';
+			if ( isset( $_POST['action'] ) && $_POST['action'] === $action ) {
+				return true;
+			}
 		}
-		return $locale;
+		return false;
 	}
 
     /**
@@ -91,7 +128,7 @@ class TRP_Languages{
 		});
 
 		$default = array( 'en_GB' => array( 'language'	=> 'en_GB', 'english_name'=> 'English (UK)', 'native_name' => 'English', 'iso' => array( 'en' ) ) );
-		return apply_filters( 'trp_wp_languages', $default + $extended_language_list );
+		return apply_filters( 'etm_wp_languages', $default + $extended_language_list );
 	}
 
     /**
@@ -110,21 +147,11 @@ class TRP_Languages{
         }
 		$iso_codes = array();
 		$wp_languages = $this->get_wp_languages();
-		// $map_wp_codes_to_google = apply_filters( 'trp_map_wp_codes_to_google', array(
-		// 	'zh_HK' => 'zh-TW',
-		// 	'zh_TW'	=> 'zh-TW',
-		// 	'zh_CN'	=> 'zh-CN',
-		// 	'nb_NO'	=> 'no'
-		// ) );
 		foreach ( $language_codes as $language_code ) {
-			if ( $map_google_codes && isset( $map_wp_codes_to_google[$language_code] ) ){
-				$iso_codes[$language_code] = $map_wp_codes_to_google[$language_code];
-			}else {
-				foreach ($wp_languages as $wp_language) {
-					if ($wp_language['language'] == $language_code) {
-						$iso_codes[$language_code] = reset($wp_language['iso']);
-						break;
-					}
+			foreach ($wp_languages as $wp_language) {
+				if ($wp_language['language'] == $language_code) {
+					$iso_codes[$language_code] = reset($wp_language['iso']);
+					break;
 				}
 			}
 		}
@@ -152,9 +179,9 @@ class TRP_Languages{
 	public function get_language_names( $language_codes, $english_or_native_name = null ){
 		if ( !$english_or_native_name ){
 			if ( !$this->settings ){
-				$trp = TRP_Translate_Press::get_trp_instance();
-				$trp_settings = $trp->get_component( 'settings' );
-				$this->settings = $trp_settings->get_settings();
+				$etm = ETM_eTranslation_Multilingual::get_etm_instance();
+				$etm_settings = $etm->get_component( 'settings' );
+				$this->settings = $etm_settings->get_settings();
 			}
 			$english_or_native_name = $this->settings['native_or_english_name'];
 		}
@@ -162,7 +189,7 @@ class TRP_Languages{
         $languages = $this->get_languages( $english_or_native_name );
 		foreach ( $language_codes as $language_code ){
 			if( isset( $languages[$language_code] ) ) {
-				$return[$language_code] = apply_filters( 'trp_language_name', $languages[$language_code], $language_code, $english_or_native_name, $language_codes );
+				$return[$language_code] = apply_filters( 'etm_language_name', $languages[$language_code], $language_code, $english_or_native_name, $language_codes );
 			}
 		}
 
@@ -224,7 +251,7 @@ class TRP_Languages{
 				$name = $this->string_trim_after_character( $name, " (" );
 			}
 		}
-		return apply_filters( 'trp_beautify_language_name', $name, $code, $english_or_native, $language_codes );
+		return apply_filters( 'etm_beautify_language_name', $name, $code, $english_or_native, $language_codes );
 	}
 
 	/**

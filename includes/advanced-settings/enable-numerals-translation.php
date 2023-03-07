@@ -1,7 +1,7 @@
 <?php
 
-add_filter('trp_register_advanced_settings', 'trp_register_enable_numerals_translation', 1081);
-function trp_register_enable_numerals_translation($settings_array)
+add_filter('etm_register_advanced_settings', 'etm_register_enable_numerals_translation', 1081);
+function etm_register_enable_numerals_translation($settings_array)
 {
     $settings_array[] = array(
         'name' => 'enable_numerals_translation',

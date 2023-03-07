@@ -1,7 +1,7 @@
 <?php
 
-add_filter( 'trp_register_advanced_settings', 'trp_register_exclude_words_from_auto_translate', 100 );
-function trp_register_exclude_words_from_auto_translate( $settings_array ){
+add_filter( 'etm_register_advanced_settings', 'etm_register_exclude_words_from_auto_translate', 100 );
+function etm_register_exclude_words_from_auto_translate( $settings_array ){
     $settings_array[] = array(
         'name'          => 'exclude_words_from_auto_translate',
         'type'          => 'list',
@@ -15,8 +15,8 @@ function trp_register_exclude_words_from_auto_translate( $settings_array ){
 }
 
 
-add_filter( 'trp_exclude_words_from_automatic_translation', 'trp_exclude_words_from_auto_translate' );
-function trp_exclude_words_from_auto_translate( $exclude_words ){
+add_filter( 'etm_exclude_words_from_automatic_translation', 'etm_exclude_words_from_auto_translate' );
+function etm_exclude_words_from_auto_translate( $exclude_words ){
     $option = get_option( 'etm_advanced_settings', true );
     $add_skip_selectors = array( );
     if ( isset( $option['exclude_words_from_auto_translate'] ) && is_array( $option['exclude_words_from_auto_translate']['words'] ) ) {

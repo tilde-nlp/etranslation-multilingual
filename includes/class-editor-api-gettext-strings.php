@@ -1,168 +1,125 @@
 <?php
 
-class TRP_Editor_Api_Gettext_Strings {
+class ETM_Editor_Api_Gettext_Strings {
 
-	/* @var TRP_Query */
-	protected $trp_query;
-	/* @var TRP_SP_Slug_Manager*/
+	/* @var ETM_Query */
+	protected $etm_query;
+	/* @var ETM_SP_Slug_Manager*/
 	protected $slug_manager;
-	/* @var TRP_Translation_Render */
+	/* @var ETM_Translation_Render */
 	protected $translation_render;
-	/* @var TRP_Translation_Manager */
+	/* @var ETM_Translation_Manager */
 	protected $translation_manager;
 
 	/**
-	 * TRP_Translation_Manager constructor.
+	 * ETM_Translation_Manager constructor.
 	 *
 	 * @param array $settings       Settings option.
 	 */
-	public function __construct( $settings ){
+	public function __construct( $settings ) {
 		$this->settings = $settings;
 	}
 
 	/**
-	 * Hooked to wp_ajax_trp_get_translations_gettext
+	 * Hooked to wp_ajax_etm_get_translations_gettext
 	 */
-	public function gettext_get_translations(){
+	public function gettext_get_translations() {
 		if ( defined( 'DOING_AJAX' ) && DOING_AJAX ) {
-			if (isset($_POST['action']) && $_POST['action'] === 'trp_get_translations_gettext' && !empty($_POST['string_ids']) && !empty($_POST['language']) && in_array($_POST['language'], $this->settings['translation-languages'])) {
+			if ( isset( $_POST['action'] ) && $_POST['action'] === 'etm_get_translations_gettext' && ! empty( $_POST['string_ids'] ) && ! empty( $_POST['language'] ) && in_array( $_POST['language'], $this->settings['translation-languages'] ) ) {
 				check_ajax_referer( 'gettext_get_translations', 'security' );
-				if (!empty($_POST['string_ids']))
-					$gettext_string_ids = json_decode(stripslashes($_POST['string_ids']));/* phpcs:ignore */ /* sanitized when inserting in db */
-				else
-					$gettext_string_ids = array();
 
-				$current_language = sanitize_text_field( $_POST['language'] );
-				$dictionaries = array();
-
-				if ( is_array( $gettext_string_ids ) ) {
-
-					$trp = TRP_Translate_Press::get_trp_instance();
-					if ( ! $this->trp_query ) {
-						$this->trp_query = $trp->get_component( 'query' );
-					}
-					if (!$this->translation_manager) {
-						$this->translation_manager = $trp->get_component('translation_manager');
-					}
-
-					/* build the current language dictionary */
-					$dictionaries[$current_language] = $this->trp_query->get_gettext_string_rows_by_ids( $gettext_string_ids, $current_language );
-
-					/* build the other languages dictionaries */
-
-					$original_strings = array();
-					$original_string_details = array();
-					if( !empty( $dictionaries[$current_language] ) ){
-						foreach( $dictionaries[$current_language] as $current_language_string ){
-							$original_strings[] = $current_language_string['original'];
-							$original_string_details[] = array( 'original' => $current_language_string['original'], 'domain' => $current_language_string['domain'] );
-						}
-					}
-
-					foreach ($this->settings['translation-languages'] as $language) {
-						if ($language == $current_language) {
-							continue;
-						}
-
-						$lang_original_string_details = $original_string_details;
-						if( !empty( $original_strings ) && !empty( $lang_original_string_details ) ){
-							$dictionaries[$language] = $this->trp_query->get_gettext_string_rows_by_original( $original_strings, $language );
-							if( empty( $dictionaries[$language] ) )
-								$dictionaries[$language]  = array();
-
-							$search_strings_array = array();
-
-							foreach( $dictionaries[$language] as $lang_string ){
-								$search_strings_array[] = array( 'original' => $lang_string['original'], 'domain' => $lang_string['domain']  );
-							}
-
-							if( !empty( $search_strings_array ) ){
-								foreach( $search_strings_array as $search_key => $search_string ){
-									if( in_array( $search_string, $lang_original_string_details ) ) {
-										$remove_original_key = array_search($search_string, $lang_original_string_details );
-										unset($lang_original_string_details[$remove_original_key]);
-									}
-									else{
-										unset($dictionaries[$language][$search_key]);
-									}
-								}
-							}
-
-							/* add here in the db the strings that are not there and after that add them in the dictionary */
-							switch_to_locale( $language );
-							if( !empty( $lang_original_string_details ) ){
-								foreach( $lang_original_string_details as $lang_original_string_detail ){
-
-									$translations = get_translations_for_domain( $lang_original_string_detail['domain'] );
-									$translated  = $translations->translate( $lang_original_string_detail['original'] );
-
-									$db_id = $this->trp_query->insert_gettext_strings( array( array('original' => $lang_original_string_detail['original'], 'translated' => $translated, 'domain' => $lang_original_string_detail['domain']) ), $language );
-									$dictionaries[$language][] = array('id' => $db_id, 'original' => $lang_original_string_detail['original'], 'translated' => ( $translated != $lang_original_string_detail['original'] ) ? $translated : '', 'domain' => $lang_original_string_detail['domain']);
-								}
-							}
-							restore_current_locale();
-
-							$dictionaries[$language] = array_values($dictionaries[$language]);
-						}
-					}
-
+				$gettext_string_ids = array();
+				if ( ! empty( $_POST['string_ids'] ) ) {
+					$gettext_string_ids = json_decode( wp_kses_post( wp_unslash( $_POST['string_ids'] ) ) );
 				}
 
-				/* html entity decode the strings so we display them properly in the textareas  */
-				foreach( $dictionaries as $lang => $dictionary ){
-					foreach( $dictionary as $key => $string ){
-						$string = array_map('html_entity_decode', $string );
-						$dictionaries[$lang][$key] = (object)$string;
-					}
-				}
-				$localized_text = $this->translation_manager->string_groups();
-				$dictionary_by_original = trp_sort_dictionary_by_original( $dictionaries, 'gettext', $localized_text['gettextstrings'], sanitize_text_field( $_POST['language'] ) );
-				die( trp_safe_json_encode( $dictionary_by_original ) );//phpcs:ignore
+				$current_language = sanitize_text_field( wp_unslash( $_POST['language'] ) );
+				$dictionaries     = array();
 
+				if ( is_array( $gettext_string_ids ) && etm_is_valid_language_code( $current_language ) ) {
+
+					$etm = ETM_eTranslation_Multilingual::get_etm_instance();
+					if ( ! $this->etm_query ) {
+						$this->etm_query = $etm->get_component( 'query' );
+					}
+					if ( ! $this->translation_manager ) {
+						$this->translation_manager = $etm->get_component( 'translation_manager' );
+					}
+
+					$dictionaries[ $current_language ] = $this->etm_query->get_gettext_string_rows_by_ids( $gettext_string_ids, $current_language );
+
+					/* build the original id array */
+					$original_ids = array();
+					if ( ! empty( $dictionaries[ $current_language ] ) ) {
+						foreach ( $dictionaries[ $current_language ] as $current_language_string ) {
+							/* searching by original id */
+							$original_ids[] = (int) $current_language_string['ot_id'];
+						}
+					}
+					emt_safe_json_send(
+						array(
+							'originalIds' => $original_ids,
+						)
+					);
+
+				}
 			}
 		}
+		wp_die();
 	}
+
 
 	/*
 	 * Save gettext translations
 	 */
-	public function gettext_save_translations(){
-		if ( defined( 'DOING_AJAX' ) && DOING_AJAX && current_user_can( apply_filters( 'trp_translating_capability', 'manage_options' ) ) ) {
-			if (isset($_POST['action']) && $_POST['action'] === 'trp_save_translations_gettext' && !empty($_POST['strings'])) {
+	public function gettext_save_translations() {
+		if ( defined( 'DOING_AJAX' ) && DOING_AJAX && current_user_can( apply_filters( 'etm_translating_capability', 'manage_options' ) ) ) {
+			if ( isset( $_POST['action'] ) && $_POST['action'] === 'etm_save_translations_gettext' && ! empty( $_POST['strings'] ) ) {
 				check_ajax_referer( 'gettext_save_translations', 'security' );
-				$strings = json_decode(stripslashes($_POST['strings']));/* phpcs:ignore */ /* properly sanitized bellow */
+				$strings        = sanitize_decode_json_html_recursively( 'strings' );
+				// validate input.
+				$string_keys = array_keys( get_object_vars( $strings ) );
+				if ( array_intersect( $string_keys, $this->settings['translation-languages'] ) !== $string_keys ) {
+					// $strings contain some key not present in selected language codes
+					wp_die();
+				}
 				$update_strings = array();
 				foreach ( $strings as $language => $language_strings ) {
 					if ( in_array( $language, $this->settings['translation-languages'] ) ) {
 						$update_strings[ $language ] = array();
-						foreach( $language_strings as $string ) {
+						foreach ( $language_strings as $string ) {
 							if ( isset( $string->id ) && is_numeric( $string->id ) ) {
-								array_push($update_strings[ $language ], array(
-									'id' => (int)$string->id,
-                                    'original' => trp_sanitize_string( $string->original, false ),
-									'translated' => trp_sanitize_string( $string->translated ),
-									'domain' => sanitize_text_field( $string->domain ),
-									'status' => (int)$string->status
-								));
+								array_push(
+									$update_strings[ $language ],
+									array(
+										'id'          => (int) $string->id,
+										'original'    => etm_sanitize_string( $string->original, false ),
+										'translated'  => etm_sanitize_string( $string->translated ),
+										'domain'      => sanitize_text_field( $string->domain ),
+										'status'      => (int) $string->status,
+										'plural_form' => (int) $string->plural_form,
+										'context'     => $string->context,
+									)
+								);
 							}
 						}
 					}
 				}
 
-				if ( ! $this->trp_query ) {
-					$trp = TRP_Translate_Press::get_trp_instance();
-					$this->trp_query = $trp->get_component( 'query' );
+				if ( ! $this->etm_query ) {
+					$etm             = ETM_eTranslation_Multilingual::get_etm_instance();
+					$this->etm_query = $etm->get_component( 'query' );
 				}
 
-				foreach( $update_strings as $language => $update_string_array ) {
-					$this->trp_query->update_gettext_strings( $update_string_array, $language, array('id','translated', 'status') );
-                    $this->trp_query->remove_possible_duplicates($update_string_array, $language, 'gettext');
+				foreach ( $update_strings as $language => $update_string_array ) {
+					$gettext_insert_update = $this->etm_query->get_query_component( 'gettext_insert_update' );
+					$gettext_insert_update->update_gettext_strings( $update_string_array, $language, array( 'id', 'translated', 'status' ) );
+					$this->etm_query->remove_possible_duplicates( $update_string_array, $language, 'gettext' );
 				}
 
-                do_action('trp_save_editor_translations_gettext_strings', $update_strings, $this->settings);
+				do_action( 'etm_save_editor_translations_gettext_strings', $update_strings, $this->settings );
 			}
 		}
-		echo trp_safe_json_encode( $update_strings );//phpcs:ignore
-		wp_die();
+		emt_safe_json_send( $update_strings );
 	}
 }

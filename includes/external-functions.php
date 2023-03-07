@@ -11,9 +11,9 @@
  * @return string           Trimmed string.
  */
 
- /* NB: We don't always have access to WP get_option, for instance while calling trp_full_trim inside trp-ajax */
+ /* NB: We don't always have access to WP get_option, for instance while calling etm_full_trim inside etm-ajax */
  /* So this falls back to the option being transmitted either as a param from another function or obtained directly if get_option is available */
-function trp_full_trim( $string, $args = array()  ) {
+function etm_full_trim( $string, $args = array()  ) {
 
     if((is_array($string)) || (is_object($string))){
         return "";
@@ -70,25 +70,27 @@ function trp_full_trim( $string, $args = array()  ) {
 	return $string;
 }
 
-function trp_sort_dictionary_by_original( $dictionaries, $type, $group, $languageForId ){
+function etm_sort_dictionary_by_original( $dictionaries, $type, $group, $languageForId ){
 	$array = array();
 	foreach( $dictionaries as $language => $dictionary ){
 		if ( isset( $dictionary['default-language'] ) && $dictionary['default-language'] == true ){
 			continue;
 		}
 		foreach( $dictionary as $string ) {
+			$string = (object)$string;
 			if ( isset( $string->original ) ){
 				$found = false;
 				$string->editedTranslation = $string->translated;
 				foreach( $array as $key => $row ){
 					if ( $row['original'] == $string->original ){
-						if ( !isset( $string->domain ) || ( isset( $string->domain ) && $string->domain == $row['description'] ) ) {
+						if ( !isset( $string->domain ) || ( isset($row['originalId']) && $row['originalId'] == $string->ot_id && $row['pluralForm'] == (int)$string->plural_form ) /*|| ( $string->plural_form == 0 && $string->domain == $row['description'] )*/ ) {
 							$array[ $key ]['translationsArray'][ $language ] = $string;
 							unset( $array[ $key ]['translationsArray'][ $language ]->original );
 							$found = true;
 
 							if ( isset($string->domain) ){
 								$array[ $key ]['description'] = $string->domain;
+								$array[ $key ]['domain'] = $string->domain;
 							}
 							if ( $language == $languageForId ){
 								$array[ $key ][ 'dbID' ] = $string->id;
@@ -107,8 +109,20 @@ function trp_sort_dictionary_by_original( $dictionaries, $type, $group, $languag
 					unset($string->original);
 
 					if ( isset( $string->domain ) ){
-						$new_entry['description'] = $description = $string->domain;
+						$new_entry['description'] = $string->domain;
 					}
+                    if ( isset( $string->original_plural ) ){
+                        $new_entry['originalPlural'] = $string->original_plural;
+                    }
+                    if ( isset( $string->context ) ){
+                        $new_entry['context'] = $string->context;
+                    }
+                    if ( $type === 'gettext' ){
+                        $new_entry['pluralForm'] = ( isset( $string->plural_form) ) ? $string->plural_form : 0;
+                    }
+                    if ( isset( $string->ot_id ) ){
+                        $new_entry['originalId'] = $string->ot_id;
+                    }
 					if ( $language == $languageForId ){
 						$new_entry['dbID'] = $string->id;
 					}
@@ -124,7 +138,7 @@ function trp_sort_dictionary_by_original( $dictionaries, $type, $group, $languag
 	return $array;
 }
 
-function trp_is_valid_language_code( $language_code ){
+function etm_is_valid_language_code( $language_code ){
     // allowed characters A-Z a-z 0-9 - _
     if ( empty($language_code) || preg_match('/[^A-Za-z0-9\-_]/i', $language_code ) ) {
         return false;

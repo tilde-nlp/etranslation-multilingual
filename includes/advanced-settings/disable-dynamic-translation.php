@@ -1,7 +1,7 @@
 <?php
 
-add_filter( 'trp_register_advanced_settings', 'trp_register_disable_dynamic_translation', 30 );
-function trp_register_disable_dynamic_translation( $settings_array ){
+add_filter( 'etm_register_advanced_settings', 'etm_register_disable_dynamic_translation', 30 );
+function etm_register_disable_dynamic_translation( $settings_array ){
 	$settings_array[] = array(
 		'name'          => 'disable_dynamic_translation',
 		'type'          => 'checkbox',
@@ -11,8 +11,8 @@ function trp_register_disable_dynamic_translation( $settings_array ){
 	return $settings_array;
 }
 
-add_filter( 'trp_enable_dynamic_translation', 'trp_adst_disable_dynamic' );
-function trp_adst_disable_dynamic( $enable ){
+add_filter( 'etm_enable_dynamic_translation', 'etm_adst_disable_dynamic' );
+function etm_adst_disable_dynamic( $enable ){
 	$option = get_option( 'etm_advanced_settings', true );
 	if ( isset( $option['disable_dynamic_translation'] ) && $option['disable_dynamic_translation'] === 'yes' ){
 		return false;
@@ -20,11 +20,11 @@ function trp_adst_disable_dynamic( $enable ){
 	return $enable;
 }
 
-add_filter( 'trp_editor_missing_scripts_and_styles', 'trp_adst_disable_dynamic2' );
-function trp_adst_disable_dynamic2( $scripts ){
+add_filter( 'etm_editor_missing_scripts_and_styles', 'etm_adst_disable_dynamic2' );
+function etm_adst_disable_dynamic2( $scripts ){
 	$option = get_option( 'etm_advanced_settings', true );
 	if ( isset( $option['disable_dynamic_translation'] ) && $option['disable_dynamic_translation'] === 'yes' ){
-		unset($scripts['trp-translate-dom-changes.js']);
+		unset($scripts['etm-translate-dom-changes.js']);
 	}
 	return $scripts;
 }

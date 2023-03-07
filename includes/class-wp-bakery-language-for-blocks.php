@@ -5,14 +5,14 @@ if (!defined('ABSPATH')) {
     exit();
 }
 
-class TRP_WPBakery {
+class ETM_WPBakery {
     private static $_instance = null;
 
-    public $shortcode_param_type_dropdown_multi = 'trp_dropdown_multi';
-    public $param_name_show = 'trp_param_show';
-    public $param_name_show_language = 'trp_param_show_language';
-    public $param_name_exclude = 'trp_param_exclude';
-    public $param_name_exclude_languages = 'trp_param_exclude_languages';
+    public $shortcode_param_type_dropdown_multi = 'etm_dropdown_multi';
+    public $param_name_show = 'etm_param_show';
+    public $param_name_show_language = 'etm_param_show_language';
+    public $param_name_exclude = 'etm_param_exclude';
+    public $param_name_exclude_languages = 'etm_param_exclude_languages';
 
     /**
      * Register plugin action hooks and filters
@@ -37,7 +37,7 @@ class TRP_WPBakery {
     }
 
     /**
-     * Modify the output of a given shortcode if TranslatePress is configured.
+     * Modify the output of a given shortcode if eTranslation Multilingual is configured.
      */
     public function do_shortcode_tag($output, $tag, $attr) {
         return $this->is_hidden($attr) ? '' : $output;
@@ -114,7 +114,7 @@ class TRP_WPBakery {
             ]
         ];
 
-        $skip_sc = apply_filters( 'trp_wpbakery_skip_shortcodes', $this->get_skip_sc_array());
+        $skip_sc = apply_filters( 'etm_wpbakery_skip_shortcodes', $this->get_skip_sc_array());
         foreach ($shortcode_bases as $sh) {
             if ( !in_array( $sh, $skip_sc ) ) {
                 vc_add_param( $sh, $attributes_checkbox );
@@ -166,7 +166,7 @@ class TRP_WPBakery {
             ]
         ];
 
-        $skip_sc = apply_filters( 'trp_wpbakery_skip_shortcodes', $this->get_skip_sc_array());
+        $skip_sc = apply_filters( 'etm_wpbakery_skip_shortcodes', $this->get_skip_sc_array());
         foreach ($shortcode_bases as $sh) {
             if ( !in_array( $sh, $skip_sc ) ) {
                 vc_add_param( $sh, $attributes_checkbox );
@@ -176,14 +176,14 @@ class TRP_WPBakery {
     }
 
     private function get_group() {
-        return __('TranslatePress', 'etranslation-multilingual');
+        return __('eTranslation Multilingual', 'etranslation-multilingual');
     }
 
     private function get_published_languages($placeholder = false) {
-        $trp = TRP_Translate_Press::get_trp_instance();
-        $trp_languages = $trp->get_component('languages');
-        $trp_settings = $trp->get_component('settings');
-        $result = $trp_languages->get_language_names($trp_settings->get_settings()['publish-languages']);
+        $etm = ETM_eTranslation_Multilingual::get_etm_instance();
+        $etm_languages = $etm->get_component('languages');
+        $etm_settings = $etm->get_component('settings');
+        $result = $etm_languages->get_language_names($etm_settings->get_settings()['publish-languages']);
 
         if ($placeholder) {
             $result = array_merge(['' => ''], $result);
@@ -227,7 +227,7 @@ class TRP_WPBakery {
      *
      * Ensures only one instance of the class is loaded or can be loaded.
      *
-     * @return TRP_WPBakery An instance of the class.
+     * @return ETM_WPBakery An instance of the class.
      */
     public static function instance() {
         if (is_null(self::$_instance)) {
@@ -239,7 +239,7 @@ class TRP_WPBakery {
 
     /**
      *
-     * Shortcodes with missing 'params' trigger notice, so don't add TP settings to them
+     * Shortcodes with missing 'params' trigger notice, so don't add ETM settings to them
      *
      * Also, shortcodes with 'params' set to empty string instead of array trigger fatal error.
      *
@@ -273,7 +273,7 @@ class TRP_WPBakery {
             }
         }
 
-        $invalid_params = apply_filters('trp_wp_bakery_invalid_params', $bool, $arr);
+        $invalid_params = apply_filters('etm_wp_bakery_invalid_params', $bool, $arr);
         return $invalid_params;
     }
 
@@ -282,5 +282,5 @@ class TRP_WPBakery {
 
 
 // Instantiate Plugin Class
-TRP_WPBakery::instance();
+ETM_WPBakery::instance();
 

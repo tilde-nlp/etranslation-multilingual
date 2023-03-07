@@ -1,7 +1,7 @@
 <?php
 
-add_filter( 'trp_register_advanced_settings', 'trp_open_language_switcher_shortcode_on_click', 1350 );
-function trp_open_language_switcher_shortcode_on_click( $settings_array ){
+add_filter( 'etm_register_advanced_settings', 'etm_open_language_switcher_shortcode_on_click', 1350 );
+function etm_open_language_switcher_shortcode_on_click( $settings_array ){
     $settings_array[] = array(
         'name'          => 'open_language_switcher_shortcode_on_click',
         'type'          => 'checkbox',
@@ -11,23 +11,23 @@ function trp_open_language_switcher_shortcode_on_click( $settings_array ){
     return $settings_array;
 }
 
-function trp_lsclick_enqueue_scriptandstyle() {
-    wp_enqueue_script('trp-clickable-ls-js', TRP_PLUGIN_URL . 'assets/js/trp-clickable-ls.js', array('jquery'), TRP_PLUGIN_VERSION, true );
+function etm_lsclick_enqueue_scriptandstyle() {
+    wp_enqueue_script('etm-clickable-ls-js', ETM_PLUGIN_URL . 'assets/js/etm-clickable-ls.js', array('jquery'), ETM_PLUGIN_VERSION, true );
 
-    wp_add_inline_style('trp-language-switcher-style', '.trp_language_switcher_shortcode .trp-language-switcher .trp-ls-shortcode-current-language.trp-ls-clicked{
+    wp_add_inline_style('etm-language-switcher-style', '.etm_language_switcher_shortcode .etm-language-switcher .etm-ls-shortcode-current-language.etm-ls-clicked{
     visibility: hidden;
 }
 
-.trp_language_switcher_shortcode .trp-language-switcher:hover div.trp-ls-shortcode-current-language{
+.etm_language_switcher_shortcode .etm-language-switcher:hover div.etm-ls-shortcode-current-language{
     visibility: visible;
 }
 
-.trp_language_switcher_shortcode .trp-language-switcher:hover div.trp-ls-shortcode-language{
+.etm_language_switcher_shortcode .etm-language-switcher:hover div.etm-ls-shortcode-language{
     visibility: hidden;
     height: 1px;
 }
-.trp_language_switcher_shortcode .trp-language-switcher .trp-ls-shortcode-language.trp-ls-clicked,
-.trp_language_switcher_shortcode .trp-language-switcher:hover .trp-ls-shortcode-language.trp-ls-clicked{
+.etm_language_switcher_shortcode .etm-language-switcher .etm-ls-shortcode-language.etm-ls-clicked,
+.etm_language_switcher_shortcode .etm-language-switcher:hover .etm-ls-shortcode-language.etm-ls-clicked{
     visibility:visible;
     height:auto;
     position: absolute;
@@ -37,12 +37,12 @@ function trp_lsclick_enqueue_scriptandstyle() {
 }');
 }
 
-function trp_open_language_switcher_on_click(){
+function etm_open_language_switcher_on_click(){
     $option = get_option( 'etm_advanced_settings', true );
 
     if(isset($option['open_language_switcher_shortcode_on_click']) && $option['open_language_switcher_shortcode_on_click'] !== 'no'){
-        add_action( 'wp_enqueue_scripts', 'trp_lsclick_enqueue_scriptandstyle', 99 );
+        add_action( 'wp_enqueue_scripts', 'etm_lsclick_enqueue_scriptandstyle', 99 );
     }
 }
 
-trp_open_language_switcher_on_click();
+etm_open_language_switcher_on_click();

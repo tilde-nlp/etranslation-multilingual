@@ -1,0 +1,21 @@
+jQuery( function() {
+    function place_etm_button() {
+
+        // check if gutenberg's editor root element is present.
+        var editorEl = document.getElementById( 'editor' );
+        if ( !editorEl ){ // do nothing if there's no gutenberg root element on page.
+            return;
+        }
+
+        var unsubscribe = wp.data.subscribe( function () {
+                if ( !document.getElementById( "etm-link-id" ) ){
+                    var toolbalEl = editorEl.querySelector( '.edit-post-header-toolbar__left' );
+                    if ( toolbalEl instanceof HTMLElement ){
+                        toolbalEl.insertAdjacentHTML("afterend", etm_url_etm_editor[0] );
+                    }
+                }
+        } );
+     }
+
+        place_etm_button();
+});

@@ -1,6 +1,6 @@
 <?php
-add_filter( 'trp_register_advanced_settings', 'trp_register_remove_duplicate_entries_from_db', 530 );
-function trp_register_remove_duplicate_entries_from_db( $settings_array ){
+add_filter( 'etm_register_advanced_settings', 'etm_register_remove_duplicate_entries_from_db', 530 );
+function etm_register_remove_duplicate_entries_from_db( $settings_array ){
     $settings_array[] = array(
         'name'          => 'remove_duplicate_entries_from_db',
         'type'          => 'text',

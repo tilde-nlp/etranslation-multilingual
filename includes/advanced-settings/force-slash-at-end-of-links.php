@@ -1,7 +1,7 @@
 <?php
 
-add_filter('trp_register_advanced_settings', 'trp_register_force_slash_in_home_url', 1071);
-function trp_register_force_slash_in_home_url($settings_array)
+add_filter('etm_register_advanced_settings', 'etm_register_force_slash_in_home_url', 1071);
+function etm_register_force_slash_in_home_url($settings_array)
 {
     $settings_array[] = array(
         'name' => 'force_slash_at_end_of_links',

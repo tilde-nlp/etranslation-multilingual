@@ -1,8 +1,8 @@
 <?php
 
 /** Post title */
-add_filter( 'trp_register_advanced_settings', 'trp_register_disable_post_container_tags_for_post_title', 510 );
-function trp_register_disable_post_container_tags_for_post_title( $settings_array ){
+add_filter( 'etm_register_advanced_settings', 'etm_register_disable_post_container_tags_for_post_title', 510 );
+function etm_register_disable_post_container_tags_for_post_title( $settings_array ){
 	$settings_array[] = array(
 		'name'          => 'disable_post_container_tags_for_post_title',
 		'type'          => 'checkbox',
@@ -12,20 +12,20 @@ function trp_register_disable_post_container_tags_for_post_title( $settings_arra
 	return $settings_array;
 }
 
-add_filter( 'trp_before_running_hooks', 'trp_remove_hooks_to_disable_post_title_search_wraps' );
-function trp_remove_hooks_to_disable_post_title_search_wraps( $trp_loader ){
+add_filter( 'etm_before_running_hooks', 'etm_remove_hooks_to_disable_post_title_search_wraps' );
+function etm_remove_hooks_to_disable_post_title_search_wraps( $etm_loader ){
     $option = get_option( 'etm_advanced_settings', true );
     if ( isset( $option['disable_post_container_tags_for_post_title'] ) && $option['disable_post_container_tags_for_post_title'] === 'yes' ) {
-        $trp                = TRP_Translate_Press::get_trp_instance();
-        $translation_render = $trp->get_component( 'translation_render' );
-        $trp_loader->remove_hook( 'the_title', 'wrap_with_post_id', $translation_render );
+        $etm                = ETM_eTranslation_Multilingual::get_etm_instance();
+        $translation_render = $etm->get_component( 'translation_render' );
+        $etm_loader->remove_hook( 'the_title', 'wrap_with_post_id', $translation_render );
     }
 }
 
 
 /** Post content */
-add_filter( 'trp_register_advanced_settings', 'trp_register_disable_post_container_tags_for_post_content', 520 );
-function trp_register_disable_post_container_tags_for_post_content( $settings_array ){
+add_filter( 'etm_register_advanced_settings', 'etm_register_disable_post_container_tags_for_post_content', 520 );
+function etm_register_disable_post_container_tags_for_post_content( $settings_array ){
     $settings_array[] = array(
         'name'          => 'disable_post_container_tags_for_post_content',
         'type'          => 'checkbox',
@@ -35,14 +35,14 @@ function trp_register_disable_post_container_tags_for_post_content( $settings_ar
     return $settings_array;
 }
 
-add_filter( 'trp_before_running_hooks', 'trp_remove_hooks_to_disable_post_content_search_wraps' );
-function trp_remove_hooks_to_disable_post_content_search_wraps( $trp_loader ){
+add_filter( 'etm_before_running_hooks', 'etm_remove_hooks_to_disable_post_content_search_wraps' );
+function etm_remove_hooks_to_disable_post_content_search_wraps( $etm_loader ){
     $option = get_option( 'etm_advanced_settings', true );
     if ( isset( $option['disable_post_container_tags_for_post_content'] ) && $option['disable_post_container_tags_for_post_content'] === 'yes' ) {
-        $trp                = TRP_Translate_Press::get_trp_instance();
-        $translation_render = $trp->get_component( 'translation_render' );
-        $trp_loader->remove_hook( 'the_content', 'wrap_with_post_id', $translation_render );
-	    remove_action( 'do_shortcode_tag', 'tp_oxygen_search_compatibility', 10, 4 );
+        $etm                = ETM_eTranslation_Multilingual::get_etm_instance();
+        $translation_render = $etm->get_component( 'translation_render' );
+        $etm_loader->remove_hook( 'the_content', 'wrap_with_post_id', $translation_render );
+	    remove_action( 'do_shortcode_tag', 'etm_oxygen_search_compatibility', 10, 4 );
     }
 }
 

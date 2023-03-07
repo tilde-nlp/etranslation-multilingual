@@ -5,7 +5,7 @@ if ( ! defined( 'ABSPATH' ) ) exit;
 
 use Elementor\Controls_Manager;
 
-class TRP_Elementor {
+class ETM_Elementor {
     private static $_instance = null;
     public $locations = array(
         array(
@@ -21,8 +21,8 @@ class TRP_Elementor {
             'action'  => 'section_layout',
         )
     );
-    public $section_name_show    = 'trp_section_show';
-    public $section_name_exclude = 'trp_section_exclude';
+    public $section_name_show    = 'etm_section_show';
+    public $section_name_exclude = 'etm_section_exclude';
 
 	/**
 	 * Register plugin action hooks and filters
@@ -47,7 +47,7 @@ class TRP_Elementor {
         // Add data-no-translation to elements that are restricted to a particular language
         add_action( 'elementor/element/after_add_attributes', array( $this, 'add_attributes' ) );
 
-        add_filter( 'trp_allow_language_redirect', array( $this, 'trp_elementor_compatibility' ) );
+        add_filter( 'etm_allow_language_redirect', array( $this, 'etm_elementor_compatibility' ) );
 
 	}
 
@@ -55,7 +55,7 @@ class TRP_Elementor {
      *
      * Ensures only one instance of the class is loaded or can be loaded.
      *
-     * @return TRP_Elementor An instance of the class.
+     * @return ETM_Elementor An instance of the class.
      */
     public static function instance() {
 
@@ -127,7 +127,7 @@ class TRP_Elementor {
 		$element_type = $element->get_type();
 
 		$element->add_control(
-			'trp_language_restriction', array(
+			'etm_language_restriction', array(
 				'label'       => __( 'Restrict element to language', 'etranslation-multilingual' ),
 				'type'        => Controls_Manager::SWITCHER,
 				'description' => __( 'Show this element only in one language.', 'etranslation-multilingual' ),
@@ -135,7 +135,7 @@ class TRP_Elementor {
 		);
 
         $element->add_control(
-            'trp_language_restriction_automatic_translation', array(
+            'etm_language_restriction_automatic_translation', array(
                 'label'       => __( 'Enable translation', 'etranslation-multilingual' ),
                 'type'        => Controls_Manager::SWITCHER,
                 'description' => __( 'Allow translation to the corresponding language only if the content is written in the default language.', 'etranslation-multilingual' ),
@@ -143,7 +143,7 @@ class TRP_Elementor {
         );
 
 		$element->add_control(
-			'trp_language_restriction_heading', array(
+			'etm_language_restriction_heading', array(
 				'label'     => __( 'Select language', 'etranslation-multilingual' ),
 				'type'      => Controls_Manager::HEADING,
 				'separator' => 'before',
@@ -151,13 +151,13 @@ class TRP_Elementor {
 		);
 
 
-        $trp                 = TRP_Translate_Press::get_trp_instance();
-        $trp_languages       = $trp->get_component( 'languages' );
-        $trp_settings        = $trp->get_component( 'settings' );
-        $published_languages = $trp_languages->get_language_names( $trp_settings->get_settings()['publish-languages'] );
+        $etm                 = ETM_eTranslation_Multilingual::get_etm_instance();
+        $etm_languages       = $etm->get_component( 'languages' );
+        $etm_settings        = $etm->get_component( 'settings' );
+        $published_languages = $etm_languages->get_language_names( $etm_settings->get_settings()['publish-languages'] );
 
 		$element->add_control(
-            'trp_restricted_languages', array(
+            'etm_restricted_languages', array(
                 'type'        => Controls_Manager::SELECT2,
                 'options'     => $published_languages,
 				'label_block' => 'true',
@@ -172,7 +172,7 @@ class TRP_Elementor {
 		$element_type = $element->get_type();
 
 		$element->add_control(
-			'trp_exclude_handler', array(
+			'etm_exclude_handler', array(
 				'label'       => __( 'Exclude element from language', 'etranslation-multilingual' ),
 				'type'        => Controls_Manager::SWITCHER,
 				'description' => __( 'Exclude this element from specific languages.', 'etranslation-multilingual' ),
@@ -180,7 +180,7 @@ class TRP_Elementor {
 		);
 
 		$element->add_control(
-			'trp_excluded_heading', array(
+			'etm_excluded_heading', array(
 				'label'     => __( 'Select languages', 'etranslation-multilingual' ),
 				'type'      => Controls_Manager::HEADING,
 				'separator' => 'before',
@@ -188,13 +188,13 @@ class TRP_Elementor {
 		);
 
 
-        $trp                 = TRP_Translate_Press::get_trp_instance();
-        $trp_languages       = $trp->get_component( 'languages' );
-        $trp_settings        = $trp->get_component( 'settings' );
-        $published_languages = $trp_languages->get_language_names( $trp_settings->get_settings()['publish-languages'] );
+        $etm                 = ETM_eTranslation_Multilingual::get_etm_instance();
+        $etm_languages       = $etm->get_component( 'languages' );
+        $etm_settings        = $etm->get_component( 'settings' );
+        $published_languages = $etm_languages->get_language_names( $etm_settings->get_settings()['publish-languages'] );
 
 		$element->add_control(
-            'trp_excluded_languages', array(
+            'etm_excluded_languages', array(
                 'type'                => Controls_Manager::SELECT2,
                 'options'             => $published_languages,
 				'multiple'            => 'true',
@@ -207,7 +207,7 @@ class TRP_Elementor {
         $message .= '<p>' . __( 'The content of this element should be written in the default language.', 'etranslation-multilingual' ) . '</p>';
 
 		$element->add_control(
-            'trp_excluded_message', array(
+            'etm_excluded_message', array(
                 'type' => Controls_Manager::RAW_HTML,
                 'raw'  => $message,
             )
@@ -220,20 +220,20 @@ class TRP_Elementor {
 
 		$settings = $element->get_settings();
 
-        if( isset( $settings['trp_language_restriction'] ) && $settings['trp_language_restriction'] == 'yes' && !empty( $settings['trp_restricted_languages'] ) ){
+        if( isset( $settings['etm_language_restriction'] ) && $settings['etm_language_restriction'] == 'yes' && !empty( $settings['etm_restricted_languages'] ) ){
 
             $current_language = get_locale();
 
-            if( $current_language != $settings['trp_restricted_languages'] )
+            if( $current_language != $settings['etm_restricted_languages'] )
                 return true;
 
         }
 
-        if( !isset( $_GET['trp-edit-translation'] ) && isset( $settings['trp_exclude_handler'] ) && $settings['trp_exclude_handler'] == 'yes' && !empty( $settings['trp_excluded_languages'] ) ){
+        if( !isset( $_GET['etm-edit-translation'] ) && isset( $settings['etm_exclude_handler'] ) && $settings['etm_exclude_handler'] == 'yes' && !empty( $settings['etm_excluded_languages'] ) ){
 
             $current_language = get_locale();
 
-            if( in_array( $current_language, $settings['trp_excluded_languages'] ) )
+            if( in_array( $current_language, $settings['etm_excluded_languages'] ) )
                 return true;
 
         }
@@ -272,7 +272,7 @@ class TRP_Elementor {
 
         $settings = $element->get_settings();
 
-        if( isset( $settings['trp_language_restriction'] ) && $settings['trp_language_restriction'] == 'yes' && !empty( $settings['trp_restricted_languages'] ) && isset( $settings['trp_language_restriction_automatic_translation'] ) && $settings['trp_language_restriction_automatic_translation'] != 'yes')
+        if( isset( $settings['etm_language_restriction'] ) && $settings['etm_language_restriction'] == 'yes' && !empty( $settings['etm_restricted_languages'] ) && isset( $settings['etm_language_restriction_automatic_translation'] ) && $settings['etm_language_restriction_automatic_translation'] != 'yes')
             $element->add_render_attribute( '_wrapper', 'data-no-translation' );
 
     }
@@ -284,7 +284,7 @@ class TRP_Elementor {
      *
      * @return bool
      */
-    public function trp_elementor_compatibility( $allow_redirect ){
+    public function etm_elementor_compatibility( $allow_redirect ){
 
         // compatibility with Elementor preview. Do not redirect to subdir language when elementor preview is present.
         if ( isset( $_GET['elementor-preview'] ) )
@@ -296,4 +296,4 @@ class TRP_Elementor {
 }
 
 // Instantiate Plugin Class
-TRP_Elementor::instance();
+ETM_Elementor::instance();
